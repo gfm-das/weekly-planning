@@ -116,8 +116,8 @@ fi
 
 [ -f "$WORK/answers.json" ] || stop "no settings were saved."
 
-if [ -x "$HERE/run-install.sh" ]; then
-  exec "$HERE/run-install.sh" "$WORK/answers.json"
+if [ -f "$HERE/run-install.sh" ]; then
+  exec bash "$HERE/run-install.sh" "$WORK/answers.json"
 fi
 say ""
 say "Your settings are saved in install/.work/answers.json (only you can read it)."
