@@ -106,12 +106,27 @@ step_supabase() {
   step "3/10 The database stack (Supabase)"
   # All services: compose starts each one when the ones it needs are healthy. A test names only the few services it needs, and then
   # they are started without their neighbours (--no-deps).
-  local no_deps=""
+  local no_deps="" bucket_tool=no try
   [ -n "$SUPA_SERVICES" ] && no_deps="--no-deps"
+  if [ -z "$SUPA_SERVICES" ]; then
+    # One program of the stack only makes a storage bucket once (minio-createbucket, from quay.io, which sometimes refuses a download).
+    # It is not needed to run, so a failed download of it must not stop the installation: it is started last, and only a warning if it fails.
+    SUPA_SERVICES=$(compose_supabase config --services 2>/dev/null | grep -vx minio-createbucket | tr '\n' ' ')
+    bucket_tool=yes
+  fi
+  say "Downloading the programs of the database stack (the first time this takes a while) ..."
+  for try in 1 2 3; do
+    # shellcheck disable=SC2086
+    compose_supabase pull --ignore-pull-failures $SUPA_SERVICES >"$WORK/compose.log" 2>&1 && break
+    say "  a download failed, trying again ($try of 3) ..."; sleep 10
+  done
   # shellcheck disable=SC2086
-  if ! compose_supabase up -d $no_deps $SUPA_SERVICES >"$WORK/compose.log" 2>&1; then
+  if ! compose_supabase up -d $no_deps $SUPA_SERVICES >>"$WORK/compose.log" 2>&1; then
     tail -15 "$WORK/compose.log" >&2
     stop "the database stack did not start (the log is install/.work/compose.log)."
+  fi
+  if [ "$bucket_tool" = yes ]; then
+    compose_supabase up -d minio-createbucket >>"$WORK/compose.log" 2>&1 || say "Note: the storage bucket tool could not be downloaded; the system works without it (Supabase file storage is not used by the portal)."
   fi
   say "Waiting for the database ..."
   local i
