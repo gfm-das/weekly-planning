@@ -1,0 +1,106 @@
+<!doctype html>
+<!-- site/index.html: the website of Weekly Planning (GitHub Pages: https://gfm-das.github.io/weekly-planning). One plain page, no libraries, no tracking.
+     release/publish.sh puts it on the gh-pages branch and replaces 1.0.3 by the release number. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly Planning for your mission</title>
+<meta name="description" content="Install the Weekly Planning portal for your mission on one computer: weekly planning, call-ins, calendar, dashboards and presentations in 14 languages.">
+<style>
+  :root { --bg:#f4f8f9; --card:#ffffff; --ink:#173644; --muted:#587080; --line:#d3e0e5; --accent:#1d6f7d; --accent-ink:#ffffff; --soft:#e6f2f4; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#10202a; --card:#172c38; --ink:#e6f0f3; --muted:#9fb6c0; --line:#2c4553; --accent:#5cc2d1; --accent-ink:#0b1a22; --soft:#1d3744; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:18px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:50rem; margin:0 auto; padding:1.5rem 1.1rem 4rem; }
+  header { padding:2.2rem 0 1rem; }
+  h1 { font-size:2.2rem; line-height:1.2; margin:0 0 .6rem; }
+  h2 { font-size:1.4rem; margin:2.4rem 0 .6rem; }
+  .lead { font-size:1.2rem; color:var(--muted); margin:0; }
+  .downloads { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin:1.8rem 0 .6rem; }
+  a.big { display:block; text-align:center; text-decoration:none; background:var(--accent); color:var(--accent-ink); font-weight:700; font-size:1.2rem; padding:1.3rem .6rem; border-radius:14px; border:3px solid transparent; }
+  a.big small { display:block; font-weight:400; font-size:.85rem; opacity:.9; margin-top:.2rem; }
+  a.big.mine { border-color:var(--ink); }
+  a.big:focus-visible, a:focus-visible { outline:3px solid var(--ink); outline-offset:3px; }
+  @media (max-width:600px) { .downloads { grid-template-columns:1fr; } }
+  .note { color:var(--muted); font-size:.95rem; margin:.2rem 0 0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.3rem; margin:1rem 0; }
+  .card h3 { margin:.1rem 0 .4rem; font-size:1.1rem; }
+  ol, ul { padding-left:1.3rem; } li { margin:.35rem 0; }
+  code { background:var(--soft); padding:.1rem .35rem; border-radius:6px; font-size:.92em; }
+  a { color:var(--accent); }
+  footer { margin-top:3rem; color:var(--muted); font-size:.92rem; border-top:1px solid var(--line); padding-top:1rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Weekly Planning for your mission</h1>
+    <p class="lead">Weekly plans, call-ins, the calendar, dashboards and presentations for every missionary and leader, in 14 languages. You install it yourself, on one computer, in about 20 minutes. Your data stays with you.</p>
+  </header>
+
+  <section aria-labelledby="download">
+    <h2 id="download">Download</h2>
+    <div class="downloads">
+      <a class="big" id="dl-windows" href="https://github.com/gfm-das/weekly-planning/releases/latest/download/install-windows.cmd">Download for Windows<small>install-windows.cmd</small></a>
+      <a class="big" id="dl-mac" href="https://github.com/gfm-das/weekly-planning/releases/latest/download/install-weekly-planning.sh">Download for Mac<small>install-weekly-planning.sh</small></a>
+      <a class="big" id="dl-linux" href="https://github.com/gfm-das/weekly-planning/releases/latest/download/install-weekly-planning.sh">Download for Linux<small>install-weekly-planning.sh</small></a>
+    </div>
+    <p class="note">Version 1.0.3. The file is a small starter: it checks that you have what you need, fetches the newest release and opens the setup page.</p>
+  </section>
+
+  <section aria-labelledby="need">
+    <h2 id="need">What you need</h2>
+    <div class="card">
+      <ul>
+        <li><b>A computer that stays on</b> (the mission office's computer is ideal): Windows 10 or 11, a Mac, or Linux. At least 8 GB of memory (16 GB is better) and 40 GB of free disk space.</li>
+        <li><b>Docker</b>, free: <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a> for Windows and Mac, <a href="https://docs.docker.com/engine/install/">Docker Engine</a> for Linux. Install it first and start it.</li>
+        <li><b>Git</b>, free, on Windows: <a href="https://git-scm.com/download/win">Git for Windows</a>. Mac and Linux usually have it already.</li>
+        <li>An internet connection while installing (the first start downloads about 3 GB).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="how">
+    <h2 id="how">How it goes</h2>
+    <ol>
+      <li><b>Download</b> the file above for your computer and open it (on Windows: double-click; on Mac and Linux: <code>bash install-weekly-planning.sh</code> in a terminal).</li>
+      <li>A <b>setup page</b> opens in your browser. Type the mission's name, choose the language missionaries start with, and make the first Data Analyst's account (name, email, password). Everything else on the page is optional. A computer without a screen is asked the same questions in the terminal.</li>
+      <li><b>Wait</b> a few minutes while it builds everything: the portal, DA Management, Dashboards, Presentations and the nightly backups.</li>
+      <li><b>Open the portal</b> (the address is shown at the end) and sign in with the account you just made.</li>
+      <li>In <b>DA Management</b>, create the other accounts and upload the roster (Roster Import).</li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="later">
+    <h2 id="later">Updates and backups</h2>
+    <p>New versions are published here as numbered releases. In DA Management, the <b>Updates</b> page shows what is new and installs it only when a person asks: it tests the new version first, saves a way back, and checks the system's health afterwards. A backup of the database is made every night.</p>
+  </section>
+
+  <section aria-labelledby="help">
+    <h2 id="help">Help and details</h2>
+    <ul>
+      <li>The step-by-step installation guide: <a href="https://github.com/gfm-das/weekly-planning/tree/main/install">install/README</a>.</li>
+      <li>The manual (in the portal after installing, and in the repository): <a href="https://github.com/gfm-das/weekly-planning/tree/main/wiki">wiki</a>.</li>
+      <li>A problem or a question: <a href="https://github.com/gfm-das/weekly-planning/issues">report it here</a>.</li>
+      <li>All versions: <a href="https://github.com/gfm-das/weekly-planning/releases">releases</a>. The source: <a href="https://github.com/gfm-das/weekly-planning">github.com/gfm-das/weekly-planning</a>.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Weekly Planning 1.0.3. Free software under the <a href="https://github.com/gfm-das/weekly-planning/blob/main/LICENSE">MIT licence</a>;
+    <a href="https://github.com/gfm-das/weekly-planning/blob/main/NOTICE.md">third-party software and content</a>.
+    This is not an official website of any church.
+  </footer>
+</main>
+<script>
+  // Marks the download that fits this computer (all three stay visible and work without this script).
+  (function () {
+    var p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '').toLowerCase();
+    var id = /win/.test(p) ? 'dl-windows' : /mac|iphone|ipad/.test(p) ? 'dl-mac' : /linux|x11|cros/.test(p) ? 'dl-linux' : '';
+    var el = id && document.getElementById(id);
+    if (el) el.className += ' mine';
+  })();
+</script>
+</body>
+</html>
