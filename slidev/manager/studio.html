@@ -1,0 +1,694 @@
+<!doctype html>
+<!--
+  The editor page: GET /studio/<deck> on the manager address, for people who may change the deck.
+  The bar at the top holds the deck's title (click to rename), whether everything is saved and published, and
+  Add chart / Edit chart, Source, View and Publish now. Below it: the visual editor (Slidev with Studio) in a frame
+  from the deck address, and the Source pane (the slides as text, in the Monaco editor) beside it.
+  The server fills in the title, the deck's data (window.STUDIO), the tab icon and the random number of this page's
+  Content-Security-Policy (manager-routes.mjs, pages.mjs studioPage).
+  The editor in the frame talks to this page by messages (editor-bridge.js); the chart builder is loaded on the
+  first click on Add chart or Edit chart (chart-builder.mjs). Everything else goes through portal-bridge.js.
+-->
+<html lang="en" data-theme="mission">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>__TITLE_HTML__ · Editor</title>
+<link rel="icon" href="__FAVICON__" />
+<script src="/_manager/portal-bridge.js"></script>
+<script nonce="__NONCE__">window.STUDIO=__STUDIO_DATA__;</script>
+<style>
+:root{--teal:#087f8c;--teal-dark:#066a75;--navy:#17394b;--page:#eef4f5;--panel:#fff;--text:#193746;--muted:#6b828d;--line:#d9e5e8;--soft:#e8f1f2;--danger:#b42318;--warn:#8a5a00;--ok:#127a4a;--shadow:0 14px 38px rgba(20,30,40,.18);color-scheme:light;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--page)}
+[data-theme="light"]{--navy:#27313a;--page:#f7f8fa;--text:#27313a;--muted:#6d7780;--line:#e1e5e9;--soft:#f0f2f4}
+[data-theme="dark"]{--navy:#edf7f8;--page:#101a21;--panel:#18262f;--text:#edf7f8;--muted:#a9bdc3;--line:#2d414b;--soft:#21343d;--danger:#ff9b91;--warn:#f2c46d;--ok:#6fd3a0;--shadow:0 14px 38px rgba(0,0,0,.45);color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--page);color:var(--text);display:flex;flex-direction:column;overflow:hidden}button,input{font:inherit;color:inherit}[hidden]{display:none!important}
+.bar{flex:none;display:flex;align-items:center;gap:14px;padding:10px 16px;min-height:60px;background:var(--panel);border-bottom:1px solid var(--line)}
+.back{flex:none;display:inline-flex;align-items:center;gap:6px;color:var(--navy);text-decoration:none;font-weight:650;font-size:14px;padding:8px 10px;border-radius:10px}.back:hover,.back:focus-visible{background:var(--soft);outline:none}
+.divider{flex:none;width:1px;height:30px;background:var(--line)}
+.deck{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.title{align-self:flex-start;max-width:100%;border:0;background:transparent;padding:2px 6px;margin-left:-6px;border-radius:8px;font-size:18px;font-weight:750;color:var(--navy);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:text}.title:hover,.title:focus-visible{background:var(--soft);outline:none}
+.title-input{width:min(520px,100%);font-size:17px;font-weight:700;padding:4px 8px;margin-left:-6px;border:1px solid var(--teal);border-radius:8px;background:var(--panel);outline:3px solid rgba(8,127,140,.18)}
+.states{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.states .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none}.states.busy .dot{background:var(--teal);animation:pulse 1s ease-in-out infinite}.states.warn .dot{background:#d99a00}.states.error .dot{background:var(--danger)}.states.error #saveState{color:var(--danger)}.sep{opacity:.6}
+@keyframes pulse{50%{opacity:.3}}
+.actions{flex:none;display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--panel);color:var(--navy);border-radius:10px;padding:8px 13px;font-size:14px;font-weight:650;cursor:pointer;text-decoration:none;white-space:nowrap}.btn:hover{background:var(--soft)}.btn:focus-visible{outline:3px solid rgba(8,127,140,.35);outline-offset:1px}.btn:disabled{opacity:.55;cursor:default}
+.btn[aria-pressed="true"]{background:var(--soft);border-color:var(--teal);color:var(--teal)}[data-theme="dark"] .btn[aria-pressed="true"]{color:#5cc6cf;border-color:#5cc6cf}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}.btn.primary:hover{background:var(--teal-dark)}.btn.small{padding:6px 10px;font-size:13px}
+.btn .spin{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}.btn.working .spin{display:inline-block}
+.work{flex:1;min-height:0;display:flex}
+.source{flex:none;width:var(--source-w,42%);min-width:300px;max-width:75%;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line)}
+.source-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line)}.source-head strong{font-size:14px;color:var(--navy)}.source-head .hint{display:block;font-size:12px;color:var(--muted);margin-top:1px}.source-actions{display:flex;gap:6px}
+.notice{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 12px;font-size:13px;line-height:1.4;background:#fff4e0;color:#6b4500;border-bottom:1px solid #f0d49a}.notice.error{background:#fdecea;color:#8c1d13;border-color:#f3c2bc}[data-theme="dark"] .notice{background:#3a2f16;color:#f7dca0;border-color:#5a4a22}[data-theme="dark"] .notice.error{background:#3d1f1c;color:#ffc4bd;border-color:#6b322c}
+.editor{flex:1;min-height:0;position:relative}.editor-msg{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--muted);font-size:14px;background:var(--panel)}
+.splitter{flex:none;width:6px;margin-left:-3px;margin-right:-3px;cursor:col-resize;position:relative;z-index:2}.splitter:hover,.splitter.dragging,.splitter:focus-visible{background:rgba(8,127,140,.35);outline:none}
+.phone-note{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;font-size:13px;line-height:1.4;background:var(--soft);color:var(--text);border-bottom:1px solid var(--line)}
+.menu-wrap{position:relative;display:inline-block}.menu{position:absolute;right:0;top:calc(100% + 6px);min-width:220px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;z-index:10}.menu[hidden]{display:none}.menu button{background:none;border:0;text-align:left;padding:9px 11px;border-radius:8px;cursor:pointer;color:var(--text);font-size:14px}.menu button:hover,.menu button:focus-visible{background:var(--soft)}
+.stage{flex:1;min-width:0;position:relative;background:var(--page)}.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}.dragging-split .stage iframe{pointer-events:none}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--page);z-index:3;padding:20px}.overlay-box{display:flex;gap:16px;align-items:flex-start;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow)}.overlay-box strong{display:block;font-size:16px;color:var(--navy)}.overlay-box p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.overlay-box .btn{margin-top:14px}
+.spinner{flex:none;width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin-top:2px}.overlay.error .spinner{display:none}
+.steps{display:flex;gap:6px;margin-top:12px}.steps span{width:28px;height:4px;border-radius:2px;background:var(--line)}.steps span.done{background:var(--teal)}.overlay.error .steps{display:none}body:not(.debug) .steps{display:none}
+/* GFM Studio: the published deck is shown at once (#preview) while the editor starts; the editor loads under it and the
+   preview fades out when the editor is editable. Until then the loading message is a small pill, not a full cover. */
+.stage iframe#preview{z-index:2;pointer-events:none;transition:opacity .3s ease}.stage iframe#preview.gone{opacity:0}.stage iframe#studio{z-index:1}
+.stage.has-preview .overlay:not(.error){inset:auto;top:12px;right:12px;padding:0;background:transparent;pointer-events:none}
+.stage.has-preview .overlay:not(.error) .overlay-box{align-items:center;gap:10px;padding:8px 14px;border-radius:999px;max-width:none}.stage.has-preview .overlay:not(.error) .overlay-box p{display:none}.stage.has-preview .overlay:not(.error) .spinner{width:16px;height:16px;border-width:2px;margin:0}.stage.has-preview .overlay:not(.error) .overlay-box strong{font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--navy);color:var(--panel);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow);transition:.18s ease;z-index:50;max-width:calc(100vw - 32px)}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.warn{background:#8a5a00;color:#fff}
+dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px));background:var(--panel);color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.3)}dialog::backdrop{background:rgba(10,20,30,.45)}.modal{padding:22px}.modal h3{margin:0 0 8px;font-size:20px;color:var(--navy)}.modal p{color:var(--muted);line-height:1.5;margin:0 0 12px}
+.log{margin:0;max-height:300px;overflow:auto;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;word-break:break-word}details summary{cursor:pointer;font-weight:650;font-size:14px;margin:6px 0 8px;color:var(--navy)}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;flex-wrap:wrap}
+@media(max-width:860px){.label-long{display:none}.divider{display:none}.bar{gap:8px;padding:8px 10px}.back{padding:8px 6px}}
+@media(max-width:700px){.source{position:absolute;left:0;right:0;top:0;bottom:0;width:auto!important;min-width:0;max-width:none;z-index:4}.work{position:relative}.splitter{display:none}.actions .btn{padding:8px 10px}}
+@media(max-width:600px){.bar{flex-wrap:wrap;row-gap:2px;min-height:0}.deck{order:3;flex-basis:100%}.actions{margin-left:auto;gap:4px;flex-wrap:wrap;justify-content:flex-end;flex:1 1 0;min-width:0}.back span:not(.arrow){display:none}.source-head .hint{display:none}.actions .btn{padding:8px}.actions .btn,.back,.phone-note .btn{min-height:44px}.back{min-width:44px;justify-content:center}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a id="backLink" class="back" href="/" title="Back to the presentation library" aria-label="Back to the presentation library"><span class="arrow" aria-hidden="true" data-i18n="common.arrowBack">←</span> <span>Library</span></a>
+  <span class="divider" aria-hidden="true"></span>
+  <div class="deck">
+    <button id="titleButton" class="title" type="button" title="Click to rename">__TITLE_HTML__</button>
+    <div id="states" class="states" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="saveState">All changes saved</span><span class="sep" id="publishSep" hidden>·</span><span id="publishState"></span></div>
+  </div>
+  <div class="actions">
+    <button id="chartButton" class="btn" type="button" title="Add a chart from mission numbers or your own numbers">Add chart</button>
+    <button id="editChartButton" class="btn" type="button" title="Change the chart selected on the slide" hidden>Edit chart</button>
+    <button id="pasteButton" class="btn" type="button" title="Bring in a whole presentation, for example one written by ChatGPT or Claude">Paste presentation</button>
+    <button id="sourceButton" class="btn" type="button" aria-pressed="false" title="Edit the slide text directly">Source</button>
+    <button id="viewButton" class="btn" type="button" title="Watch the presentation">View</button>
+    <span class="menu-wrap">
+      <button id="moreButton" class="btn" type="button" aria-haspopup="true" aria-expanded="false">More</button>
+      <div id="moreMenu" class="menu" role="menu" hidden>
+        <button id="copyAiItem" type="button" role="menuitem">Copy AI instructions</button>
+        <button id="downloadMdItem" type="button" role="menuitem">Download slides.md</button>
+        <button id="downloadZipItem" type="button" role="menuitem">Download source (.zip)</button>
+        <button id="uploadItem" type="button" role="menuitem">Upload source…</button>
+      </div>
+      <input id="uploadInput" type="file" accept=".md,.markdown,.txt,.zip,application/zip,text/markdown,text/plain" hidden>
+    </span>
+    <button id="publishButton" class="btn primary" type="button" title="Saved changes go live for viewers when you leave the editor. Use this to publish straight away and see any problems."><span class="spin" aria-hidden="true"></span><span id="publishLabel">Publish now</span></button>
+  </div>
+</header>
+<div id="phoneNote" class="phone-note" hidden><span>The visual editor works best on a computer. On a phone, use Source to change the text.</span><button id="phoneNoteClose" class="btn small" type="button">OK</button></div>
+<main class="work" id="work">
+  <section id="sourcePane" class="source" hidden aria-label="Slide source">
+    <div class="source-head">
+      <div><strong>Slide source</strong><span class="hint">Markdown. Start a new slide with a line of three dashes (---). <span class="label-long">Ctrl+S saves.</span></span></div>
+      <div class="source-actions"><button id="sourceSave" class="btn primary small" type="button" disabled>Save</button></div>
+    </div>
+    <div id="sourceNotice" class="notice" hidden><span id="sourceNoticeText"></span><button id="sourceAction" class="btn small" type="button" hidden>Load latest</button></div>
+    <div id="editor" class="editor"><div id="editorMsg" class="editor-msg">Loading the editor…</div></div>
+  </section>
+  <div id="splitter" class="splitter" hidden role="separator" aria-orientation="vertical" aria-label="Resize the source pane (arrow keys)" aria-valuemin="300" tabindex="0"></div>
+  <section class="stage">
+    <iframe id="studio" title="Visual slide editor" allow="fullscreen; clipboard-read; clipboard-write; display-capture"></iframe>
+    <iframe id="preview" tabindex="-1" aria-hidden="true" hidden></iframe>
+    <div id="overlay" class="overlay" role="status"><div class="overlay-box"><div class="spinner" aria-hidden="true"></div><div><strong id="overlayTitle">Starting the editor…</strong><p id="overlayText">Step 1 of 3: starting the slide tools.</p><div id="overlaySteps" class="steps" aria-hidden="true"><span class="done"></span><span></span><span></span></div><details id="overlayDetails" hidden><summary>Details</summary><pre id="overlayLog" class="log"></pre></details><button id="overlayRetry" class="btn primary" type="button" hidden>Try again</button></div></div></div>
+  </section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="publishDialog"><div class="modal"><h3>Publishing did not work</h3><p id="publishMessage"></p><details id="publishDetails" open><summary>Details from the slide builder</summary><pre id="publishLog" class="log"></pre></details><div class="modal-actions"><button id="publishViewOld" class="btn" type="button" hidden>View the last published version</button><button id="publishClose" class="btn primary" type="button">Close</button></div></div></dialog>
+<script nonce="__NONCE__">
+(() => {
+  const $ = id => document.getElementById(id), P = window.PresentationSession;
+  const state = { slug: STUDIO.slug, title: STUDIO.title, version: null, savedText: '', dirty: false, saving: false, applying: false, conflict: false, publishing: false, status: null, studioBusy: false, studioError: '', studioErrorSeen: '', studioErrorVersion: null, leaving: false, editor: null, monaco: null, monacoLoading: null, noticeAction: null, chartSelection: null, builder: null };
+  // Round 8: the editor in the frame runs on the deck address (deck-origin.mjs), so this page cannot look into it.
+  // It tells this page its state by messages (editor-bridge.js); the last state is kept here.
+  const DECK_ORIGIN = STUDIO.deck_origin;
+  // GFM Studio startup measurement: ms since this page started loading (that is the click on Edit), by name. The
+  // editor's own side (editor-bridge.js) and the server's (GET …/editor timings) are added when they arrive.
+  // Read it with window.GFM_PERF, or in the console ("[GFM STUDIO STARTUP]").
+  const PERF = window.GFM_PERF = { marks: {}, polls: [], server: null, frame: null };
+  const mark = name => { if (!(name in PERF.marks)) PERF.marks[name] = Math.round(performance.now()); };
+  mark('shell_script');
+  const frameState = { page: '', ready: false, readySince: 0, busy: false, error: '', selection: null, slide: 0 };
+  const deckApi = suffix => '/api/presentations/' + encodeURIComponent(state.slug) + suffix;
+  // This page's own random name: the editor's edit pass is given to this page and ends when it is left (round 8
+  // review), but not when another tab of the same deck, or this page reloaded, still has the editor open.
+  const PAGE_ID = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
+  let toastTimer = 0;
+
+  function toast(text, warn) { const t = $('toast'); t.textContent = text; t.className = 'toast show' + (warn ? ' warn' : ''); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', warn ? 6000 : 3200); }
+
+  function renderStates() {
+    let text = 'All changes saved', cls = '';
+    if (state.saving || state.studioBusy) { text = 'Saving…'; cls = 'busy'; }
+    else if (state.studioError) { text = 'Your last change in the visual editor was not saved. Try again.'; cls = 'error'; }
+    else if (state.dirty) { text = 'Unsaved changes in Source'; cls = 'warn'; }
+    $('saveState').title = cls === 'error' ? state.studioError : '';
+    const s = state.status; let pub = '';
+    if (state.publishing || (s?.building && !s.build_waiting)) pub = 'Publishing…';
+    else if (s?.build_waiting) pub = 'Publishing when you pause';
+    else if (s?.build_error) pub = 'Last publish did not work';
+    else if (s && !s.published_at) pub = 'Not published yet';
+    else if (s && !s.up_to_date) pub = 'Viewers see an older version';
+    else if (s) pub = 'Viewers see the latest version';
+    // i18n.js shows these in the reader's language, so the translated text counts as already shown.
+    const shows = (id, value) => [value, window.MissionI18n?.translate(value)].includes($(id).textContent);
+    if (!shows('saveState', text)) $('saveState').textContent = text;
+    if (!shows('publishState', pub)) $('publishState').textContent = pub;
+    $('publishSep').hidden = !pub;
+    $('states').className = 'states ' + cls;
+    $('sourceSave').disabled = !state.dirty || state.saving || !state.editor;
+  }
+
+  function setTitle(title) { state.title = title; $('titleButton').textContent = title; document.title = `${title} · Editor`; }
+
+  // ---- Visual editor (Studio inside the deck's Slidev dev server) ----
+  function overlay(kind, title, text, log) {
+    const o = $('overlay');
+    if (!kind) { o.hidden = true; return; }
+    o.hidden = false; o.className = 'overlay' + (kind === 'error' ? ' error' : '');
+    $('overlayTitle').textContent = title; $('overlayText').textContent = text || ''; $('overlayRetry').hidden = kind !== 'error';
+    $('overlayLog').textContent = log || ''; $('overlayDetails').hidden = !log;
+  }
+
+  // The published deck, shown while the editor starts (first slide, no controls). Only once per page, and never for a
+  // deck that was not published yet. endPreview() fades it out when the editor is editable.
+  async function showPreview() {
+    if (state.previewTried) return;
+    state.previewTried = true;
+    try {
+      const r = await P.api(deckApi('/preview'), { method: 'POST', body: '{}' });
+      mark('preview_pass_ok');
+      if (!r.preview || state.stageShown) return;
+      const frame = $('preview');
+      frame.onload = () => mark('preview_loaded');
+      frame.hidden = false;
+      frame.classList.remove('gone');
+      document.querySelector('.stage').classList.add('has-preview');
+      mark('preview_src_set');
+      frame.src = r.preview + '1?embedded=true';
+    } catch {}
+  }
+  function endPreview() {
+    const frame = $('preview');
+    if (frame.hidden || frame.classList.contains('gone')) return;
+    frame.classList.add('gone');
+    document.querySelector('.stage').classList.remove('has-preview');
+    setTimeout(() => { frame.removeAttribute('src'); frame.hidden = true; }, 400);
+  }
+
+  // The three steps of opening the editor, named as they happen (the server
+  // reports the first two: GET .../editor).
+  const STAGES = {
+    starting: [1, 'Starting the editor…', 'Step 1 of 3: starting the slide tools.'],
+    preparing: [2, 'Preparing your slides…', 'Step 2 of 3: getting every slide and chart ready. The first time for a presentation takes longest.'],
+    loading: [3, 'Opening the slides…', 'Step 3 of 3: almost there.'],
+  };
+  function showStage(name) {
+    const [step, title, text] = STAGES[name];
+    overlay('loading', title, text);
+    $('overlaySteps').querySelectorAll('span').forEach((bar, i) => bar.classList.toggle('done', i < step));
+  }
+
+  async function startStudio() {
+    state.stageShown = false;
+    mark('start_called');
+    showPreview();
+    showStage('starting');
+    let starting = true;
+    (async () => {
+      while (starting) {
+        try {
+          const s = await P.api(deckApi('/editor'));
+          PERF.polls.push([Math.round(performance.now()), s.stage]);
+          if (s.timings) PERF.server = s.timings;
+          if (starting && (s.stage === 'starting' || s.stage === 'preparing')) showStage(s.stage);
+        } catch {}
+        await new Promise(resolve => setTimeout(resolve, 700));
+      }
+    })();
+    try { await P.api(deckApi('/editor'), { method: 'POST', body: JSON.stringify({ page: PAGE_ID }) }); }
+    catch (e) { starting = false; overlay('error', 'The editor could not start', e.message, e.data?.log); return; }
+    starting = false;
+    mark('editor_post_done');
+    showStage('loading');
+    const frame = $('studio');
+    frame.onload = () => { mark('iframe_load'); waitForSlides(); };
+    // Forget what the editor said before (an editor started again): only the new page's messages count.
+    Object.assign(frameState, { page: '', ready: false, readySince: 0, busy: false, error: '', selection: null, slide: 0 });
+    // The editor answer above also gave this browser the edit pass for this deck (a cookie).
+    // gfm_studio_panel=open: Studio's side panel opens, on wide screens only; on a phone it would cover the slide,
+    // so the user's own choice is left alone there. The editor keeps that setting on its own address, so the
+    // editor page sets it itself (editor-bridge.js) and takes this word out of its address again.
+    mark('iframe_src_set');
+    frame.src = DECK_ORIGIN + '/edit/' + encodeURIComponent(state.slug) + '/1' + (window.innerWidth >= 900 ? '?gfm_studio_panel=open' : '');
+  }
+
+  // Ready = the editor says a slide is on screen and Slidev's CSS utilities apply (editor-bridge.js). On a cold
+  // start the page reloads itself once (pages.mjs addEditorScripts), so the overlay waits until the same page
+  // has stayed ready for a moment.
+  function waitForSlides() {
+    if (state.stageShown) return;
+    const started = Date.now();
+    (function check() {
+      if (frameState.ready && frameState.readySince && Date.now() - frameState.readySince >= 400) { state.stageShown = true; mark('overlay_hidden'); endPreview(); reportPerf(); return overlay(null); }
+      if (Date.now() - started > 60000) { state.stageShown = true; mark('overlay_hidden_timeout'); endPreview(); reportPerf(); return overlay(null); }
+      setTimeout(check, 100);
+    })();
+  }
+
+  // The startup timeline, printed once the editor is open (and kept in window.GFM_PERF). The editor's own marks
+  // (PERF.frame.marks) count from when its page started loading; its page load began at about iframe_src_set.
+  function reportPerf() {
+    tellEditor({ type: 'gfm-editor-perf-get' });
+    for (const entry of performance.getEntriesByType('paint')) PERF.marks[entry.name] = Math.round(entry.startTime);
+    setTimeout(() => {
+      const c = navigator.connection || {};
+      PERF.env = { type: c.effectiveType || '', rtt: c.rtt ?? null, downlink: c.downlink ?? null, cores: navigator.hardwareConcurrency || null, memory: navigator.deviceMemory || null, host: location.hostname };
+      try { console.info('[GFM STUDIO STARTUP: ' + state.slug + ']', JSON.stringify(PERF)); } catch {}
+      // The server's log gets the same, so real people's numbers can be read there (manager-routes.mjs editorPerf).
+      P.api(deckApi('/editor/perf'), { method: 'POST', body: JSON.stringify({ timeline: PERF }) }).catch(() => {});
+    }, 700);
+  }
+
+  // Messages to the editor in the frame (only if it is on the deck address).
+  function tellEditor(message) {
+    try { $('studio').contentWindow.postMessage(message, DECK_ORIGIN); } catch {}
+  }
+
+  function reloadStudio() {
+    if (frameState.page) tellEditor({ type: 'gfm-editor-reload' });
+    else $('studio').src = $('studio').src;
+  }
+
+  // What the editor tells this page (editor-bridge.js). Only the frame's own page on the deck address counts.
+  window.addEventListener('message', event => {
+    if (event.source !== $('studio').contentWindow || event.origin !== DECK_ORIGIN) return;
+    const data = event.data || {};
+    if (data.type === 'gfm-editor-input') { state.userInputAt = Date.now(); return; }
+    if (data.type === 'gfm-editor-perf') { PERF.frame = data.perf; mark('frame_perf_received'); return; }
+    if (data.type !== 'gfm-editor-state') return;
+    mark('frame_first_message');
+    const page = String(data.page || '');
+    if (page !== frameState.page) { frameState.page = page; frameState.readySince = 0; }
+    frameState.ready = data.ready === true;
+    if (!frameState.ready) frameState.readySince = 0;
+    else if (!frameState.readySince) { frameState.readySince = Date.now(); mark('frame_ready'); }
+    frameState.busy = data.busy === true;
+    frameState.error = String(data.error || '').slice(0, 500);
+    frameState.slide = Number(data.slide) || 0;
+    const sel = data.selection && typeof data.selection === 'object' ? data.selection : null;
+    frameState.selection = sel ? { no: Number(sel.no) || 0, range: Array.isArray(sel.range) ? [Number(sel.range[0]), Number(sel.range[1])] : null, tag: String(sel.tag || '').slice(0, 100), sig: String(sel.sig || '').slice(0, 200), chartId: String(sel.chartId || '').slice(0, 100) } : null;
+  });
+
+  function clearStudioError() { state.studioError = ''; state.studioErrorVersion = null; }
+
+  // Studio clears its own error message after a few seconds, so the shell
+  // keeps it until a later change is written (or the slides move on).
+  function readStudio() {
+    const busy = frameState.busy, error = frameState.error, selection = frameState.selection;
+    readChartSelection(selection);
+    let changed = busy !== state.studioBusy;
+    if (error && error !== state.studioErrorSeen) {
+      state.studioError = error; state.studioErrorVersion = null; changed = true;
+      // Often a lost sign-in: ask the portal to renew it, and note which version failed.
+      P.refresh().catch(() => {});
+      P.api(deckApi('/status')).then(s => { if (state.studioError === error) state.studioErrorVersion = s.version; }, () => {});
+    } else if (state.studioBusy && !busy && !error && state.studioError) { clearStudioError(); changed = true; }
+    state.studioErrorSeen = error; state.studioBusy = busy;
+    if (changed) renderStates();
+  }
+
+  // ---- Chart builder (chart-builder.mjs, loaded on first use) ----
+  // "Edit chart" shows while Studio's selection is a chart component. Studio's
+  // fingerprint of the clicked tag (data-studio-sig) goes along: two charts
+  // side by side on one line share the line range, and the builder uses the
+  // fingerprint to open (and save) the one that was clicked.
+  // Round 6: each chart also carries its chart-id (data-chart-id on the chart's
+  // element), which the builder uses to find the chart again when it saves.
+  // Studio re-finds its selection after a slide is rebuilt by picking the
+  // nearest element of the same kind, which can be the other chart on the
+  // slide: when that happens without a click or a key from the user, the
+  // shell selects the chart the user had picked again (keepChartSelected).
+  const CHART_TAG = /^(missionchart|mission-chart|missionkpichart|mission-kpi-chart)$/i;
+  const chartKey = c => c ? c.no + ':' + (c.range || []).join('-') + ':' + c.sig + ':' + c.chartId : '';
+  // sel: the editor's selection as editor-bridge.js sends it ({ no, range, tag, sig, chartId }).
+  function readChartSelection(sel) {
+    const sig = sel ? sel.sig : '';
+    const chartId = sel ? sel.chartId : '';
+    const range = sel ? sel.range : null;
+    const chart = sel && CHART_TAG.test(String(sel.tag || '')) && (range || chartId) ? { no: Number(sel.no), range, tag: String(sel.tag), sig, chartId } : null;
+    if (chartKey(chart) !== chartKey(state.chartSelection)) { keepChartSelected(state.chartSelection, chart, sel); state.chartSelection = chart; }
+    $('editChartButton').hidden = !chart;
+    state.lastSelection = sel && Number(sel.no) ? { no: Number(sel.no), range, tag: String(sel.tag || '') } : null;
+  }
+
+  // When the user last pressed a key or a pointer in the visual editor: the editor tells this page
+  // ('gfm-editor-input', editor-bridge.js), and it is kept in state.userInputAt.
+
+  // Studio moved its selection off a chart the user had picked (to another
+  // chart or element) without a click or key from them: select that chart again.
+  // The editor finds the chart on the slide and selects it the way a click does (editor-bridge.js).
+  function keepChartSelected(before, now, sel) {
+    if (!before?.chartId || (now && now.chartId === before.chartId) || state.restoring) return;
+    if (Date.now() - (state.userInputAt || 0) < 1200 || !sel) return;
+    if (Number(sel.no) !== before.no) return;
+    state.restoring = true;
+    tellEditor({ type: 'gfm-editor-select-chart', no: before.no, chartId: before.chartId });
+    setTimeout(() => { state.restoring = false; }, 150);
+  }
+
+  /** After the builder saved: select that chart on the slide once it has been drawn again (the editor shows that slide first). */
+  function reselectChart({ no, chartId }) {
+    if (chartId) tellEditor({ type: 'gfm-editor-select-chart', no: Number(no), chartId: String(chartId), go: true });
+  }
+
+  async function openBuilder(edit) {
+    if (edit && !state.chartSelection) { toast('Click a chart on the slide first.', true); return; }
+    try {
+      state.builder = state.builder || import('/_manager/chart/chart-builder.mjs');
+      const builder = await state.builder;
+      await builder.openChartBuilder({ slug: state.slug, api: P.api, frame: $('studio'), slideNo: () => frameState.slide, selection: edit ? state.chartSelection : state.lastSelection, edit, toast, loadMonaco, onSaved: saved => { state.userInputAt = Date.now(); reselectChart(saved); } });
+    } catch (e) {
+      state.builder = null;
+      toast(e?.message && e.status ? e.message : 'The chart builder could not be loaded. Check your connection and try again.', true);
+    }
+  }
+
+  // ---- Status polling (Studio and Slidev's side editor write slides.md directly) ----
+  async function refreshStatus() {
+    try {
+      const s = await P.api(deckApi('/status'));
+      state.status = s;
+      // The editor was stopped while this page was in the background (after
+      // about 40 minutes without use): start it again.
+      if (s.editor === 'stopped' && state.stageShown && !state.leaving && document.visibilityState === 'visible') { toast('Starting the editor again…'); startStudio(); }
+      if (s.title && s.title !== state.title && !$('titleButton').hidden) setTitle(s.title);
+      // A later change reached the file, so the failed one no longer matters.
+      if (state.studioError && state.studioErrorVersion && s.version !== state.studioErrorVersion && !state.studioBusy) clearStudioError();
+      if (state.editor && state.version && s.version !== state.version && !state.saving) {
+        if (!state.dirty) await loadSource(true);
+        else if (!state.conflict) { state.conflict = true; notice('These slides were changed in the visual editor after you opened the source. Saving now would overwrite that work, so it is blocked. Copy anything you need, then choose Load latest.', 'warn', LOAD_LATEST); }
+      }
+    } catch (e) {
+      if (e.status === 404) overlay('error', 'This presentation no longer exists', 'It may have been renamed or deleted. Go back to the library to find it.');
+      // Signed out and the portal could not renew it, or the connection dropped.
+      else if (!e.status && Date.now() - (state.warnedAt || 0) > 60000) { state.warnedAt = Date.now(); toast(e.message === 'Failed to fetch' ? 'The presentation server cannot be reached right now.' : e.message, true); }
+    }
+    renderStates();
+  }
+
+  // ---- Source pane (Monaco) ----
+  // A message above the text editor, with an optional button { label, run }.
+  function notice(text, kind, action) {
+    $('sourceNotice').hidden = !text; $('sourceNotice').className = 'notice' + (kind === 'error' ? ' error' : '');
+    $('sourceNoticeText').textContent = text || '';
+    state.noticeAction = text && action || null;
+    $('sourceAction').hidden = !state.noticeAction; if (state.noticeAction) $('sourceAction').textContent = action.label;
+  }
+
+  const LOAD_LATEST = { label: 'Load latest', run: () => { if (!state.dirty || confirm('Replace your unsaved Source changes with the latest saved slides?')) loadSource(true).catch(e => notice(e.message, 'error', LOAD_LATEST)); } };
+  const RETRY_OPEN = { label: 'Try again', run: () => openSource() };
+
+  function monacoTheme() { return document.documentElement.dataset.theme === 'dark' ? 'vs-dark' : 'vs'; }
+
+  function loadMonaco() {
+    if (state.monacoLoading) return state.monacoLoading;
+    state.monacoLoading = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = '/vendor/monaco/vs/loader.js';
+      script.onerror = () => reject(new Error('The text editor could not be loaded. Check your connection and try again.'));
+      script.onload = () => {
+        window.require.config({ paths: { vs: '/vendor/monaco/vs' } });
+        window.require(['vs/editor/editor.main'], () => resolve(window.monaco), () => reject(new Error('The text editor could not be loaded.')));
+      };
+      document.head.appendChild(script);
+    });
+    state.monacoLoading.catch(() => { state.monacoLoading = null; });
+    return state.monacoLoading;
+  }
+
+  async function ensureEditor() {
+    if (state.editor) return state.editor;
+    $('editorMsg').textContent = 'Loading the editor…'; $('editorMsg').hidden = false;
+    const monaco = await loadMonaco();
+    state.monaco = monaco;
+    // Read-only until the slides have loaded: an empty editor must never be saveable.
+    const editor = monaco.editor.create($('editor'), {
+      value: '', readOnly: true, language: 'markdown', theme: monacoTheme(), wordWrap: 'on', minimap: { enabled: false }, automaticLayout: true,
+      fontSize: 14, lineHeight: 22, tabSize: 2, scrollBeyondLastLine: false, renderLineHighlight: 'line', unicodeHighlight: { ambiguousCharacters: false }, padding: { top: 10 },
+    });
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => saveSource());
+    editor.onDidChangeModelContent(() => { if (state.applying) return; state.dirty = editor.getValue() !== state.savedText; renderStates(); });
+    $('editorMsg').hidden = true;
+    state.editor = editor;
+    return editor;
+  }
+
+  async function loadSource(keepView) {
+    const data = await P.api(deckApi('/source'));
+    const editor = state.editor, model = editor.getModel(), view = keepView ? editor.saveViewState() : null;
+    state.applying = true;
+    // Keep the file's own line endings (Monaco would default to CRLF on Windows).
+    model.setEOL(data.markdown.includes('\r\n') ? state.monaco.editor.EndOfLineSequence.CRLF : state.monaco.editor.EndOfLineSequence.LF);
+    model.pushEditOperations([], [{ range: model.getFullModelRange(), text: data.markdown }], () => null);
+    if (view) editor.restoreViewState(view);
+    state.applying = false;
+    state.savedText = data.markdown; state.version = data.version; state.dirty = false; state.conflict = false;
+    editor.updateOptions({ readOnly: false });
+    notice(''); renderStates();
+  }
+
+  async function openSource() {
+    $('sourcePane').hidden = false; $('splitter').hidden = false; $('sourceButton').setAttribute('aria-pressed', 'true');
+    notice('');
+    try {
+      const loaded = !!state.version;
+      const editor = await ensureEditor();
+      if (!loaded || !state.dirty) await loadSource(loaded);
+      editor.focus();
+    } catch (e) {
+      $('editorMsg').hidden = !!state.editor;
+      $('editorMsg').textContent = state.editor ? '' : 'The text editor is not available right now.';
+      if (state.version) notice(e.message, 'error', LOAD_LATEST);
+      else notice('The slides could not be opened in Source, so nothing can be changed here yet. ' + e.message, 'error', RETRY_OPEN);
+    }
+    renderStates();
+  }
+
+  function closeSource() { $('sourcePane').hidden = true; $('splitter').hidden = true; $('sourceButton').setAttribute('aria-pressed', 'false'); }
+
+  async function saveSource() {
+    if (!state.editor || state.saving) return !state.dirty;
+    if (!state.dirty) return true;
+    if (!state.version) { notice('The slides are not loaded, so nothing was saved.', 'error', RETRY_OPEN); return false; }
+    const markdown = state.editor.getValue();
+    if (!markdown.trim()) { notice('The presentation cannot be empty.', 'error'); return false; }
+    state.saving = true; renderStates();
+    try {
+      const data = await P.api(deckApi('/source'), { method: 'PUT', body: JSON.stringify({ markdown, version: state.version }) });
+      state.version = data.version; state.savedText = markdown; state.dirty = state.editor.getValue() !== markdown; state.conflict = false;
+      clearStudioError(); notice(''); toast('Saved.'); reloadStudio();
+      return true;
+    } catch (e) {
+      if (e.status === 409) { state.conflict = true; notice(e.message, 'warn', LOAD_LATEST); }
+      else notice(e.message, 'error');
+      return false;
+    } finally { state.saving = false; renderStates(); refreshStatus(); }
+  }
+
+  // ---- Publish and view ----
+  // skipSave: the user chose to leave their Source changes unsaved.
+  async function publish(forView, skipSave) {
+    if (state.publishing) return false;
+    if (!skipSave && state.dirty && !(await saveSource())) {
+      $('sourcePane').hidden = false; $('splitter').hidden = false; $('sourceButton').setAttribute('aria-pressed', 'true');
+      toast('Your Source changes are not saved yet, so nothing was published. See the message in Source.', true);
+      return false;
+    }
+    state.publishing = true; $('publishButton').disabled = true; $('publishButton').classList.add('working'); $('publishLabel').textContent = 'Publishing…'; renderStates();
+    try {
+      await P.api(deckApi('/publish'), { method: 'POST' });
+      if (!forView) toast('Published. Everyone with access now sees this version.');
+      return true;
+    } catch (e) {
+      $('publishMessage').textContent = e.message;
+      $('publishLog').textContent = e.data?.log || '';
+      $('publishDetails').hidden = !e.data?.log;
+      $('publishViewOld').hidden = !forView || !state.status?.published_at;
+      $('publishDialog').showModal();
+      return false;
+    } finally {
+      state.publishing = false; $('publishButton').disabled = false; $('publishButton').classList.remove('working'); $('publishLabel').textContent = 'Publish now';
+      await refreshStatus();
+    }
+  }
+
+  function leave(url) {
+    if (state.dirty && !confirm('You have unsaved changes in Source. Leave without saving them?')) return;
+    state.leaving = true; location.href = url;
+  }
+
+  // Leaving the editor publishes what is saved straight away (the server
+  // otherwise waits until the slides have been quiet for a few seconds).
+  let leftSent = false;
+  function editorLeft() {
+    if (leftSent) return;
+    leftSent = true;
+    // keepalive: the request still goes out while the page closes (like sendBeacon, which cannot send the
+    // X-GFM-Request header the manager asks for, round 8).
+    // The edit pass of this page ends here too (round 8 review).
+    try { fetch(deckApi('/editor/leave'), { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'X-GFM-Request': '1', 'Content-Type': 'application/json' }, body: JSON.stringify({ page: PAGE_ID }) }).catch(() => {}); } catch {}
+  }
+
+  async function view() {
+    const discard = state.dirty;
+    if (discard && !confirm('You have unsaved changes in Source. Leave without saving them?')) return;
+    const s = state.status;
+    // Publishes what is saved; the Source text the user chose to leave stays unsaved.
+    if ((!s || !s.up_to_date || s.building) && !(await publish(true, discard))) return;
+    state.leaving = true; location.href = '/p/' + encodeURIComponent(state.slug) + '/';
+  }
+
+  // ---- Rename (click the title) ----
+  function startRename() {
+    // A protected deck (opened by name elsewhere) keeps its name; the server refuses a rename too.
+    if (STUDIO.protected_reason) { toast(STUDIO.protected_reason, true); return; }
+    if (state.dirty) { toast('Save or close your Source changes before renaming.', true); return; }
+    const button = $('titleButton'), input = document.createElement('input');
+    input.className = 'title-input'; input.value = state.title; input.maxLength = 200; input.setAttribute('aria-label', 'Presentation name');
+    button.hidden = true; button.after(input); input.focus(); input.select();
+    let done = false;
+    const finish = async save => {
+      if (done) return; done = true;
+      const title = input.value.trim();
+      if (!save || !title || title === state.title) { input.remove(); button.hidden = false; return; }
+      input.disabled = true; $('saveState').textContent = 'Renaming…';
+      try {
+        const data = await P.api(deckApi('/rename'), { method: 'POST', body: JSON.stringify({ title }) });
+        if (data.slug !== state.slug) { state.leaving = true; location.replace('/studio/' + encodeURIComponent(data.slug)); return; }
+        setTitle(data.title || title);
+        if (data.build_error) toast('Renamed, but publishing did not work. Use Publish to see why.', true); else toast('Renamed.');
+      } catch (e) { toast(e.message, true); }
+      input.remove(); button.hidden = false; refreshStatus();
+    };
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); finish(true); } else if (e.key === 'Escape') { e.preventDefault(); finish(false); } });
+    input.addEventListener('blur', () => finish(true));
+  }
+
+  // ---- Source pane width ----
+  (() => {
+    const pane = $('sourcePane'), splitter = $('splitter');
+    const setWidth = w => {
+      const max = Math.round(window.innerWidth * .75); w = Math.round(Math.max(300, Math.min(max, w)));
+      pane.style.setProperty('--source-w', w + 'px'); splitter.setAttribute('aria-valuenow', w); splitter.setAttribute('aria-valuemax', max);
+    };
+    const remember = () => { try { localStorage.setItem('gfm-studio-source-width', parseInt(pane.style.getPropertyValue('--source-w'))); } catch {} };
+    try { const w = Number(localStorage.getItem('gfm-studio-source-width')); if (w > 250) setWidth(w); } catch {}
+    splitter.addEventListener('pointerdown', e => {
+      e.preventDefault(); splitter.setPointerCapture(e.pointerId); splitter.classList.add('dragging'); document.body.classList.add('dragging-split');
+      const move = ev => setWidth(ev.clientX);
+      const up = () => { splitter.removeEventListener('pointermove', move); splitter.classList.remove('dragging'); document.body.classList.remove('dragging-split'); remember(); };
+      splitter.addEventListener('pointermove', move); splitter.addEventListener('pointerup', up, { once: true }); splitter.addEventListener('pointercancel', up, { once: true });
+    });
+    // Keyboard: arrow keys move the edge (Shift for bigger steps), Home/End jump to the limits.
+    splitter.addEventListener('keydown', e => {
+      const now = pane.getBoundingClientRect().width, step = e.shiftKey ? 80 : 20;
+      const next = { ArrowLeft: now - step, ArrowRight: now + step, Home: 300, End: Infinity }[e.key];
+      if (next === undefined) return;
+      e.preventDefault(); setWidth(next); remember();
+    });
+  })();
+
+  // ---- Wiring ----
+  $('backLink').addEventListener('click', e => { e.preventDefault(); leave('/'); });
+  $('titleButton').addEventListener('click', startRename);
+  if (STUDIO.protected_reason) { $('titleButton').title = STUDIO.protected_reason; $('titleButton').style.cursor = 'default'; }
+  $('chartButton').addEventListener('click', () => openBuilder(false));
+  $('editChartButton').addEventListener('click', () => openBuilder(true));
+  // Source opens and closes the Source pane (it shows as pressed while the pane is open).
+  $('sourceButton').addEventListener('click', () => $('sourcePane').hidden ? openSource() : closeSource());
+  $('sourceSave').addEventListener('click', () => saveSource());
+  $('sourceAction').addEventListener('click', () => state.noticeAction?.run());
+  $('phoneNoteClose').addEventListener('click', () => { $('phoneNote').hidden = true; try { localStorage.setItem('gfm-studio-phone-note', '1'); } catch {} });
+  try { $('phoneNote').hidden = window.innerWidth > 700 || localStorage.getItem('gfm-studio-phone-note') === '1'; } catch { $('phoneNote').hidden = window.innerWidth > 700; }
+  $('viewButton').addEventListener('click', view);
+  // ---- GFM Studio: the manager-only performance view (the editor page opened with ?debug) ----
+  if (/[?&]debugb/.test(location.search)) {
+    const box = document.createElement('pre');
+    box.id = 'perfView';
+    box.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:50;max-width:min(560px,60vw);max-height:46vh;overflow:auto;margin:0;padding:10px 12px;border-radius:10px;background:rgba(10,20,26,.92);color:#cfe;font:11.5px/1.4 ui-monospace,Consolas,monospace;white-space:pre-wrap';
+    document.body.appendChild(box);
+    const draw = async () => {
+      try {
+        const d = await P.api('/api/presentations-diagnostics');
+        const mine = (d.editors || []).find(e => e.slug === state.slug);
+        box.textContent = JSON.stringify({ this_page: window.GFM_PERF || null, editor: mine || null, other_editors: (d.editors || []).filter(e => e.slug !== state.slug).map(e => ({ slug: e.slug, state: e.state, rss_mb: e.rss_mb, idle_s: e.idle_s })), max_editors: d.max_editors, builds: d.builds, manager: d.manager }, null, 1);
+      } catch (e) { box.textContent = e.message; }
+    };
+    draw(); setInterval(draw, 5000);
+  }
+
+  // ---- GFM Studio: Paste presentation, and the More menu (AI instructions, downloads, upload) ----
+  function download(blob, name) {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  function closeMore() { $('moreMenu').hidden = true; $('moreButton').setAttribute('aria-expanded', 'false'); }
+  $('pasteButton').addEventListener('click', () => tellEditor({ type: 'gfm-editor-open-import' }));
+  $('moreButton').addEventListener('click', e => {
+    e.stopPropagation();
+    const open = $('moreMenu').hidden;
+    $('moreMenu').hidden = !open; $('moreButton').setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.menu-wrap')) closeMore(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMore(); });
+  $('copyAiItem').addEventListener('click', async () => {
+    closeMore();
+    try {
+      const text = await (await fetch('/_manager/chart/gfm-ai-prompt.txt', { credentials: 'same-origin' })).text();
+      await navigator.clipboard.writeText(text);
+      toast('AI instructions copied. Paste them into ChatGPT or Claude.');
+    } catch { toast('The browser did not allow copying.', true); }
+  });
+  $('downloadMdItem').addEventListener('click', async () => {
+    closeMore();
+    try { const s = await P.api(deckApi('/source')); download(new Blob([s.markdown], { type: 'text/markdown;charset=utf-8' }), 'slides.md'); }
+    catch (e) { toast(e.message, true); }
+  });
+  $('downloadZipItem').addEventListener('click', () => { closeMore(); location.href = deckApi('/download'); });
+  $('uploadItem').addEventListener('click', () => { closeMore(); $('uploadInput').click(); });
+  $('uploadInput').addEventListener('change', async () => {
+    const file = $('uploadInput').files[0];
+    $('uploadInput').value = '';
+    if (!file) return;
+    if (/\.zip$/i.test(file.name) || file.type === 'application/zip') {
+      try {
+        const r = await fetch(deckApi('/upload'), { method: 'POST', credentials: 'same-origin', headers: { 'X-GFM-Request': '1', 'Content-Type': 'application/zip' }, body: file });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || 'The upload did not work.');
+        toast('The source was uploaded. The editor is loading it.');
+        reloadStudio(); refreshStatus();
+      } catch (e) { toast(e.message || 'The upload did not work.', true); }
+    } else {
+      // A Markdown file goes through the same check as a pasted presentation.
+      tellEditor({ type: 'gfm-editor-open-import', text: await file.text() });
+    }
+  });
+
+  $('publishButton').addEventListener('click', () => publish(false));
+  $('publishClose').addEventListener('click', () => $('publishDialog').close());
+  $('publishViewOld').addEventListener('click', () => { state.leaving = true; location.href = '/p/' + encodeURIComponent(state.slug) + '/'; });
+  $('overlayRetry').addEventListener('click', startStudio);
+  window.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); if (!$('sourcePane').hidden) saveSource(); } });
+  window.addEventListener('beforeunload', e => { if (state.dirty && !state.leaving) { e.preventDefault(); e.returnValue = ''; } });
+  window.addEventListener('pagehide', editorLeft);
+  window.addEventListener('gfm-theme', () => state.monaco?.editor.setTheme(monacoTheme()));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshStatus(); });
+
+  if (/[?&]debug\b/.test(location.search)) document.body.classList.add('debug');
+  (async () => {
+    try { await P.ensure(); } catch (e) { overlay('error', 'You are signed out of Presentations', e.message); return; }
+    mark('session_ok');
+    startStudio();
+    refreshStatus();
+    setInterval(() => { if (document.visibilityState === 'visible') refreshStatus(); }, 5000);
+    setInterval(readStudio, 400);
+  })();
+})();
+</script>
+</body>
+</html>

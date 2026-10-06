@@ -1,0 +1,468 @@
+<!doctype html>
+<!--
+  calendar.html: the mission calendar (menu: Calendar).
+
+  Who uses it: everyone sees the meetings and events for their role and zone.
+  Calendar editors (Office, APs, the President, Data Analysts) also create, edit and delete events, add or remove
+  attachments and record who attended.
+
+  How it fits: it opens inside the portal shell's frame. portal-client.js brings portalAPI (requests to portal-api),
+  portalConfirm (the "are you sure?" dialog) and the attachment helpers. portal-api decides what each person sees
+  and may change (/api/events, /api/options, /api/attachments); the page only follows its
+  answers (can_edit). Every time is in the mission's time zone (GFM_TIME_ZONE), whatever the device's own time zone.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mission calendar</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+  </head>
+  <body>
+    <main>
+      <div class="page-head">
+        <div>
+          <h1>Mission calendar</h1>
+          <p class="muted">Meetings and events for your role and zone.</p>
+        </div>
+        <!-- Inline display:none is intentional: workspace.css gives buttons display:inline-block, so the HTML hidden
+             attribute alone is not strong enough in every browser. load() removes it only when the API says can_edit. -->
+        <button id="newEvent" hidden style="display: none">New event</button>
+      </div>
+
+      <!-- The dates to show (from today, 90 days ahead at first). -->
+      <div class="toolbar">
+        <label for="from">From</label>
+        <input id="from" type="date" />
+        <label for="to">To</label>
+        <input id="to" type="date" />
+        <button class="secondary" id="refresh">Show events</button>
+      </div>
+      <div id="status" class="status" role="status"></div>
+      <div id="events"></div>
+
+      <!-- New event / Edit event series (editors only). -->
+      <dialog id="editor">
+        <form id="eventForm">
+          <h2 id="editorTitle">New event</h2>
+          <div class="fields">
+            <div class="field wide">
+              <label for="name">Title</label>
+              <input id="name" maxlength="180" required />
+            </div>
+            <div class="field wide">
+              <label for="description">Details</label>
+              <textarea id="description"></textarea>
+            </div>
+            <div class="field">
+              <label for="start" id="startLabel">Starts · {zone} time</label>
+              <input id="start" type="datetime-local" required />
+            </div>
+            <div class="field">
+              <label for="end" id="endLabel">Ends · {zone} time</label>
+              <input id="end" type="datetime-local" required />
+            </div>
+            <div class="field">
+              <label for="location">Location</label>
+              <input id="location" maxlength="500" />
+            </div>
+            <div class="field">
+              <label for="meeting">Video meeting link</label>
+              <input id="meeting" type="url" placeholder="https://" />
+            </div>
+            <div class="field">
+              <label for="repeat">Repeat</label>
+              <select id="repeat">
+                <option value="">Does not repeat</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="repeatUntil">Repeat through</label>
+              <input id="repeatUntil" type="date" />
+            </div>
+            <div class="field">
+              <label for="roles">Roles</label>
+              <select id="roles" multiple></select>
+              <p class="hint">Leave empty for all roles. Select more than one on desktop with Ctrl/Cmd.</p>
+            </div>
+            <div class="field">
+              <label for="zones">Zones</label>
+              <select id="zones" multiple></select>
+              <p class="hint">Leave empty for all zones in the mission.</p>
+            </div>
+            <div class="field">
+              <label for="reminder">Push reminder</label>
+              <select id="reminder">
+                <option value="0">At start</option>
+                <option value="15">15 minutes before</option>
+                <option value="30" selected>30 minutes before</option>
+                <option value="60">1 hour before</option>
+                <option value="1440">1 day before</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="files">Attachments</label>
+              <input id="files" type="file" multiple />
+              <p class="hint">Maximum 16 MB per request.</p>
+            </div>
+          </div>
+          <div id="editStatus" class="status" role="status"></div>
+          <div class="dialog-actions">
+            <button type="button" class="secondary" id="closeEditor">Cancel</button>
+            <button id="saveEvent">Save event</button>
+          </div>
+        </form>
+      </dialog>
+
+      <!-- Attendance of a past meeting (editors only). -->
+      <dialog id="attendanceDialog">
+        <h2>Record attendance</h2>
+        <p class="muted">Record who attended after the meeting ends.</p>
+        <div id="attendees" class="attendance"></div>
+        <div id="attendanceStatus" class="status"></div>
+        <div class="dialog-actions">
+          <button class="secondary" id="closeAttendance">Close</button>
+          <button id="saveAttendance">Save attendance</button>
+        </div>
+      </dialog>
+    </main>
+    <script src="portal-client.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const esc = escapeHTML;
+      // The mission's time zone (site-config.js, from GFM_TIME_ZONE; Europe/Berlin when nothing says otherwise).
+      const ZONE = (window.GFM_SITE && window.GFM_SITE.timeZone) || "Europe/Berlin";
+
+      $("startLabel").textContent = `Starts · ${ZONE} time`;
+      $("endLabel").textContent = `Ends · ${ZONE} time`;
+
+      let options; // the roles and zones for the editor's lists (GET /api/options)
+      let editorLists; // the moment those lists are filled in (a promise; it gives the Error if they failed)
+      let events = []; // the events on screen; their buttons name them by position (data-edit="2")
+      let editing = null; // the event open in the editor, or null for a new one
+      let attending = null; // the event whose attendance is open
+
+      // ---- The mission's time --------------------------------------------------------------------------------------------
+      const dateFormat = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", timeZone: ZONE });
+      const timeFormat = new Intl.DateTimeFormat(undefined, {
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: ZONE,
+      });
+
+      // A moment as the mission's wall-clock time, "2026-09-29T19:00" (the format of a datetime-local field).
+      function localZone(date) {
+        const text = new Intl.DateTimeFormat("sv-SE", {
+          timeZone: ZONE,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(new Date(date));
+        return text.replace(" ", "T");
+      }
+
+      // The other way round: The mission's wall-clock time ("2026-09-29T19:00") as an exact moment (ISO, UTC). Starts from
+      // the same numbers read as UTC and corrects by the zone's offset; three rounds settle it around summer time.
+      function zoneISO(value) {
+        let guess = new Date(value + "Z");
+        for (let round = 0; round < 3; round++) {
+          const shown = localZone(guess);
+          guess = new Date(guess.getTime() + (new Date(value + "Z") - new Date(shown + "Z")));
+        }
+        return guess.toISOString();
+      }
+
+      // ---- Small helpers ------------------------------------------------------------------------------------------
+      // The chosen values of a multiple-choice list.
+      function selected(id, numeric = false) {
+        return [...$(id).selectedOptions].map((option) => (numeric ? Number(option.value) : option.value));
+      }
+
+      function selectValues(id, values) {
+        [...$(id).options].forEach((option) => (option.selected = values.map(String).includes(option.value)));
+      }
+
+      function showStatus(id, text, error = false) {
+        $(id).textContent = text;
+        $(id).classList.toggle("error", error);
+      }
+
+      // ---- Showing the calendar -----------------------------------------------------------------------------------
+      // The block on the left: "Sep" over "29".
+      function dateBlock(start) {
+        const month = start.toLocaleDateString(undefined, { month: "short", timeZone: ZONE });
+        const day = new Intl.DateTimeFormat(undefined, { day: "numeric", timeZone: ZONE })
+          .formatToParts(start)
+          .find((part) => part.type === "day").value;
+        return `<div class="date-block"><span>${esc(month)}</span><b>${esc(day)}</b></div>`;
+      }
+
+      // "Sep 29 · Tue 19:00 – 20:30 Europe/Berlin time", the place, and "Repeating".
+      function eventMeta(e, start) {
+        const end = new Date(e.ends_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", timeZone: ZONE });
+        return `<div class="meta"><span>${esc(dateFormat.format(start))} · ${esc(timeFormat.format(start))} – ${esc(end)} ${esc(ZONE)} time</span>${e.location ? `<span>${esc(e.location)}</span>` : ""}${e.recurrence ? '<span class="tag">Repeating</span>' : ""}</div>`;
+      }
+
+      // Each file opens with a click; editors also get Remove next to it.
+      function attachmentItem(a, canEdit) {
+        const remove = canEdit
+          ? `<button class="attachment-remove" data-remove-file="${esc(a.id)}" data-name="${esc(a.filename)}" data-i18n="common.remove" title="Remove this file">Remove</button>`
+          : "";
+        return `<span class="attachment-item"><button class="attachment" data-file="${esc(a.id)}" data-name="${esc(a.filename)}">${esc(a.filename)}</button>${remove}</span>`;
+      }
+
+      // Edit, Attendance (once the meeting has ended) and Delete: editors only.
+      function eventActions(e, index) {
+        const attendance = new Date(e.ends_at) < new Date() ? `<button class="secondary" data-attendance="${index}">Attendance</button>` : "";
+        return `<div class="actions"><button class="secondary" data-edit="${index}">Edit</button>${attendance}<button class="secondary danger" data-delete="${index}">Delete</button></div>`;
+      }
+
+      function eventCard(e, index, canEdit) {
+        const start = new Date(e.starts_at);
+        const meeting = e.meeting_url ? `<a href="${esc(e.meeting_url)}" target="_blank" rel="noopener">Join meeting ↗</a>` : "";
+        const files = e.attachments.map((a) => attachmentItem(a, canEdit)).join("");
+        const actions = canEdit ? eventActions(e, index) : "";
+        return `<article class="panel event">${dateBlock(start)}<div><h2>${esc(e.title)}</h2>${eventMeta(e, start)}<p>${esc(e.description)}</p>${meeting}<div class="attachments">${files}</div></div>${actions}</article>`;
+      }
+
+      // Loads the events of the chosen dates and shows them.
+      async function load() {
+        try {
+          showStatus("status", "Loading calendar…");
+          const start = encodeURIComponent(zoneISO($("from").value + "T00:00"));
+          const end = encodeURIComponent(zoneISO($("to").value + "T23:59"));
+          const data = await portalAPI(`events?start=${start}&end=${end}`);
+          events = data.events;
+          const canEdit = data.can_edit === true;
+          $("newEvent").hidden = !canEdit;
+          $("newEvent").style.display = canEdit ? "" : "none";
+          $("events").innerHTML = events.length
+            ? events.map((e, index) => eventCard(e, index, canEdit)).join("")
+            : '<div class="empty">No events for your role and zone in this date range.</div>';
+          showStatus("status", "");
+        } catch (e) {
+          showStatus("status", e.message, true);
+        }
+      }
+
+      // ---- The editor ---------------------------------------------------------------------------------------------
+      // Opens the editor, empty for a new event or filled in. A repeating event is edited as a whole series, from
+      // the series' first date.
+      // It first waits for the lists of roles and zones. Saved without them, an event would have no roles and no
+      // zones, and portal-api reads that as "the whole mission" (everyone would see it and get its reminders).
+      async function edit(event = null) {
+        const problem = await editorLists;
+        if (problem) return showStatus("status", problem.message, true);
+        editing = event;
+        $("eventForm").reset();
+        $("editorTitle").textContent = event ? "Edit event series" : "New event";
+        $("name").value = event?.title || "";
+        $("description").value = event?.description || "";
+        $("location").value = event?.location || "";
+        $("meeting").value = event?.meeting_url || "";
+        const firstStart = event?.recurrence ? event.series_starts_at || event.starts_at : event?.starts_at;
+        const firstEnd = event?.recurrence ? event.series_ends_at || event.ends_at : event?.ends_at;
+        $("start").value = event ? localZone(firstStart) : $("from").value + "T10:00";
+        $("end").value = event ? localZone(firstEnd) : $("from").value + "T11:00";
+        $("repeat").value = event?.recurrence?.frequency || "";
+        $("repeatUntil").value = event?.recurrence?.until?.slice(0, 10) || "";
+        $("reminder").value = event?.reminder_minutes ?? 30;
+        selectValues("roles", event?.roles || []);
+        selectValues("zones", event?.zone_ids || []);
+        showStatus("editStatus", "");
+        $("editor").showModal();
+      }
+
+      // The event as portal-api wants it.
+      function eventFromForm() {
+        if ($("repeat").value && !$("repeatUntil").value) {
+          throw Error("Choose the last date of the repeating event (Repeat through).");
+        }
+        const recurrence = $("repeat").value
+          ? {
+              frequency: $("repeat").value,
+              interval: editing?.recurrence?.interval || 1,
+              until: zoneISO($("repeatUntil").value + "T23:59"),
+            }
+          : null;
+        return {
+          title: $("name").value,
+          description: $("description").value,
+          starts_at: zoneISO($("start").value),
+          ends_at: zoneISO($("end").value),
+          timezone: ZONE,
+          recurrence,
+          roles: selected("roles"),
+          zone_ids: selected("zones", true),
+          location: $("location").value,
+          meeting_url: $("meeting").value,
+          reminder_minutes: Number($("reminder").value),
+        };
+      }
+
+      $("eventForm").onsubmit = async (e) => {
+        e.preventDefault();
+        try {
+          $("saveEvent").disabled = true;
+          const body = eventFromForm();
+          const result = await portalAPI("events" + (editing ? "/" + editing.id : ""), {
+            method: editing ? "PUT" : "POST",
+            body,
+          });
+          // Saved: trying again after a failed upload updates this event instead of adding another one.
+          editing = result.event;
+          await uploadPortalFiles("events", result.event.id, $("files").files);
+          $("editor").close();
+          await load();
+        } catch (e) {
+          showStatus("editStatus", e.message, true);
+        } finally {
+          $("saveEvent").disabled = false;
+        }
+      };
+
+      // ---- Attendance ---------------------------------------------------------------------------------------------
+      // One tick box per person the meeting was for, ticked when they were recorded as present.
+      async function recordAttendance(event) {
+        attending = event;
+        try {
+          const data = await portalAPI(`events/${event.id}/attendance?occurrence=${encodeURIComponent(event.occurrence)}`);
+          const recorded = new Map(data.attendance.map((a) => [a.user_id, a.attended]));
+          $("attendees").innerHTML =
+            data.users
+              .map((u) => `<label><input type="checkbox" value="${esc(u.user_id)}" ${recorded.get(u.user_id) ? "checked" : ""}>${esc(u.name || u.user_id)}</label>`)
+              .join("") || "<p>No assigned accounts found.</p>";
+          showStatus("attendanceStatus", "");
+          $("attendanceDialog").showModal();
+        } catch (e) {
+          showStatus("status", e.message, true);
+        }
+      }
+
+      $("saveAttendance").onclick = async () => {
+        try {
+          const attendance = [...$("attendees").querySelectorAll("input")].map((box) => ({
+            user_id: box.value,
+            attended: box.checked,
+          }));
+          await portalAPI(`events/${attending.id}/attendance`, {
+            method: "POST",
+            body: { occurrence: attending.occurrence, attendance },
+          });
+          showStatus("attendanceStatus", "Attendance saved.");
+        } catch (e) {
+          showStatus("attendanceStatus", e.message, true);
+        }
+      };
+
+      // ---- Deleting -----------------------------------------------------------------------------------------------
+      // Deleting asks first, in the page. A repeating event offers this date only or every date. (The questions stay
+      // written inside the portalConfirm call: portal-api/tests/test_wording.py reads them there.)
+      async function deleteEvent(event, button) {
+        const start = new Date(event.starts_at);
+        const name = `${event.title} · ${dateFormat.format(start)} · ${timeFormat.format(start)}`;
+        const choice = await portalConfirm(
+          event.recurrence
+            ? {
+                title: "Delete which events?",
+                name,
+                message:
+                  "It disappears from everyone’s calendar and Overview, and its reminders stop. Deleting all events of the series also deletes the attachments. This cannot be undone.",
+                choices: [
+                  { value: "date", label: "Only this one" },
+                  { value: "all", label: "All events in the series" },
+                ],
+                keep: "Keep",
+              }
+            : {
+                title: "Delete this event?",
+                name,
+                message:
+                  "It disappears from everyone’s calendar and Overview, and its reminders stop. Its attachments and recorded attendance are deleted too. This cannot be undone.",
+                choices: [{ value: "all", label: "Delete event" }],
+                keep: "Keep",
+              },
+        );
+        if (!choice) return;
+        try {
+          button.disabled = true;
+          showStatus("status", "Deleting…");
+          const onlyThisDate = choice === "date" ? `?occurrence=${encodeURIComponent(event.occurrence)}` : "";
+          await portalAPI(`events/${event.id}` + onlyThisDate, { method: "DELETE" });
+          await load();
+          showStatus("status", choice === "date" ? "That date was deleted." : "The event was deleted.");
+        } catch (e) {
+          button.disabled = false;
+          showStatus("status", e.message, true);
+        }
+      }
+
+      async function removeAttachment(button) {
+        const choice = await portalConfirm({
+          title: "Remove this attachment?",
+          name: button.dataset.name,
+          message: "The file is deleted for everyone. This cannot be undone.",
+          choices: [{ value: "remove", label: "Remove attachment" }],
+          keep: "Keep",
+        });
+        if (!choice) return;
+        try {
+          button.disabled = true;
+          await portalAPI(`attachments/${button.dataset.removeFile}`, { method: "DELETE" });
+          await load();
+          showStatus("status", "The attachment was removed.");
+        } catch (e) {
+          button.disabled = false;
+          showStatus("status", e.message, true);
+        }
+      }
+
+      // ---- Buttons ------------------------------------------------------------------------------------------------
+      // One listener for every button in the event list; the button's data-… says what it does.
+      $("events").onclick = (e) => {
+        const button = e.target.closest("button");
+        if (!button) return;
+        const { edit: editIndex, delete: deleteIndex, attendance, removeFile, file } = button.dataset;
+        if (editIndex !== undefined) edit(events[+editIndex]);
+        if (deleteIndex !== undefined) deleteEvent(events[+deleteIndex], button);
+        if (removeFile) removeAttachment(button);
+        if (attendance !== undefined) recordAttendance(events[+attendance]);
+        if (file) portalAttachment(file, button.dataset.name).catch((error) => showStatus("status", error.message, true));
+      };
+      $("closeEditor").onclick = () => $("editor").close();
+      $("closeAttendance").onclick = () => $("attendanceDialog").close();
+      $("newEvent").onclick = () => edit();
+      $("refresh").onclick = load;
+
+      // ---- Start --------------------------------------------------------------------------------------------------
+      // The editor's lists: roles and zones (calendar editors may aim events at the whole mission).
+      async function loadEditorLists() {
+        options = await portalAPI("options?purpose=calendar");
+        $("roles").innerHTML = options.roles
+          .map((r) => `<option value="${esc(r)}">${esc(options.role_labels?.[r] || r)}</option>`)
+          .join("");
+        $("zones").innerHTML = options.zones.map((z) => `<option value="${z.id}">${esc(z.name)}</option>`).join("");
+      }
+
+      // From today to 90 days ahead. The events and the editor's lists are asked for at the same time, so the events
+      // do not wait for the lists (the editor does: see edit()).
+      (async () => {
+        const now = new Date();
+        $("from").value = localZone(now).slice(0, 10);
+        $("to").value = localZone(new Date(now.getTime() + 90 * 86400000)).slice(0, 10);
+        editorLists = loadEditorLists().catch((error) => error);
+        await load();
+        const problem = await editorLists;
+        if (problem) showStatus("status", problem.message, true);
+      })();
+    </script>
+  </body>
+</html>

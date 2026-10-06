@@ -1,0 +1,14 @@
+# Ports and the network of the Presentations container (see slidev-compose.yml).
+services:
+  slidev:
+    ports:
+      - "3030:3040"
+      # Round 8: the deck address (published decks and the deck editor, manager/deck-origin.mjs). 8089 is already
+      # open in the office firewall rule "GFM System LAN".
+      - "8089:3041"
+    networks:
+      gfm_network: {}
+networks:
+  gfm_network:
+    external: true
+    name: gfm-network

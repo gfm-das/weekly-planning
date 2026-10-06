@@ -1,0 +1,2 @@
+# Run with bash (Git Bash or Linux): keep LF line ends on every checkout.
+*.sh text eol=lf

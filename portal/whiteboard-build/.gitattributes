@@ -1,0 +1,2 @@
+# The build script runs in a Linux container: keep LF line ends on every checkout.
+*.sh text eol=lf

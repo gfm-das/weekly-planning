@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uploads / Importer — Weekly Planning Wiki</title>
+  <meta name="description" content="Data uploads, historical CSV, people upload, import history.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="uploads-importer" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li class="current"><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="uploads-importer">
+          <a class="tab is-active" href="uploads-importer.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=uploads-importer" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=uploads-importer" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Uploads / Importer</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Uploads / Importer</strong> covers DA Management tools that bring people and historical data into the database, with Import history and Undo.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li style="margin-left:1rem"><a href="#historical-csv">Historical CSV</a></li>
+<li style="margin-left:1rem"><a href="#people-upload">People upload</a></li>
+<li style="margin-left:1rem"><a href="#same-person">Same person?</a></li>
+<li style="margin-left:1rem"><a href="#after-apply">After Apply</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>Open <strong>DA Management</strong> (portal menu or port 8090). Analysts use several upload paths:</p>
+<h3 id="historical-csv">Historical CSV</h3>
+<p>Imports past weekly forms. Can also read people named on each form (new members, baptismal-date friends, high-potential friends) and place them on the matching weekly plans.</p>
+<h3 id="people-upload">People upload</h3>
+<p>Spreadsheet upload for <strong>new members</strong> (office templates / “Vollzogen” / New Member Database Raw layouts). Area is resolved from area name or from ward/branch when only one open area serves it. Unclear rows are left out and counted — not guessed.</p>
+<h3 id="same-person">Same person?</h3>
+<p>When names might match existing people, the check page <strong>asks</strong> before Apply. Answers are remembered. Typed answers on a person are never overwritten; only empty fields are filled.</p>
+<h3 id="after-apply">After Apply</h3>
+<ul><li>Each import is one <strong>batch</strong> in <strong>Import history</strong> (before/after rows).</li><li><strong>Undo</strong> reverses the batch while later edits have not made reversal unsafe.</li><li>Current-week draft plans can be filled so people carry forward by the same rules as opening Weekly Planning.</li></ul>
+<h2 id="how-it-works">How it works</h2>
+<ul><li>Runs in the <code>roster-importer</code> service against the Beta database.</li><li>People carry-forward rules match <a href="weekly-planning.html">Weekly Planning</a> (new members ~1 year; baptismal / high-potential from last week’s plan).</li><li>Never invents area membership when ward/area is unclear.</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>AP, President, Data Analyst (DA Management users).</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Apply blocked</td><td>Answer outstanding “same person?” questions</td></tr><tr><td>Friends not carried this week</td><td>Newest upload may end before “last week”; check dates</td></tr><tr><td>Undo refused</td><td>Something changed after the batch; use a database backup path if needed</td></tr><tr><td>Slow large Apply</td><td>Large people batches can take tens of seconds; Undo is slow too</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 7 / 033</td><td>Data uploads</td></tr><tr><td>Round 12 / 039</td><td>People from uploads; current-week fill</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="management.html">Management (Places)</a></li><li><a href="roster.html">Roster</a></li><li><a href="backups-and-restore.html">Backups and restore</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Uploads / Importer</div>
+<div class="infobox-icon" aria-hidden="true">⬆️</div>
+<table>
+<tr><th>Where</th><td>DA Management :8090</td></tr>
+<tr><th>Who</th><td>AP</td></tr>
+<tr><th>Undo</th><td>Import history batches</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<strong>Uploads / Importer</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

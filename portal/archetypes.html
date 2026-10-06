@@ -1,0 +1,624 @@
+<!doctype html>
+<!--
+  archetypes.html: Archetypal Health (menu: Archetypal Health; docs/handoff/round7/archetypes.md).
+
+  What it shows: for each zone, district and area, six archetypes of the work (finding, teaching, bringing,
+  baptizing, fellowshipping, reactivating) as an index, where 100 means "like similar areas" (its peer group). Leaders
+  drill down like in Call-ins: the mission (managers), then a zone, then a district, then the areas. An area opens
+  ("What it means") to its strengths, up to two patterns with next steps, the numbers behind it and leader notes.
+
+  Who uses it: managers (the whole mission; they also get Settings), ZLs and STLs (their zone), DLs (their district).
+  portal-api archetypes.py sends only the viewer's stewardship and does all the counting; this page only draws it.
+
+  How it fits: it opens inside the portal shell's frame. portal-client.js brings portalAPI; archetypes-common.js the
+  small helpers shared with archetype-settings.html; archetypes.css the look. Every visible text is a catalog key
+  (archetypes.*) translated by i18n.js. The place and week are kept in the address (#level=zone&id=3&week=2026-09-20
+  &weeks=1), so Back and Forward work inside the portal frame.
+-->
+<html lang="en" data-theme="mission">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>Archetypal Health</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <link rel="stylesheet" href="archetypes.css?v=1" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+  </head>
+  <body>
+    <main>
+      <header class="panel">
+        <div class="head">
+          <div>
+            <h1 data-i18n="archetypes.title">Archetypal Health</h1>
+            <p class="muted" data-i18n="archetypes.purpose">How each part of the work is going compared with similar areas, and where leaders can help.</p>
+            <p class="scope-line" id="scopeLine"></p>
+          </div>
+          <a class="button secondary" id="settingsLink" href="archetype-settings.html" hidden data-i18n="archetypes.settings">Settings</a>
+        </div>
+      </header>
+
+      <section class="panel" aria-labelledby="filtersTitle">
+        <h2 id="filtersTitle" class="visually-hidden" data-i18n="archetypes.filters">Filters</h2>
+        <div class="filters">
+          <div><label for="week" data-i18n="archetypes.week">Week</label><select id="week"></select></div>
+          <div><label for="average" data-i18n="archetypes.average">Average over</label><select id="average"></select></div>
+          <div id="zoneBox" hidden><label for="zone" data-i18n="overview.zone">Zone</label><select id="zone"></select></div>
+          <div id="districtBox" hidden><label for="district" data-i18n="overview.district">District</label><select id="district"></select></div>
+          <div><label for="search" data-i18n="archetypes.search">Search areas</label><input id="search" type="search" autocomplete="off" /></div>
+          <div><label for="sort" data-i18n="archetypes.sort">Sort</label><select id="sort"></select></div>
+        </div>
+      </section>
+
+      <div id="notices"></div>
+      <div class="legend" id="legend"></div>
+      <nav class="crumbs" id="crumbs"></nav>
+      <div id="strengths"></div>
+      <p class="status" id="status" role="status"></p>
+      <div class="rows" id="rows"></div>
+    </main>
+
+    <script src="portal-client.js"></script>
+    <script src="archetypes-common.js?v=1"></script>
+    <script>
+      // See the overview at the top of this file.
+      const A = window.Archetypes;
+      const $ = (id) => document.getElementById(id);
+      // data: the server's answer. level and id: the place on screen (mission, zone 3, district 12). week and weeks:
+      // the chosen week and how many weeks to average ('' = the server's choice). search and sort: the filters.
+      const state = { data: null, level: null, id: null, week: '', weeks: '', search: '', sort: 'needs' };
+      const openAreas = new Set(); // the areas whose "What it means" is open
+
+      // ------------------------------------------------------------------ the address
+      function readAddress() {
+        const values = new URLSearchParams(location.hash.slice(1));
+        state.level = values.get('level');
+        state.id = values.get('id') ? Number(values.get('id')) : null;
+        state.week = values.get('week') || '';
+        state.weeks = values.get('weeks') || '';
+      }
+      function writeAddress(push = true) {
+        const values = new URLSearchParams();
+        if (state.level) values.set('level', state.level);
+        if (state.id) values.set('id', state.id);
+        if (state.week) values.set('week', state.week);
+        if (state.weeks) values.set('weeks', state.weeks);
+        const hash = '#' + values.toString();
+        if (hash !== location.hash) history[push ? 'pushState' : 'replaceState'](null, '', hash);
+      }
+
+      // ------------------------------------------------------------------ loading
+      async function load() {
+        $('status').className = 'status';
+        $('status').textContent = A.t('archetypes.loading');
+        const query = new URLSearchParams();
+        if (state.week) query.set('week', state.week);
+        if (state.weeks) query.set('weeks', state.weeks);
+        try {
+          state.data = await portalAPI('archetypes?' + query.toString());
+          $('status').textContent = '';
+          goHomeIfNeeded();
+          render();
+        } catch (error) {
+          $('status').className = 'status error';
+          $('status').textContent = error.status === 403 ? A.tr(error.message) : A.t('archetypes.loadFailed');
+          $('rows').innerHTML = '';
+        }
+      }
+
+      // Where the viewer starts: the mission (managers), their zone (ZL, STL) or their district (DL).
+      function home() {
+        const h = state.data.home || { scope: state.data.viewer.scope };
+        if (h.scope === 'zone') return { level: 'zone', id: h.zone_id };
+        if (h.scope === 'district') return { level: 'district', id: h.district_id };
+        return { level: 'mission', id: null };
+      }
+      function goHomeIfNeeded() {
+        const known = (state.level === 'mission' && state.data.mission) ||
+          (state.level === 'zone' && zoneById(state.id)) || (state.level === 'district' && districtById(state.id));
+        if (!known) Object.assign(state, home());
+        writeAddress(false);
+      }
+      const zoneById = (id) => state.data.zones.find((z) => z.id === id);
+      const districtById = (id) => state.data.districts.find((d) => d.id === id);
+
+      // ------------------------------------------------------------------ drawing
+      function render() {
+        const d = state.data;
+        $('settingsLink').hidden = !d.viewer.settings;
+        renderScopeLine();
+        renderFilters();
+        renderNotices();
+        renderLegend();
+        renderCrumbs();
+        const rows = sortRows(rowsToShow());
+        renderStrengths(rows);
+        renderRows(rows);
+      }
+
+      function currentUnit() {
+        if (state.level === 'zone') return zoneById(state.id);
+        if (state.level === 'district') return districtById(state.id);
+        return state.data.mission;
+      }
+
+      function renderScopeLine() {
+        const d = state.data;
+        const unit = currentUnit();
+        const place = state.level === 'mission' ? A.t('archetypes.mission') : unit ? unit.name : '';
+        $('scopeLine').textContent = d.week ? place + ' · ' + A.t('template.week', { date: A.weekDate(d.week) }) : '';
+        $('scopeLine').setAttribute('data-i18n-ignore', '');
+      }
+
+      function option(value, label, selected) {
+        const o = document.createElement('option');
+        o.value = value;
+        o.textContent = label;
+        o.selected = String(value) === String(selected);
+        return o;
+      }
+
+      function renderFilters() {
+        const d = state.data;
+        // "1 area" / "4 areas": the catalog has no plural rules yet, so the one-area text is its own key.
+        $('week').replaceChildren(...d.weeks.map((w) => option(w.week,
+          A.t(w.areas === 1 ? 'archetypes.weekOptionOne' : 'archetypes.weekOption', { date: A.weekDate(w.week), count: w.areas }),
+          d.week)));
+        $('average').replaceChildren(...d.weeks_choices.map((n) =>
+          option(n, n === 1 ? A.t('archetypes.oneWeek') : A.t('archetypes.manyWeeks', { count: n }), d.weeks_to_average)));
+        $('sort').replaceChildren(option('needs', A.t('archetypes.sortNeeds'), state.sort),
+          option('name', A.t('archetypes.sortName'), state.sort));
+        const manager = d.viewer.scope === 'mission';
+        const zoneId = zoneOfPlace();
+        $('zoneBox').hidden = !manager;
+        if (manager) {
+          const chosenZone = zoneId ?? '';
+          $('zone').replaceChildren(option('', A.t('archetypes.allZones'), chosenZone),
+            ...byName(d.zones).map((z) => option(z.id, z.name, chosenZone)));
+        }
+        const districts = byName(d.districts.filter((x) => x.zone_id === zoneId));
+        $('districtBox').hidden = d.viewer.scope === 'district' || !zoneId;
+        $('district').replaceChildren(option('', A.t('archetypes.allDistricts'), state.level === 'district' ? state.id : ''),
+          ...districts.map((x) => option(x.id, x.name, state.level === 'district' ? state.id : '')));
+        $('search').placeholder = A.t('archetypes.searchHint');
+      }
+
+      // The zone of the place on screen (null for the mission).
+      function zoneOfPlace() {
+        if (state.level === 'zone') return state.id;
+        if (state.level === 'district') return districtById(state.id)?.zone_id;
+        return null;
+      }
+
+      function byName(list) {
+        return [...list].sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      function renderNotices() {
+        const d = state.data;
+        const box = $('notices');
+        box.replaceChildren();
+        const add = (text) => {
+          const p = document.createElement('p');
+          p.className = 'notice';
+          p.textContent = text;
+          box.append(p);
+        };
+        if (!d.week) add(A.t('archetypes.noWeeks'));
+        if (d.week && !state.week && d.newest_week && d.newest_week !== d.week) {
+          const newest = d.weeks.find((w) => w.week === d.newest_week);
+          const count = newest ? newest.areas : 0;
+          add(A.t(count === 1 ? 'archetypes.partialWeekOne' : 'archetypes.partialWeek',
+            { newest: A.weekDate(d.newest_week), count, shown: A.weekDate(d.week) }));
+        }
+        if (d.skipped.length) add(A.t('archetypes.skipped', { list: d.skipped.map((k) => kpiName(k)).join(', ') }));
+      }
+
+      function kpiName(key) {
+        return A.tr(state.data.kpi_labels[key] || key);
+      }
+
+      function renderLegend() {
+        const bands = state.data.bands;
+        const keys = bands.map((band, i) => {
+          const span = document.createElement('span');
+          span.className = 'key';
+          span.innerHTML = `<span class="swatch" style="background:${A.escape(band.color)}"></span>`;
+          span.append(A.bandRange(bands, i) + ' ' + A.tr(band.name));
+          return span;
+        });
+        const hint = document.createElement('span');
+        hint.textContent = A.t('archetypes.legend');
+        $('legend').replaceChildren(...keys, hint);
+      }
+
+      function renderCrumbs() {
+        const d = state.data;
+        const nav = $('crumbs');
+        nav.setAttribute('aria-label', A.t('archetypes.whereYouAre'));
+        const parts = [];
+        const district = state.level === 'district' ? districtById(state.id) : null;
+        const zone = state.level === 'zone' ? zoneById(state.id) : district ? zoneById(district.zone_id) : null;
+        if (d.viewer.scope === 'mission') parts.push({ label: A.t('archetypes.mission'), level: 'mission', id: null });
+        if (zone && d.viewer.scope !== 'district') parts.push({ label: zone.name, level: 'zone', id: zone.id, name: true });
+        if (district) parts.push({ label: district.name, level: 'district', id: district.id, name: true });
+        nav.replaceChildren();
+        parts.forEach((part, i) => {
+          if (i) nav.append(Object.assign(document.createElement('span'), { className: 'sep', textContent: '›' }));
+          const last = i === parts.length - 1 && !state.search;
+          const el = document.createElement(last ? 'span' : 'button');
+          el.className = last ? 'here' : '';
+          el.textContent = part.label;
+          if (part.name) el.setAttribute('data-i18n-ignore', '');
+          if (!last) el.onclick = () => goTo(part.level, part.id);
+          nav.append(el);
+        });
+        nav.hidden = parts.length < 2 && !state.search;
+      }
+
+      // The rows of the current level: zones (mission), districts (zone) or areas (district); or, while searching,
+      // every area of the stewardship whose name matches.
+      function rowsToShow() {
+        const d = state.data;
+        if (state.search) {
+          const text = state.search.toLocaleLowerCase();
+          return d.areas.filter((a) => a.name.toLocaleLowerCase().includes(text)).map((a) => ({ ...a, kind: 'area' }));
+        }
+        if (state.level === 'mission') return d.zones;
+        if (state.level === 'zone') return d.districts.filter((x) => x.zone_id === state.id);
+        return d.areas.filter((a) => a.district_id === state.id).map((a) => ({ ...a, kind: 'area' }));
+      }
+
+      // "Needs help first": lowest overall index first (rows without an index last); else by name.
+      function sortRows(rows) {
+        const byNameOnly = (a, b) => a.name.localeCompare(b.name);
+        if (state.sort === 'name') return [...rows].sort(byNameOnly);
+        return [...rows].sort((a, b) => (a.overall ?? Infinity) - (b.overall ?? Infinity) || byNameOnly(a, b));
+      }
+
+      // Strengths first: the strongest row in each archetype (only at or above 100).
+      function renderStrengths(rows) {
+        const box = $('strengths');
+        box.replaceChildren();
+        const items = A.ARCHETYPES.map((key) => {
+          const best = rows.filter((r) => (r.indices[key] ?? -1) >= 100)
+            .sort((a, b) => b.indices[key] - a.indices[key])[0];
+          return best ? { key, best } : null;
+        }).filter(Boolean);
+        if (!items.length || rows.length < 2) return;
+        const title = document.createElement('h2');
+        title.textContent = A.t('archetypes.strengthsWeek');
+        const strip = document.createElement('div');
+        strip.className = 'strengths-strip';
+        for (const { key, best } of items) {
+          const item = document.createElement('div');
+          item.className = 'item';
+          item.innerHTML = `<b>${A.escape(A.archetypeName(key))}</b> · <span data-i18n-ignore>${A.escape(best.name)}</span> · ${Math.round(best.indices[key])}`;
+          strip.append(item);
+        }
+        box.append(title, strip);
+      }
+
+      function renderRows(rows) {
+        const d = state.data;
+        const box = $('rows');
+        box.replaceChildren();
+        if (!d.week) return;
+        const unit = currentUnit();
+        if (unit && !state.search) box.append(unitCard({ ...unit, kind: state.level }, true));
+        if (state.search) {
+          const head = document.createElement('h2');
+          head.textContent = A.t(rows.length ? 'archetypes.searchResults' : 'archetypes.noMatch', { text: state.search });
+          box.append(head);
+        } else if (!rows.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = A.t('archetypes.noAreas');
+          box.append(empty);
+        }
+        rows.forEach((row) => box.append(unitCard(row, false)));
+      }
+
+      // ------------------------------------------------------------------ one row
+      function unitCard(row, summary) {
+        const card = document.createElement('article');
+        card.className = 'unit' + (summary ? ' summary' : '');
+        card.append(unitHead(row, summary), pills(row));
+        if (row.kind === 'area' && !summary) card.append(...areaDropdown(row));
+        return card;
+      }
+
+      function unitHead(row, summary) {
+        const head = document.createElement('div');
+        head.className = 'unit-head';
+        const name = document.createElement('h2');
+        name.textContent = row.kind === 'mission' ? A.t('archetypes.mission') : row.name;
+        if (row.kind !== 'mission') name.setAttribute('data-i18n-ignore', '');
+        head.append(name);
+        if (row.label) head.append(labelChip(row.label));
+        if (row.areas_scored !== undefined) {
+          const meta = document.createElement('span');
+          meta.className = 'meta';
+          meta.textContent = row.areas_scored === 1 ? A.t('archetypes.oneArea') : A.t('archetypes.areasCount', { count: row.areas_scored });
+          head.append(meta);
+        }
+        head.append(Object.assign(document.createElement('span'), { className: 'spacer' }));
+        if (row.trend && row.trend.filter((p) => p.overall !== null).length > 1) head.append(sparkline(row.trend));
+        if (!summary && (row.kind === 'zone' || row.kind === 'district')) {
+          const deeper = document.createElement('button');
+          deeper.className = 'secondary deeper';
+          deeper.textContent = A.t('archetypes.goDeeper') + ' ›';
+          deeper.setAttribute('aria-label', A.t('archetypes.goDeeperInto', { name: row.name }));
+          deeper.onclick = () => goTo(row.kind, row.id);
+          head.append(deeper);
+        }
+        return head;
+      }
+
+      function labelChip(label) {
+        const chip = document.createElement('span');
+        chip.className = 'chip ' + label;
+        chip.textContent = A.archetypeName(label);
+        return chip;
+      }
+
+      function pills(row) {
+        const grid = document.createElement('div');
+        grid.className = 'pills';
+        const cells = [['overall', row.overall], ...A.ARCHETYPES.map((key) => [key, row.indices[key]])];
+        for (const [key, value] of cells) grid.append(pill(key, value));
+        return grid;
+      }
+
+      function pill(key, value) {
+        const cell = document.createElement('div');
+        cell.className = 'pill-cell';
+        const band = A.bandFor(value, state.data.bands);
+        const shape = document.createElement('span');
+        const name = key === 'overall' ? A.t('archetypes.overall') : A.archetypeName(key);
+        shape.className = 'pill' + (key === 'overall' ? ' overall' : '') + (band ? '' : ' none');
+        shape.textContent = band ? Math.round(value) : '–';
+        if (band) {
+          shape.style.background = band.color;
+          shape.style.color = A.textOn(band.color);
+          shape.title = A.tr(band.name);
+        }
+        shape.setAttribute('aria-label', name + ': ' + (band ? Math.round(value) + ', ' + A.tr(band.name) : A.t('archetypes.noNumber')));
+        const label = document.createElement('span');
+        label.className = 'pill-label';
+        label.textContent = name;
+        cell.append(shape, label);
+        return cell;
+      }
+
+      // A small line of the overall index, week by week, with a dashed line at 100.
+      function sparkline(points) {
+        const values = points.map((p) => p.overall);
+        const known = values.filter((v) => v !== null);
+        const width = 104, height = 34;
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'spark');
+        svg.setAttribute('width', width);
+        svg.setAttribute('height', height);
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', A.t('archetypes.trend', { count: points.length }) + ': ' +
+          values.map((v) => (v === null ? '–' : Math.round(v))).join(', '));
+        const low = Math.min(85, ...known), high = Math.max(115, ...known);
+        const x = (i) => 4 + (i * (width - 8)) / (points.length - 1);
+        const y = (v) => height - 4 - ((v - low) * (height - 8)) / (high - low);
+        const base = `<line x1="2" x2="${width - 2}" y1="${y(100)}" y2="${y(100)}" stroke="var(--spark-base)" stroke-dasharray="3 3"/>`;
+        const line = values.map((v, i) => (v === null ? null : `${x(i)},${y(v)}`)).filter(Boolean).join(' ');
+        const lastIndex = values.map((v) => v !== null).lastIndexOf(true);
+        svg.innerHTML = base + `<polyline fill="none" stroke="var(--spark)" stroke-width="2" points="${line}"/>` +
+          `<circle cx="${x(lastIndex)}" cy="${y(values[lastIndex])}" r="3" fill="var(--spark)"/>`;
+        return svg;
+      }
+
+      // ------------------------------------------------------------------ "What it means": the dropdown of an area
+      function areaDropdown(area) {
+        const toggle = document.createElement('button');
+        const expanded = openAreas.has(area.id);
+        toggle.className = 'toggle';
+        toggle.setAttribute('aria-expanded', String(expanded));
+        toggle.innerHTML = '<svg class="chev" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+          `<span>${A.escape(A.t('archetypes.whatItMeans'))}</span>`;
+        const details = document.createElement('div');
+        details.className = 'details';
+        details.hidden = !expanded;
+        details.id = 'details-' + area.id;
+        toggle.setAttribute('aria-controls', details.id);
+        toggle.onclick = () => {
+          const now = !openAreas.has(area.id);
+          if (now) openAreas.add(area.id); else openAreas.delete(area.id);
+          toggle.setAttribute('aria-expanded', String(now));
+          details.hidden = !now;
+          if (now && !details.childElementCount) fillDetails(details, area);
+        };
+        if (expanded) fillDetails(details, area);
+        return [toggle, details];
+      }
+
+      function fillDetails(box, area) {
+        box.replaceChildren();
+        const diagnosis = area.diagnosis;
+        if (diagnosis.strengths.length) {
+          const section = sectionWith(A.t('archetypes.strengths'));
+          const list = document.createElement('ul');
+          for (const s of diagnosis.strengths) {
+            const item = document.createElement('li');
+            item.innerHTML = `<b class="strength">${A.escape(A.archetypeName(s.archetype))} · ${Math.round(area.indices[s.archetype])}</b> – `;
+            item.append(A.tr(s.text));
+            list.append(item);
+          }
+          section.append(list);
+          box.append(section);
+        }
+        const section = sectionWith(A.t('archetypes.patterns'));
+        for (const p of diagnosis.patterns) section.append(patternBlock(p));
+        // No index at all (no numbers or no peer group): say so instead of guessing a pattern.
+        if (!diagnosis.patterns.length) section.append(Object.assign(document.createElement('p'),
+          { className: 'muted', textContent: A.t('archetypes.notEnough') }));
+        box.append(section);
+        box.append(comparedWith(area));
+        if (Object.keys(area.values).length) box.append(numbersBehind(area));
+        box.append(notesBlock(area));
+      }
+
+      function sectionWith(title) {
+        const section = document.createElement('section');
+        const h = document.createElement('h3');
+        h.textContent = title;
+        section.append(h);
+        return section;
+      }
+
+      function patternBlock(p) {
+        const block = document.createElement('div');
+        block.className = 'pattern';
+        const title = document.createElement('h4');
+        title.textContent = A.tr(p.title);
+        const meaning = document.createElement('p');
+        meaning.textContent = A.tr(p.meaning);
+        const stepsTitle = document.createElement('p');
+        stepsTitle.innerHTML = `<b>${A.escape(A.t('archetypes.nextSteps'))}</b>`;
+        const steps = document.createElement('ol');
+        for (const step of p.steps) steps.append(Object.assign(document.createElement('li'), { textContent: A.tr(step) }));
+        block.append(title, meaning, stepsTitle, steps);
+        return block;
+      }
+
+      // "Compared with similar areas: City · Standard · 700 – 1200". A detail not uploaded yet reads "not known yet".
+      function comparedWith(area) {
+        const p = document.createElement('p');
+        p.className = 'muted';
+        const parts = area.peer_group === null ? [] : area.peer_group.split(' | ');
+        const group = parts.map((part) => (part === 'Missing' ? A.t('archetypes.notKnown') : A.tr(part))).join(' · ');
+        p.textContent = area.peer_group === null ? A.t('archetypes.noPeerGroup') : A.t('archetypes.comparedWith', { group });
+        if (parts.includes('Missing')) p.append(document.createElement('br'), A.t('archetypes.uploadHint'));
+        if (area.missing.length) {
+          p.append(document.createElement('br'),
+            A.t('archetypes.missing', { list: area.missing.map((k) => kpiName(k)).join(', ') }));
+        }
+        return p;
+      }
+
+      function numbersBehind(area) {
+        const details = document.createElement('details');
+        details.className = 'numbers';
+        const summary = document.createElement('summary');
+        summary.textContent = A.t('archetypes.numbersBehind');
+        const table = document.createElement('table');
+        const caption = document.createElement('caption');
+        caption.className = 'muted';
+        caption.style.textAlign = 'left';
+        caption.textContent = A.t('archetypes.perWeek');
+        table.append(caption);
+        for (const [key, value] of Object.entries(area.values)) {
+          const tr = table.insertRow();
+          tr.insertCell().textContent = kpiName(key);
+          tr.insertCell().textContent = value === null ? '–' : (window.MissionI18n?.number ? MissionI18n.number(value, { maximumFractionDigits: 2 }) : value);
+        }
+        details.append(summary, table);
+        return details;
+      }
+
+      // Leader notes: everyone who may see the area reads them; each leader writes their own note for the week.
+      function notesBlock(area) {
+        const section = sectionWith(A.t('archetypes.notes'));
+        const help = document.createElement('p');
+        help.className = 'muted';
+        help.textContent = A.t('archetypes.notesHelp');
+        section.append(help);
+        const others = area.notes.filter((n) => !n.mine);
+        if (!area.notes.length) section.append(Object.assign(document.createElement('p'), { className: 'muted', textContent: A.t('archetypes.noNotes') }));
+        for (const note of others) section.append(noteView(note));
+        section.append(noteForm(area));
+        return section;
+      }
+
+      function noteView(note) {
+        const box = document.createElement('div');
+        box.className = 'note';
+        const who = document.createElement('div');
+        who.className = 'who';
+        who.setAttribute('data-i18n-ignore', '');
+        who.textContent = [note.author, note.role, new Date(note.updated_at).toLocaleString(document.documentElement.lang || 'en',
+          { dateStyle: 'medium', timeStyle: 'short', timeZone: (window.GFM_SITE && window.GFM_SITE.timeZone) || 'Europe/Berlin' })].filter(Boolean).join(' · ');
+        const body = document.createElement('p');
+        body.setAttribute('data-i18n-ignore', '');
+        body.textContent = note.body;
+        box.append(who, body);
+        return box;
+      }
+
+      function noteForm(area) {
+        const mine = area.notes.find((n) => n.mine);
+        const form = document.createElement('form');
+        form.className = 'note-form';
+        const id = 'note-' + area.id;
+        form.innerHTML = `<label for="${id}">${A.escape(A.t('archetypes.yourNote'))}</label>
+          <textarea id="${id}" maxlength="4000"></textarea>
+          <div class="actions"><button type="submit">${A.escape(A.t('archetypes.saveNote'))}</button>
+          <span class="status" role="status"></span></div>`;
+        const text = form.querySelector('textarea');
+        text.value = mine ? mine.body : '';
+        text.placeholder = A.t('archetypes.notePlaceholder');
+        form.onsubmit = (event) => {
+          event.preventDefault();
+          saveNote(area, text, form.querySelector('.status'), form.querySelector('button'));
+        };
+        return form;
+      }
+
+      async function saveNote(area, text, status, button) {
+        button.disabled = true;
+        status.className = 'status';
+        status.textContent = A.t('archetypes.saving');
+        try {
+          const result = await portalAPI('archetypes/notes', { method: 'PUT',
+            body: { area_id: area.id, week: state.data.week, body: text.value } });
+          const others = area.notes.filter((n) => !n.mine);
+          area.notes = result.saved ? [...others, { mine: true, body: text.value.trim() }] : others;
+          status.textContent = A.t(result.saved ? 'archetypes.saved' : 'archetypes.removed');
+        } catch (error) {
+          status.className = 'status error';
+          status.textContent = A.t('archetypes.notSaved', { reason: A.tr(error.message) });
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      // ------------------------------------------------------------------ moving around
+      function goTo(level, id) {
+        state.level = level;
+        state.id = id;
+        state.search = '';
+        $('search').value = '';
+        writeAddress(true);
+        render();
+        window.scrollTo({ top: 0 });
+      }
+
+      $('week').onchange = () => { state.week = $('week').value; writeAddress(true); load(); };
+      $('average').onchange = () => { state.weeks = $('average').value; writeAddress(true); load(); };
+      $('zone').onchange = () => ($('zone').value ? goTo('zone', Number($('zone').value)) : goTo('mission', null));
+      $('district').onchange = () => {
+        if ($('district').value) return goTo('district', Number($('district').value));
+        const district = districtById(state.id);
+        goTo('zone', state.level === 'district' ? district.zone_id : state.id);
+      };
+      $('sort').onchange = () => { state.sort = $('sort').value; render(); };
+      $('search').oninput = () => { state.search = $('search').value.trim(); render(); };
+      addEventListener('popstate', () => {
+        const before = [state.week, state.weeks].join();
+        readAddress();
+        if ([state.week, state.weeks].join() !== before) load(); else if (state.data) { goHomeIfNeeded(); render(); }
+      });
+      addEventListener('mission-i18n-change', () => state.data && render());
+
+      A.whenReady().then(() => {
+        readAddress();
+        load();
+      });
+    </script>
+  </body>
+</html>

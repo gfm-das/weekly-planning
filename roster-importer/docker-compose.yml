@@ -1,0 +1,36 @@
+# DA Management (port 8090): accounts, imports, planning questions, uploads, places, Import history, Updates.
+# Start or update: docker compose -p roster-importer -f roster-importer/docker-compose.yml up -d --build --no-deps roster-importer
+# Settings come from roster-importer/.env (roster-importer/.env.example lists them).
+
+services:
+  roster-importer:
+    build: .
+    ports:
+      - "8090:8080"
+    environment:
+      DATABASE_URL: "${DATABASE_URL}"
+      MISSION_ID: "${MISSION_ID:-2}"
+      IMPORTER_PASSWORD: "${IMPORTER_PASSWORD}"
+      SECRET_KEY: "${SECRET_KEY}"
+      PERSON_KEY_SECRET: "${PERSON_KEY_SECRET:-}"
+      GFM_PUBLIC_DOMAIN: "${GFM_PUBLIC_DOMAIN:-}"
+      GFM_TIME_ZONE: "${GFM_TIME_ZONE:-Europe/Berlin}"
+      SUPABASE_AUTH_INTERNAL_URL: "${SUPABASE_AUTH_INTERNAL_URL:-http://supabase-kong:8000}"
+      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
+      PASSWORD_REDIRECT_URL: "${PASSWORD_REDIRECT_URL:-http://localhost/}"
+      UPDATES_DIR: /updates
+    volumes:
+      # DA Management > Updates (round 7): the page only leaves requests for the updater on this computer
+      # (updater/gfm-updater.ps1) and reads its status read-only. It never runs git or a shell.
+      - ../updater/requests:/updates/requests
+      - ../updater/status:/updates/status:ro
+    networks:
+      - default
+      - supabase_network
+    restart: unless-stopped
+
+networks:
+  supabase_network:
+    external: true
+    name: gfm-network
+

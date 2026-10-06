@@ -1,0 +1,1388 @@
+{
+ "version": 1,
+ "slidevLayouts": [
+  "default",
+  "center",
+  "cover",
+  "end",
+  "fact",
+  "full",
+  "iframe",
+  "iframe-left",
+  "iframe-right",
+  "image",
+  "image-left",
+  "image-right",
+  "intro",
+  "none",
+  "quote",
+  "section",
+  "statement",
+  "two-cols",
+  "two-cols-header"
+ ],
+ "slidevComponents": [
+  "Arrow",
+  "AutoFitText",
+  "Link",
+  "RenderWhen",
+  "SlideCurrentNo",
+  "SlidesTotal",
+  "Toc",
+  "Transform",
+  "Tweet",
+  "Youtube",
+  "VClick",
+  "VClicks",
+  "VAfter",
+  "VSwitch",
+  "VDrag",
+  "VDragArrow",
+  "SlidevVideo",
+  "LightOrDark"
+ ],
+ "layouts": [
+  {
+   "name": "gfm-chart-insight",
+   "description": "A chart on the left and what it means on the right. Put the chart first, then a line with ::right:: and the message.",
+   "slots": [
+    "default",
+    "right"
+   ],
+   "props": [
+    {
+     "name": "heading",
+     "type": "string",
+     "label": "Slide title"
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    }
+   ]
+  },
+  {
+   "name": "gfm-comparison",
+   "description": "Two things side by side, such as this week and last week, or two zones. Put the first, then a line with ::right:: and the second.",
+   "slots": [
+    "default",
+    "right"
+   ],
+   "props": [
+    {
+     "name": "heading",
+     "type": "string",
+     "label": "Slide title"
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    },
+    {
+     "name": "leftTitle",
+     "type": "string",
+     "label": "Heading of the left side"
+    },
+    {
+     "name": "rightTitle",
+     "type": "string",
+     "label": "Heading of the right side"
+    }
+   ]
+  },
+  {
+   "name": "gfm-cover",
+   "description": "Opening slide. A big title (a # heading), a line under it, a small label above and a footer line.",
+   "slots": [
+    "default"
+   ],
+   "props": [
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    },
+    {
+     "name": "footer",
+     "type": "string",
+     "label": "Footer line (for example the mission or the date)"
+    }
+   ]
+  },
+  {
+   "name": "gfm-freeform",
+   "description": "A blank slide for placing things freely - drag, resize and rotate anything. Use it when no other layout fits.",
+   "slots": [
+    "default"
+   ],
+   "props": []
+  },
+  {
+   "name": "gfm-full-chart",
+   "description": "One chart, as large as the slide allows, with a title and an optional source line. Put a chart (height about 360) in the slide.",
+   "slots": [
+    "default"
+   ],
+   "props": [
+    {
+     "name": "heading",
+     "type": "string",
+     "label": "Slide title"
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    },
+    {
+     "name": "caption",
+     "type": "string",
+     "label": "Line under the chart (for example the source or the weeks shown)"
+    }
+   ]
+  },
+  {
+   "name": "gfm-hero",
+   "description": "One message, large and centred - a statement, a big number or a question for the whole group.",
+   "slots": [
+    "default"
+   ],
+   "props": [
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the message"
+    }
+   ]
+  },
+  {
+   "name": "gfm-image-message",
+   "description": "A picture beside a message. The picture fills one side of the slide; the text sits on the other.",
+   "slots": [
+    "default"
+   ],
+   "props": [
+    {
+     "name": "image",
+     "type": "string",
+     "label": "Picture (an address, or a file from the assets panel)"
+    },
+    {
+     "name": "imageSide",
+     "type": "'left' | 'right'",
+     "label": "Side of the picture",
+     "options": [
+      "left",
+      "right"
+     ]
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the text"
+    }
+   ]
+  },
+  {
+   "name": "gfm-kpi-grid",
+   "description": "A set of key numbers. Put a GfmKpiGrid (the mission's key indicators) or several GfmBigNumber in the slide.",
+   "slots": [
+    "default"
+   ],
+   "props": [
+    {
+     "name": "heading",
+     "type": "string",
+     "label": "Slide title"
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    },
+    {
+     "name": "note",
+     "type": "string",
+     "label": "Line under the numbers"
+    }
+   ]
+  },
+  {
+   "name": "gfm-section",
+   "description": "Starts a new part of the presentation. A big heading on a teal background, with an optional label such as \"Part 2\".",
+   "slots": [
+    "default"
+   ],
+   "props": [
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the heading"
+    }
+   ]
+  },
+  {
+   "name": "gfm-three-column",
+   "description": "Three equal cards, each with a heading and a few lines. Separate the cards with ::middle:: and ::right::.",
+   "slots": [
+    "default",
+    "middle",
+    "right"
+   ],
+   "props": [
+    {
+     "name": "heading",
+     "type": "string",
+     "label": "Slide title"
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    }
+   ]
+  },
+  {
+   "name": "gfm-two-chart",
+   "description": "Two charts side by side (height about 300 each). Put the first chart, then a line with ::right:: and the second.",
+   "slots": [
+    "default",
+    "right"
+   ],
+   "props": [
+    {
+     "name": "heading",
+     "type": "string",
+     "label": "Slide title"
+    },
+    {
+     "name": "kicker",
+     "type": "string",
+     "label": "Label above the title"
+    }
+   ]
+  }
+ ],
+ "components": [
+  {
+   "name": "GfmBigNumber",
+   "category": "GFM content",
+   "description": "One number shown large, with its label, the change from before and a short note.",
+   "snippet": "<GfmBigNumber value=\"47\" label=\"New people being taught\" change=\"+6 from last week\" tone=\"good\" />",
+   "props": [
+    {
+     "name": "value",
+     "type": "string",
+     "label": "The number"
+    },
+    {
+     "name": "label",
+     "type": "string",
+     "label": "What it counts"
+    },
+    {
+     "name": "change",
+     "type": "string",
+     "label": "Change (for example +6 from last week)"
+    },
+    {
+     "name": "tone",
+     "type": "'good' | 'warn' | 'bad' | 'neutral'",
+     "label": "Colour of the change",
+     "options": [
+      "good",
+      "warn",
+      "bad",
+      "neutral"
+     ]
+    },
+    {
+     "name": "note",
+     "type": "string",
+     "label": "Note under the number"
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "GfmCallout",
+   "category": "GFM content",
+   "description": "A box that points something out - an invitation, a reminder or a warning - with a small heading.",
+   "snippet": "<GfmCallout title=\"Invitation\" tone=\"info\">\nInvite one friend this week.\n</GfmCallout>",
+   "props": [
+    {
+     "name": "title",
+     "type": "string",
+     "label": "Heading"
+    },
+    {
+     "name": "tone",
+     "type": "'info' | 'good' | 'warn' | 'bad'",
+     "label": "Kind",
+     "options": [
+      "info",
+      "good",
+      "warn",
+      "bad"
+     ]
+    }
+   ],
+   "slot": true
+  },
+  {
+   "name": "GfmComparison",
+   "category": "GFM content",
+   "description": "Two numbers side by side with the change between them - this week and last week, or two zones.",
+   "snippet": "<GfmComparison leftLabel=\"Last week\" :leftValue=\"41\" rightLabel=\"This week\" :rightValue=\"47\" />",
+   "props": [
+    {
+     "name": "leftLabel",
+     "type": "string",
+     "label": "Left label"
+    },
+    {
+     "name": "leftValue",
+     "type": "number",
+     "label": "Left number"
+    },
+    {
+     "name": "rightLabel",
+     "type": "string",
+     "label": "Right label"
+    },
+    {
+     "name": "rightValue",
+     "type": "number",
+     "label": "Right number"
+    },
+    {
+     "name": "unit",
+     "type": "string",
+     "label": "Unit after the numbers (for example %)"
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "GfmInsight",
+   "category": "GFM content",
+   "description": "What the numbers mean, in one or two sentences, set apart with a teal bar.",
+   "snippet": "<GfmInsight>\nMost zones taught more people than last week.\n</GfmInsight>",
+   "props": [
+    {
+     "name": "label",
+     "type": "string",
+     "label": "Small heading"
+    }
+   ],
+   "slot": true
+  },
+  {
+   "name": "GfmKpi",
+   "category": "GFM data",
+   "description": "One key indicator of the mission as a tile - the last finished week against the goal set the week before, with a small line of the weeks. Live from the weekly plans.",
+   "snippet": "<GfmKpi metric=\"New people being taught\" />",
+   "props": [
+    {
+     "name": "weeks",
+     "type": "number",
+     "label": "Weeks in the small line (1-104)"
+    },
+    {
+     "name": "height",
+     "type": "number",
+     "label": "Height (slide pixels)"
+    },
+    {
+     "name": "highlight",
+     "type": "boolean",
+     "label": "Outline in teal (the first, most important number)"
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "GfmKpiGrid",
+   "category": "GFM data",
+   "description": "Key indicators of the mission as a grid of tiles, live from the weekly plans. Choose which ones, how many weeks the small lines show, and whether the first is outlined.",
+   "snippet": "<GfmKpiGrid metrics=\"friends_found,baptismal_dates,sacrament_attendance\" />",
+   "props": [
+    {
+     "name": "metrics",
+     "type": "string",
+     "label": "Key indicators, separated by commas (empty = all six)"
+    },
+    {
+     "name": "weeks",
+     "type": "number",
+     "label": "Weeks in each small line (1-104)"
+    },
+    {
+     "name": "columns",
+     "type": "number",
+     "label": "Tiles across (0 = automatic)"
+    },
+    {
+     "name": "highlightFirst",
+     "type": "boolean",
+     "label": "Outline the first tile"
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "GfmProgress",
+   "category": "GFM content",
+   "description": "How far along a goal is: a bar with the numbers and the percentage.",
+   "snippet": "<GfmProgress label=\"Baptismal dates\" :value=\"31\" :goal=\"40\" />",
+   "props": [
+    {
+     "name": "label",
+     "type": "string",
+     "label": "What is measured"
+    },
+    {
+     "name": "value",
+     "type": "number",
+     "label": "Reached so far"
+    },
+    {
+     "name": "goal",
+     "type": "number",
+     "label": "Goal"
+    },
+    {
+     "name": "unit",
+     "type": "string",
+     "label": "Unit after the numbers (for example %)"
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "GfmQuote",
+   "category": "GFM content",
+   "description": "A quotation or scripture, large, with the source underneath.",
+   "snippet": "<GfmQuote author=\"Alma 37:6\">\nBy small and simple things are great things brought to pass.\n</GfmQuote>",
+   "props": [
+    {
+     "name": "author",
+     "type": "string",
+     "label": "Who said it, or the reference"
+    }
+   ],
+   "slot": true
+  },
+  {
+   "name": "MissionChart",
+   "category": "Charts",
+   "description": "A chart from your own numbers or from mission numbers, drawn with ECharts. Use Add chart at the top of the editor to make one, and Edit chart to change the selected chart (every chart type, the numbers, and every setting). The settings below are for charts written the older way.",
+   "snippet": "<MissionChart :rows=\"['Label, Value', 'A, 3', 'B, 5', 'C, 4']\" :option='{\"series\":[{\"type\":\"bar\"}]}' />",
+   "props": [
+    {
+     "name": "type",
+     "type": "'line' | 'bar' | 'area' | 'scatter' | 'pie' | 'donut' | 'gauge' | 'tile' | 'heatmap' | 'radar' | 'funnel' | 'treemap' | 'sunburst' | 'boxplot' | 'waterfall'",
+     "label": "Chart type",
+     "options": [
+      "line",
+      "bar",
+      "area",
+      "scatter",
+      "pie",
+      "donut",
+      "gauge",
+      "tile",
+      "heatmap",
+      "radar",
+      "funnel",
+      "treemap",
+      "sunburst",
+      "boxplot",
+      "waterfall"
+     ]
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "label": "Title"
+    },
+    {
+     "name": "rows",
+     "type": "string[]",
+     "label": "Data, one row per box (first row = headings; for mission numbers use Add chart)"
+    },
+    {
+     "name": "csv",
+     "type": "string",
+     "hidden": true
+    },
+    {
+     "name": "data",
+     "type": "Record<string, any> | Record<string, any>[]",
+     "hidden": true
+    },
+    {
+     "name": "trend",
+     "type": "'none' | 'linear' | 'polynomial' | 'exponential' | 'logarithmic' | 'moving-average'",
+     "label": "Trend line",
+     "options": [
+      "none",
+      "linear",
+      "polynomial",
+      "exponential",
+      "logarithmic",
+      "moving-average"
+     ]
+    },
+    {
+     "name": "degree",
+     "type": "number",
+     "label": "Trend degree (polynomial, 2–6)"
+    },
+    {
+     "name": "trendColor",
+     "type": "string",
+     "label": "Trend line colour (empty = the series colour)"
+    },
+    {
+     "name": "colors",
+     "type": "string[]",
+     "label": "Series colours"
+    },
+    {
+     "name": "showValues",
+     "type": "boolean",
+     "label": "Show values"
+    },
+    {
+     "name": "height",
+     "type": "number",
+     "label": "Height (slide pixels)"
+    },
+    {
+     "name": "max",
+     "type": "number",
+     "label": "Maximum (gauge and radar)"
+    },
+    {
+     "name": "trendStyle",
+     "type": "'dashed' | 'dotted' | 'solid'",
+     "label": "More · Trend line style",
+     "options": [
+      "dashed",
+      "dotted",
+      "solid"
+     ]
+    },
+    {
+     "name": "trendWidth",
+     "type": "number",
+     "label": "More · Trend line width (1–8)"
+    },
+    {
+     "name": "trendLabel",
+     "type": "string",
+     "label": "More · Trend name in the legend"
+    },
+    {
+     "name": "window",
+     "type": "number",
+     "label": "More · Moving average over how many points (2–52)"
+    },
+    {
+     "name": "forecast",
+     "type": "number",
+     "label": "More · Forecast periods (needs a trend line)"
+    },
+    {
+     "name": "goal",
+     "type": "string",
+     "label": "More · Goal column (its heading)"
+    },
+    {
+     "name": "goalColor",
+     "type": "string",
+     "label": "More · Goal line colour"
+    },
+    {
+     "name": "target",
+     "type": "number",
+     "label": "More · A line at this number"
+    },
+    {
+     "name": "targetLabel",
+     "type": "string",
+     "label": "More · That line's name (for example Goal)"
+    },
+    {
+     "name": "targetColor",
+     "type": "string",
+     "label": "More · That line's colour"
+    },
+    {
+     "name": "average",
+     "type": "boolean",
+     "label": "More · Average line"
+    },
+    {
+     "name": "averageColor",
+     "type": "string",
+     "label": "More · Average line colour"
+    },
+    {
+     "name": "legend",
+     "type": "'auto' | 'top' | 'bottom' | 'right' | 'none'",
+     "label": "More · Legend",
+     "options": [
+      "auto",
+      "top",
+      "bottom",
+      "right",
+      "none"
+     ]
+    },
+    {
+     "name": "xTitle",
+     "type": "string",
+     "label": "More · Title under the chart (x axis)"
+    },
+    {
+     "name": "yTitle",
+     "type": "string",
+     "label": "More · Title beside the numbers (y axis)"
+    },
+    {
+     "name": "yMin",
+     "type": "number",
+     "label": "More · Lowest number on the axis"
+    },
+    {
+     "name": "yMax",
+     "type": "number",
+     "label": "More · Highest number on the axis"
+    },
+    {
+     "name": "labelRotate",
+     "type": "number",
+     "label": "More · Turn the labels (degrees)"
+    },
+    {
+     "name": "format",
+     "type": "'auto' | 'plain' | 'percent' | 'compact' | 'decimals'",
+     "label": "More · Number format",
+     "options": [
+      "auto",
+      "plain",
+      "percent",
+      "compact",
+      "decimals"
+     ]
+    },
+    {
+     "name": "decimals",
+     "type": "number",
+     "label": "More · Decimal places"
+    },
+    {
+     "name": "prefix",
+     "type": "string",
+     "label": "More · Before each number (e.g. €)"
+    },
+    {
+     "name": "suffix",
+     "type": "string",
+     "label": "More · After each number (e.g. people)"
+    },
+    {
+     "name": "valuePosition",
+     "type": "'auto' | 'top' | 'inside' | 'bottom'",
+     "label": "More · Where the values go",
+     "options": [
+      "auto",
+      "top",
+      "inside",
+      "bottom"
+     ]
+    },
+    {
+     "name": "stack",
+     "type": "boolean",
+     "label": "More · Stack the series"
+    },
+    {
+     "name": "horizontal",
+     "type": "boolean",
+     "label": "More · Horizontal bars"
+    },
+    {
+     "name": "smooth",
+     "type": "boolean",
+     "label": "More · Smooth lines"
+    },
+    {
+     "name": "seriesTypes",
+     "type": "string[]",
+     "label": "More · Type per series (line, bar, area or scatter)"
+    },
+    {
+     "name": "multiples",
+     "type": "boolean",
+     "label": "More · One small chart per series"
+    },
+    {
+     "name": "dataZoom",
+     "type": "boolean",
+     "label": "More · Zoom slider"
+    },
+    {
+     "name": "option",
+     "type": "Record<string, any> | string",
+     "hidden": true
+    },
+    {
+     "name": "query",
+     "type": "Record<string, any> | string",
+     "hidden": true
+    },
+    {
+     "name": "chartId",
+     "type": "string",
+     "hidden": true
+    },
+    {
+     "name": "calc",
+     "type": "Record<string, any>[] | string",
+     "hidden": true
+    },
+    {
+     "name": "preset",
+     "type": "string",
+     "hidden": true
+    },
+    {
+     "name": "presetTop",
+     "type": "number",
+     "hidden": true
+    },
+    {
+     "name": "presetAggregate",
+     "type": "'last' | 'sum'",
+     "options": [
+      "last",
+      "sum"
+     ],
+     "hidden": true
+    },
+    {
+     "name": "presetTarget",
+     "type": "number",
+     "hidden": true
+    },
+    {
+     "name": "shape",
+     "type": "Record<string, any>",
+     "hidden": true
+    },
+    {
+     "name": "story",
+     "type": "Record<string, any>[] | string",
+     "hidden": true
+    },
+    {
+     "name": "storyTransition",
+     "type": "'morph' | 'fade' | 'none'",
+     "options": [
+      "morph",
+      "fade",
+      "none"
+     ],
+     "hidden": true
+    },
+    {
+     "name": "storyDuration",
+     "type": "number",
+     "hidden": true
+    },
+    {
+     "name": "storyEasing",
+     "type": "string",
+     "hidden": true
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "MissionKpiChart",
+   "category": "Charts",
+   "description": "Live mission numbers for one key indicator, week by week, with the goal and a trend line. The first settings are the everyday ones; the ones marked More fine-tune the chart.",
+   "snippet": "<MissionKpiChart kpi=\"New people being taught\" :weeks=\"12\" chart=\"bar\" trend=\"linear\" />",
+   "props": [
+    {
+     "name": "weeks",
+     "type": "number",
+     "label": "Weeks (1–104)"
+    },
+    {
+     "name": "chart",
+     "type": "'bar' | 'line' | 'area' | 'tile'",
+     "label": "Chart type (tile = one big number)",
+     "options": [
+      "bar",
+      "line",
+      "area",
+      "tile"
+     ]
+    },
+    {
+     "name": "showGoal",
+     "type": "boolean",
+     "label": "Show the goal"
+    },
+    {
+     "name": "trend",
+     "type": "'linear' | 'polynomial' | 'exponential' | 'logarithmic' | 'moving-average' | 'none'",
+     "label": "Trend line",
+     "options": [
+      "linear",
+      "polynomial",
+      "exponential",
+      "logarithmic",
+      "moving-average",
+      "none"
+     ]
+    },
+    {
+     "name": "degree",
+     "type": "number",
+     "label": "Trend degree (polynomial, 2–6)"
+    },
+    {
+     "name": "trendColor",
+     "type": "string",
+     "label": "Trend line colour (empty = the bar or line colour)"
+    },
+    {
+     "name": "colors",
+     "type": "string[]",
+     "label": "Colours"
+    },
+    {
+     "name": "goalColor",
+     "type": "string",
+     "label": "Goal line colour"
+    },
+    {
+     "name": "title",
+     "type": "string",
+     "label": "Title (default is the indicator's name)"
+    },
+    {
+     "name": "height",
+     "type": "number",
+     "label": "Height (slide pixels)"
+    },
+    {
+     "name": "showValues",
+     "type": "boolean",
+     "label": "Show values"
+    },
+    {
+     "name": "trendStyle",
+     "type": "'dashed' | 'dotted' | 'solid'",
+     "label": "More · Trend line style",
+     "options": [
+      "dashed",
+      "dotted",
+      "solid"
+     ]
+    },
+    {
+     "name": "trendWidth",
+     "type": "number",
+     "label": "More · Trend line width (1–8)"
+    },
+    {
+     "name": "trendLabel",
+     "type": "string",
+     "label": "More · Trend name in the legend"
+    },
+    {
+     "name": "window",
+     "type": "number",
+     "label": "More · Moving average over how many weeks (2–52)"
+    },
+    {
+     "name": "forecast",
+     "type": "number",
+     "label": "More · Forecast weeks (needs a trend line)"
+    },
+    {
+     "name": "target",
+     "type": "number",
+     "label": "More · A line at this number"
+    },
+    {
+     "name": "targetLabel",
+     "type": "string",
+     "label": "More · That line's name (for example Goal)"
+    },
+    {
+     "name": "targetColor",
+     "type": "string",
+     "label": "More · That line's colour"
+    },
+    {
+     "name": "average",
+     "type": "boolean",
+     "label": "More · Average line"
+    },
+    {
+     "name": "averageColor",
+     "type": "string",
+     "label": "More · Average line colour"
+    },
+    {
+     "name": "legend",
+     "type": "'auto' | 'top' | 'bottom' | 'right' | 'none'",
+     "label": "More · Legend",
+     "options": [
+      "auto",
+      "top",
+      "bottom",
+      "right",
+      "none"
+     ]
+    },
+    {
+     "name": "yMin",
+     "type": "number",
+     "label": "More · Lowest number on the axis"
+    },
+    {
+     "name": "yMax",
+     "type": "number",
+     "label": "More · Highest number on the axis"
+    },
+    {
+     "name": "smooth",
+     "type": "boolean",
+     "label": "More · Smooth line"
+    },
+    {
+     "name": "valuePosition",
+     "type": "'auto' | 'top' | 'inside' | 'bottom'",
+     "label": "More · Where the values go",
+     "options": [
+      "auto",
+      "top",
+      "inside",
+      "bottom"
+     ]
+    },
+    {
+     "name": "dataZoom",
+     "type": "boolean",
+     "label": "More · Zoom slider"
+    },
+    {
+     "name": "option",
+     "type": "Record<string, any> | string",
+     "hidden": true
+    },
+    {
+     "name": "chartId",
+     "type": "string",
+     "hidden": true
+    }
+   ],
+   "slot": false
+  }
+ ],
+ "chart": {
+  "kpis": {
+   "friends_found": "New people being taught",
+   "baptisms_confirmations": "Baptisms and confirmations",
+   "baptismal_dates": "Baptismal dates",
+   "sacrament_attendance": "Sacrament attendance",
+   "members_at_lessons": "Members at lessons",
+   "new_member_sacrament": "New member sacrament attendance"
+  },
+  "kinds": [
+   {
+    "id": "trend",
+    "label": "Trend",
+    "group": "kind",
+    "needs": "weeks"
+   },
+   {
+    "id": "goal-vs-actual",
+    "label": "Goal vs actual",
+    "group": "kind",
+    "needs": "goal"
+   },
+   {
+    "id": "ranked-bar",
+    "label": "Ranked bar",
+    "group": "kind",
+    "needs": "units"
+   },
+   {
+    "id": "comparison",
+    "label": "Comparison",
+    "group": "kind",
+    "needs": "two numbers"
+   },
+   {
+    "id": "big-number",
+    "label": "Big number",
+    "group": "kind",
+    "needs": "one number"
+   },
+   {
+    "id": "progress",
+    "label": "Progress",
+    "group": "kind",
+    "needs": "goal"
+   },
+   {
+    "id": "cumulative-goal",
+    "label": "Cumulative goal",
+    "group": "kind",
+    "needs": "weeks"
+   },
+   {
+    "id": "funnel",
+    "label": "Funnel",
+    "group": "kind",
+    "needs": "several numbers"
+   },
+   {
+    "id": "conversion-funnel",
+    "label": "Conversion funnel",
+    "group": "kind",
+    "needs": "several numbers"
+   },
+   {
+    "id": "leaderboard",
+    "label": "Leaderboard",
+    "group": "kind",
+    "needs": "units"
+   },
+   {
+    "id": "small-multiples",
+    "label": "Small multiples",
+    "group": "kind",
+    "needs": "several numbers"
+   },
+   {
+    "id": "type-line",
+    "label": "Line",
+    "group": "type",
+    "needs": "weeks or places"
+   },
+   {
+    "id": "type-area",
+    "label": "Area",
+    "group": "type",
+    "needs": "weeks or places"
+   },
+   {
+    "id": "type-stacked-area",
+    "label": "Stacked area",
+    "group": "type",
+    "needs": "weeks or places, two or more numbers"
+   },
+   {
+    "id": "type-bar",
+    "label": "Bar",
+    "group": "type",
+    "needs": "weeks or places"
+   },
+   {
+    "id": "type-stacked-bar",
+    "label": "Stacked bar",
+    "group": "type",
+    "needs": "two or more numbers"
+   },
+   {
+    "id": "type-horizontal-bar",
+    "label": "Horizontal bar",
+    "group": "type",
+    "needs": "places"
+   },
+   {
+    "id": "type-scatter",
+    "label": "Scatter",
+    "group": "type",
+    "needs": "two numbers (x and y)"
+   },
+   {
+    "id": "type-effect-scatter",
+    "label": "Scatter, ripples",
+    "group": "type",
+    "needs": "two numbers (x and y)"
+   },
+   {
+    "id": "type-pictorial-bar",
+    "label": "Pictorial bar",
+    "group": "type",
+    "needs": "weeks or places"
+   },
+   {
+    "id": "type-pie",
+    "label": "Pie",
+    "group": "type",
+    "needs": "one number for each part"
+   },
+   {
+    "id": "type-donut",
+    "label": "Donut",
+    "group": "type",
+    "needs": "one number for each part"
+   },
+   {
+    "id": "type-gauge",
+    "label": "Gauge",
+    "group": "type",
+    "needs": "one number (and a goal)"
+   },
+   {
+    "id": "type-radar",
+    "label": "Radar",
+    "group": "type",
+    "needs": "several numbers"
+   },
+   {
+    "id": "type-heatmap",
+    "label": "Heat map",
+    "group": "type",
+    "needs": "rows and several numbers"
+   },
+   {
+    "id": "type-matrix-heatmap",
+    "label": "Heat map matrix",
+    "group": "type",
+    "needs": "rows and several numbers"
+   },
+   {
+    "id": "type-calendar-heatmap",
+    "label": "Calendar heat map",
+    "group": "type",
+    "needs": "dates and one number"
+   },
+   {
+    "id": "type-treemap",
+    "label": "Tree map",
+    "group": "type",
+    "needs": "one number for each part (names may use \" / \" for groups)"
+   },
+   {
+    "id": "type-sunburst",
+    "label": "Sunburst",
+    "group": "type",
+    "needs": "one number for each part (names may use \" / \" for groups)"
+   },
+   {
+    "id": "type-boxplot",
+    "label": "Box plot",
+    "group": "type",
+    "needs": "several numbers, many rows"
+   },
+   {
+    "id": "type-candlestick",
+    "label": "Candlestick",
+    "group": "type",
+    "needs": "open, close, low and high"
+   },
+   {
+    "id": "type-waterfall",
+    "label": "Waterfall",
+    "group": "type",
+    "needs": "steps with gains and losses"
+   },
+   {
+    "id": "type-range",
+    "label": "Range",
+    "group": "type",
+    "needs": "the lowest and the highest number"
+   },
+   {
+    "id": "type-errorbar",
+    "label": "Error bars",
+    "group": "type",
+    "needs": "the lowest and the highest number"
+   },
+   {
+    "id": "type-tree",
+    "label": "Tree",
+    "group": "type",
+    "needs": "names with \" / \" for groups, and a number"
+   },
+   {
+    "id": "type-graph",
+    "label": "Network",
+    "group": "type",
+    "needs": "from, to and a number"
+   },
+   {
+    "id": "type-sankey",
+    "label": "Sankey (flows)",
+    "group": "type",
+    "needs": "from, to and a number"
+   },
+   {
+    "id": "type-chord",
+    "label": "Chord",
+    "group": "type",
+    "needs": "from, to and a number"
+   },
+   {
+    "id": "type-theme-river",
+    "label": "Theme river",
+    "group": "type",
+    "needs": "weeks and several numbers"
+   },
+   {
+    "id": "type-parallel",
+    "label": "Parallel coordinates",
+    "group": "type",
+    "needs": "several numbers"
+   },
+   {
+    "id": "type-polar-bar",
+    "label": "Polar bar",
+    "group": "type",
+    "needs": "weeks or places"
+   }
+  ],
+  "seriesTypes": [
+   "line",
+   "bar",
+   "scatter",
+   "effectScatter",
+   "pictorialBar",
+   "pie",
+   "funnel",
+   "gauge",
+   "radar",
+   "heatmap",
+   "tree",
+   "treemap",
+   "sunburst",
+   "boxplot",
+   "candlestick",
+   "graph",
+   "sankey",
+   "chord",
+   "themeRiver",
+   "parallel",
+   "lines",
+   "custom"
+  ],
+  "functions": {
+   "SUM": {
+    "signature": "SUM(column) or SUM(a, b, ...)",
+    "help": "One column: the total of all rows. Several values: their sum, row by row.",
+    "example": "SUM([Baptisms])"
+   },
+   "AVG": {
+    "signature": "AVG(column) or AVG(a, b, ...)",
+    "help": "One column: the average of all rows. Several values: their average, row by row.",
+    "example": "AVG([New people being taught])"
+   },
+   "MIN": {
+    "signature": "MIN(column) or MIN(a, b, ...)",
+    "help": "One column: the lowest row. Several values: the lowest, row by row.",
+    "example": "MIN([Actual], [Goal])"
+   },
+   "MAX": {
+    "signature": "MAX(column) or MAX(a, b, ...)",
+    "help": "One column: the highest row. Several values: the highest, row by row.",
+    "example": "MAX([Actual], [Goal])"
+   },
+   "COUNT": {
+    "signature": "COUNT(column)",
+    "help": "How many rows have a number.",
+    "example": "COUNT([Actual])"
+   },
+   "IF": {
+    "signature": "IF(test, then, otherwise)",
+    "help": "Gives \"then\" where the test is true and \"otherwise\" where it is not.",
+    "example": "IF([Actual] >= [Goal], 1, 0)"
+   },
+   "SAFE_DIVIDE": {
+    "signature": "SAFE_DIVIDE(a, b, instead)",
+    "help": "a divided by b; where b is 0 or missing it gives \"instead\" (no number if you leave it out).",
+    "example": "SAFE_DIVIDE([Taught], [Contacted], 0)"
+   },
+   "DIFFERENCE": {
+    "signature": "DIFFERENCE(column, rows back)",
+    "help": "The change from the row before (or from that many rows back).",
+    "example": "DIFFERENCE([Baptisms])"
+   },
+   "PERCENT_CHANGE": {
+    "signature": "PERCENT_CHANGE(column, rows back)",
+    "help": "The change from the row before as a fraction of it: (this - before) / before.",
+    "example": "PERCENT_CHANGE([Baptisms])"
+   },
+   "CUMULATIVE_SUM": {
+    "signature": "CUMULATIVE_SUM(column)",
+    "help": "The running total from the first row to this one.",
+    "example": "CUMULATIVE_SUM([Baptisms])"
+   },
+   "MOVING_AVG": {
+    "signature": "MOVING_AVG(column, rows)",
+    "help": "The average of this row and the rows before it (up to that many rows).",
+    "example": "MOVING_AVG([Baptisms], 4)"
+   },
+   "LAG": {
+    "signature": "LAG(column, rows back)",
+    "help": "The value from the row before (or that many rows back).",
+    "example": "LAG([Baptisms])"
+   },
+   "ROUND": {
+    "signature": "ROUND(value, decimals)",
+    "help": "Rounds to that many decimals (0 if you leave it out).",
+    "example": "ROUND([Rate], 1)"
+   },
+   "ABS": {
+    "signature": "ABS(value)",
+    "help": "Removes a minus sign.",
+    "example": "ABS(DIFFERENCE([Baptisms]))"
+   }
+  },
+  "formats": [
+   "number",
+   "percent",
+   "integer",
+   "compact",
+   "decimals"
+  ],
+  "storyKeys": [
+   "label",
+   "preset",
+   "presetTop",
+   "presetAggregate",
+   "presetTarget",
+   "shape",
+   "calc",
+   "title",
+   "colors",
+   "option"
+  ],
+  "transitions": [
+   "morph",
+   "fade",
+   "none"
+  ],
+  "easings": [
+   "cubicInOut",
+   "cubicOut",
+   "linear",
+   "elasticOut",
+   "backOut"
+  ]
+ }
+}

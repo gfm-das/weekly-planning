@@ -1,0 +1,8193 @@
+{
+ "id": "1150002000000000000",
+ "name": "Zones & districts",
+ "exportedAt": "2026-09-29T04:50:12.586Z",
+ "dataeaseVersion": "2.10.27",
+ "canvasStyleData": {
+  "width": 1280,
+  "height": 800,
+  "refreshViewEnable": false,
+  "refreshViewLoading": false,
+  "refreshUnit": "minute",
+  "refreshTime": 5,
+  "scale": 60,
+  "scaleWidth": 100,
+  "scaleHeight": 100,
+  "backgroundColorSelect": true,
+  "backgroundImageEnable": false,
+  "backgroundType": "backgroundColor",
+  "background": "",
+  "openCommonStyle": true,
+  "opacity": 1,
+  "fontSize": 14,
+  "themeId": "10001",
+  "color": "#17394b",
+  "backgroundColor": "#e9eff1",
+  "dashboard": {
+   "gap": "yes",
+   "gapSize": 6,
+   "resultMode": "all",
+   "resultCount": 1000,
+   "themeColor": "light",
+   "mobileSetting": {
+    "customSetting": false,
+    "imageUrl": null,
+    "backgroundType": "image",
+    "color": "#000"
+   }
+  },
+  "component": {
+   "chartTitle": {
+    "show": true,
+    "fontSize": "15",
+    "hPosition": "left",
+    "vPosition": "top",
+    "isItalic": false,
+    "isBolder": true,
+    "remarkShow": false,
+    "remark": "",
+    "fontFamily": "Microsoft YaHei",
+    "letterSpace": "0",
+    "fontShadow": false,
+    "color": "#17394b",
+    "remarkBackgroundColor": "#ffffff",
+    "modifyName": "color"
+   },
+   "chartColor": {
+    "basicStyle": {
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "alpha": 100,
+     "gradient": false,
+     "mapStyle": "normal",
+     "areaBaseColor": "#FFFFFF",
+     "areaBorderColor": "#303133",
+     "gaugeStyle": "default",
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024"
+    },
+    "misc": {
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC",
+     "nameFontColor": "#000000",
+     "valueFontColor": "#5470c6"
+    },
+    "tableHeader": {
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000"
+    },
+    "tableCell": {
+     "tableItemBgColor": "#FFFFFF",
+     "tableFontColor": "#000000"
+    },
+    "modifyName": "gradient"
+   },
+   "chartCommonStyle": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "filterStyle": {
+    "layout": "horizontal",
+    "titleLayout": "left",
+    "labelColor": "#17394b",
+    "titleColor": "#17394b",
+    "color": "#17394b",
+    "borderColor": "#b8c6cd",
+    "text": "#17394b",
+    "bgColor": "#FFFFFF"
+   },
+   "tabStyle": {
+    "headPosition": "left",
+    "headFontColor": "#000000",
+    "headFontActiveColor": "#000000",
+    "headBorderColor": "#ffffff",
+    "headBorderActiveColor": "#ffffff"
+   }
+  },
+  "fontFamily": "'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+ },
+ "componentData": [
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "1150002000001000000",
+   "label": "1150002000001000000",
+   "propValue": {
+    "textValue": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:22px;color:#17394b;\"><strong>Zones &amp; districts</strong></span></p><p style=\"margin:4px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">Last complete week: <strong><span class=\"mceNonEditable\" contenteditable=\"false\" data-mce-content=\"[Last complete week]\">[Last complete week]</span></strong>. Every zone and district is measured against the goals its own areas set the week before, so a small zone can be at 100% too.</span></p>",
+    "innerType": "rich-text",
+    "render": "custom"
+   },
+   "icon": "bar",
+   "innerType": "rich-text",
+   "editing": false,
+   "x": 1,
+   "y": 1,
+   "sizeX": 72,
+   "sizeY": 4,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": false,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 4,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 0)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "custom",
+   "id": "1150002000001000000",
+   "_dragId": 0,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 1,
+   "mSizeX": 72,
+   "mSizeY": 6
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "VQuery",
+   "name": "Filters",
+   "label": "Filters",
+   "propValue": [
+    {
+     "id": "1150002000002000000-1",
+     "name": "Zone",
+     "showError": true,
+     "timeGranularity": "date",
+     "timeGranularityMultiple": "daterange",
+     "field": {
+      "id": "",
+      "type": "VARCHAR",
+      "name": "Zone",
+      "deType": 0
+     },
+     "displayId": "",
+     "sortId": "",
+     "sort": "asc",
+     "defaultMapValue": [],
+     "mapValue": [],
+     "conditionType": 0,
+     "conditionValueOperatorF": "eq",
+     "conditionValueF": "",
+     "conditionValueOperatorS": "like",
+     "conditionValueS": "",
+     "defaultConditionValueOperatorF": "eq",
+     "defaultConditionValueF": "",
+     "defaultConditionValueOperatorS": "like",
+     "defaultConditionValueS": "",
+     "timeType": "fixed",
+     "relativeToCurrent": "custom",
+     "required": false,
+     "timeNum": 0,
+     "relativeToCurrentType": "date",
+     "around": "f",
+     "parametersStart": null,
+     "parametersEnd": null,
+     "arbitraryTime": null,
+     "timeNumRange": 0,
+     "relativeToCurrentTypeRange": "date",
+     "aroundRange": "f",
+     "arbitraryTimeRange": null,
+     "auto": false,
+     "defaultValue": [],
+     "selectValue": [],
+     "optionValueSource": 0,
+     "valueSource": [],
+     "dataset": {
+      "id": "",
+      "name": "",
+      "fields": []
+     },
+     "visible": true,
+     "defaultValueCheck": false,
+     "multiple": true,
+     "displayType": "0",
+     "checkedFields": [
+      "1150002000001000000",
+      "1150002000003000000",
+      "1150002000004000000",
+      "1150002000005000000",
+      "1150002000006000000",
+      "1150002000007000000",
+      "1150002000008000000",
+      "1150002000009000000"
+     ],
+     "parameters": [],
+     "parametersCheck": false,
+     "parametersList": [],
+     "checkedFieldsMap": {
+      "1150002000001000000": "1160000002000020000",
+      "1150002000003000000": "1160000002000020000",
+      "1150002000004000000": "1160000002000020000",
+      "1150002000005000000": "1160000003000010000",
+      "1150002000006000000": "1160000003000010000",
+      "1150002000007000000": "1160000004000000000",
+      "1150002000008000000": "1160000004000000000",
+      "1150002000009000000": "1160000004000000000"
+     },
+     "hideConditionSwitching": false,
+     "resultMode": 0,
+     "treeDatasetId": "",
+     "setTimeRange": false,
+     "showEmpty": false,
+     "defaultNumValueStart": null,
+     "defaultNumValueEnd": null,
+     "numValueEnd": null,
+     "numValueStart": null,
+     "displayFormat": 0,
+     "timeRange": {
+      "intervalType": "none",
+      "dynamicWindow": false,
+      "maximumSingleQuery": 0,
+      "regularOrTrends": "fixed",
+      "regularOrTrendsValue": "",
+      "relativeToCurrent": "custom",
+      "timeNum": 0,
+      "relativeToCurrentType": "year",
+      "around": "f",
+      "timeNumRange": 0,
+      "relativeToCurrentTypeRange": "year",
+      "aroundRange": "f"
+     },
+     "oldTreeLoad": false,
+     "treeCheckedList": [],
+     "defaultValueFirstItem": false,
+     "treeFieldList": [],
+     "placeholder": "",
+     "mQueryConditionWidth": 200,
+     "queryConditionWidth": 170
+    },
+    {
+     "id": "1150002000002000000-2",
+     "name": "District",
+     "showError": true,
+     "timeGranularity": "date",
+     "timeGranularityMultiple": "daterange",
+     "field": {
+      "id": "",
+      "type": "VARCHAR",
+      "name": "District",
+      "deType": 0
+     },
+     "displayId": "",
+     "sortId": "",
+     "sort": "asc",
+     "defaultMapValue": [],
+     "mapValue": [],
+     "conditionType": 0,
+     "conditionValueOperatorF": "eq",
+     "conditionValueF": "",
+     "conditionValueOperatorS": "like",
+     "conditionValueS": "",
+     "defaultConditionValueOperatorF": "eq",
+     "defaultConditionValueF": "",
+     "defaultConditionValueOperatorS": "like",
+     "defaultConditionValueS": "",
+     "timeType": "fixed",
+     "relativeToCurrent": "custom",
+     "required": false,
+     "timeNum": 0,
+     "relativeToCurrentType": "date",
+     "around": "f",
+     "parametersStart": null,
+     "parametersEnd": null,
+     "arbitraryTime": null,
+     "timeNumRange": 0,
+     "relativeToCurrentTypeRange": "date",
+     "aroundRange": "f",
+     "arbitraryTimeRange": null,
+     "auto": false,
+     "defaultValue": [],
+     "selectValue": [],
+     "optionValueSource": 0,
+     "valueSource": [],
+     "dataset": {
+      "id": "",
+      "name": "",
+      "fields": []
+     },
+     "visible": true,
+     "defaultValueCheck": false,
+     "multiple": true,
+     "displayType": "0",
+     "checkedFields": [
+      "1150002000001000000",
+      "1150002000003000000",
+      "1150002000004000000",
+      "1150002000007000000",
+      "1150002000008000000",
+      "1150002000009000000"
+     ],
+     "parameters": [],
+     "parametersCheck": false,
+     "parametersList": [],
+     "checkedFieldsMap": {
+      "1150002000001000000": "1160000002000030000",
+      "1150002000003000000": "1160000002000030000",
+      "1150002000004000000": "1160000002000030000",
+      "1150002000007000000": "1160000004000010000",
+      "1150002000008000000": "1160000004000010000",
+      "1150002000009000000": "1160000004000010000"
+     },
+     "hideConditionSwitching": false,
+     "resultMode": 0,
+     "treeDatasetId": "",
+     "setTimeRange": false,
+     "showEmpty": false,
+     "defaultNumValueStart": null,
+     "defaultNumValueEnd": null,
+     "numValueEnd": null,
+     "numValueStart": null,
+     "displayFormat": 0,
+     "timeRange": {
+      "intervalType": "none",
+      "dynamicWindow": false,
+      "maximumSingleQuery": 0,
+      "regularOrTrends": "fixed",
+      "regularOrTrendsValue": "",
+      "relativeToCurrent": "custom",
+      "timeNum": 0,
+      "relativeToCurrentType": "year",
+      "around": "f",
+      "timeNumRange": 0,
+      "relativeToCurrentTypeRange": "year",
+      "aroundRange": "f"
+     },
+     "oldTreeLoad": false,
+     "treeCheckedList": [],
+     "defaultValueFirstItem": false,
+     "treeFieldList": [],
+     "placeholder": "",
+     "mQueryConditionWidth": 200,
+     "queryConditionWidth": 190
+    },
+    {
+     "id": "1150002000002000000-3",
+     "name": "Weeks",
+     "showError": true,
+     "timeGranularity": "date",
+     "timeGranularityMultiple": "daterange",
+     "field": {
+      "id": "",
+      "type": "DATE",
+      "name": "Weeks",
+      "deType": 1
+     },
+     "displayId": "",
+     "sortId": "",
+     "sort": "asc",
+     "defaultMapValue": [],
+     "mapValue": [],
+     "conditionType": 0,
+     "conditionValueOperatorF": "eq",
+     "conditionValueF": "",
+     "conditionValueOperatorS": "like",
+     "conditionValueS": "",
+     "defaultConditionValueOperatorF": "eq",
+     "defaultConditionValueF": "",
+     "defaultConditionValueOperatorS": "like",
+     "defaultConditionValueS": "",
+     "timeType": "fixed",
+     "relativeToCurrent": "custom",
+     "required": false,
+     "timeNum": 0,
+     "relativeToCurrentType": "date",
+     "around": "f",
+     "parametersStart": null,
+     "parametersEnd": null,
+     "arbitraryTime": null,
+     "timeNumRange": 0,
+     "relativeToCurrentTypeRange": "date",
+     "aroundRange": "f",
+     "arbitraryTimeRange": null,
+     "auto": false,
+     "defaultValue": [],
+     "selectValue": [],
+     "optionValueSource": 0,
+     "valueSource": [],
+     "dataset": {
+      "id": "",
+      "name": "",
+      "fields": []
+     },
+     "visible": true,
+     "defaultValueCheck": false,
+     "multiple": false,
+     "displayType": "7",
+     "checkedFields": [
+      "1150002000005000000",
+      "1150002000006000000"
+     ],
+     "parameters": [],
+     "parametersCheck": false,
+     "parametersList": [],
+     "checkedFieldsMap": {
+      "1150002000005000000": "1160000003000000000",
+      "1150002000006000000": "1160000003000000000"
+     },
+     "hideConditionSwitching": false,
+     "resultMode": 0,
+     "treeDatasetId": "",
+     "setTimeRange": false,
+     "showEmpty": false,
+     "defaultNumValueStart": null,
+     "defaultNumValueEnd": null,
+     "numValueEnd": null,
+     "numValueStart": null,
+     "displayFormat": 0,
+     "timeRange": {
+      "intervalType": "none",
+      "dynamicWindow": false,
+      "maximumSingleQuery": 0,
+      "regularOrTrends": "fixed",
+      "regularOrTrendsValue": "",
+      "relativeToCurrent": "custom",
+      "timeNum": 0,
+      "relativeToCurrentType": "year",
+      "around": "f",
+      "timeNumRange": 0,
+      "relativeToCurrentTypeRange": "year",
+      "aroundRange": "f"
+     },
+     "oldTreeLoad": false,
+     "treeCheckedList": [],
+     "defaultValueFirstItem": false,
+     "treeFieldList": [],
+     "placeholder": "",
+     "mQueryConditionWidth": 110,
+     "queryConditionWidth": 140
+    }
+   ],
+   "icon": "icon_search",
+   "innerType": "VQuery",
+   "isHang": false,
+   "freeze": false,
+   "x": 1,
+   "y": 5,
+   "sizeX": 72,
+   "sizeY": 6,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "request": {
+    "method": "GET",
+    "data": [],
+    "url": "",
+    "series": false,
+    "time": 1000,
+    "paramType": "",
+    "requestCount": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "custom",
+   "id": "1150002000002000000",
+   "_dragId": 8,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "inMobile": true,
+   "mx": 1,
+   "my": 7,
+   "mSizeX": 72,
+   "mSizeY": 12
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "New People Being Taught by zone, last complete week",
+   "label": "New People Being Taught by zone, last complete week",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "bar",
+   "editing": false,
+   "x": 1,
+   "y": 11,
+   "sizeX": 36,
+   "sizeY": 14,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000003000000",
+   "_dragId": 1,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 19,
+   "mSizeX": 72,
+   "mSizeY": 20
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "Sacrament attendance by zone, last complete week",
+   "label": "Sacrament attendance by zone, last complete week",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "bar",
+   "editing": false,
+   "x": 37,
+   "y": 11,
+   "sizeX": 36,
+   "sizeY": 14,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000004000000",
+   "_dragId": 2,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 39,
+   "mSizeX": 72,
+   "mSizeY": 20
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "New People Being Taught: % of goal, zones by week",
+   "label": "New People Being Taught: % of goal, zones by week",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "t-heatmap",
+   "editing": false,
+   "x": 1,
+   "y": 25,
+   "sizeX": 72,
+   "sizeY": 16,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000005000000",
+   "_dragId": 3,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 59,
+   "mSizeX": 72,
+   "mSizeY": 20
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "Sacrament attendance: % of goal, zones by week",
+   "label": "Sacrament attendance: % of goal, zones by week",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "t-heatmap",
+   "editing": false,
+   "x": 1,
+   "y": 41,
+   "sizeX": 72,
+   "sizeY": 16,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000006000000",
+   "_dragId": 4,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 79,
+   "mSizeX": 72,
+   "mSizeY": 20
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "Districts that may need help: New People Being Taught",
+   "label": "Districts that may need help: New People Being Taught",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "bar-horizontal",
+   "editing": false,
+   "x": 1,
+   "y": 57,
+   "sizeX": 36,
+   "sizeY": 16,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000007000000",
+   "_dragId": 5,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 99,
+   "mSizeX": 72,
+   "mSizeY": 20
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "Districts that may need help: Sacrament attendance",
+   "label": "Districts that may need help: Sacrament attendance",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "bar-horizontal",
+   "editing": false,
+   "x": 37,
+   "y": 57,
+   "sizeX": 36,
+   "sizeY": 16,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000008000000",
+   "_dragId": 6,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 119,
+   "mSizeX": 72,
+   "mSizeY": 20
+  },
+  {
+   "animations": [],
+   "canvasId": "canvas-main",
+   "events": {},
+   "groupStyle": {},
+   "isLock": false,
+   "isShow": true,
+   "collapseName": [
+    "position",
+    "background",
+    "style",
+    "picture"
+   ],
+   "linkage": {
+    "duration": 0,
+    "data": [
+     {
+      "id": "",
+      "label": "",
+      "event": "",
+      "style": [
+       {
+        "key": "",
+        "value": ""
+       }
+      ]
+     }
+    ]
+   },
+   "component": "UserView",
+   "name": "Districts, last 4 complete weeks",
+   "label": "Districts, last 4 complete weeks",
+   "propValue": {
+    "textValue": "",
+    "urlList": []
+   },
+   "icon": "bar",
+   "innerType": "table-normal",
+   "editing": false,
+   "x": 1,
+   "y": 73,
+   "sizeX": 72,
+   "sizeY": 16,
+   "style": {
+    "rotate": 0,
+    "opacity": 1,
+    "width": 0,
+    "height": 0,
+    "left": 0,
+    "top": 0
+   },
+   "matrixStyle": {},
+   "commonBackground": {
+    "backgroundColorSelect": true,
+    "backgroundImageEnable": false,
+    "backgroundType": "innerImage",
+    "innerImage": "board/board_1.svg",
+    "outerImage": null,
+    "innerPadding": 12,
+    "borderRadius": 10,
+    "backgroundColor": "rgba(255, 255, 255, 1)",
+    "innerImageColor": "rgba(16, 148, 229,1)"
+   },
+   "state": "ready",
+   "render": "antv",
+   "id": "1150002000009000000",
+   "_dragId": 7,
+   "show": true,
+   "linkageFilters": [],
+   "canvasActive": false,
+   "maintainRadio": false,
+   "aspectRatio": 1,
+   "actionSelection": {
+    "linkageActive": "custom"
+   },
+   "inMobile": true,
+   "mx": 1,
+   "my": 139,
+   "mSizeX": 72,
+   "mSizeY": 30
+  }
+ ],
+ "canvasViewInfo": {
+  "1150002000001000000": {
+   "id": "1150002000001000000",
+   "title": "",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280795569917952",
+   "type": "rich-text",
+   "render": "custom",
+   "resultCount": 1000,
+   "resultMode": "all",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": false,
+     "position": "top",
+     "color": "#3d5866",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": false,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": false,
+     "remark": "",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": true,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "breakLine",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "panel",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [],
+   "xaxis": [],
+   "yaxis": [
+    {
+     "id": "1160000002005000000",
+     "datasourceId": null,
+     "datasetTableId": null,
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "MAX([1160000002000010000])",
+     "name": "Last complete week",
+     "dbFieldName": null,
+     "description": "latest_week",
+     "dataeaseName": "f_b7ad8c2550ab3217",
+     "groupType": "d",
+     "type": "VARCHAR",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 2,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": "",
+     "dateFormatType": "",
+     "fieldShortName": "f_b7ad8c2550ab3217",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "rich-text",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": true
+    }
+   ],
+   "xAxis": [],
+   "xAxisExt": [],
+   "yAxis": [
+    {
+     "id": "1160000002005000000",
+     "datasourceId": null,
+     "datasetTableId": null,
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "MAX([1160000002000010000])",
+     "name": "Last complete week",
+     "dbFieldName": null,
+     "description": "latest_week",
+     "dataeaseName": "f_b7ad8c2550ab3217",
+     "groupType": "d",
+     "type": "VARCHAR",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 2,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": "",
+     "dateFormatType": "",
+     "fieldShortName": "f_b7ad8c2550ab3217",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "rich-text",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": true
+    }
+   ],
+   "yAxisExt": []
+  },
+  "1150002000006000000": {
+   "id": "1150002000006000000",
+   "title": "Sacrament attendance: % of goal, zones by week",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280799042801664",
+   "type": "t-heatmap",
+   "render": "antv",
+   "resultCount": 1000,
+   "resultMode": "all",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#eef5f7",
+      "#d6eaef",
+      "#bcdde5",
+      "#9ccdd8",
+      "#77b9c8",
+      "#4fa3b6",
+      "#2a8ca2",
+      "#11788e",
+      "#00667a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": true,
+     "position": "top",
+     "color": "#17394b",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": true,
+     "remark": "As above, for sacrament attendance.",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": true,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": -45,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "ignoreData",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "view",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [
+    {
+     "id": "1160000003000070000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "sa_pct_of_goal",
+     "name": "Sacrament attendance: % of goal",
+     "dbFieldName": null,
+     "description": "sa_pct_of_goal",
+     "dataeaseName": "f_5cfc55b5cfe39441",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_5cfc55b5cfe39441",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [
+    {
+     "id": "1160000003000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_acd5a0c1320e9ac5",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_acd5a0c1320e9ac5",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xaxis": [
+    {
+     "id": "1160000003000000000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "week",
+     "name": "Week",
+     "dbFieldName": null,
+     "description": "week",
+     "dataeaseName": "f_f187f190ca546e89",
+     "groupType": "d",
+     "type": "DATE",
+     "precision": null,
+     "scale": null,
+     "deType": 1,
+     "deExtractType": 1,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_f187f190ca546e89",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [],
+   "xAxis": [
+    {
+     "id": "1160000003000000000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "week",
+     "name": "Week",
+     "dbFieldName": null,
+     "description": "week",
+     "dataeaseName": "f_f187f190ca546e89",
+     "groupType": "d",
+     "type": "DATE",
+     "precision": null,
+     "scale": null,
+     "deType": 1,
+     "deExtractType": 1,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_f187f190ca546e89",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [
+    {
+     "id": "1160000003000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_acd5a0c1320e9ac5",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_acd5a0c1320e9ac5",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxis": [],
+   "yAxisExt": []
+  },
+  "1150002000005000000": {
+   "id": "1150002000005000000",
+   "title": "New People Being Taught: % of goal, zones by week",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280799042801664",
+   "type": "t-heatmap",
+   "render": "antv",
+   "resultCount": 1000,
+   "resultMode": "all",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#eef5f7",
+      "#d6eaef",
+      "#bcdde5",
+      "#9ccdd8",
+      "#77b9c8",
+      "#4fa3b6",
+      "#2a8ca2",
+      "#11788e",
+      "#00667a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": true,
+     "position": "top",
+     "color": "#17394b",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": true,
+     "remark": "Each square is one zone in one complete week: the result as a % of the goal its areas set the week before. Darker is nearer or above the goal; an empty square had no goal. The District filter does not apply here.",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": true,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": -45,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "ignoreData",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "view",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [
+    {
+     "id": "1160000003000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "npbt_pct_of_goal",
+     "name": "New People Being Taught: % of goal",
+     "dbFieldName": null,
+     "description": "npbt_pct_of_goal",
+     "dataeaseName": "f_9f0b574362c4c5c4",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_9f0b574362c4c5c4",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [
+    {
+     "id": "1160000003000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_acd5a0c1320e9ac5",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_acd5a0c1320e9ac5",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xaxis": [
+    {
+     "id": "1160000003000000000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "week",
+     "name": "Week",
+     "dbFieldName": null,
+     "description": "week",
+     "dataeaseName": "f_f187f190ca546e89",
+     "groupType": "d",
+     "type": "DATE",
+     "precision": null,
+     "scale": null,
+     "deType": 1,
+     "deExtractType": 1,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_f187f190ca546e89",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [],
+   "xAxis": [
+    {
+     "id": "1160000003000000000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "week",
+     "name": "Week",
+     "dbFieldName": null,
+     "description": "week",
+     "dataeaseName": "f_f187f190ca546e89",
+     "groupType": "d",
+     "type": "DATE",
+     "precision": null,
+     "scale": null,
+     "deType": 1,
+     "deExtractType": 1,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_f187f190ca546e89",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [
+    {
+     "id": "1160000003000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000003900000000",
+     "datasetGroupId": "1302280799042801664",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_acd5a0c1320e9ac5",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_acd5a0c1320e9ac5",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "t-heatmap",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxis": [],
+   "yAxisExt": []
+  },
+  "1150002000003000000": {
+   "id": "1150002000003000000",
+   "title": "New People Being Taught by zone, last complete week",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280795569917952",
+   "type": "bar",
+   "render": "antv",
+   "resultCount": 1000,
+   "resultMode": "all",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": true,
+     "position": "top",
+     "color": "#3d5866",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": true,
+     "remark": "Result and the goal the zone's areas set the week before.",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": true,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "ignoreData",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "panel",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [],
+   "xaxis": [
+    {
+     "id": "1160000002000020000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_c94dc5847e9e20de",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_c94dc5847e9e20de",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [
+    {
+     "id": "1160000002000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "npbt_actual",
+     "name": "npbt_actual",
+     "dbFieldName": null,
+     "description": "npbt_actual",
+     "dataeaseName": "f_e68d1085bd4759c5",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_e68d1085bd4759c5",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Result",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000002000050000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "npbt_goal",
+     "name": "npbt_goal",
+     "dbFieldName": null,
+     "description": "npbt_goal",
+     "dataeaseName": "f_2798eb00d7b46d3f",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_2798eb00d7b46d3f",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goal set the week before",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxis": [
+    {
+     "id": "1160000002000020000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_c94dc5847e9e20de",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_c94dc5847e9e20de",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [],
+   "yAxis": [
+    {
+     "id": "1160000002000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "npbt_actual",
+     "name": "npbt_actual",
+     "dbFieldName": null,
+     "description": "npbt_actual",
+     "dataeaseName": "f_e68d1085bd4759c5",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_e68d1085bd4759c5",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Result",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000002000050000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "npbt_goal",
+     "name": "npbt_goal",
+     "dbFieldName": null,
+     "description": "npbt_goal",
+     "dataeaseName": "f_2798eb00d7b46d3f",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_2798eb00d7b46d3f",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goal set the week before",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxisExt": []
+  },
+  "1150002000004000000": {
+   "id": "1150002000004000000",
+   "title": "Sacrament attendance by zone, last complete week",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280795569917952",
+   "type": "bar",
+   "render": "antv",
+   "resultCount": 1000,
+   "resultMode": "all",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": true,
+     "position": "top",
+     "color": "#3d5866",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": true,
+     "remark": "Result and the goal the zone's areas set the week before.",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": true,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "ignoreData",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "panel",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [],
+   "xaxis": [
+    {
+     "id": "1160000002000020000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_c94dc5847e9e20de",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_c94dc5847e9e20de",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [
+    {
+     "id": "1160000002000130000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "sa_actual",
+     "name": "sa_actual",
+     "dbFieldName": null,
+     "description": "sa_actual",
+     "dataeaseName": "f_d2bf629d366f2ece",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_d2bf629d366f2ece",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Result",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000002000140000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "sa_goal",
+     "name": "sa_goal",
+     "dbFieldName": null,
+     "description": "sa_goal",
+     "dataeaseName": "f_62d791f5ffdb0190",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_62d791f5ffdb0190",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goal set the week before",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxis": [
+    {
+     "id": "1160000002000020000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_c94dc5847e9e20de",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_c94dc5847e9e20de",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [],
+   "yAxis": [
+    {
+     "id": "1160000002000130000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "sa_actual",
+     "name": "sa_actual",
+     "dbFieldName": null,
+     "description": "sa_actual",
+     "dataeaseName": "f_d2bf629d366f2ece",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_d2bf629d366f2ece",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Result",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000002000140000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000002900000000",
+     "datasetGroupId": "1302280795569917952",
+     "chartId": null,
+     "originName": "sa_goal",
+     "name": "sa_goal",
+     "dbFieldName": null,
+     "description": "sa_goal",
+     "dataeaseName": "f_62d791f5ffdb0190",
+     "groupType": "q",
+     "type": "INT8",
+     "precision": null,
+     "scale": null,
+     "deType": 2,
+     "deExtractType": 2,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_62d791f5ffdb0190",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goal set the week before",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxisExt": []
+  },
+  "1150002000009000000": {
+   "id": "1150002000009000000",
+   "title": "Districts, last 4 complete weeks",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280800728911872",
+   "type": "table-normal",
+   "render": "antv",
+   "resultCount": 1000,
+   "resultMode": "all",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#F7F8F5",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "pull",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60,
+     "showZoom": true,
+     "zoomButtonColor": "#aaa",
+     "zoomBackground": "#fff",
+     "tableLayoutMode": "grid",
+     "calcTopN": false,
+     "topN": 5,
+     "topNLabel": "Other"
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC",
+     "wordSizeRange": [
+      8,
+      32
+     ],
+     "wordSpacing": 6
+    },
+    "label": {
+     "show": false,
+     "position": "top",
+     "color": "#3d5866",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM",
+       "cfg": []
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM",
+       "cfg": []
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM",
+       "cfg": []
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM",
+       "cfg": []
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "Rank",
+     "showIndex": false,
+     "tableHeaderAlign": "center",
+     "tableHeaderBgColor": "#f1f6f8",
+     "tableHeaderFontColor": "#17394b",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 28,
+     "tableHeaderSort": false,
+     "showColTooltip": false,
+     "showRowTooltip": false
+    },
+    "tableCell": {
+     "tableFontColor": "#17394b",
+     "tableItemAlign": "center",
+     "tableItemBgColor": "#ffffff",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 28,
+     "enableTableCrossBG": false,
+     "tableItemSubBgColor": "#EEEEEE",
+     "showTooltip": false
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient",
+    "indicator": {
+     "show": true,
+     "fontSize": 20,
+     "color": "#5470C6ff",
+     "hPosition": "center",
+     "vPosition": "center",
+     "isItalic": false,
+     "isBolder": true,
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": 0,
+     "fontShadow": false,
+     "suffixEnable": true,
+     "suffix": "",
+     "suffixFontSize": 14,
+     "suffixColor": "#5470C6ff",
+     "suffixIsItalic": false,
+     "suffixIsBolder": true,
+     "suffixFontFamily": "Microsoft YaHei",
+     "suffixLetterSpace": 0,
+     "suffixFontShadow": false
+    },
+    "indicatorName": {
+     "show": true,
+     "fontSize": 18,
+     "color": "#ffffffff",
+     "isItalic": false,
+     "isBolder": true,
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": 0,
+     "fontShadow": false,
+     "nameValueSpacing": 0
+    }
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": false,
+     "remark": "",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": true,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "breakLine",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": true,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "panel",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [],
+   "xaxis": [
+    {
+     "id": "1160000004000000000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_2c62a42ae8cd2517",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_2c62a42ae8cd2517",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Zone",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "district",
+     "name": "District",
+     "dbFieldName": null,
+     "description": "district",
+     "dataeaseName": "f_4364970fe9657d49",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_4364970fe9657d49",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "District",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [
+    {
+     "id": "1160000004000020000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_actual",
+     "name": "npbt_actual",
+     "dbFieldName": null,
+     "description": "npbt_actual",
+     "dataeaseName": "f_40837f963e6b8f59",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_40837f963e6b8f59",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "New People Being Taught",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000030000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_goal",
+     "name": "npbt_goal",
+     "dbFieldName": null,
+     "description": "npbt_goal",
+     "dataeaseName": "f_b8bd766994580af8",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_b8bd766994580af8",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goals set the week before",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_pct_of_goal",
+     "name": "New People Being Taught: % of goal",
+     "dbFieldName": null,
+     "description": "npbt_pct_of_goal",
+     "dataeaseName": "f_829bbec09940588f",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_829bbec09940588f",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 2,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000050000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_actual",
+     "name": "sa_actual",
+     "dbFieldName": null,
+     "description": "sa_actual",
+     "dataeaseName": "f_5f108f93369a3976",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_5f108f93369a3976",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 3,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Sacrament attendance",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000060000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_goal",
+     "name": "sa_goal",
+     "dbFieldName": null,
+     "description": "sa_goal",
+     "dataeaseName": "f_0cf37531a21c41d9",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_0cf37531a21c41d9",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 4,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goals set the week before ",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000070000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_pct_of_goal",
+     "name": "Sacrament attendance: % of goal",
+     "dbFieldName": null,
+     "description": "sa_pct_of_goal",
+     "dataeaseName": "f_b4798067b5838f54",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_b4798067b5838f54",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 5,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal ",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxis": [
+    {
+     "id": "1160000004000000000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "zone",
+     "name": "Zone",
+     "dbFieldName": null,
+     "description": "zone",
+     "dataeaseName": "f_2c62a42ae8cd2517",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_2c62a42ae8cd2517",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Zone",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "district",
+     "name": "District",
+     "dbFieldName": null,
+     "description": "district",
+     "dataeaseName": "f_4364970fe9657d49",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_4364970fe9657d49",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "District",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [],
+   "yAxis": [
+    {
+     "id": "1160000004000020000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_actual",
+     "name": "npbt_actual",
+     "dbFieldName": null,
+     "description": "npbt_actual",
+     "dataeaseName": "f_40837f963e6b8f59",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_40837f963e6b8f59",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "New People Being Taught",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000030000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_goal",
+     "name": "npbt_goal",
+     "dbFieldName": null,
+     "description": "npbt_goal",
+     "dataeaseName": "f_b8bd766994580af8",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_b8bd766994580af8",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 1,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goals set the week before",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_pct_of_goal",
+     "name": "New People Being Taught: % of goal",
+     "dbFieldName": null,
+     "description": "npbt_pct_of_goal",
+     "dataeaseName": "f_829bbec09940588f",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_829bbec09940588f",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 2,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000050000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_actual",
+     "name": "sa_actual",
+     "dbFieldName": null,
+     "description": "sa_actual",
+     "dataeaseName": "f_5f108f93369a3976",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_5f108f93369a3976",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 3,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Sacrament attendance",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000060000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_goal",
+     "name": "sa_goal",
+     "dbFieldName": null,
+     "description": "sa_goal",
+     "dataeaseName": "f_0cf37531a21c41d9",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_0cf37531a21c41d9",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 4,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "Goals set the week before ",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    },
+    {
+     "id": "1160000004000070000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_pct_of_goal",
+     "name": "Sacrament attendance: % of goal",
+     "dbFieldName": null,
+     "description": "sa_pct_of_goal",
+     "dataeaseName": "f_b4798067b5838f54",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_b4798067b5838f54",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "table-normal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 5,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal ",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxisExt": []
+  },
+  "1150002000007000000": {
+   "id": "1150002000007000000",
+   "title": "Districts that may need help: New People Being Taught",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280800728911872",
+   "type": "bar-horizontal",
+   "render": "antv",
+   "resultCount": 10,
+   "resultMode": "custom",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": true,
+     "position": "right",
+     "color": "#3d5866",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": true,
+     "remark": "The 10 districts furthest below their own goals over the last 4 complete weeks (result as a % of the goals set the week before). A district with no goals is not shown. Talk with the leaders before drawing conclusions.",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": false,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "ignoreData",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "panel",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [],
+   "xaxis": [
+    {
+     "id": "1160000004000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "district",
+     "name": "District",
+     "dbFieldName": null,
+     "description": "district",
+     "dataeaseName": "f_4364970fe9657d49",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_4364970fe9657d49",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [
+    {
+     "id": "1160000004000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_pct_of_goal",
+     "name": "New People Being Taught: % of goal",
+     "dbFieldName": null,
+     "description": "npbt_pct_of_goal",
+     "dataeaseName": "f_829bbec09940588f",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_829bbec09940588f",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxis": [
+    {
+     "id": "1160000004000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "district",
+     "name": "District",
+     "dbFieldName": null,
+     "description": "district",
+     "dataeaseName": "f_4364970fe9657d49",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_4364970fe9657d49",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [],
+   "yAxis": [
+    {
+     "id": "1160000004000040000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "npbt_pct_of_goal",
+     "name": "New People Being Taught: % of goal",
+     "dbFieldName": null,
+     "description": "npbt_pct_of_goal",
+     "dataeaseName": "f_829bbec09940588f",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_829bbec09940588f",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxisExt": []
+  },
+  "1150002000008000000": {
+   "id": "1150002000008000000",
+   "title": "Districts that may need help: Sacrament attendance",
+   "sceneId": "1150002000000000000",
+   "tableId": "1302280800728911872",
+   "type": "bar-horizontal",
+   "render": "antv",
+   "resultCount": 10,
+   "resultMode": "custom",
+   "extStack": [],
+   "extBubble": [],
+   "extLabel": [],
+   "extTooltip": [],
+   "customAttr": {
+    "basicStyle": {
+     "alpha": 100,
+     "tableBorderColor": "#E6E7E4",
+     "tableScrollBarColor": "#00000024",
+     "tableColumnMode": "adapt",
+     "tableColumnWidth": 100,
+     "tablePageMode": "page",
+     "tablePageSize": 20,
+     "gaugeStyle": "default",
+     "colorScheme": "custom",
+     "colors": [
+      "#00869e",
+      "#d96b2b",
+      "#6656c9",
+      "#b88400",
+      "#a64f8e",
+      "#3f8a3a",
+      "#2a5f99",
+      "#cf4545",
+      "#6b7f8a"
+     ],
+     "mapVendor": "amap",
+     "gradient": false,
+     "lineWidth": 2,
+     "lineSymbol": "circle",
+     "lineSymbolSize": 4,
+     "lineSmooth": false,
+     "barDefault": true,
+     "barWidth": 40,
+     "barGap": 0.4,
+     "lineType": "solid",
+     "scatterSymbol": "circle",
+     "scatterSymbolSize": 8,
+     "radarShape": "polygon",
+     "mapStyle": "normal",
+     "areaBorderColor": "#303133",
+     "suspension": true,
+     "areaBaseColor": "#FFFFFF",
+     "mapSymbolOpacity": 0.7,
+     "mapSymbolStrokeWidth": 2,
+     "mapSymbol": "circle",
+     "mapSymbolSize": 20,
+     "radius": 100,
+     "innerRadius": 60
+    },
+    "misc": {
+     "pieInnerRadius": 0,
+     "pieOuterRadius": 80,
+     "radarShape": "polygon",
+     "radarSize": 80,
+     "gaugeMinType": "fix",
+     "gaugeMinField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMin": 0,
+     "gaugeMaxType": "fix",
+     "gaugeMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "gaugeMax": 100,
+     "gaugeStartAngle": 225,
+     "gaugeEndAngle": -45,
+     "nameFontSize": 18,
+     "valueFontSize": 18,
+     "nameValueSpace": 10,
+     "valueFontColor": "#5470c6",
+     "valueFontFamily": "Microsoft YaHei",
+     "valueFontIsBolder": false,
+     "valueFontIsItalic": false,
+     "valueLetterSpace": 0,
+     "valueFontShadow": false,
+     "showName": true,
+     "nameFontColor": "#000000",
+     "nameFontFamily": "Microsoft YaHei",
+     "nameFontIsBolder": false,
+     "nameFontIsItalic": false,
+     "nameLetterSpace": "0",
+     "nameFontShadow": false,
+     "treemapWidth": 80,
+     "treemapHeight": 80,
+     "liquidMax": 100,
+     "liquidMaxType": "fix",
+     "liquidMaxField": {
+      "id": "",
+      "summary": ""
+     },
+     "liquidSize": 80,
+     "liquidShape": "circle",
+     "hPosition": "center",
+     "vPosition": "center",
+     "mapPitch": 0,
+     "mapLineType": "arc",
+     "mapLineWidth": 1,
+     "mapLineAnimateDuration": 3,
+     "mapLineGradient": false,
+     "mapLineSourceColor": "#146C94",
+     "mapLineTargetColor": "#576CBC"
+    },
+    "label": {
+     "show": true,
+     "position": "right",
+     "color": "#3d5866",
+     "fontSize": 12,
+     "formatter": "",
+     "labelLine": {
+      "show": true
+     },
+     "labelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "reserveDecimalCount": 2,
+     "labelShadow": false,
+     "labelBgColor": "",
+     "labelShadowColor": "",
+     "quotaLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     },
+     "showDimension": true,
+     "showQuota": false,
+     "showProportion": true,
+     "seriesLabelFormatter": []
+    },
+    "tooltip": {
+     "show": true,
+     "trigger": "item",
+     "confine": true,
+     "fontSize": 12,
+     "color": "#17394b",
+     "tooltipFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 1,
+      "thousandSeparator": true
+     },
+     "backgroundColor": "#ffffff",
+     "seriesTooltipFormatter": []
+    },
+    "tableTotal": {
+     "row": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     },
+     "col": {
+      "showGrandTotals": true,
+      "showSubTotals": true,
+      "reverseLayout": false,
+      "reverseSubLayout": false,
+      "label": "Total",
+      "subLabel": "Subtotal",
+      "subTotalsDimensions": [],
+      "calcTotals": {
+       "aggregation": "SUM"
+      },
+      "calcSubTotals": {
+       "aggregation": "SUM"
+      },
+      "totalSort": "none",
+      "totalSortField": ""
+     }
+    },
+    "tableHeader": {
+     "indexLabel": "No.",
+     "showIndex": false,
+     "tableHeaderAlign": "left",
+     "tableHeaderBgColor": "#1E90FF",
+     "tableHeaderFontColor": "#000000",
+     "tableTitleFontSize": 12,
+     "tableTitleHeight": 36
+    },
+    "tableCell": {
+     "tableFontColor": "#000000",
+     "tableItemAlign": "right",
+     "tableItemBgColor": "#FFFFFF",
+     "tableItemFontSize": 12,
+     "tableItemHeight": 36
+    },
+    "map": {
+     "id": "",
+     "level": "world"
+    },
+    "modifyName": "gradient"
+   },
+   "customAttrMobile": null,
+   "customStyle": {
+    "text": {
+     "show": true,
+     "fontSize": 15,
+     "hPosition": "left",
+     "vPosition": "top",
+     "isItalic": false,
+     "isBolder": true,
+     "remarkShow": true,
+     "remark": "The 10 districts furthest below their own goals over the last 4 complete weeks.",
+     "fontFamily": "Microsoft YaHei",
+     "letterSpace": "0",
+     "fontShadow": false,
+     "color": "#17394b",
+     "remarkBackgroundColor": "#ffffff"
+    },
+    "legend": {
+     "show": false,
+     "hPosition": "left",
+     "vPosition": "top",
+     "orient": "horizontal",
+     "icon": "circle",
+     "color": "#3d5866",
+     "fontSize": 13
+    },
+    "xAxis": {
+     "show": true,
+     "position": "bottom",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxis": {
+     "show": true,
+     "position": "left",
+     "name": "",
+     "color": "#556d7a",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#556d7a",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#b8c6cd",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#e3eaee",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": 10,
+      "max": 100,
+      "split": 10,
+      "splitCount": 10
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     }
+    },
+    "yAxisExt": {
+     "show": true,
+     "position": "right",
+     "name": "",
+     "color": "#000000",
+     "fontSize": 12,
+     "axisLabel": {
+      "show": true,
+      "color": "#000000",
+      "fontSize": 12,
+      "rotate": 0,
+      "formatter": "{value}"
+     },
+     "axisLine": {
+      "show": false,
+      "lineStyle": {
+       "color": "#cccccc",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "style": "solid"
+      }
+     },
+     "axisValue": {
+      "auto": true,
+      "min": null,
+      "max": null,
+      "split": null,
+      "splitCount": null
+     },
+     "axisLabelFormatter": {
+      "type": "auto",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 2,
+      "thousandSeparator": true
+     }
+    },
+    "misc": {
+     "showName": false,
+     "color": "#000000",
+     "fontSize": 12,
+     "axisColor": "#999",
+     "splitNumber": 5,
+     "axisLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisTick": {
+      "show": false,
+      "length": 5,
+      "lineStyle": {
+       "color": "#000000",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "axisLabel": {
+      "show": false,
+      "rotate": 0,
+      "margin": 8,
+      "color": "#000000",
+      "fontSize": "12",
+      "formatter": "{value}"
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "#CCCCCC",
+       "width": 1,
+       "type": "solid"
+      }
+     },
+     "splitArea": {
+      "show": true
+     }
+    }
+   },
+   "customStyleMobile": null,
+   "customFilter": {
+    "logic": null,
+    "items": null
+   },
+   "drillFields": [],
+   "senior": {
+    "functionCfg": {
+     "sliderShow": false,
+     "sliderRange": [
+      0,
+      10
+     ],
+     "sliderBg": "#FFFFFF",
+     "sliderFillBg": "#BCD6F1",
+     "sliderTextColor": "#999999",
+     "emptyDataStrategy": "ignoreData",
+     "emptyDataFieldCtrl": []
+    },
+    "assistLineCfg": {
+     "enable": false,
+     "assistLine": []
+    },
+    "threshold": {
+     "enable": false,
+     "gaugeThreshold": "",
+     "labelThreshold": [],
+     "tableThreshold": [],
+     "textLabelThreshold": []
+    },
+    "scrollCfg": {
+     "open": false,
+     "row": 1,
+     "interval": 2000,
+     "step": 50
+    },
+    "areaMapping": {}
+   },
+   "createBy": null,
+   "createTime": null,
+   "updateTime": null,
+   "snapshot": null,
+   "stylePriority": "panel",
+   "chartType": "private",
+   "isPlugin": null,
+   "dataFrom": "calc",
+   "viewFields": [],
+   "refreshViewEnable": false,
+   "refreshUnit": "minute",
+   "refreshTime": 5,
+   "linkageActive": false,
+   "jumpActive": false,
+   "aggregate": null,
+   "flowMapStartName": [],
+   "flowMapEndName": [],
+   "calParams": [],
+   "extColor": [],
+   "sortPriority": [],
+   "data": null,
+   "privileges": null,
+   "isLeaf": null,
+   "pid": null,
+   "sql": null,
+   "drill": false,
+   "drillFilters": null,
+   "position": null,
+   "totalPage": 0,
+   "totalItems": 0,
+   "datasetMode": 0,
+   "datasourceType": null,
+   "chartExtRequest": null,
+   "isExcelExport": false,
+   "exportDatasetOriginData": false,
+   "cache": false,
+   "sourceTableId": null,
+   "downloadType": null,
+   "yaxisExt": [],
+   "xaxisExt": [],
+   "xaxis": [
+    {
+     "id": "1160000004000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "district",
+     "name": "District",
+     "dbFieldName": null,
+     "description": "district",
+     "dataeaseName": "f_4364970fe9657d49",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_4364970fe9657d49",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yaxis": [
+    {
+     "id": "1160000004000070000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_pct_of_goal",
+     "name": "Sacrament attendance: % of goal",
+     "dbFieldName": null,
+     "description": "sa_pct_of_goal",
+     "dataeaseName": "f_b4798067b5838f54",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_b4798067b5838f54",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxis": [
+    {
+     "id": "1160000004000010000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "district",
+     "name": "District",
+     "dbFieldName": null,
+     "description": "district",
+     "dataeaseName": "f_4364970fe9657d49",
+     "groupType": "d",
+     "type": "TEXT",
+     "precision": null,
+     "scale": null,
+     "deType": 0,
+     "deExtractType": 0,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_4364970fe9657d49",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "count",
+     "sort": "none",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": null,
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "xAxisExt": [],
+   "yAxis": [
+    {
+     "id": "1160000004000070000",
+     "datasourceId": "1302280790163460096",
+     "datasetTableId": "1160000004900000000",
+     "datasetGroupId": "1302280800728911872",
+     "chartId": null,
+     "originName": "sa_pct_of_goal",
+     "name": "Sacrament attendance: % of goal",
+     "dbFieldName": null,
+     "description": "sa_pct_of_goal",
+     "dataeaseName": "f_b4798067b5838f54",
+     "groupType": "q",
+     "type": "NUMERIC",
+     "precision": null,
+     "scale": null,
+     "deType": 3,
+     "deExtractType": 3,
+     "extField": 0,
+     "checked": true,
+     "columnIndex": null,
+     "lastSyncTime": null,
+     "dateFormat": null,
+     "dateFormatType": null,
+     "fieldShortName": "f_b4798067b5838f54",
+     "groupList": null,
+     "otherGroup": null,
+     "desensitized": null,
+     "orderChecked": false,
+     "params": null,
+     "summary": "sum",
+     "sort": "asc",
+     "dateStyle": "y_M_d",
+     "datePattern": "date_sub",
+     "dateShowFormat": null,
+     "chartType": "bar-horizontal",
+     "compareCalc": {
+      "type": "none",
+      "resultData": "percent",
+      "field": null,
+      "custom": null
+     },
+     "logic": null,
+     "filterType": null,
+     "index": 0,
+     "formatterCfg": {
+      "type": "auto",
+      "unitLanguage": "en",
+      "unit": 1,
+      "suffix": "",
+      "decimalCount": 0,
+      "thousandSeparator": true
+     },
+     "chartShowName": "% of goal",
+     "filter": [],
+     "customSort": [],
+     "busiType": null,
+     "hide": false,
+     "field": null,
+     "agg": false
+    }
+   ],
+   "yAxisExt": []
+  }
+ }
+}

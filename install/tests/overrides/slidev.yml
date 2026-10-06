@@ -1,0 +1,10 @@
+# Test only (see README.md): Presentations on the test network and ports 23030 and 28089.
+services:
+  slidev:
+    ports: !override
+      - "23030:3040"
+      - "28089:3041"
+networks:
+  gfm_network:
+    external: true
+    name: gfmtest-network

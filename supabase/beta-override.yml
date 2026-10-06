@@ -1,0 +1,32 @@
+# This computer's settings for the database stack (the Supabase "Beta" stack, which is the real data): the Kong API on port
+# 18000, the sign-in redirect addresses. Used together with supabase-compose.yml:
+#   docker compose -p gfm-beta --env-file supabase/.env -f supabase/supabase-compose.yml -f supabase/beta-override.yml up -d
+
+services:
+  supabase-kong:
+    ports:
+      - "18000:8000"
+
+  supabase-studio:
+    ports:
+      - "13000:3000"
+
+  # PostgreSQL for DBeaver (direct database logins for the data analysts, docs/DBEAVER.md). Published on all interfaces by
+  # default (GFM_DB_BIND in supabase/.env: the installer sets 127.0.0.1, this computer only) so the LAN and later Tailscale can reach it; Windows Firewall rule 'GFM Postgres DBeaver' (TCP 54322).
+  # Logins use scram-sha-256 passwords; the passwords live in /path/to\secrets, never in Git.
+  supabase-db:
+    ports:
+      - "${GFM_DB_BIND:-0.0.0.0}:54322:5432"
+
+  # Browser-facing auth URLs for email links (invite/recovery). GFM_SITE_URL (supabase/.env) is the address the mission's
+  # people open the portal on: https://<public domain> when the mission has one (Frankfurt: since the public-domain
+  # change, docs/handoff/round10/public-domain.md, step 2), else the office address, http://<this computer>:8070.
+  # The portal's nginx (portal/nginx.conf) passes /auth/v1/verify on to this
+  # stack's Kong, so they work from any phone, in the office too. Kong is still published on 18000 for the LAN;
+  # the portal is reachable via localhost, the LAN IP and the public address (and www.).
+  # Before: API_EXTERNAL_URL 'http://192.168.1.20:18000/auth/v1', GOTRUE_SITE_URL 'http://192.168.1.20:8070/'.
+  supabase-auth:
+    environment:
+      API_EXTERNAL_URL: '${GFM_SITE_URL:-http://localhost:8070}/auth/v1'
+      GOTRUE_SITE_URL: '${GFM_SITE_URL:-http://localhost:8070}/'
+      GOTRUE_URI_ALLOW_LIST: 'http://localhost:8070/**,http://${GFM_HOST_IP:-192.168.1.20}:8070/**,${GFM_PUBLIC_DOMAIN:+https://$GFM_PUBLIC_DOMAIN/**,https://www.$GFM_PUBLIC_DOMAIN/**,}http://localhost:8090,http://localhost:8090/**,http://${GFM_HOST_IP:-192.168.1.20}:8090/**'

@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+  office-only.html: what the portal shows on its public address (https://example.org) instead of
+  Dashboards, Presentations or DA Management. Those run on their own ports of the server computer (8088, 3030 and
+  8089, 8090), and the Cloudflare tunnel carries only the portal's port, so they open in the mission office only.
+  The shell (portal-enhancements.js, OFFICE_ONLY) opens this page as /office-only.html?page=<name>; it holds no data
+  and needs no sign-in. The theme comes from the shell's "portal-theme" message, the language from i18n.js.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Mission System</title>
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+    <style>
+      :root {
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #183240;
+        background: #f4f7f8;
+      }
+      html[data-theme="dark"] {
+        color: #e6eef2;
+        background: #0f1b24;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 28px;
+      }
+      .card {
+        max-width: 640px;
+        margin: 8vh auto 0;
+        padding: 28px;
+        border: 1px solid #dce7ea;
+        border-radius: 16px;
+        background: #fff;
+      }
+      html[data-theme="dark"] .card {
+        border-color: #2a3d4a;
+        background: #16252f;
+      }
+      .eyebrow {
+        color: #087f8c;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 8px 0 14px;
+        font-size: 26px;
+      }
+      p {
+        margin: 0 0 12px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .address {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(8, 127, 140, 0.1);
+        font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="eyebrow">Only in the mission office</div>
+      <h1 id="partName">Mission System</h1>
+      <p>This part of the portal opens only on the mission office network, not on the public address.</p>
+      <p>On a computer in the mission office, open the portal at its office address and choose it there:</p>
+      <p><span class="address" translate="no">http://192.168.1.20:8070</span></p>
+    </main>
+    <script>
+      // The name of the part, from ?page= (only these three; anything else keeps "Mission System").
+      const PARTS = { insights: "Dashboards", presentations: "Presentations", management: "DA Management" };
+      const part = PARTS[new URLSearchParams(location.search).get("page")];
+      if (part) document.getElementById("partName").textContent = part;
+      // The shell's theme (the same message every portal page gets).
+      addEventListener("message", (event) => {
+        if (event.source !== window.parent || event.origin !== location.origin) return;
+        if (event.data?.type === "portal-theme") document.documentElement.dataset.theme = event.data.theme || "mission";
+      });
+    </script>
+  </body>
+</html>

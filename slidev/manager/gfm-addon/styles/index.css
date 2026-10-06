@@ -1,0 +1,80 @@
+/*
+ * GFM presentation look: the colours, type and spacing every GFM layout and component (Gfm*, gfm-*) shares, so a slide
+ * built from them looks right without any styling. Written for a 980 px wide slide read on a video call: nothing small
+ * (body 20 px, labels 15 px and up). Light and dark follow Slidev (html.dark).
+ * Components and layouts own the spacing and type; a slide only chooses content.
+ */
+:root {
+  --gfm-teal: #087f8c;
+  --gfm-teal-soft: rgba(8, 127, 140, 0.1);
+  --gfm-navy: #17394b;
+  --gfm-text: #17394b;
+  --gfm-muted: rgba(23, 57, 75, 0.72);
+  --gfm-surface: #f5f9fa;
+  --gfm-line: rgba(23, 57, 75, 0.14);
+  --gfm-good: #127a4a;
+  --gfm-warn: #8a5a00;
+  --gfm-bad: #b42318;
+  --gfm-radius: 16px;
+  --gfm-pad-x: 48px;
+  --gfm-pad-y: 40px;
+}
+html.dark {
+  --gfm-teal: #5cc6cf;
+  --gfm-teal-soft: rgba(92, 198, 207, 0.14);
+  --gfm-navy: #e8f1f3;
+  --gfm-text: #e8f1f3;
+  --gfm-muted: rgba(232, 241, 243, 0.74);
+  --gfm-surface: rgba(255, 255, 255, 0.05);
+  --gfm-line: rgba(255, 255, 255, 0.16);
+  --gfm-good: #6fd3a0;
+  --gfm-warn: #f2c46d;
+  --gfm-bad: #ff9b91;
+}
+
+/* ---- layouts ---- */
+.gfm-layout {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--gfm-pad-y) var(--gfm-pad-x);
+  color: var(--gfm-text);
+  font-size: 20px;
+  line-height: 1.45;
+  overflow: hidden;
+}
+.gfm-layout > .gfm-head { flex: none; margin-bottom: 20px; }
+.gfm-layout > .gfm-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+.gfm-layout h1 { margin: 0; font-size: 38px; line-height: 1.15; font-weight: 750; color: var(--gfm-navy); letter-spacing: -0.01em; }
+.gfm-layout h2 { margin: 0 0 10px; font-size: 28px; line-height: 1.2; font-weight: 700; color: var(--gfm-navy); }
+.gfm-layout p { margin: 0 0 12px; }
+.gfm-layout ul, .gfm-layout ol { margin: 0 0 12px; padding-left: 1.2em; }
+.gfm-layout li { margin: 4px 0; }
+.gfm-kicker { font-size: 15px; line-height: 1.3; font-weight: 650; text-transform: uppercase; letter-spacing: 0.16em; color: var(--gfm-teal); margin-bottom: 6px; }
+.gfm-lead { font-size: 22px; line-height: 1.4; color: var(--gfm-muted); margin-top: 8px; }
+.gfm-grid { display: grid; gap: 24px; min-height: 0; height: 100%; }
+.gfm-col { min-width: 0; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+.gfm-col > :last-child { margin-bottom: 0; }
+
+/* ---- cards (components share these) ---- */
+.gfm-card {
+  box-sizing: border-box;
+  border: 1px solid var(--gfm-line);
+  border-radius: var(--gfm-radius);
+  background: var(--gfm-surface);
+  padding: 18px 22px;
+}
+.gfm-card--teal { border-color: var(--gfm-teal); }
+.gfm-label { font-size: 15px; line-height: 1.3; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gfm-muted); }
+.gfm-tone-good { color: var(--gfm-good); }
+.gfm-tone-warn { color: var(--gfm-warn); }
+.gfm-tone-bad { color: var(--gfm-bad); }
+.gfm-tone-neutral { color: var(--gfm-muted); }
+
+/* A slide's own motion: components that appear one by one use this (and Slidev's v-click). */
+@media (prefers-reduced-motion: no-preference) {
+  .gfm-rise { animation: gfm-rise 0.5s ease both; }
+}
+@keyframes gfm-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }

@@ -1,0 +1,30 @@
+# The Cloudflare tunnel of a new mission: one small container that connects this computer to the mission's tunnel in Cloudflare, so the
+# portal and its parts can be reached from the internet by the mission's own web name. The installer starts it only when a tunnel token
+# was given. cloudflared/.env holds TUNNEL_TOKEN (a secret; written by the installer, never committed).
+#   docker compose -p gfm-cloudflared -f cloudflared/compose.yml up -d
+# The routes (which public name goes to which part) are set in Cloudflare, not here: cloudflared/ROUTES.txt lists them. From inside
+# this container the programs of this computer are reached as host.docker.internal:<port>.
+# Settings (optional): GFM_CLOUDFLARED_CONTAINER (default gfm-cloudflared), GFM_CLOUDFLARED_TAG (default latest: Cloudflare stops
+# supporting old versions, so the newest is wanted).
+name: gfm-cloudflared
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:${GFM_CLOUDFLARED_TAG:-latest}
+    container_name: ${GFM_CLOUDFLARED_CONTAINER:-gfm-cloudflared}
+    restart: unless-stopped
+    env_file: .env
+    command: tunnel --no-autoupdate --metrics 127.0.0.1:2000 run
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      # Healthy only while the tunnel is connected to Cloudflare.
+      test: ["CMD", "cloudflared", "tunnel", "--metrics", "127.0.0.1:2000", "ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options: { max-size: "1m", max-file: "2" }

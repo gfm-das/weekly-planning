@@ -1,0 +1,50 @@
+# Presentations (Slidev and its manager): a Node container; the manager's code comes from this folder, read-only, on top
+# of a data volume. Used together with local-override.yml (ports 3030 and 8089, the network):
+#   docker compose -p slidev -f slidev/slidev-compose.yml -f slidev/local-override.yml up -d --no-deps slidev
+# The names are settings, so a new install can choose its own; the defaults are what this server uses.
+#   GFM_SLIDEV_CONTAINER  the container's name
+#   GFM_SLIDEV_VOLUME     the Docker volume with the decks (create it once: docker volume create <name>)
+#   GFM_HOST_IP           this computer's address in the office network (used in the portal addresses below)
+services:
+  slidev:
+    image: 'node:24-alpine'
+    restart: unless-stopped
+    container_name: ${GFM_SLIDEV_CONTAINER:-slidev-j5iyrpjbsssqlilqhw9axugx}
+    environment:
+      SUPABASE_URL: 'http://gfm-beta-supabase-kong-1:8000'
+      SUPABASE_SERVICE_ROLE_KEY: '${SUPABASE_SERVICE_ROLE_KEY}'
+      PRESENTATION_ACL_API_URL: 'http://portal-api:8091'
+      PORTAL_SERVICE_KEY: '${PORTAL_SERVICE_KEY}'
+      PRESENTATIONS_HOST: localhost
+      PRESENTATIONS_PORTAL_ORIGINS: '${PRESENTATIONS_PORTAL_ORIGINS:-http://localhost:8070,http://127.0.0.1:8070,http://${GFM_HOST_IP:-192.168.1.20}:8070}'
+      PRESENTATION_MANAGER_PORT: '3040'
+      # Round 8 (manager/deck-origin.mjs): published decks and the deck editor run on their own address. The
+      # manager listens for it on 3041; browsers reach it on port 8089 (local-override.yml), the manager on 3030.
+      PRESENTATION_DECK_SERVER_PORT: '3041'
+      PRESENTATIONS_DECK_PORT: '8089'
+      PRESENTATIONS_PUBLIC_PORT: '3030'
+      SLIDEV_INTERNAL_PORT_START: '3100'
+      SLIDEV_MAX_RUNNING: '10'
+      MISSION_ID: '${MISSION_ID:-2}'
+    working_dir: /slidev
+    volumes:
+      - 'slidev-data:/slidev'
+      # The whole manager folder (server, editor page, gfm-addon) and the pinned
+      # package.json come from the repo, read-only, on top of the data volume.
+      - './manager:/slidev/manager:ro'
+      - './package.json:/slidev/package.json:ro'
+      # GFM Presentations V2: the built editor and player (presentations-v2/README.md); its decks are in the volume, in decks-v2/.
+      - './presentations-v2/dist:/slidev/presentations-v2:ro'
+    expose:
+      - '3040'
+      - '3041'
+    command:
+      - sh
+      - '-ec'
+      - "npm install --no-audit --no-fund\nexec npm start\n"
+    env_file:
+      - .env
+volumes:
+  slidev-data:
+    external: true
+    name: ${GFM_SLIDEV_VOLUME:-j5iyrpjbsssqlilqhw9axugx_slidev-data}

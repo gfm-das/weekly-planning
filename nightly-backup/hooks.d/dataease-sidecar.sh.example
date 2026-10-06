@@ -1,0 +1,21 @@
+#!/bin/bash
+# Backup hook: checks DataEase's nightly backup (round 6, docs/handoff/round6/dataease.md). DataEase's own container
+# gfm-dataease-backup (dataease/backup/nightly.sh) makes it at 02:15 into this same folder, with the database's own
+# MySQL tools, so gfm-backup needs no MySQL client and no access to DataEase's network:
+#   dataease-<YYYYMMDD-HHMM>.sql.gz (metadata) and dataease-files-<YYYYMMDD-HHMM>.tgz (file volumes)
+# Those names are deleted after 14 days like the database dumps. Switch the check on by copying this file to
+# dataease.sh (hooks.d/README.md). It fails, and so turns health.ps1's
+# "Nightly backup" row to FAIL, when there is no DataEase dump from the last 3 hours, the newest one is damaged, or
+# gfm-dataease-backup reported a failure. A test at another time: first
+#   docker exec gfm-dataease-backup /backup/nightly.sh --now
+# then docker exec gfm-backup /backup/nightly.sh --now.
+set -eu -o pipefail
+
+newest=$(ls -1t "$BACKUP_DIR"/dataease-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9].sql.gz 2>/dev/null | head -n 1 || true)
+[ -n "$newest" ] || { echo "no DataEase backup in the folder (gfm-dataease-backup makes it at 02:15; docker logs gfm-dataease-backup)"; exit 1; }
+age=$(( $(date +%s) - $(stat -c %Y "$newest") ))
+[ "$age" -lt 10800 ] || { echo "the newest DataEase backup, $(basename "$newest"), is $((age / 3600)) hours old (docker logs gfm-dataease-backup)"; exit 1; }
+gzip -t "$newest" 2>/dev/null || { echo "$(basename "$newest") is damaged"; exit 1; }
+last=$(head -n 1 "$BACKUP_DIR/dataease-last-run.txt" 2>/dev/null || true)
+case $last in FAILED*) echo "gfm-dataease-backup: $last"; exit 1 ;; esac
+echo "$(basename "$newest") $(du -k "$newest" | cut -f1) kB (made by gfm-dataease-backup)"

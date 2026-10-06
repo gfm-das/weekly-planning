@@ -1,0 +1,322 @@
+<!doctype html>
+<!--
+  announcements.html: updates from the leaders (menu: Announcements).
+
+  Who uses it: everyone reads the announcements meant for them and marks them as read. Leaders publish updates
+  within their stewardship (a ZL for the zone, a DL for the district …); Office and managers for the whole mission. The author
+  or a manager may edit or delete an announcement, see who read it (read receipts) and remove its attachments.
+
+  How it fits: it opens inside the portal shell's frame. portal-client.js brings portalAPI, portalConfirm and the
+  attachment helpers. portal-api decides who sees what and who may publish (can_publish, can_edit); /api/options
+  gives the audience lists (roles, zones, districts, areas, accounts) the author may choose from.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Announcements</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+  </head>
+  <body>
+    <main>
+      <div class="page-head">
+        <div>
+          <h1>Announcements</h1>
+          <p class="muted">Updates from the leaders in your stewardship.</p>
+        </div>
+        <!-- Inline display:none is intentional: workspace.css gives buttons display:inline-block, so the HTML hidden
+             attribute alone is not strong enough in every browser. load() removes it only when the API says can_publish. -->
+        <button id="newAnnouncement" hidden style="display: none">Publish update</button>
+      </div>
+      <div id="status" class="status" role="status"></div>
+      <div id="list"></div>
+
+      <!-- Publish an announcement / Edit announcement (leaders and managers). -->
+      <dialog id="editor">
+        <form id="form">
+          <h2 id="editorTitle">Publish an announcement</h2>
+          <div class="fields">
+            <div class="field wide">
+              <label for="name">Title</label>
+              <input id="name" maxlength="180" required />
+            </div>
+            <div class="field wide">
+              <label for="body">Message</label>
+              <textarea id="body" maxlength="20000" required></textarea>
+            </div>
+            <div class="field">
+              <label for="roles">Roles</label>
+              <select id="roles" multiple></select>
+              <p class="hint">Empty includes every role in the selected audience.</p>
+            </div>
+            <div class="field">
+              <label for="zones">Zones</label>
+              <select id="zones" multiple></select>
+            </div>
+            <div class="field">
+              <label for="districts">Districts</label>
+              <select id="districts" multiple></select>
+            </div>
+            <div class="field">
+              <label for="areas">Areas</label>
+              <select id="areas" multiple></select>
+            </div>
+            <div class="field wide">
+              <label for="users">Individual accounts</label>
+              <select id="users" multiple></select>
+              <p class="hint">
+                Audience scopes combine. Leadership updates are always constrained to the author's stewardship.
+              </p>
+            </div>
+            <div class="field">
+              <label for="expires">Expires · your local time</label>
+              <input id="expires" type="datetime-local" />
+            </div>
+            <div class="field">
+              <label for="files">Attachments</label>
+              <input id="files" type="file" multiple />
+            </div>
+            <div class="checks wide">
+              <label><input id="pinned" type="checkbox" />Pin to top</label>
+              <label><input id="urgent" type="checkbox" />Urgent</label>
+            </div>
+          </div>
+          <div id="editStatus" class="status"></div>
+          <div class="dialog-actions">
+            <button type="button" id="cancel" class="secondary">Cancel</button>
+            <button id="publish">Publish</button>
+          </div>
+        </form>
+      </dialog>
+
+      <!-- Who has read an announcement (its author and the managers). -->
+      <dialog id="receipts">
+        <h2>Read receipts</h2>
+        <div id="reads"></div>
+        <div class="dialog-actions">
+          <button class="secondary" id="closeReceipts">Close</button>
+        </div>
+      </dialog>
+    </main>
+    <script src="portal-client.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const esc = escapeHTML;
+
+      let options; // the audience lists (GET /api/options)
+      let audienceLists; // the moment those lists are filled in (a promise; it gives the Error if they failed)
+      let records = []; // the announcements on screen; their buttons name them by position (data-edit="2")
+      let editing = null; // the announcement open in the editor, or null for a new one
+
+      // The audience lists in the editor, and the field of an announcement each one fills.
+      const AUDIENCE = { roles: "roles", zones: "zone_ids", districts: "district_ids", areas: "area_ids", users: "user_ids" };
+
+      function status(id, text, error = false) {
+        $(id).textContent = text;
+        $(id).classList.toggle("error", error);
+      }
+
+      // The chosen values of a multiple-choice list.
+      function selected(id, numeric = false) {
+        return [...$(id).selectedOptions].map((option) => (numeric ? Number(option.value) : option.value));
+      }
+
+      // ---- Showing the list ---------------------------------------------------------------------------------------
+      function attachmentItem(file, canEdit) {
+        const remove = canEdit
+          ? `<button class="attachment-remove" data-remove-file="${esc(file.id)}" data-name="${esc(file.filename)}" data-i18n="common.remove" title="Remove this file">Remove</button>`
+          : "";
+        return `<span class="attachment-item"><button class="attachment" data-file="${esc(file.id)}" data-name="${esc(file.filename)}">${esc(file.filename)}</button>${remove}</span>`;
+      }
+
+      // "Mark as read" (or "Read ✓"); for the author and the managers also Edit, Read receipts and Delete.
+      function announcementActions(a, index) {
+        const read = a.read_at ? '<span class="muted">Read ✓</span>' : `<button class="secondary" data-read="${index}">Mark as read</button>`;
+        const editorButtons = a.can_edit
+          ? `<button class="secondary" data-edit="${index}">Edit</button><button class="secondary" data-receipts="${index}">Read receipts</button><button class="secondary danger" data-delete="${index}">Delete</button>`
+          : "";
+        return `<div class="actions" style="margin-top:16px">${read}${editorButtons}</div>`;
+      }
+
+      function announcementCard(a, index) {
+        const created = new Date(a.created_at).toLocaleDateString(undefined, { dateStyle: "medium" });
+        const expires = a.expires_at ? `<span>Expires ${esc(new Date(a.expires_at).toLocaleDateString())}</span>` : "";
+        const files = a.attachments.map((file) => attachmentItem(file, a.can_edit)).join("");
+        return `<article class="panel announcement ${a.read_at ? "read" : "unread"}"><div class="announcement-head"><h2>${esc(a.title)}</h2><div>${a.pinned ? '<span class="tag">Pinned</span>' : ""} ${a.urgent ? '<span class="tag urgent">Urgent</span>' : ""}</div></div><p>${esc(a.body)}</p><div class="meta"><span>${esc(created)}</span>${expires}</div><div class="attachments">${files}</div>${announcementActions(a, index)}</article>`;
+      }
+
+      async function load() {
+        try {
+          const data = await portalAPI("announcements");
+          records = data.announcements;
+          const canPublish = data.can_publish === true;
+          $("newAnnouncement").hidden = !canPublish;
+          $("newAnnouncement").style.display = canPublish ? "" : "none";
+          $("list").innerHTML = records.length
+            ? records.map(announcementCard).join("")
+            : '<div class="empty">You’re all caught up. New leadership updates will appear here.</div>';
+          status("status", "");
+        } catch (e) {
+          status("status", e.message, true);
+        }
+      }
+
+      // ---- The editor ---------------------------------------------------------------------------------------------
+      // A saved expiry (an exact moment) as this device's local time, the format of a datetime-local field.
+      function localInputValue(moment) {
+        const date = new Date(moment);
+        return new Date(date - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      }
+
+      // Opens the editor, empty for a new announcement or filled in.
+      // It first waits for the audience lists. Saved without them, an announcement would have no audience, and
+      // portal-api reads that as "everyone in the author's stewardship" (for a manager: the whole mission).
+      async function edit(a = null) {
+        const problem = await audienceLists;
+        if (problem) return status("status", problem.message, true);
+        editing = a;
+        $("form").reset();
+        $("editorTitle").textContent = a ? "Edit announcement" : "Publish an announcement";
+        $("name").value = a?.title || "";
+        $("body").value = a?.body || "";
+        $("pinned").checked = a?.pinned || false;
+        $("urgent").checked = a?.urgent || false;
+        for (const [id, field] of Object.entries(AUDIENCE)) {
+          const values = a?.[field] || [];
+          [...$(id).options].forEach((option) => (option.selected = values.map(String).includes(option.value)));
+        }
+        if (a?.expires_at) $("expires").value = localInputValue(a.expires_at);
+        status("editStatus", "");
+        $("editor").showModal();
+      }
+
+      function announcementFromForm() {
+        return {
+          title: $("name").value,
+          body: $("body").value,
+          pinned: $("pinned").checked,
+          urgent: $("urgent").checked,
+          roles: selected("roles"),
+          zone_ids: selected("zones", true),
+          district_ids: selected("districts", true),
+          area_ids: selected("areas", true),
+          user_ids: selected("users"),
+          expires_at: $("expires").value ? new Date($("expires").value).toISOString() : null,
+        };
+      }
+
+      $("form").onsubmit = async (e) => {
+        e.preventDefault();
+        try {
+          $("publish").disabled = true;
+          const body = announcementFromForm();
+          const result = await portalAPI("announcements" + (editing ? "/" + editing.id : ""), {
+            method: editing ? "PUT" : "POST",
+            body,
+          });
+          // Saved: trying again after a failed upload updates this announcement instead of publishing it twice.
+          editing = result.announcement;
+          await uploadPortalFiles("announcements", result.announcement.id, $("files").files);
+          $("editor").close();
+          await load();
+        } catch (e) {
+          status("editStatus", e.message, true);
+        } finally {
+          $("publish").disabled = false;
+        }
+      };
+
+      // ---- The buttons on each announcement -----------------------------------------------------------------------
+      async function markAsRead(a) {
+        await portalAPI(`announcements/${a.id}/read`, { method: "POST" });
+        await load();
+      }
+
+      async function deleteAnnouncement(a, button) {
+        const choice = await portalConfirm({
+          title: "Delete this announcement?",
+          name: a.title,
+          message: "Missionaries will no longer see it. Its read receipts and attachments are deleted too. This cannot be undone.",
+          choices: [{ value: "delete", label: "Delete announcement" }],
+          keep: "Keep",
+        });
+        if (!choice) return;
+        button.disabled = true;
+        await portalAPI(`announcements/${a.id}`, { method: "DELETE" });
+        await load();
+        status("status", "The announcement was deleted.");
+      }
+
+      async function removeAttachment(button) {
+        const choice = await portalConfirm({
+          title: "Remove this attachment?",
+          name: button.dataset.name,
+          message: "The file is deleted for everyone. This cannot be undone.",
+          choices: [{ value: "remove", label: "Remove attachment" }],
+          keep: "Keep",
+        });
+        if (!choice) return;
+        button.disabled = true;
+        await portalAPI(`attachments/${button.dataset.removeFile}`, { method: "DELETE" });
+        await load();
+        status("status", "The attachment was removed.");
+      }
+
+      async function showReceipts(a) {
+        const data = await portalAPI(`announcements/${a.id}/receipts`);
+        $("reads").innerHTML =
+          data.reads
+            .map((r) => `<p>${esc(r.display_name)} <span class="muted">${esc(new Date(r.read_at).toLocaleString())}</span></p>`)
+            .join("") || '<p class="muted">No reads recorded yet.</p>';
+        $("receipts").showModal();
+      }
+
+      // One listener for every button in the list; the button's data-… says what it does. An error shows at the top
+      // and the button can be used again.
+      $("list").onclick = async (e) => {
+        const button = e.target.closest("button");
+        if (!button) return;
+        const { read, edit: editIndex, delete: deleteIndex, removeFile, receipts, file } = button.dataset;
+        try {
+          if (read !== undefined) await markAsRead(records[+read]);
+          if (editIndex !== undefined) edit(records[+editIndex]);
+          if (deleteIndex !== undefined) await deleteAnnouncement(records[+deleteIndex], button);
+          if (removeFile) await removeAttachment(button);
+          if (receipts !== undefined) await showReceipts(records[+receipts]);
+          if (file) await portalAttachment(file, button.dataset.name);
+        } catch (e) {
+          button.disabled = false;
+          status("status", e.message, true);
+        }
+      };
+      $("newAnnouncement").onclick = () => edit();
+      $("cancel").onclick = () => $("editor").close();
+      $("closeReceipts").onclick = () => $("receipts").close();
+
+      // ---- Start --------------------------------------------------------------------------------------------------
+      // The editor's audience lists (a role shows in the viewer's words).
+      function audienceOption(id, value) {
+        return id === "roles"
+          ? `<option value="${esc(value)}">${esc(options.role_labels?.[value] || value)}</option>`
+          : `<option value="${esc(value.user_id || value.id)}">${esc(value.name || value.user_id)}</option>`;
+      }
+
+      async function loadAudienceLists() {
+        options = await portalAPI("options");
+        for (const id of Object.keys(AUDIENCE)) {
+          $(id).innerHTML = options[id].map((value) => audienceOption(id, value)).join("");
+        }
+      }
+
+      // The announcements and the audience lists are asked for at the same time, so the list does not wait for them
+      // (the editor does: see edit()).
+      (async () => {
+        audienceLists = loadAudienceLists().catch((error) => error);
+        await load();
+        const problem = await audienceLists;
+        if (problem) status("status", problem.message, true);
+      })();
+    </script>
+  </body>
+</html>

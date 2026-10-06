@@ -1,0 +1,74 @@
+{
+ "animations": [],
+ "canvasId": "canvas-main",
+ "events": {},
+ "groupStyle": {},
+ "isLock": false,
+ "isShow": true,
+ "collapseName": [
+  "position",
+  "background",
+  "style",
+  "picture"
+ ],
+ "linkage": {
+  "duration": 0,
+  "data": [
+   {
+    "id": "",
+    "label": "",
+    "event": "",
+    "style": [
+     {
+      "key": "",
+      "value": ""
+     }
+    ]
+   }
+  ]
+ },
+ "component": "UserView",
+ "name": null,
+ "label": null,
+ "propValue": {
+  "textValue": ""
+ },
+ "icon": "bar",
+ "innerType": null,
+ "editing": false,
+ "x": 17,
+ "y": 11,
+ "sizeX": 28,
+ "sizeY": 8,
+ "style": {
+  "rotate": 0,
+  "opacity": 1,
+  "width": 474.4444444444444,
+  "height": 174.66666666666666,
+  "left": 271.1111111111111,
+  "top": 218.33333333333331
+ },
+ "matrixStyle": {},
+ "commonBackground": {
+  "backgroundColorSelect": true,
+  "backgroundImageEnable": false,
+  "backgroundType": "innerImage",
+  "innerImage": "board/board_1.svg",
+  "outerImage": null,
+  "innerPadding": 12,
+  "borderRadius": 11,
+  "backgroundColor": "rgba(255, 255, 255, 0.99)"
+ },
+ "state": "ready",
+ "render": "antv",
+ "id": null,
+ "_dragId": 10,
+ "show": true,
+ "linkageFilters": [],
+ "canvasActive": false,
+ "maintainRadio": false,
+ "aspectRatio": 1,
+ "actionSelection": {
+  "linkageActive": "custom"
+ }
+}

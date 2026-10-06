@@ -1,0 +1,405 @@
+{
+ "version": 1,
+ "name": "Referral demo",
+ "theme": "gfm",
+ "slides": [
+  {
+   "id": "slide-1",
+   "transition": "fade",
+   "autoAnimate": false,
+   "notes": "Welcome. Everything on the next slides is live mission data.",
+   "components": [
+    {
+     "id": "bar",
+     "type": "shape",
+     "x": 6,
+     "y": 30,
+     "width": 12,
+     "height": 1.4,
+     "props": {
+      "color": "#087f8c",
+      "round": false
+     }
+    },
+    {
+     "id": "title",
+     "type": "heading",
+     "x": 6,
+     "y": 34,
+     "width": 88,
+     "height": 16,
+     "props": {
+      "text": "Weekly Key Numbers",
+      "size": 64,
+      "color": "#17394b"
+     }
+    },
+    {
+     "id": "sub",
+     "type": "text",
+     "x": 6,
+     "y": 52,
+     "width": 88,
+     "height": 10,
+     "props": {
+      "text": "Live from the mission database - press the right arrow to continue",
+      "size": 26,
+      "color": "#3d5866"
+     }
+    }
+   ]
+  },
+  {
+   "id": "slide-2",
+   "transition": "fade",
+   "autoAnimate": true,
+   "notes": "New people being taught, by zone. Next slide: the same chart, different number.",
+   "components": [
+    {
+     "id": "h",
+     "type": "heading",
+     "x": 6,
+     "y": 5,
+     "width": 88,
+     "height": 14,
+     "props": {
+      "text": "New people being taught, by zone",
+      "size": 40,
+      "color": "#17394b"
+     }
+    },
+    {
+     "id": "main",
+     "type": "chart",
+     "x": 6,
+     "y": 22,
+     "width": 88,
+     "height": 70,
+     "props": {
+      "title": "",
+      "chartType": "bar",
+      "transitionId": "referrals-main",
+      "calcs": [],
+      "fields": [
+       "friends_found_actual"
+      ],
+      "sortBy": "friends_found_actual",
+      "sortDir": "desc",
+      "scenes": [],
+      "advanced": null,
+      "filter": null,
+      "query": {
+       "v": 1,
+       "measures": [
+        "friends_found.actual"
+       ],
+       "level": "zone",
+       "by": "unit",
+       "filter": {},
+       "weeks": {
+        "last": 1
+       },
+       "includeCurrent": true,
+       "transform": "none",
+       "sort": "none",
+       "top": 0,
+       "audience": "deck"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "slide-3",
+   "transition": "fade",
+   "autoAnimate": true,
+   "notes": "Same chart instance: the bars morph into the new numbers.",
+   "components": [
+    {
+     "id": "h",
+     "type": "heading",
+     "x": 6,
+     "y": 5,
+     "width": 88,
+     "height": 14,
+     "props": {
+      "text": "Baptismal dates, by zone",
+      "size": 40,
+      "color": "#17394b"
+     }
+    },
+    {
+     "id": "main",
+     "type": "chart",
+     "x": 6,
+     "y": 22,
+     "width": 88,
+     "height": 70,
+     "props": {
+      "title": "",
+      "chartType": "bar",
+      "transitionId": "referrals-main",
+      "calcs": [],
+      "fields": [
+       "baptismal_dates_actual"
+      ],
+      "sortBy": "friends_found_actual",
+      "sortDir": "desc",
+      "scenes": [],
+      "advanced": null,
+      "filter": null,
+      "query": {
+       "v": 1,
+       "measures": [
+        "friends_found.actual",
+        "baptismal_dates.actual"
+       ],
+       "level": "zone",
+       "by": "unit",
+       "filter": {},
+       "weeks": {
+        "last": 1
+       },
+       "includeCurrent": true,
+       "transform": "none",
+       "sort": "none",
+       "top": 0,
+       "audience": "deck"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "slide-4",
+   "transition": "slide",
+   "autoAnimate": false,
+   "notes": "The mission funnel: each step is a key indicator.",
+   "components": [
+    {
+     "id": "h",
+     "type": "heading",
+     "x": 6,
+     "y": 5,
+     "width": 88,
+     "height": 14,
+     "props": {
+      "text": "Key indicator funnel",
+      "size": 40,
+      "color": "#17394b"
+     }
+    },
+    {
+     "id": "funnel",
+     "type": "chart",
+     "x": 20,
+     "y": 22,
+     "width": 60,
+     "height": 70,
+     "props": {
+      "title": "",
+      "chartType": "funnel",
+      "transitionId": "",
+      "calcs": [],
+      "fields": [
+       "friends_found_actual",
+       "baptismal_dates_actual",
+       "baptisms_confirmations_actual"
+      ],
+      "sortBy": "",
+      "sortDir": "none",
+      "scenes": [],
+      "advanced": null,
+      "filter": null,
+      "query": {
+       "v": 1,
+       "measures": [
+        "friends_found.actual",
+        "baptismal_dates.actual",
+        "baptisms_confirmations.actual"
+       ],
+       "level": "mission",
+       "by": "unit",
+       "filter": {},
+       "weeks": {
+        "last": 4
+       },
+       "includeCurrent": true,
+       "transform": "none",
+       "sort": "none",
+       "top": 0,
+       "audience": "deck"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "slide-5",
+   "transition": "slide",
+   "autoAnimate": false,
+   "notes": "Date rate = baptismal dates divided by new people being taught, a calculated field.",
+   "components": [
+    {
+     "id": "h",
+     "type": "heading",
+     "x": 6,
+     "y": 5,
+     "width": 88,
+     "height": 14,
+     "props": {
+      "text": "Date rate leaderboard",
+      "size": 40,
+      "color": "#17394b"
+     }
+    },
+    {
+     "id": "d",
+     "type": "text",
+     "x": 6,
+     "y": 17,
+     "width": 88,
+     "height": 6,
+     "props": {
+      "text": "Date rate = baptismal dates / new people being taught",
+      "size": 20,
+      "color": "#3d5866"
+     }
+    },
+    {
+     "id": "rate",
+     "type": "chart",
+     "x": 6,
+     "y": 26,
+     "width": 88,
+     "height": 66,
+     "props": {
+      "title": "",
+      "chartType": "ranked-bar",
+      "transitionId": "",
+      "calcs": [
+       {
+        "name": "date_rate",
+        "label": "Date rate",
+        "formula": "safeDivide(baptismal_dates_actual, friends_found_actual)",
+        "format": "percent"
+       }
+      ],
+      "fields": [
+       "date_rate"
+      ],
+      "sortBy": "date_rate",
+      "sortDir": "desc",
+      "scenes": [],
+      "advanced": null,
+      "filter": null,
+      "query": {
+       "v": 1,
+       "measures": [
+        "friends_found.actual",
+        "baptismal_dates.actual"
+       ],
+       "level": "zone",
+       "by": "unit",
+       "filter": {},
+       "weeks": {
+        "last": 4
+       },
+       "includeCurrent": true,
+       "transform": "none",
+       "sort": "none",
+       "top": 0,
+       "audience": "deck"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "slide-6",
+   "transition": "slide",
+   "autoAnimate": false,
+   "notes": "Story mode: press next to add a number to the chart.",
+   "components": [
+    {
+     "id": "h",
+     "type": "heading",
+     "x": 6,
+     "y": 5,
+     "width": 88,
+     "height": 14,
+     "props": {
+      "text": "Story mode: build it up (press next)",
+      "size": 40,
+      "color": "#17394b"
+     }
+    },
+    {
+     "id": "story",
+     "type": "chart",
+     "x": 6,
+     "y": 22,
+     "width": 88,
+     "height": 70,
+     "props": {
+      "title": "",
+      "chartType": "bar",
+      "transitionId": "",
+      "calcs": [],
+      "fields": [
+       "friends_found_actual",
+       "baptismal_dates_actual",
+       "baptisms_confirmations_actual"
+      ],
+      "sortBy": "",
+      "sortDir": "none",
+      "scenes": [
+       {
+        "name": "Taught",
+        "fields": [
+         "friends_found_actual"
+        ]
+       },
+       {
+        "name": "+ Dates",
+        "fields": [
+         "friends_found_actual",
+         "baptismal_dates_actual"
+        ]
+       },
+       {
+        "name": "+ Baptisms",
+        "fields": [
+         "friends_found_actual",
+         "baptismal_dates_actual",
+         "baptisms_confirmations_actual"
+        ]
+       }
+      ],
+      "advanced": null,
+      "filter": null,
+      "query": {
+       "v": 1,
+       "measures": [
+        "friends_found.actual",
+        "baptismal_dates.actual",
+        "baptisms_confirmations.actual"
+       ],
+       "level": "zone",
+       "by": "unit",
+       "filter": {},
+       "weeks": {
+        "last": 4
+       },
+       "includeCurrent": true,
+       "transform": "none",
+       "sort": "none",
+       "top": 0,
+       "audience": "deck"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

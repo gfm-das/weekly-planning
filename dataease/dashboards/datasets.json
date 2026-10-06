@@ -1,0 +1,51 @@
+{
+  "_comment": "The DataEase datasets behind the Dashboards. Each is one SQL query (dataease/dashboards/sql/) that the read-only login gfm_dashboard_reader runs against the dashboards views of migrations 018 and 025. Complete weeks only: the week still being reported is always left out. Field names are the SQL column names; 'labels' gives the English name people see in DataEase. 'calculated' fields are worked out by DataEase after the zone, district and week filters (so a % of goal is right for any choice). Keep 'index' fixed once live: it makes the ids that charts refer to.",
+  "folder": "Mission",
+  "datasource": "GFM mission data (read-only)",
+  "datasets": [
+    {
+      "key": "kpi-weeks", "index": 1, "name": "Key indicators by week and district", "sql": "sql/kpi-weeks.sql",
+      "labels": {
+        "week": "Week", "zone": "Zone", "district": "District",
+        "npbt_actual": "New People Being Taught", "npbt_goal": "New People Being Taught: goal set the week before", "npbt_trend": "New People Being Taught: trend",
+        "bc_actual": "Baptisms and confirmations", "bc_goal": "Baptisms and confirmations: goal set the week before", "bc_trend": "Baptisms and confirmations: trend",
+        "bd_actual": "Baptismal dates", "bd_goal": "Baptismal dates: goal set the week before", "bd_trend": "Baptismal dates: trend",
+        "sa_actual": "Sacrament attendance", "sa_goal": "Sacrament attendance: goal set the week before", "sa_trend": "Sacrament attendance: trend",
+        "ml_actual": "Members at lessons", "ml_goal": "Members at lessons: goal set the week before", "ml_trend": "Members at lessons: trend",
+        "nms_actual": "New member sacrament attendance", "nms_goal": "New member sacrament attendance: goal set the week before", "nms_trend": "New member sacrament attendance: trend"
+      }
+    },
+    {
+      "key": "kpi-latest", "index": 2, "name": "Key indicators, last complete week", "sql": "sql/kpi-latest.sql",
+      "labels": { "week": "Week", "week_label": "Week (text)", "zone": "Zone", "district": "District" },
+      "calculated": [
+        { "name": "latest_week", "label": "Last complete week", "expression": "MAX([week_label])", "deType": 0 },
+        { "name": "npbt_pct", "label": "New People Being Taught: % of goal", "expression": "ROUND(SUM([npbt_actual]) * 100.0 / NULLIF(SUM([npbt_goal]), 0))", "deType": 2 },
+        { "name": "bc_pct", "label": "Baptisms and confirmations: % of goal", "expression": "ROUND(SUM([bc_actual]) * 100.0 / NULLIF(SUM([bc_goal]), 0))", "deType": 2 },
+        { "name": "bd_pct", "label": "Baptismal dates: % of goal", "expression": "ROUND(SUM([bd_actual]) * 100.0 / NULLIF(SUM([bd_goal]), 0))", "deType": 2 },
+        { "name": "sa_pct", "label": "Sacrament attendance: % of goal", "expression": "ROUND(SUM([sa_actual]) * 100.0 / NULLIF(SUM([sa_goal]), 0))", "deType": 2 },
+        { "name": "ml_pct", "label": "Members at lessons: % of goal", "expression": "ROUND(SUM([ml_actual]) * 100.0 / NULLIF(SUM([ml_goal]), 0))", "deType": 2 },
+        { "name": "nms_pct", "label": "New member sacrament attendance: % of goal", "expression": "ROUND(SUM([nms_actual]) * 100.0 / NULLIF(SUM([nms_goal]), 0))", "deType": 2 }
+      ]
+    },
+    {
+      "key": "zone-heat", "index": 3, "name": "Zones by week", "sql": "sql/zone-heat.sql",
+      "labels": { "week": "Week", "zone": "Zone", "npbt_pct_of_goal": "New People Being Taught: % of goal", "sa_pct_of_goal": "Sacrament attendance: % of goal" }
+    },
+    {
+      "key": "districts-help", "index": 4, "name": "Districts, last 4 complete weeks", "sql": "sql/districts-help.sql",
+      "labels": { "zone": "Zone", "district": "District", "npbt_pct_of_goal": "New People Being Taught: % of goal", "sa_pct_of_goal": "Sacrament attendance: % of goal" }
+    },
+    {
+      "key": "people-weeks", "index": 5, "name": "Covenant path by week and district (counts only)", "sql": "sql/people-weeks.sql",
+      "labels": { "week": "Week", "zone": "Zone", "district": "District" }
+    },
+    {
+      "key": "people-latest", "index": 6, "name": "Covenant path, last complete week (counts only)", "sql": "sql/people-latest.sql",
+      "labels": { "week": "Week", "week_label": "Week (text)", "zone": "Zone", "district": "District" },
+      "calculated": [
+        { "name": "latest_week", "label": "Last complete week", "expression": "MAX([week_label])", "deType": 0 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Whiteboard test shell</title>
+<!--
+  TEST ONLY (served by whiteboard_env.sh at /test-shell.html): stands in for the portal shell around the Whiteboard
+  page, with the same small interface the page uses from the real shell (portal-enhancements.js and portal-session.js):
+  window.ensureMissionSession() (the portal sign-in; here the test token in localStorage), window.portalPresentationsUrl()
+  (here the test manager, ?presentations=...), the portal-theme messages (?theme=dark) and mission-language (?lang=de).
+-->
+<style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style>
+</head>
+<body>
+<iframe id="appFrame" title="Whiteboard"></iframe>
+<script>
+  const query = new URLSearchParams(location.search);
+  const theme = query.get('theme') || 'mission';
+  const language = query.get('lang') || 'en';
+  window.ensureMissionSession = async () => localStorage.getItem('mission_access_token');
+  window.portalPresentationsUrl = () => query.get('presentations') || 'http://127.0.0.1:18471';
+  try { sessionStorage.setItem('mission_language', language); } catch {}
+  const frame = document.getElementById('appFrame');
+  const send = () => {
+    frame.contentWindow.postMessage({ type: 'portal-theme', theme }, '*');
+    frame.contentWindow.postMessage({ type: 'mission-language', language }, '*');
+  };
+  frame.addEventListener('load', send);
+  addEventListener('message', event => {
+    if (event.data?.type === 'portal-theme-request' && event.source === frame.contentWindow) frame.contentWindow.postMessage({ type: 'portal-theme', theme }, '*');
+  });
+  // ?blank: only this page (the check signs in here first).
+  if (!query.has('blank')) frame.src = '/whiteboard/' + (query.get('board') ? '?board=' + encodeURIComponent(query.get('board')) : '');
+</script>
+</body>
+</html>

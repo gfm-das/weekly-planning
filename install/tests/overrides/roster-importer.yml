@@ -1,0 +1,9 @@
+# Test only (see README.md): DA Management on the test network and port 28090.
+services:
+  roster-importer:
+    ports: !override
+      - "28090:8080"
+networks:
+  supabase_network:
+    external: true
+    name: gfmtest-network

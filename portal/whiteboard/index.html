@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-theme="mission">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Whiteboard</title>
+<!--
+  The portal's Whiteboard tab (AP, President, Data Analyst): named boards on Excalidraw, shared by the managers of the
+  mission, with live charts and key numbers from the Presentations chart engine. whiteboard.js is the page;
+  board-core.js its rules; vendor/ the Excalidraw + React bundle built by portal/whiteboard-build (never at runtime).
+  Boards are saved through portal-api (/api/whiteboards, migration 031). docs/handoff/round6/whiteboard2.md.
+-->
+<link rel="icon" href="../mission-icon.svg" />
+<link rel="stylesheet" href="vendor/gfm-excalidraw.css" />
+<link rel="stylesheet" href="whiteboard.css?v=1" />
+<script>
+  // Excalidraw's fonts come from this folder only (never from another site).
+  window.EXCALIDRAW_ASSET_PATH = new URL('vendor/', location.href).href;
+</script>
+<script src="../site-config.js"></script><script src="../i18n.js?v=6"></script>
+<script type="module" src="whiteboard.js?v=2"></script>
+</head>
+<body>
+<header class="wb-bar" id="bar">
+  <div class="wb-list-head" id="listHead">
+    <div class="wb-heading">
+      <h1>Whiteboard</h1>
+      <p>Boards for councils, trainings and plans, shared by the APs, the President and the Data Analysts.</p>
+    </div>
+    <button id="newBoard" class="btn primary" type="button" hidden>New board</button>
+  </div>
+  <div class="wb-board-head" id="boardHead" hidden>
+    <button id="backToBoards" class="btn ghost" type="button" title="Back to all boards"><span aria-hidden="true" data-i18n="common.arrowBack">←</span> <span class="wb-label">Boards</span></button>
+    <div class="wb-title">
+      <button id="boardName" class="wb-name" type="button" title="Rename this board" data-i18n-ignore></button>
+      <div id="saveState" class="wb-state" role="status" aria-live="polite"></div>
+    </div>
+    <div class="wb-actions" id="actions">
+      <button id="addNote" class="btn" type="button" title="Add a sticky note in the middle of the board">Add note</button>
+      <button id="addChart" class="btn" type="button" title="Add a live chart from mission numbers or your own numbers">Add chart</button>
+      <button id="addNumber" class="btn" type="button" title="Add a live key number with its trend">Add number</button>
+      <button id="editChart" class="btn" type="button" title="Change the selected chart" hidden>Edit chart</button>
+      <div class="wb-style" role="group" aria-label="Drawing style">
+        <button type="button" data-style="hand" aria-pressed="true" title="Sketchy lines and a handwritten font">Hand-drawn</button>
+        <button type="button" data-style="clean" aria-pressed="false" title="Straight lines and a plain font, for sharing and projecting">Clean lines</button>
+      </div>
+    </div>
+  </div>
+</header>
+<div id="banner" class="wb-banner" role="alert" hidden>
+  <span id="bannerText"></span>
+  <span class="wb-banner-actions">
+    <button id="bannerReload" class="btn" type="button">Reload their version</button>
+    <button id="bannerCopy" class="btn primary" type="button">Keep mine as a new board</button>
+  </span>
+</div>
+<main id="list" class="wb-list">
+  <p id="listMessage" class="wb-message" role="status" aria-live="polite">Loading boards…</p>
+  <div id="boards" class="wb-grid"></div>
+</main>
+<main id="stage" class="wb-stage" hidden data-i18n-ignore></main>
+<div id="busy" class="wb-busy" hidden><span class="wb-spinner" aria-hidden="true"></span><span id="busyText">Opening the board…</span></div>
+<iframe id="builder" class="wb-builder" title="Chart builder" hidden></iframe>
+<div id="toast" class="wb-toast" role="status" aria-live="polite"></div>
+
+<dialog id="nameDialog" class="wb-dialog" aria-labelledby="nameTitle">
+  <form method="dialog" id="nameForm">
+    <h2 id="nameTitle">New board</h2>
+    <label class="wb-field"><span id="nameLabel">Name</span><input id="nameInput" maxlength="80" autocomplete="off" required /></label>
+    <p id="nameError" class="wb-error" role="alert" hidden></p>
+    <div class="wb-dialog-actions">
+      <button value="cancel" class="btn" type="button" id="nameCancel">Cancel</button>
+      <button value="ok" class="btn primary" id="nameOk">Create</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirmDialog" class="wb-dialog" aria-labelledby="confirmTitle">
+  <form method="dialog">
+    <h2 id="confirmTitle">Delete this board?</h2>
+    <p class="wb-confirm-name" id="confirmName" data-i18n-ignore></p>
+    <p id="confirmText">Everyone loses it: the drawing, its notes, pictures and charts. This cannot be undone.</p>
+    <div class="wb-dialog-actions">
+      <button value="cancel" class="btn" id="confirmCancel">Cancel</button>
+      <button value="ok" class="btn danger" id="confirmOk">Delete board</button>
+    </div>
+  </form>
+</dialog>
+</body>
+</html>

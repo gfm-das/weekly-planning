@@ -1,0 +1,9 @@
+# Test only (see README.md): the portal's nginx on the test network and port 28070.
+services:
+  portal:
+    ports: !override
+      - "28070:80"
+networks:
+  gfm:
+    external: true
+    name: gfmtest-network

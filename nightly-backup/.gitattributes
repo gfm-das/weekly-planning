@@ -1,0 +1,3 @@
+# The gfm-backup container runs these with bash: keep LF line endings even with core.autocrlf=true on Windows.
+*.sh text eol=lf
+*.sh.example text eol=lf

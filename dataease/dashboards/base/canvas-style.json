@@ -1,0 +1,120 @@
+{
+ "width": 1280,
+ "height": 800,
+ "refreshViewEnable": false,
+ "refreshViewLoading": false,
+ "refreshUnit": "minute",
+ "refreshTime": 5,
+ "scale": 60,
+ "scaleWidth": 100,
+ "scaleHeight": 100,
+ "backgroundColorSelect": false,
+ "backgroundImageEnable": true,
+ "backgroundType": "backgroundColor",
+ "background": "/static-resource/7127292608094670848.png",
+ "openCommonStyle": true,
+ "opacity": 1,
+ "fontSize": 14,
+ "themeId": "10001",
+ "color": "#000000",
+ "backgroundColor": "rgba(245, 246, 247, 1)",
+ "dashboard": {
+  "gap": "yes",
+  "gapSize": 5,
+  "resultMode": "all",
+  "resultCount": 1000,
+  "themeColor": "light",
+  "mobileSetting": {
+   "customSetting": false,
+   "imageUrl": null,
+   "backgroundType": "image",
+   "color": "#000"
+  }
+ },
+ "component": {
+  "chartTitle": {
+   "show": true,
+   "fontSize": "18",
+   "hPosition": "left",
+   "vPosition": "top",
+   "isItalic": false,
+   "isBolder": true,
+   "remarkShow": false,
+   "remark": "",
+   "fontFamily": "Microsoft YaHei",
+   "letterSpace": "0",
+   "fontShadow": false,
+   "color": "#000000",
+   "remarkBackgroundColor": "#ffffff",
+   "modifyName": "color"
+  },
+  "chartColor": {
+   "basicStyle": {
+    "colorScheme": "default",
+    "colors": [
+     "#1E90FF",
+     "#90EE90",
+     "#00CED1",
+     "#E2BD84",
+     "#7A90E0",
+     "#3BA272",
+     "#2BE7FF",
+     "#0A8ADA",
+     "#FFD700"
+    ],
+    "alpha": 100,
+    "gradient": true,
+    "mapStyle": "normal",
+    "areaBaseColor": "#FFFFFF",
+    "areaBorderColor": "#303133",
+    "gaugeStyle": "default",
+    "tableBorderColor": "#E6E7E4",
+    "tableScrollBarColor": "#00000024"
+   },
+   "misc": {
+    "mapLineGradient": false,
+    "mapLineSourceColor": "#146C94",
+    "mapLineTargetColor": "#576CBC",
+    "nameFontColor": "#000000",
+    "valueFontColor": "#5470c6"
+   },
+   "tableHeader": {
+    "tableHeaderBgColor": "#1E90FF",
+    "tableHeaderFontColor": "#000000"
+   },
+   "tableCell": {
+    "tableItemBgColor": "#FFFFFF",
+    "tableFontColor": "#000000"
+   },
+   "modifyName": "gradient"
+  },
+  "chartCommonStyle": {
+   "backgroundColorSelect": true,
+   "backgroundImageEnable": false,
+   "backgroundType": "innerImage",
+   "innerImage": "board/board_1.svg",
+   "outerImage": null,
+   "innerPadding": 12,
+   "borderRadius": 8,
+   "backgroundColor": "rgba(255, 255, 255, 1)",
+   "innerImageColor": "rgba(16, 148, 229,1)"
+  },
+  "filterStyle": {
+   "layout": "horizontal",
+   "titleLayout": "left",
+   "labelColor": "#1F2329",
+   "titleColor": "#1F2329",
+   "color": "#1f2329",
+   "borderColor": "#BBBFC4",
+   "text": "#1F2329",
+   "bgColor": "#FFFFFF"
+  },
+  "tabStyle": {
+   "headPosition": "left",
+   "headFontColor": "#000000",
+   "headFontActiveColor": "#000000",
+   "headBorderColor": "#ffffff",
+   "headBorderActiveColor": "#ffffff"
+  }
+ }
+}

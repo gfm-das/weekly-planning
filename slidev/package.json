@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "node /slidev/manager/server.mjs"
+  },
+  "dependencies": {
+    "@slidev/cli": "52.19.1",
+    "@slidev/theme-default": "0.25.0",
+    "@vueuse/core": "14.4.0",
+    "archiver": "8.0.0",
+    "http-proxy": "1.18.1",
+    "yaml": "2.9.0"
+  },
+  "slidev": {
+    "addons": [
+      "/slidev/manager/addons/gfm-studio",
+      "/slidev/manager/gfm-addon"
+    ]
+  }
+}

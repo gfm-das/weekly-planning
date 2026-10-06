@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" data-theme="mission">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chart builder harness</title>
+<!--
+  A page for checking the chart builder (manager/chart-builder.mjs) in a browser without the manager,
+  Slidev or portal-api: studio.html's colours and buttons, and a stand-in for the manager's API with
+  made-up numbers (no database, no people). Served by builder-harness/nginx.conf; driven by
+  tests/edge_chart_builder.ps1. window.openBuilder(edit) opens it; window.__writes lists what it saved.
+-->
+<style>
+:root{--teal:#087f8c;--teal-dark:#066a75;--navy:#17394b;--page:#eef4f5;--panel:#fff;--text:#193746;--muted:#6b828d;--line:#d9e5e8;--soft:#e8f1f2;--danger:#b42318;--warn:#8a5a00;--ok:#127a4a;--shadow:0 14px 38px rgba(20,30,40,.18);color-scheme:light;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--page)}
+[data-theme="dark"]{--navy:#edf7f8;--page:#101a21;--panel:#18262f;--text:#edf7f8;--muted:#a9bdc3;--line:#2d414b;--soft:#21343d;--danger:#ff9b91;--warn:#f2c46d;--ok:#6fd3a0;--shadow:0 14px 38px rgba(0,0,0,.45);color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--text)}button,input{font:inherit;color:inherit}[hidden]{display:none!important}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--panel);color:var(--navy);border-radius:10px;padding:8px 13px;font-size:14px;font-weight:650;cursor:pointer;text-decoration:none;white-space:nowrap}.btn:hover{background:var(--soft)}.btn:disabled{opacity:.55;cursor:default}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}.btn.primary:hover{background:var(--teal-dark)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;background:var(--navy);color:var(--panel);padding:10px 16px;border-radius:12px;font-size:14px;z-index:50}.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<p style="padding:16px">Chart builder harness (made-up numbers).</p>
+<div id="toast" class="toast" role="status"></div>
+<script type="module">
+import { openChartBuilder } from '/_manager/chart/chart-builder.mjs';
+import { KPI_NAMES } from '/_manager/chart/chart-core.mjs';
+
+const zones = [{ id: 1, name: 'North' }, { id: 2, name: 'South' }, { id: 3, name: 'East' }, { id: 4, name: 'West' }];
+const districts = zones.flatMap(z => [1, 2].map(n => ({ id: z.id * 10 + n, name: `${z.name} ${n}`, zone_id: z.id })));
+const areas = districts.flatMap(d => [1, 2, 3].map(n => ({ id: d.id * 10 + n, name: `Area ${d.id}${n}`, district_id: d.id, zone_id: d.zone_id })));
+const sundays = Array.from({ length: 30 }, (_, i) => new Date(Date.UTC(2026, 8, 27) - (29 - i) * 7 * 86400000).toISOString().slice(0, 10));
+const goalWords = { previous_goal: ['goal set the week before', 'Goal set the week before'], goal: ["next week's goal", "Next week's goal"] };
+const measures = [];
+for (const [key, name] of Object.entries(KPI_NAMES)) {
+  measures.push({ id: `${key}.actual`, label: name, short: name, group: 'kpi', kind: 'actual', topic: key, goals: { goal: `${key}.goal`, previous_goal: `${key}.previous_goal` } });
+  for (const [g, [words, short]] of Object.entries(goalWords)) measures.push({ id: `${key}.${g}`, label: `${name}: ${words}`, short, group: 'kpi', kind: 'goal', topic: key, goals: {} });
+}
+// Lesson counts as charts.py has them: one without goals, one with next week's goal only.
+measures.push({ id: 'first_time_sacrament.actual', label: 'First time at sacrament meeting', short: 'First time at sacrament meeting', group: 'lessons', kind: 'actual', topic: 'first_time_sacrament', goals: {} });
+measures.push({ id: 'lessons_with_friends.actual', label: 'Lessons with friends', short: 'Lessons with friends', group: 'lessons', kind: 'actual', topic: 'lessons_with_friends', goals: { goal: 'lessons_with_friends.goal' } });
+measures.push({ id: 'lessons_with_friends.goal', label: "Lessons with friends: next week's goal", short: "Next week's goal", group: 'lessons', kind: 'goal', topic: 'lessons_with_friends', goals: {} });
+measures.push({ id: 'new_members.total', label: 'New members', short: 'New members', group: 'new_members', kind: 'count', topic: 'new_members', goals: {} });
+measures.push({ id: 'new_members.at_church', label: 'New members at church', short: 'At church', group: 'new_members', kind: 'count', topic: 'new_members', goals: {} });
+const catalog = { measures, groups: [{ id: 'kpi', label: 'Key indicators' }, { id: 'lessons', label: 'Lessons' }, { id: 'new_members', label: 'New members' }], zones, districts, areas, weeks: { current: sundays.at(-1), available: sundays } };
+
+const label = id => measures.find(m => m.id === id)?.label ?? id;
+const value = (id, i, u) => { const base = 10 + (id.length % 7) * 3 + u * 2; return /goal$/.test(id) ? base + 2 : base + ((i * 5 + u * 3) % 7); };
+function answer(spec) {
+  const weeks = sundays.slice(-spec.weeks.last);
+  const units = spec.level === 'mission' ? [null] : (spec.level === 'zone' ? zones : spec.level === 'district' ? districts : areas);
+  const pct = spec.transform === 'pct_of_goal';
+  const main = spec.measures.filter(m => !/goal$/.test(m) || !pct);
+  // Series names as charts.py series_name() gives them.
+  const sameTopic = new Set(main.map(m => m.split('.')[0])).size === 1;
+  const word = m => (sameTopic ? measures.find(x => x.id === m)?.short : label(m)) ?? m;
+  const name = (m, u) => !u ? word(m) : main.length === 1 ? u.name : units.length > 1 ? `${u.name} · ${word(m)}` : word(m);
+  let labels, series;
+  if (spec.by === 'unit') {
+    labels = units.map(u => u.name);
+    series = main.map(m => ({ name: word(m), values: units.map((u, j) => pct ? 80 + (j * 9) % 30 : weeks.reduce((s, _, i) => s + value(m, i, j), 0)), ...(/goal$/.test(m) ? { role: 'goal' } : {}) }));
+  }
+  else {
+    labels = weeks;
+    series = units.flatMap((u, j) => main.map(m => ({ name: name(m, u), values: weeks.map((_, i) => pct ? 85 + (i * 7 + j) % 25 : value(m, i, j)), ...(/goal$/.test(m) ? { role: 'goal' } : {}) })));
+  }
+  return { table: { labels, series }, meta: { level: spec.level, by: spec.by, audience: spec.audience, transform: spec.transform, unit: pct ? 'percent' : 'count', weeks, units: units.length, suppressed: false, stewardship: false, pinned: true } };
+}
+
+window.__writes = [];
+window.__requests = [];
+let slide = '# Zone conference\n\n<MissionChart type="bar" title="Old chart" :weeks="16" :query=\'{"measures":["friends_found.actual","friends_found.previous_goal"],"weeks":16}\' />\n';
+async function api(url, options = {}) {
+  await new Promise(r => setTimeout(r, 60));
+  window.__requests.push(options.body ? `${url} ${options.body}` : url);
+  if (url === '/api/charts/catalog') return catalog;
+  if (url === '/api/charts/data') return answer(JSON.parse(options.body).spec);
+  if (/^\/__slidev\/slides\/\d+\.json$/.test(url)) {
+    if (options.method === 'POST') { slide = JSON.parse(options.body).content; window.__writes.push({ url, content: slide }); return {}; }
+    return { content: slide };
+  }
+  if (url === '/@studio/deck') { window.__writes.push({ url, body: JSON.parse(options.body) }); return {}; }
+  const error = new Error('Not found in the harness.'); error.status = 404; throw error;
+}
+function toast(text) { const t = document.getElementById('toast'); t.textContent = text; t.className = 'toast show'; window.__toast = text; }
+// selection: Studio's selection of a chart ({ no, range, tag, sig, chartId }); the default is the chart on line 3.
+window.__saved = [];
+window.openBuilder = (edit = false, selection = { no: 1, range: [2, 3], tag: 'MissionChart', sig: '', chartId: '' }) => openChartBuilder({ slug: 'harness', api, frame: null, selection: edit ? selection : null, edit, toast, loadMonaco: () => Promise.reject(new Error('no Monaco in the harness')), onSaved: s => window.__saved.push(s) });
+// Another slide for Edit chart (the chart or charts on line 3, as Studio's selection says).
+window.setSlide = (tag) => { slide = ['# Zone conference', '', tag, ''].join('\n'); };
+window.getSlide = () => slide;
+window.harnessReady = true;
+</script>
+</body>
+</html>

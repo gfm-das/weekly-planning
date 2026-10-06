@@ -1,0 +1,393 @@
+<!doctype html>
+<!--
+  archetype-settings.html: the Settings of Archetypal Health (the Settings button on archetypes.html).
+
+  Who uses it: the managers only (APs, the President, Data Analysts). portal-api archetypes.py checks every request
+  and every value; a refused value comes back with its place (error.fields) and is marked next to its box.
+
+  What can be set: the numbers (KPIs) each archetype measures and their weights (they add up to 100 %), which area
+  details make areas "similar" (peer groups), the bands and their colours, the balance threshold, how many weeks to
+  average, and the diagnosis texts leaders read. Changes apply to everyone at once; the change history lists who
+  changed what, and "Restore the sheet's defaults" goes back to the original settings.
+
+  How it works: the page keeps a working copy ("draft") of the settings; every box writes into it, and Save sends all
+  of it with the version it started from (so two managers cannot overwrite each other unknowingly).
+-->
+<html lang="en" data-theme="mission">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>Archetypal Health settings</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <link rel="stylesheet" href="archetypes.css?v=1" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+  </head>
+  <body>
+    <main>
+      <header class="panel">
+        <div class="head">
+          <div>
+            <h1 data-i18n="archetypes.settingsTitle">Archetypal Health settings</h1>
+            <p class="muted" data-i18n="archetypes.settingsPurpose">Choose what each archetype measures and how areas are compared. Changes apply to everyone at once.</p>
+          </div>
+          <div class="actions">
+            <a class="button secondary" href="archetypes.html" data-i18n="archetypes.back">Back to Archetypal Health</a>
+            <button type="button" class="secondary" id="restore" data-i18n="archetypes.restore">Restore the sheet's defaults</button>
+          </div>
+        </div>
+      </header>
+      <p class="status" id="status" role="status"></p>
+      <div class="settings-grid" id="form" hidden>
+        <section class="panel" aria-labelledby="weightsTitle">
+          <h2 id="weightsTitle" data-i18n="archetypes.weightsTitle">What each archetype measures</h2>
+          <p class="muted" data-i18n="archetypes.weightsHelp">Choose the numbers for each archetype and how much each counts. The weights of an archetype add up to 100 %. A number without data is left out and the others count proportionally more.</p>
+          <div id="weights"></div>
+        </section>
+        <section class="panel" aria-labelledby="peerTitle">
+          <h2 id="peerTitle" data-i18n="archetypes.peerTitle">Similar areas (peer groups)</h2>
+          <p class="muted" data-i18n="archetypes.peerHelp">Each area is compared with areas that are alike in the details ticked here. Area details are uploaded in DA Management under Data uploads, Area data.</p>
+          <div id="peer"></div>
+        </section>
+        <section class="panel" aria-labelledby="bandsTitle">
+          <h2 id="bandsTitle" data-i18n="archetypes.bandsTitle">Bands and colours</h2>
+          <p class="muted" data-i18n="archetypes.bandsHelp">Each band starts at an index; the last band is everything below the band above it.</p>
+          <div id="bands"></div>
+        </section>
+        <section class="panel" aria-labelledby="balanceTitle">
+          <h2 id="balanceTitle" data-i18n="archetypes.balanceTitle">Balance and weeks</h2>
+          <div class="fields" id="balance"></div>
+        </section>
+        <section class="panel" aria-labelledby="textsTitle">
+          <h2 id="textsTitle" data-i18n="archetypes.textsTitle">Diagnosis texts</h2>
+          <p class="muted" data-i18n="archetypes.textsHelp">What leaders read when they open an area: its strengths first, then up to two patterns with next steps. While a text is unchanged, readers see it in their own language; a changed text is shown as written.</p>
+          <div id="texts"></div>
+        </section>
+        <div class="savebar">
+          <button type="button" id="save" data-i18n="archetypes.save">Save changes</button>
+          <span class="status" id="saveStatus" role="status"></span>
+        </div>
+        <section class="panel" aria-labelledby="historyTitle">
+          <h2 id="historyTitle" data-i18n="archetypes.historyTitle">Change history</h2>
+          <ul class="history" id="history"></ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="portal-client.js"></script>
+    <script src="archetypes-common.js?v=1"></script>
+    <script>
+      // See the overview at the top of this file.
+      const A = window.Archetypes;
+      const $ = (id) => document.getElementById(id);
+      // data: the server's answer (settings, choices, history). draft: the working copy. dirty: unsaved changes
+      // (leaving the page asks first). errors: the server's per-field messages after a refused Save.
+      const page = { data: null, draft: null, dirty: false, errors: {} };
+      // Where a number comes from, in the order of the "Add a number" list.
+      const GROUPS = ['plans', 'answers', 'new_members', 'uploads'];
+
+      // A new element with properties and children: el('p', { className: 'hint', textContent: '…' }).
+      function el(tag, props = {}, ...children) {
+        const node = Object.assign(document.createElement(tag), props);
+        node.append(...children);
+        return node;
+      }
+      function changed() {
+        page.dirty = true;
+        $('saveStatus').className = 'status';
+        $('saveStatus').textContent = A.t('archetypes.unsaved');
+      }
+      function kpiLabel(key) {
+        const source = page.data.sources.find((s) => s.key === key);
+        return A.tr(source ? source.label : key);
+      }
+      function errorFor(path) {
+        const text = page.errors[path];
+        return text ? el('span', { className: 'field-error', textContent: A.tr(text) }) : '';
+      }
+
+      // ------------------------------------------------------------------ loading
+      async function load() {
+        $('status').textContent = A.t('archetypes.loading');
+        try {
+          page.data = await portalAPI('archetypes/settings');
+          page.draft = structuredClone(page.data.settings);
+          page.dirty = false;
+          page.errors = {};
+          $('status').textContent = '';
+          $('form').hidden = false;
+          render();
+        } catch (error) {
+          $('status').className = 'status error';
+          $('status').textContent = error.status === 403 ? A.tr(error.message) : A.t('archetypes.loadFailed');
+        }
+      }
+
+      function render() {
+        renderWeights();
+        renderPeer();
+        renderBands();
+        renderBalance();
+        renderTexts();
+        renderHistory();
+      }
+
+      // ------------------------------------------------------------------ weights
+      function renderWeights() {
+        $('weights').replaceChildren(errorFor('weights'), ...page.data.archetypes.map(archetypeBlock));
+      }
+
+      function archetypeBlock(key) {
+        const weights = page.draft.weights[key];
+        const block = el('div', { className: 'archetype-block' }, el('h3', { textContent: A.archetypeName(key) }));
+        const table = el('table', { className: 'weights-table' });
+        table.createTHead().insertRow().append(el('th', { textContent: A.t('archetypes.number') }),
+          el('th', { textContent: A.t('archetypes.weight') }), el('th'));
+        const body = table.createTBody();
+        // biggest weight first (the order is kept while typing; it changes only when a number is added or removed)
+        const order = Object.keys(weights).sort((a, b) => weights[b] - weights[a] || kpiLabel(a).localeCompare(kpiLabel(b)));
+        for (const kpi of order) body.append(weightRow(key, kpi));
+        const total = el('p', { className: 'total' });
+        showTotal(key, total);
+        block.append(table, total, errorFor('weights.' + key), addNumber(key));
+        return block;
+      }
+
+      function weightRow(archetype, kpi) {
+        const row = el('tr');
+        const input = el('input', { type: 'number', min: 1, max: 100, step: 1, value: page.draft.weights[archetype][kpi] });
+        input.setAttribute('aria-label', A.t('archetypes.weightOf', { name: kpiLabel(kpi) }));
+        input.oninput = () => {
+          page.draft.weights[archetype][kpi] = input.value === '' ? 0 : Number(input.value);
+          showTotal(archetype, row.closest('.archetype-block').querySelector('.total'));
+          changed();
+        };
+        const remove = el('button', { type: 'button', className: 'secondary', textContent: A.t('common.remove') });
+        remove.onclick = () => {
+          delete page.draft.weights[archetype][kpi];
+          changed();
+          renderWeights();
+        };
+        row.append(el('td', { textContent: kpiLabel(kpi) }), el('td', {}, input), el('td', {}, remove));
+        return row;
+      }
+
+      function showTotal(archetype, box) {
+        const total = Object.values(page.draft.weights[archetype]).reduce((sum, w) => sum + (Number(w) || 0), 0);
+        box.textContent = total === 100 ? A.t('archetypes.total', { total }) : A.t('archetypes.totalOff', { total });
+        box.classList.toggle('off', total !== 100);
+      }
+
+      // "Add a number": every number not used yet by this archetype, grouped by where it comes from. Archived numbers
+      // (Facebook, FindeChristus: migration 038) are never offered; a weight they already have stays until removed.
+      function addNumber(archetype) {
+        const select = el('select');
+        select.setAttribute('aria-label', A.t('archetypes.addNumber'));
+        select.append(el('option', { value: '', textContent: A.t('archetypes.addNumber') }));
+        for (const group of GROUPS) {
+          const options = page.data.sources.filter((s) => s.group === group && !s.archived && !(s.key in page.draft.weights[archetype]));
+          if (!options.length) continue;
+          const optgroup = el('optgroup', { label: A.t('archetypes.group.' + group) });
+          for (const s of options) {
+            const label = s.has_data ? A.tr(s.label) : A.t('archetypes.noData', { label: A.tr(s.label) });
+            optgroup.append(el('option', { value: s.key, textContent: label }));
+          }
+          select.append(optgroup);
+        }
+        select.onchange = () => {
+          if (!select.value) return;
+          page.draft.weights[archetype][select.value] = 0;
+          changed();
+          renderWeights();
+        };
+        return el('div', { className: 'add-row' }, select);
+      }
+
+      // ------------------------------------------------------------------ peer groups
+      function attributeLabel(value) {
+        if (value.startsWith('extra:')) return A.t('archetypes.attr.extra', { name: value.slice(6) });
+        return A.t('archetypes.attr.' + value);
+      }
+
+      function renderPeer() {
+        const peer = page.draft.peer_group;
+        const checks = el('div', { className: 'checks' });
+        for (const value of page.data.attributes) {
+          const box = el('input', { type: 'checkbox', checked: peer.attributes.includes(value) });
+          box.onchange = () => {
+            // keep the order of the list, so the group names always read the same way
+            const chosen = new Set(peer.attributes);
+            if (box.checked) chosen.add(value); else chosen.delete(value);
+            peer.attributes = page.data.attributes.filter((a) => chosen.has(a));
+            changed();
+          };
+          checks.append(el('label', {}, box, attributeLabel(value)));
+        }
+        const bins = el('input', { id: 'bins', value: peer.density_bins.join(', '), inputMode: 'decimal' });
+        bins.oninput = () => {
+          peer.density_bins = bins.value.split(',').map((v) => v.trim()).filter(Boolean).map((v) => (isNaN(Number(v)) ? v : Number(v)));
+          changed();
+        };
+        const size = el('input', { id: 'minimum', type: 'number', min: 2, max: 50, step: 1, value: peer.minimum_size });
+        size.oninput = () => { peer.minimum_size = Number(size.value); changed(); };
+        const fallback = el('input', { type: 'checkbox', checked: peer.fallback });
+        fallback.onchange = () => { peer.fallback = fallback.checked; changed(); };
+        $('peer').replaceChildren(checks, errorFor('peer_group.attributes'), errorFor('peer_group'),
+          el('div', { className: 'fields' },
+            field('bins', A.t('archetypes.densityBins'), bins, A.t('archetypes.densityHint'), 'peer_group.density_bins'),
+            field('minimum', A.t('archetypes.minimumSize'), size, A.t('archetypes.minimumHint'), 'peer_group.minimum_size')),
+          el('div', { className: 'checks' }, el('label', {}, fallback, A.t('archetypes.fallback'))),
+          el('p', { className: 'hint', textContent: A.t('archetypes.fallbackHint') }), errorFor('peer_group.fallback'));
+      }
+
+      function field(id, label, input, hint, errorPath) {
+        return el('div', { className: 'field' }, el('label', { htmlFor: id, textContent: label }), input,
+          hint ? el('p', { className: 'hint', textContent: hint }) : '', errorFor(errorPath));
+      }
+
+      // ------------------------------------------------------------------ bands
+      function renderBands() {
+        const bands = page.draft.bands;
+        $('bands').replaceChildren(errorFor('bands'), ...bands.map((band, i) => bandRow(band, i)));
+      }
+
+      function bandRow(band, i) {
+        const name = el('input', { value: band.name, maxLength: 40 });
+        name.setAttribute('aria-label', A.t('archetypes.bandName'));
+        const start = band.from === null
+          ? el('span', { className: 'muted', textContent: A.t('archetypes.bandRest') })
+          : el('input', { type: 'number', min: 0, max: 300, step: 1, value: band.from });
+        if (band.from !== null) start.setAttribute('aria-label', A.t('archetypes.bandStart'));
+        const colour = el('input', { type: 'color', value: band.color });
+        colour.setAttribute('aria-label', A.t('archetypes.bandColour'));
+        const preview = el('span', { className: 'pill' });
+        const paint = () => {
+          preview.textContent = A.tr(band.name);
+          preview.style.background = band.color;
+          preview.style.color = A.textOn(band.color);
+        };
+        name.oninput = () => { band.name = name.value; paint(); changed(); };
+        colour.oninput = () => { band.color = colour.value; paint(); changed(); };
+        if (band.from !== null) start.oninput = () => { band.from = start.value === '' ? null : Number(start.value); changed(); };
+        paint();
+        return el('div', {}, el('div', { className: 'band-row' }, name, start, colour, preview), errorFor('bands.' + i));
+      }
+
+      // ------------------------------------------------------------------ balance and weeks
+      function renderBalance() {
+        const threshold = el('input', { id: 'threshold', type: 'number', min: 0, max: 2, step: 0.05, value: page.draft.balance_threshold });
+        threshold.oninput = () => { page.draft.balance_threshold = Number(threshold.value); changed(); };
+        const weeks = el('select', { id: 'weeksDefault' });
+        for (const n of page.data.week_choices) {
+          weeks.append(el('option', { value: n, selected: n === page.draft.weeks_to_average,
+            textContent: n === 1 ? A.t('archetypes.oneWeek') : A.t('archetypes.manyWeeks', { count: n }) }));
+        }
+        weeks.onchange = () => { page.draft.weeks_to_average = Number(weeks.value); changed(); };
+        $('balance').replaceChildren(
+          field('threshold', A.t('archetypes.balance'), threshold, A.t('archetypes.balanceHint'), 'balance_threshold'),
+          field('weeksDefault', A.t('archetypes.weeksDefault'), weeks, A.t('archetypes.weeksHint'), 'weeks_to_average'));
+      }
+
+      // ------------------------------------------------------------------ diagnosis texts
+      function renderTexts() {
+        const texts = page.draft.diagnoses;
+        const strengths = el('div', { className: 'fields' });
+        for (const key of page.data.archetypes) {
+          const box = el('textarea', { id: 'strength-' + key, value: texts.strengths[key], maxLength: 300 });
+          box.oninput = () => { texts.strengths[key] = box.value; changed(); };
+          strengths.append(field('strength-' + key, A.t('archetypes.strengthOf', { name: A.archetypeName(key) }), box, '',
+            'diagnoses.strengths.' + key));
+        }
+        const patterns = page.data.patterns.map((key) => patternEditor(key, texts.patterns[key]));
+        $('texts').replaceChildren(errorFor('diagnoses'), el('h3', { textContent: A.t('archetypes.strengths') }), strengths,
+          el('h3', { textContent: A.t('archetypes.patterns') }), ...patterns);
+      }
+
+      function patternEditor(key, pattern) {
+        const details = el('details', { className: 'pattern-edit', open: Boolean(page.errors['diagnoses.patterns.' + key]) });
+        const summary = el('summary', { textContent: A.tr(pattern.title) });
+        const title = el('input', { id: 'title-' + key, value: pattern.title, maxLength: 80 });
+        title.oninput = () => { pattern.title = title.value; summary.textContent = title.value; changed(); };
+        const meaning = el('textarea', { id: 'meaning-' + key, value: pattern.meaning, maxLength: 400 });
+        meaning.oninput = () => { pattern.meaning = meaning.value; changed(); };
+        const steps = [0, 1, 2].map((i) => {
+          const input = el('input', { id: `step-${key}-${i}`, value: pattern.steps[i] || '', maxLength: 300 });
+          input.oninput = () => {
+            const values = [0, 1, 2].map((j) => $(`step-${key}-${j}`).value.trim());
+            pattern.steps = values.filter(Boolean);
+            changed();
+          };
+          return field(input.id, A.t('archetypes.step', { n: i + 1 }), input, '', '');
+        });
+        details.append(summary, el('div', { className: 'body' },
+          el('p', { className: 'when', textContent: A.t('archetypes.when.' + key) }),
+          field('title-' + key, A.t('common.title'), title, '', ''),
+          field('meaning-' + key, A.t('archetypes.meaning'), meaning, '', ''), ...steps,
+          errorFor('diagnoses.patterns.' + key)));
+        return details;
+      }
+
+      // ------------------------------------------------------------------ history
+      // The server writes a short English summary ("Weights: Finding, Bands"); each part is translated here.
+      function historyPart(part) {
+        let match = part.match(/^Weights: (\w+)$/);
+        if (match) return A.t('archetypes.hist.weights', { name: A.archetypeName(match[1].toLowerCase()) });
+        match = part.match(/^(.+): (.+) → (.+)$/);
+        if (match) return A.t('archetypes.hist.change', { what: A.tr(match[1]), before: match[2], after: match[3] });
+        return A.tr(part);
+      }
+
+      function renderHistory() {
+        const list = $('history');
+        list.replaceChildren();
+        if (!page.data.history.length) list.append(el('li', { className: 'muted', textContent: A.t('archetypes.historyEmpty') }));
+        for (const entry of page.data.history) {
+          const when = new Date(entry.changed_at).toLocaleString(document.documentElement.lang || 'en',
+            { dateStyle: 'medium', timeStyle: 'short', timeZone: (window.GFM_SITE && window.GFM_SITE.timeZone) || 'Europe/Berlin' });
+          const who = el('div', { className: 'who', textContent: [when, entry.changed_by_name, A.t('archetypes.version', { n: entry.version })].filter(Boolean).join(' · ') });
+          who.setAttribute('data-i18n-ignore', '');
+          list.append(el('li', {}, el('div', { textContent: entry.summary.split(', ').map(historyPart).join(', ') }), who));
+        }
+      }
+
+      // ------------------------------------------------------------------ saving
+      async function save() {
+        $('save').disabled = true;
+        $('saveStatus').className = 'status';
+        $('saveStatus').textContent = A.t('archetypes.saving');
+        try {
+          await portalAPI('archetypes/settings', { method: 'PUT', body: { settings: page.draft, version: page.data.version } });
+          await load();
+          $('saveStatus').textContent = A.t('archetypes.savedSettings');
+        } catch (error) {
+          page.errors = error.fields || {};
+          $('saveStatus').className = 'status error';
+          $('saveStatus').textContent = error.fields ? A.t('archetypes.checkMarked') : A.tr(error.message);
+          render();
+        } finally {
+          $('save').disabled = false;
+        }
+      }
+
+      async function restore() {
+        const choice = await portalConfirm({ title: A.t('archetypes.restoreTitle'), message: A.t('archetypes.restoreMessage'),
+          choices: [{ value: 'restore', label: A.t('archetypes.restoreButton') }], keep: A.t('common.cancel') });
+        if (choice !== 'restore') return;
+        try {
+          await portalAPI('archetypes/settings/restore', { method: 'POST', body: { version: page.data.version } });
+          await load();
+          $('saveStatus').className = 'status';
+          $('saveStatus').textContent = A.t('archetypes.restoredDone');
+        } catch (error) {
+          $('saveStatus').className = 'status error';
+          $('saveStatus').textContent = A.tr(error.message);
+        }
+      }
+
+      $('save').onclick = save;
+      $('restore').onclick = restore;
+      addEventListener('beforeunload', (event) => { if (page.dirty) { event.preventDefault(); event.returnValue = ''; } });
+      addEventListener('mission-i18n-change', () => page.data && render());
+      A.whenReady().then(load);
+    </script>
+  </body>
+</html>

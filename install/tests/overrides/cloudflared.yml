@@ -1,0 +1,4 @@
+# Test only (see README.md): the tunnel container with its own name.
+services:
+  cloudflared:
+    container_name: gfmtest-cloudflared

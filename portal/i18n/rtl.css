@@ -1,0 +1,60 @@
+/* Right-to-left fixes (Persian, Arabic). i18n.js loads this file only when the page is dir="rtl"; dir="rtl" already
+   mirrors flex and grid layouts, so this only fixes what the pages place with left/right directly.
+   Shared by the portal, DA Management (:8090) and Presentations (:3030). */
+[dir="rtl"] body { text-align: right; }
+/* Written content keeps its own direction, line by line: an English note stays left to right, a Persian or Arabic one
+   right to left, and an empty box shows its placeholder on the right. */
+[dir="rtl"] input, [dir="rtl"] textarea { unicode-bidi: plaintext; text-align: start; }
+/* The same for what people wrote, shown as text (i18n.js leaves it as written): events, announcements, plans, notes,
+   the mission focus, and the names of files, decks and boards. "Transfer calls are on Saturday." keeps its full stop
+   at the end of the line; an Arabic announcement still reads right to left. */
+[dir="rtl"] :is(#events .event h2, #events .event p, #events .item h3, #events .item p, #announcements .item h3,
+  #announcements .item p, #announcements .announcement h3, #announcements .announcement > p, #list .announcement h2, #list .announcement > p, #reads p, .plan-text, #supportingPlans .item p,
+  #inspirationText, #attendees label, p.text, #grid .card h2, #accessTitle, #titleButton, #boardName, .wb-confirm-name,
+  .wb-card h2) { unicode-bidi: plaintext; text-align: start; }
+[dir="rtl"] .attachments button { unicode-bidi: plaintext; }
+[dir="rtl"] select { text-align: right; }
+/* Numbers, dates, codes, emails and addresses keep their own direction inside right-to-left text. */
+[dir="rtl"] input[type="number"], [dir="rtl"] input[type="email"], [dir="rtl"] input[type="url"], [dir="rtl"] input[type="date"],
+[dir="rtl"] input[type="time"], [dir="rtl"] input[type="datetime-local"], [dir="rtl"] code { direction: ltr; unicode-bidi: plaintext; }
+[dir="rtl"] input[type="number"] { text-align: right; }
+[dir="rtl"] th, [dir="rtl"] td { text-align: right; }
+
+/* ---- Portal shell (index.html): the menu on the right, the phone menu slides in from the right (closed, it sits
+   just past the right edge, as far out as portal.css puts it past the left edge in left-to-right languages). */
+[dir="rtl"] .nav-item { text-align: right; }
+[dir="rtl"] .sidebar { border-right: 0; border-left: 1px solid #e2e8f0; }
+[dir="rtl"] .mobile-menu { margin-right: 0; margin-left: 12px; }
+@media (max-width: 780px) {
+  [dir="rtl"] .sidebar { left: auto; right: -290px; transition: right .2s ease; box-shadow: -6px 0 24px rgba(0, 0, 0, .12); }
+  [dir="rtl"] .sidebar.open { right: 0; left: auto; }
+}
+
+/* ---- Portal pages */
+[dir="rtl"] .section-head, [dir="rtl"] .week-row { text-align: right; }
+/* Letter spacing breaks the joined letters of Persian and Arabic script. */
+[dir="rtl"] * { letter-spacing: normal !important; }
+/* Overview: a card's title stays next to its grip. */
+[dir="rtl"] [data-card] .card-grip + * { margin-right: 0; margin-left: auto; }
+[dir="rtl"] .area-title { text-align: right; }
+/* Weekly Planning */
+[dir="rtl"] .answer-grid th[scope="row"] { text-align: right; }
+[dir="rtl"] .person-tab.add-tab { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .tab-badge { margin-left: 0; margin-right: 7px; }
+/* Call-ins: the first column (names) on the right, also when it sticks while the table scrolls sideways. */
+[dir="rtl"] th:first-child, [dir="rtl"] td:first-child, [dir="rtl"] .person-row { text-align: right; }
+[dir="rtl"] .count { margin-left: 0; margin-right: 4px; }
+[dir="rtl"] details.more > summary::after { margin-left: 0; margin-right: auto; }
+@media (max-width: 1099px) {
+  [dir="rtl"] .scope-table th:first-child, [dir="rtl"] .scope-table td:first-child { left: auto; right: 0; }
+}
+
+/* ---- Charts (ECharts, SVG or canvas: the chart builder's preview, the Overview glimpse, whiteboard charts). A chart keeps
+   its left-to-right drawing, with the weeks running left to right; under dir="rtl" the SVG text anchors flip and the
+   legend names run over their markers. Persian and Arabic words in the labels still read right to left. */
+[dir="rtl"] [_echarts_instance_] { direction: ltr; }
+
+/* ---- Presentations: the /studio bar */
+[dir="rtl"] .title { text-align: right; margin-left: 0; margin-right: -6px; }
+[dir="rtl"] .title-input { margin-left: 0; margin-right: -6px; }
+[dir="rtl"] .source { border-right: 0; border-left: 1px solid var(--line, #d9e5e8); }

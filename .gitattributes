@@ -1,0 +1,13 @@
+# The baseline schema is stored byte for byte: Git must not change its line endings (42 live functions contain Windows line
+# endings, and a changed file no longer builds the same database; portal-api/baseline/check-baseline.ps1 proves it).
+portal-api/baseline/000_baseline.sql -text
+
+# Scripts and config files that Linux containers read must keep Unix line endings in a Windows checkout too (a script with a
+# carriage return in its first line cannot be started: "no such file or directory").
+*.sh text eol=lf
+supabase/config/** text eol=lf
+supabase/functions/** text eol=lf
+slidev/manager/gfm-addon/ai/* text eol=lf
+
+# Windows command files need Windows line endings.
+*.cmd text eol=crlf

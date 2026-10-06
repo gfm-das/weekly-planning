@@ -1,0 +1,24 @@
+# Test only (see README.md): the database stack on its own network, volumes and port.
+networks:
+  gfm-network:
+    name: gfmtest-network
+volumes:
+  gfm-supabase-db-data: { name: gfmtest-supabase-db-data }
+  gfm-supabase-db-config: { name: gfmtest-supabase-db-config }
+  gfm-supabase-deno-cache: { name: gfmtest-supabase-deno-cache }
+  gfm-supabase-storage: { name: gfmtest-supabase-storage }
+  gfm-supabase-snippets: { name: gfmtest-supabase-snippets }
+services:
+  supabase-kong:
+    ports: !override
+      - "28000:8000"
+    mem_limit: 600m
+    networks:
+      gfm-network:
+        aliases: [gfm-beta-supabase-kong-1]
+  supabase-db:
+    ports: !override
+      - "127.0.0.1:25432:5432"
+    networks:
+      gfm-network:
+        aliases: [gfm-beta-supabase-db-1]

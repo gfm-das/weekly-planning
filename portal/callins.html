@@ -1,0 +1,2053 @@
+<!doctype html>
+<!--
+  CALL-INS (callins.html)
+
+  What it is:  the page for the weekly call-in. Leaders see how each zone, district and area did this week (the key
+               indicators against last week's goals), read each companionship's plans, write notes for each other,
+               and see the people the missionaries are helping. A district leader marks the district call-in
+               complete (and can reopen it).
+  Who uses it: district leaders (their district), zone leaders (their zone) and the managers (APs, the President,
+               Data Analysts: the whole mission). They move Mission > Zone > District > Area with the breadcrumb and
+               "Go deeper". Sister training leaders and missionaries do not have Call-ins.
+  How it fits: the portal (index.html) shows this page inside its frame. The page talks only to portal-api
+               (/api/callins..., portal-api/callins.py) through portalAPI() from portal-client.js. The numbers,
+               plans and people come from what the missionaries saved in Weekly Planning (planning.html).
+               i18n.js swaps every English text on the page for the reader's language (portal/i18n/*.json).
+
+  A plain-words guide to this page, how the data flows and how to test it: README-planning-callins.md.
+-->
+<html lang="en" data-theme="mission">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>Call-ins</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+    <style>
+      /* ---------------------------------------------------------------------------------------------------------
+         Colours: green for done, orange for not yet (light and dark theme)
+         --------------------------------------------------------------------------------------------------------- */
+      :root {
+        --ok-bg: #e3f4ee;
+        --ok-fg: #17684f;
+        --warn-bg: #fff3df;
+        --warn-fg: #8a5313;
+        --dot-on: #1f9d6f;
+        --dot-off: #b6c3c9;
+        --focus: #97d5d0;
+      }
+      [data-theme="dark"] {
+        --ok-bg: #173d33;
+        --ok-fg: #8fe0c1;
+        --warn-bg: #43351d;
+        --warn-fg: #ffd08a;
+        --dot-on: #4fd1a0;
+        --dot-off: #5d7079;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         The page and its buttons (every button is a 44 px touch target; inputs use 16 px so phones do not zoom)
+         --------------------------------------------------------------------------------------------------------- */
+      body {
+        padding-bottom: calc(100px + env(safe-area-inset-bottom));
+        overflow-wrap: anywhere;
+      }
+      main {
+        max-width: 1200px;
+      }
+      body.phone main {
+        max-width: 760px;
+      }
+      button {
+        min-height: 44px;
+      }
+      textarea,
+      select,
+      input {
+        font-size: 16px;
+      }
+      button,
+      select,
+      textarea,
+      input {
+        font-family: inherit;
+      }
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+      button.secondary {
+        background: var(--soft);
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+      button.link {
+        background: none;
+        color: var(--teal);
+        padding: 10px 4px;
+        font-weight: 700;
+      }
+      [data-theme="dark"] button.link {
+        color: #7fd3cb;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         The header: breadcrumb, title, week picker and status chips
+         --------------------------------------------------------------------------------------------------------- */
+      .hero {
+        background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
+        color: #fff;
+        border: 0;
+        box-shadow: 0 18px 42px #12384720;
+      }
+      .hero .muted {
+        color: #d8eef0;
+      }
+      .crumbs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        margin: -6px 0 8px;
+      }
+      .crumbs button {
+        background: #ffffff1f;
+        color: #fff;
+        min-height: 44px;
+        padding: 6px 14px;
+        border-radius: 99px;
+        font-size: 13px;
+      }
+      .crumbs[hidden] {
+        display: none;
+      }
+      .crumbs .here {
+        font-weight: 800;
+        padding: 6px 4px;
+      }
+      .crumbs .plain {
+        color: #d8eef0;
+        padding: 6px 4px;
+      }
+      .crumbs .sep {
+        color: #b9dfe2;
+      }
+      .head-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .eyebrow {
+        margin: 0;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #bfe6e6;
+      }
+      .hero h1 {
+        font-size: 28px;
+        margin: 4px 0;
+      }
+      .hero p {
+        margin: 0;
+      }
+      .week-picker {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .week-picker[hidden] {
+        display: none;
+      }
+      .week-picker select {
+        min-height: 44px;
+        min-width: 0;
+        background: #fff;
+        color: #173644;
+      }
+      .week-picker button {
+        background: #ffffff26;
+        color: #fff;
+        min-width: 44px;
+        padding: 0 12px;
+        font-size: 22px;
+        line-height: 1;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 99px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        background: var(--soft);
+        color: var(--text);
+      }
+      .chip.ok {
+        background: var(--ok-bg);
+        color: var(--ok-fg);
+      }
+      .chip.warn {
+        background: var(--warn-bg);
+        color: var(--warn-fg);
+      }
+      .hero .chip {
+        background: #ffffff24;
+        color: #fff;
+      }
+      .hero .chip.ok {
+        background: #c7f0de;
+        color: #0f5a43;
+      }
+      .hero .chip.warn {
+        background: #ffe6bd;
+        color: #6f420c;
+      }
+      #week-note {
+        margin: -4px 0 12px;
+      }
+      .status:empty {
+        min-height: 0;
+        margin: 0;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         The tabs: Overview, People and Notes
+         --------------------------------------------------------------------------------------------------------- */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        border-bottom: 1px solid var(--line);
+        margin: 8px 0 16px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .tabs[hidden],
+      .tabs button[hidden] {
+        display: none;
+      }
+      .tabs button {
+        background: transparent;
+        color: var(--muted);
+        border-radius: 10px 10px 0 0;
+        padding: 10px 18px;
+        white-space: nowrap;
+        border: 1px solid transparent;
+        border-bottom: 0;
+        margin-bottom: -1px;
+        font-size: 15px;
+      }
+      .tabs button[aria-selected="true"] {
+        background: var(--panel);
+        color: var(--text);
+        border-color: var(--line);
+        box-shadow: inset 0 3px 0 var(--teal);
+      }
+      .count {
+        display: inline-block;
+        min-width: 20px;
+        padding: 1px 6px;
+        border-radius: 99px;
+        background: var(--soft);
+        color: var(--muted);
+        font-size: 11px;
+        margin-left: 4px;
+        text-align: center;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Numbers: the key indicator tiles, the small tables and the big sortable table
+         --------------------------------------------------------------------------------------------------------- */
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .kpi {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 12px;
+      }
+      .kpi span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        min-height: 32px;
+      }
+      .kpi strong {
+        font-size: 26px;
+        letter-spacing: -0.02em;
+      }
+      .kpi small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 3px;
+      }
+      .table-wrap {
+        position: relative; /* keeps the hidden column label inside the scrolling box */
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 9px 8px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+        white-space: nowrap;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+        white-space: normal;
+      }
+      th {
+        /* Column titles may wrap: indicator names are much longer in some languages. They wrap between words (or
+           with a hyphen where the language allows it), never inside a word: Persian and Arabic words stay whole. */
+        white-space: normal;
+        hyphens: auto;
+        overflow-wrap: normal;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        background: var(--panel);
+      }
+      .numbers td:first-child {
+        min-width: 110px;
+      }
+      .legend {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+      /* Every button in the table is a 44 px touch target; the cells around them lose their own padding instead. */
+      .scope-table th {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .scope-table th button {
+        background: none;
+        color: inherit;
+        font: inherit;
+        padding: 6px 2px;
+        min-height: 44px;
+        cursor: pointer;
+      }
+      .scope-table td.open {
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+      .scope-table th[aria-sort="ascending"] button::after {
+        content: " \25B2";
+      }
+      .scope-table th[aria-sort="descending"] button::after {
+        content: " \25BC";
+      }
+      .scope-table td.name {
+        font-weight: 700;
+        min-width: 130px;
+      }
+      @media (max-width: 1099px) {
+        .scope-table th:first-child,
+        .scope-table td:first-child {
+          position: sticky;
+          left: 0;
+          z-index: 1;
+          background: var(--panel);
+          box-shadow: 1px 0 0 var(--line);
+        }
+      }
+      .scope-table .go {
+        min-height: 44px;
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      @media (min-width: 1100px) {
+        body.desktop .table-wrap.sticky {
+          overflow: visible;
+        }
+        body.desktop .table-wrap.sticky th {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+        }
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Cards: one per zone, district or area, with folding parts (details.more)
+         --------------------------------------------------------------------------------------------------------- */
+      .cards {
+        display: grid;
+        gap: 12px;
+      }
+      body.desktop .cards {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 16px;
+        min-width: 0;
+        margin-bottom: 0;
+      }
+      .card + .card,
+      .card.spaced {
+        margin-top: 12px;
+      }
+      .cards > .card + .card {
+        margin-top: 0;
+      }
+      .card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .card-head h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .card .chips {
+        margin: 8px 0 4px;
+      }
+      .card h3 {
+        font-size: 12px;
+        margin: 16px 0 8px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .section-title {
+        margin: 20px 0 10px;
+      }
+      .missionaries {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 4px 0 0;
+      }
+      details.more {
+        border-top: 1px solid var(--line);
+        margin-top: 12px;
+      }
+      details.more > summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 44px;
+        font-weight: 700;
+        font-size: 15px;
+      }
+      details.more > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.more > summary::after {
+        content: "+";
+        color: var(--teal);
+        font-size: 22px;
+        margin-left: auto;
+      }
+      details.more[open] > summary::after {
+        content: "\2212";
+      }
+      .text {
+        white-space: pre-wrap;
+        background: var(--soft);
+        padding: 12px;
+        border-radius: 9px;
+        font-size: 15px;
+        line-height: 1.55;
+        margin: 0 0 10px;
+      }
+      .empty-line {
+        color: var(--muted);
+        font-size: 14px;
+        font-style: italic;
+        margin: 0 0 10px;
+      }
+      .plan-item h4,
+      .unit h4 {
+        margin: 10px 0 6px;
+        font-size: 14px;
+      }
+      .go-deeper {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .rows {
+        display: grid;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 15px;
+      }
+      .row span:last-child {
+        font-weight: 700;
+        text-align: right;
+      }
+      .update-list .update {
+        border-bottom: 1px solid var(--line);
+        padding: 10px 0;
+      }
+      .update strong {
+        display: block;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Notes and area updates: the text boxes, Save and the kept text
+         --------------------------------------------------------------------------------------------------------- */
+      .field {
+        margin: 6px 0 12px;
+      }
+      .field textarea {
+        width: 100%;
+        min-height: 130px;
+      }
+      .field-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .save-state {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .save-state.saved {
+        color: var(--ok-fg);
+        font-weight: 700;
+      }
+      .locked {
+        background: var(--soft);
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0 0 12px;
+      }
+      /* Text a leader typed that could not be saved (the call-in was completed meanwhile): kept, never dropped. */
+      .unsaved {
+        background: var(--warn-bg);
+        color: var(--warn-fg);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin: 0 0 12px;
+      }
+      .unsaved p {
+        margin: 0 0 8px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .unsaved textarea {
+        width: 100%;
+        min-height: 110px;
+        background: var(--panel);
+        color: var(--text);
+      }
+      .unsaved .save-state {
+        color: inherit;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         The People tab and the person pop-up
+         --------------------------------------------------------------------------------------------------------- */
+      .subtabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        margin-bottom: 12px;
+        padding-bottom: 2px;
+      }
+      .subtabs button {
+        background: var(--panel);
+        color: var(--text);
+        border: 1px solid var(--line);
+        white-space: nowrap;
+        font-size: 14px;
+      }
+      .subtabs button[aria-selected="true"] {
+        border-color: var(--teal);
+        box-shadow: inset 0 -3px 0 var(--teal);
+      }
+      .people-panels {
+        display: grid;
+        gap: 12px;
+      }
+      .people-panels > .card {
+        margin-top: 0;
+      }
+      @media (max-width: 700px) {
+        .subtabs {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          overflow: visible;
+        }
+        .subtabs button {
+          white-space: normal;
+          line-height: 1.25;
+          padding: 8px 6px;
+          font-size: 13px;
+        }
+      }
+      .people-panel[hidden] {
+        display: none;
+      }
+      @media (min-width: 1000px) {
+        body.desktop .subtabs {
+          display: none;
+        }
+        body.desktop .people-panels {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          align-items: start;
+        }
+        body.desktop .people-panel[hidden] {
+          display: block;
+        }
+      }
+      .people-panel h2 {
+        font-size: 17px;
+        margin: 0 0 4px;
+      }
+      .group-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 14px 0 4px;
+      }
+      .person-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: transparent;
+        color: var(--text);
+        border-bottom: 1px solid var(--line);
+        border-radius: 0;
+        padding: 10px 4px;
+        text-align: left;
+        font-weight: 400;
+        font-size: 15px;
+      }
+      .person-row:hover {
+        background: var(--soft);
+      }
+      .person-row small {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .active-flag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--dot-off);
+        flex: none;
+      }
+      .dot.on {
+        background: var(--dot-on);
+      }
+      #personDialog {
+        background: var(--panel);
+        color: var(--text);
+        width: min(640px, 96vw);
+        padding: 0;
+      }
+      #personDialog .dialog-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 18px 20px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      #personDialog h2 {
+        margin: 0;
+      }
+      #personDialog .dialog-head > div {
+        min-width: 0;
+      }
+      #personDialog .dialog-head button,
+      .go-deeper button,
+      .bar-buttons button {
+        flex: none;
+        white-space: nowrap;
+        overflow-wrap: normal;
+      }
+      #personDialog .dialog-body {
+        padding: 12px 20px 22px;
+        overflow-y: auto;
+        max-height: calc(92dvh - 90px);
+      }
+      #personDialog h3 {
+        font-size: 12px;
+        margin: 18px 0 6px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         The bar at the bottom (Save all, Complete call-in, Reopen call-in), loading, and phones
+         --------------------------------------------------------------------------------------------------------- */
+      .action-bar {
+        position: fixed;
+        z-index: 25;
+        left: max(10px, calc((100vw - 760px) / 2));
+        right: max(10px, calc((100vw - 760px) / 2));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 10px 12px;
+        box-shadow: 0 12px 40px #102d3b35;
+      }
+      body.desktop .action-bar {
+        left: max(10px, calc((100vw - 1200px) / 2));
+        right: max(10px, calc((100vw - 1200px) / 2));
+      }
+      .action-bar[hidden] {
+        display: none;
+      }
+      .action-bar .bar-state {
+        font-size: 14px;
+        color: var(--muted);
+        min-width: 0;
+      }
+      .action-bar .bar-buttons {
+        display: flex;
+        gap: 8px;
+        flex: none;
+      }
+      .skeleton {
+        height: 140px;
+        background: var(--soft);
+        border-radius: 15px;
+        animation: pulse 1.2s infinite alternate;
+        margin-bottom: 12px;
+      }
+      @keyframes pulse {
+        to {
+          opacity: 0.5;
+        }
+      }
+      @media (max-width: 1100px) {
+        .kpis {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 700px) {
+        body {
+          padding: 10px 10px calc(120px + env(safe-area-inset-bottom));
+        }
+        .panel,
+        .card {
+          padding: 14px;
+        }
+        .hero h1 {
+          font-size: 23px;
+        }
+        .head-row {
+          align-items: stretch;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .week-picker select {
+          flex: 1;
+        }
+        .kpis {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .action-bar {
+          left: 8px;
+          right: 8px;
+        }
+        .action-bar .bar-buttons button {
+          padding: 10px 12px;
+        }
+      }
+    </style>
+  </head>
+  <body class="phone">
+    <main>
+      <!-- The header: where you are (breadcrumb), the call-in's name, the week and its status chips -->
+      <header class="panel hero">
+        <nav class="crumbs" id="crumbs" aria-label="Where you are"></nav>
+        <div class="head-row">
+          <div>
+            <p class="eyebrow" id="eyebrow">Call-ins</p>
+            <h1 id="title">Call-ins</h1>
+            <p class="muted" id="subtitle"></p>
+          </div>
+          <div class="week-picker" id="weekPicker" hidden>
+            <button type="button" id="olderWeek" aria-label="Previous week" title="Previous week">&#8249;</button>
+            <select id="week" aria-label="Reporting week"></select>
+            <button type="button" id="newerWeek" aria-label="Next week" title="Next week">&#8250;</button>
+          </div>
+        </div>
+        <div class="chips" id="chips"></div>
+      </header>
+      <p id="week-note" class="muted" hidden></p>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <!-- The three tabs; the script fills their panels -->
+      <div class="tabs" role="tablist" id="tabs" aria-label="Call-in sections" hidden>
+        <button type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" data-tab="overview">Overview</button>
+        <button type="button" role="tab" id="tab-people" aria-controls="panel-people" aria-selected="false" data-tab="people">People</button>
+        <button type="button" role="tab" id="tab-notes" aria-controls="panel-notes" aria-selected="false" data-tab="notes">Notes</button>
+      </div>
+      <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview"></section>
+      <section id="panel-people" role="tabpanel" aria-labelledby="tab-people" hidden></section>
+      <section id="panel-notes" role="tabpanel" aria-labelledby="tab-notes" hidden></section>
+    </main>
+    <!-- The bar at the bottom: Save all, Complete call-in, Reopen call-in -->
+    <div class="action-bar" id="actionBar" hidden>
+      <div class="bar-state" id="barState" aria-live="polite"></div>
+      <div class="bar-buttons" id="barButtons"></div>
+    </div>
+    <!-- Pop-up: one person of the People tab -->
+    <dialog id="personDialog" aria-labelledby="personName">
+      <div class="dialog-head">
+        <div>
+          <h2 id="personName"></h2>
+          <p class="muted" id="personWhere" style="margin: 4px 0 0"></p>
+        </div>
+        <button type="button" class="secondary" id="personClose">Close</button>
+      </div>
+      <div class="dialog-body" id="personBody"></div>
+    </dialog>
+    <script>
+      // portal-client.js removes the query string (it may carry the sign-in token), so the page keeps its own part
+      // of it (level, id, week, tab) before that script runs.
+      window.CALLINS_START = location.search;
+    </script>
+    <script src="portal-client.js"></script>
+    <script>
+      /* =============================================================================================================
+         HOW THIS SCRIPT WORKS (read this first)
+
+         1. The address says what to show, for example ?level=district&id=51&week=2026-09-27&tab=notes, so Back and
+            Forward work. Without a level, portal-api picks the viewer's own call-in (a DL's district, a ZL's zone,
+            the mission for the managers).
+         2. load() asks portal-api for that call-in. The answer is a "bundle": the scope (mission, zone, district or
+            area) with its breadcrumb, the week, the numbers, the children (the zones, districts or areas below it),
+            the notes, and what this viewer "can" do. render() draws the whole page from it. Bundles are kept in
+            "cache", so going back up and down again does not load them again.
+         3. Leaders type notes and area updates. Text typed but not saved yet is kept in "drafts", so drawing the page
+            again never loses it. Each box has its own Save button; when two or more wait, Save all in the bar
+            saves them together.
+         4. When a district call-in is marked complete while someone is still typing, that person's save is refused.
+            Their text is kept on the page, read-only, with Copy and Discard, until the call-in is reopened.
+         5. GEMIKO (ward coordination) and the People tab are only loaded when someone opens them.
+
+         Short names used everywhere: d = the call-in bundle on screen (state.data), s = a status, c = a child of the
+         call-in (a zone, district or area), p = a person, m = a key indicator (a "metric").
+         The page never decides who may see or change what: the bundle's "allowed" and "can" come from portal-api,
+         and portal-api and the database check every request again. Every text people see is written here in
+         English and i18n.js swaps it for the reader's language (portal/i18n/*.json), so a text may only change
+         together with the catalogs (all 14 languages). The script is split into 13 numbered parts.
+         ============================================================================================================= */
+
+      // =============================================================================================================
+      // 1. WORDS AND SETTINGS
+      // =============================================================================================================
+      const $ = (id) => document.getElementById(id);
+      const esc = window.escapeHTML; // makes a text safe to put inside HTML (portal-client.js)
+      const DASH = "—"; // shown where there is no number or answer
+      // One line under the week, in the spirit of Preach My Gospel: people first, then the numbers.
+      const PURPOSE = {
+        mission: "How each zone is doing this week, and where leaders can help.",
+        zone: "Your districts this week. Learn what each needs and plan how to help.",
+        district: "Your areas this week. Listen, encourage, and agree on next steps.",
+        area: "This companionship's week: the people they are helping, their plans and their results.",
+      };
+      const LEVEL_NAMES = { mission: "Mission", zone: "Zone", district: "District", area: "Area" };
+      const CHILD_NAMES = { zone: "Zones", district: "Districts", area: "Areas" };
+      // Short names of the key indicators for the column titles of the big table.
+      const SHORT = {
+        friends_found: "New people being taught",
+        members_at_lessons: "Members at lessons",
+        sacrament_attendance: "Sacrament",
+        baptismal_dates: "Baptismal dates",
+        baptisms_confirmations: "Baptisms",
+        nm_sacrament: "New member sacrament",
+        follow_up_lessons: "Follow-up lessons",
+      };
+      // The action plans a companionship writes in Weekly Planning, one per key indicator.
+      const PLAN_LABELS = {
+        friends_found: "New people being taught",
+        members_at_lessons: "Members at lessons",
+        sacrament_attendance: "Sacrament attendance",
+        baptismal_dates: "Baptismal dates",
+        baptisms_confirmations: "Baptisms and confirmations",
+        nm_sacrament: "New member sacrament attendance",
+      };
+      // A New Member's next ordinance, by the code Weekly Planning saves.
+      const ORDINANCES = {
+        SA: "Sacrament",
+        AP: "Aaronic Priesthood",
+        TB: "Temple baptisms",
+        MP: "Melchizedek Priesthood",
+        PB: "Patriarchal blessing",
+        TE: "Temple endowment",
+      };
+      // GEMIKO (ward coordination) roles, in the order Weekly Planning asks about them.
+      const GEMIKO_ROLES = [
+        ["elders_quorum_representative", "Elders quorum"],
+        ["relief_society_representative", "Relief Society"],
+        ["primary_presidency_representative", "Primary"],
+        ["ward_missionaries", "Ward missionaries"],
+        ["priests_quorum_assistant", "Priests quorum"],
+        ["oldest_young_women_presidency", "Young Women"],
+        ["senior_service_missionaries", "Senior / service missionaries"],
+        ["gemiko_leader", "GEMIKO leader"],
+      ];
+      // The three lists of the People tab.
+      const PEOPLE_GROUPS = [
+        ["baptismal_dates", "Baptismal dates"],
+        ["new_members", "New members"],
+        ["high_potentials", "High potentials"],
+      ];
+      const NOT_SAVED_LEAVE = "You have notes that are not saved yet. Leave without saving them?";
+
+      // =============================================================================================================
+      // 2. WHAT THE PAGE REMEMBERS
+      // =============================================================================================================
+      // Where the viewer is (level, id, week, tab), the bundle on screen (data), the people of the People tab, the
+      // list shown on the People tab (peopleTab) and how the big table is sorted (sort).
+      const state = { level: null, id: null, week: "", tab: "overview", peopleTab: "baptismal_dates", data: null, people: null, sort: null };
+      // Bundles, people and GEMIKO per scope and week, so going up and back down does not load them again.
+      const cache = { bundles: new Map(), people: new Map(), gemiko: new Map() };
+      // Text typed but not saved yet, per week and field id: { id, week, text, kept }. A page drawn again (after a save
+      // elsewhere, Complete / Reopen, or a refused save) puts this text back instead of the stored value. "kept" marks
+      // text that cannot be saved right now because the call-in was completed meanwhile: it is shown read-only with
+      // Copy / Discard, survives moving around Call-ins, and returns to its field once the call-in is reopened.
+      const drafts = new Map();
+      // Counts the loads, so an answer that arrives after a newer load started is not shown.
+      let loadToken = 0;
+      const draftKey = (id, week = state.data && state.data.week.sunday) => `${week}|${id}`;
+      const draftFor = (id) => (id && state.data ? drafts.get(draftKey(id)) : undefined);
+      const weekDrafts = () => [...drafts.values()].filter((draft) => state.data && draft.week === state.data.week.sunday);
+      const unsavedCount = () => [...drafts.values()].filter((draft) => !draft.kept).length;
+
+      // =============================================================================================================
+      // 3. SMALL HELPERS FOR NUMBERS, DATES AND ANSWERS
+      // =============================================================================================================
+      const num = (v) => (v == null || v === "" ? DASH : Number(v).toLocaleString());
+      const day = (date) =>
+        date ? new Date(String(date).slice(0, 10) + "T12:00:00").toLocaleDateString(undefined, { dateStyle: "medium" }) : DASH;
+      const when = (time) => (time ? new Date(time).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "");
+      const yesNo = (v) => (v === true ? "Yes" : v === false ? "No" : DASH);
+      const threeWay = (v) => ({ yes: "Yes", no: "No", not_applicable: "Not applicable" })[v] || DASH;
+      const gemikoValue = (v) =>
+        v === true || v === "yes" ? "Yes" : v === false || v === "no" ? "No" : v === "dont_have_one" ? "Don't have one" : DASH;
+      const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+      // The name a bundle, the people or GEMIKO are kept under in "cache", e.g. "district:51:2026-09-27".
+      const keyOf = (...parts) => parts.join(":");
+      // "level=district&id=51" from { level: "district", id: 51, week: "" } (empty values are left out).
+      function queryString(params) {
+        const q = new URLSearchParams();
+        for (const [name, value] of Object.entries(params)) if (value !== null && value !== undefined && value !== "") q.set(name, value);
+        return q.toString();
+      }
+
+      // =============================================================================================================
+      // 4. MOVING AROUND: the address, Back and Forward, and loading a call-in
+      // =============================================================================================================
+      // What the address asks for; anything unexpected in it is ignored.
+      function paramsFromSearch(search) {
+        const q = new URLSearchParams(search || "");
+        const level = q.get("level");
+        const okLevel = ["mission", "zone", "district", "area"].includes(level);
+        const okId = /^\d+$/.test(q.get("id") || "");
+        return {
+          level: okLevel && okId ? level : null,
+          id: okLevel && okId ? Number(q.get("id")) : null,
+          week: /^\d{4}-\d{2}-\d{2}$/.test(q.get("week") || "") ? q.get("week") : "",
+          tab: ["people", "notes"].includes(q.get("tab")) ? q.get("tab") : "overview",
+        };
+      }
+      function urlFor(s) {
+        const q = queryString({ level: s.level && s.id ? s.level : "", id: s.level && s.id ? s.id : "", week: s.week, tab: s.tab === "overview" ? "" : s.tab });
+        return location.pathname + (q ? "?" + q : "");
+      }
+      function currentState() {
+        return { level: state.level, id: state.id, week: state.week, tab: state.tab };
+      }
+      // Leaving this page drops text still waiting in a field (after asking). Kept text stays until it is saved or
+      // discarded, so a leader can go to the district page and reopen the call-in without losing it.
+      function dropUnsaved() {
+        for (const [name, draft] of drafts) if (!draft.kept) drafts.delete(name);
+      }
+      function confirmLeave() {
+        if (!unsavedCount()) return true;
+        if (!confirm(NOT_SAVED_LEAVE)) return false;
+        dropUnsaved();
+        return true;
+      }
+      // Opens another call-in (a breadcrumb, "Go deeper", another week).
+      function go(level, id, week = state.week, tab = "overview") {
+        if (!confirmLeave()) return;
+        const next = { level, id, week, tab };
+        history.pushState(next, "", urlFor(next));
+        load(next);
+      }
+      addEventListener("popstate", (event) => {
+        if (unsavedCount() && !confirm(NOT_SAVED_LEAVE)) {
+          history.pushState(currentState(), "", urlFor(currentState()));
+          return;
+        }
+        dropUnsaved();
+        load(event.state || paramsFromSearch(location.search));
+      });
+      // The browser asks before closing or reloading the page while text is not saved.
+      addEventListener("beforeunload", (event) => {
+        if (!drafts.size) return;
+        event.preventDefault();
+        event.returnValue = "";
+      });
+      // The line at the top of the page ("Loading call-ins…", an error, "The call-in is marked complete.").
+      function setStatus(text, error = false) {
+        $("status").textContent = text || "";
+        $("status").className = "status" + (error ? " error" : "");
+      }
+      async function load(next) {
+        const token = ++loadToken;
+        const asked = keyOf(next.level || "home", next.id || "", next.week || "");
+        let data = cache.bundles.get(asked);
+        if (!data) {
+          data = await fetchBundle(next, token);
+          if (!data || token !== loadToken) return;
+          rememberBundle(asked, data, next.week);
+        }
+        state.level = data.scope.level;
+        state.id = data.scope.id;
+        state.week = next.week || "";
+        state.tab = next.tab || "overview";
+        state.data = data;
+        state.people = null;
+        setStatus("");
+        // The first page (no level in the URL) becomes explicit, so Back returns to it without guessing.
+        if (!history.state || !history.state.level) history.replaceState(currentState(), "", urlFor(currentState()));
+        render();
+      }
+      // Asks portal-api for one call-in. On a problem it says so at the top and answers null.
+      async function fetchBundle(next, token) {
+        setStatus("Loading call-ins…");
+        if (!state.data) $("panel-overview").innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+        try {
+          return await portalAPI("callins?" + queryString({ level: next.level, id: next.id, week: next.week }));
+        } catch (error) {
+          if (token === loadToken) showLoadError(error);
+          return null;
+        }
+      }
+      function showLoadError(error) {
+        if (!state.data && error.status === 403) {
+          // Not for this person (or outside their stewardship): say so plainly, not as an error.
+          setStatus("");
+          $("panel-overview").innerHTML = `<div class="empty">${esc(error.message)}</div>`;
+          return;
+        }
+        setStatus(error.message, true);
+        if (!state.data) $("panel-overview").innerHTML = "";
+      }
+      // A bundle is kept under the address it was asked for and under its own scope and week, so the same call-in
+      // asked for in another way (the first page, or without a week) is not loaded again.
+      function rememberBundle(asked, data, week) {
+        cache.bundles.set(asked, data);
+        cache.bundles.set(keyOf(data.scope.level, data.scope.id, week || ""), data);
+        cache.bundles.set(keyOf(data.scope.level, data.scope.id, data.week.sunday), data);
+      }
+      function reloadCurrent() {
+        for (const [name, bundle] of cache.bundles) if (bundle === state.data) cache.bundles.delete(name);
+        return load(currentState());
+      }
+      // After a save, other loaded scopes of that week may still show the old notes or status: forget them.
+      function forgetWeek(sunday) {
+        for (const [name, bundle] of cache.bundles) if (bundle.week.sunday === sunday && bundle !== state.data) cache.bundles.delete(name);
+      }
+
+      // =============================================================================================================
+      // 5. DRAWING THE PAGE: the header with the breadcrumb, the week and the status chips
+      // =============================================================================================================
+      function render() {
+        const d = state.data;
+        // portal-api says which layout suits the viewer: the wide table for managers, cards for leaders on phones.
+        document.body.classList.toggle("desktop", d.layout === "desktop");
+        document.body.classList.toggle("phone", d.layout !== "desktop");
+        document.title = `${d.scope.name || "Call-ins"} · Call-ins`;
+        renderHeader(d);
+        renderOverview(d);
+        renderNotes(d);
+        renderTabs(d);
+        if (state.tab === "people") showPeople();
+        syncDrafts();
+        renderBar();
+      }
+      // After drawing: text put back into an open field is waiting to be saved again; text whose field is locked is
+      // kept (read-only, with Copy / Discard); text for a field this page no longer has is dropped, as before.
+      function syncDrafts() {
+        for (const draft of weekDrafts()) {
+          if (document.querySelector(`[data-field="${draft.id}"]`)) {
+            draft.kept = false;
+            markNotSaved(draft.id);
+          } else if (document.querySelector(`[data-kept="${draft.id}"]`)) draft.kept = true;
+          else if (!draft.kept) drafts.delete(draftKey(draft.id));
+        }
+      }
+      function renderHeader(d) {
+        // At the top (the mission) the breadcrumb would only repeat the title, with nothing to go back to.
+        $("crumbs").hidden = d.scope.breadcrumb.length < 2;
+        $("crumbs").innerHTML = d.scope.breadcrumb.map(crumbHTML).join("");
+        $("eyebrow").textContent = `${LEVEL_NAMES[d.scope.level]} call-in`;
+        $("title").textContent = d.scope.name || "Call-ins";
+        // Two pieces, so each is found in the catalogs on its own: as one line, a one-sentence purpose (the mission's,
+        // an area's) stayed in English in the other 13 languages.
+        $("subtitle").innerHTML = `<span>Week of ${esc(day(d.week.sunday))}</span> · <span>${esc(PURPOSE[d.scope.level] || "")}</span>`;
+        showWeekPicker(d);
+        showOlderWeekNote(d);
+        $("chips").innerHTML = statusChips(d.scope.level, d.status, true);
+      }
+      // One step of "Mission › Zone › District": a button when the viewer may open it, the last one is "here".
+      function crumbHTML(c, index, all) {
+        const last = index === all.length - 1;
+        const name = esc(c.name || LEVEL_NAMES[c.level]);
+        const label = esc(`${LEVEL_NAMES[c.level]} ${c.name || ""}`);
+        const body = last
+          ? `<span class="here" aria-current="page">${name}</span>`
+          : c.allowed
+            ? `<button type="button" data-go-level="${c.level}" data-go-id="${c.id}" aria-label="Open ${label}">${name}</button>`
+            : `<span class="plain">${name}</span>`;
+        return body + (last ? "" : '<span class="sep" aria-hidden="true">›</span>');
+      }
+      // The week list and the ‹ › buttons (the newest week comes first in d.weeks).
+      function showWeekPicker(d) {
+        $("weekPicker").hidden = false;
+        $("week").innerHTML = d.weeks
+          .map((w) => `<option value="${esc(w.sunday)}" ${w.sunday === d.week.sunday ? "selected" : ""}>${esc(day(w.sunday))}</option>`)
+          .join("");
+        const index = d.weeks.findIndex((w) => w.sunday === d.week.sunday);
+        $("olderWeek").disabled = index < 0 || index >= d.weeks.length - 1;
+        $("newerWeek").disabled = index <= 0;
+      }
+      // Early in a new week nobody has planned it yet, so the week before is shown: say so.
+      function showOlderWeekNote(d) {
+        const older = !state.week && d.current_sunday && d.current_sunday !== d.week.sunday;
+        $("week-note").hidden = !older;
+        $("week-note").textContent = older
+          ? `Planning for the week of ${day(d.current_sunday)} has not started yet, so the week of ${day(d.week.sunday)} is shown.`
+          : "";
+      }
+      // A small coloured label: green when done (ok), orange when not.
+      function chip(text, ok) {
+        return `<span class="chip ${ok ? "ok" : "warn"}">${esc(text)}</span>`;
+      }
+      // The status labels of a call-in or of one of its children.
+      function statusChips(level, s, header = false) {
+        if (!s) return "";
+        if (level === "mission") return missionChips(s);
+        if (level === "zone") return zoneChips(s);
+        if (level === "district") return districtChips(s);
+        return areaChips(s, header);
+      }
+      const allDone = (done, total) => !!total && done === total;
+      function districtCallInsChip(s) {
+        return chip(`${s.completed_district_count || 0} of ${s.district_count || 0} district call-ins complete`, allDone(s.completed_district_count, s.district_count));
+      }
+      function plansChip(s) {
+        return chip(s.all_reports_submitted ? "All plans submitted" : "Plans not submitted yet", !!s.all_reports_submitted);
+      }
+      function missionChips(s) {
+        const plans = s.zone_count ? chip(`Plans in from ${s.zones_with_all_reports || 0} of ${s.zone_count} zones`, allDone(s.zones_with_all_reports, s.zone_count)) : "";
+        return districtCallInsChip(s) + plans;
+      }
+      function zoneChips(s) {
+        return districtCallInsChip(s) + plansChip(s);
+      }
+      function districtChips(s) {
+        const callIn = chip(s.dl_call_in_complete ? `Call-in complete${s.dl_completed_at ? " · " + when(s.dl_completed_at) : ""}` : "Call-in not complete", !!s.dl_call_in_complete);
+        const areas = s.area_count != null ? `<span class="chip">${plural(s.area_count, "area", "areas")}</span>` : "";
+        return callIn + plansChip(s) + areas;
+      }
+      // An area; in the page header it also shows whether its district's call-in is complete.
+      function areaChips(s, header) {
+        const plan = chip(s.all_reports_submitted ? "Plan submitted" : s.report_count ? "Plan not submitted" : "No plan yet", !!s.all_reports_submitted);
+        const district =
+          header && s.dl_call_in_complete !== undefined
+            ? chip(s.dl_call_in_complete ? "District call-in complete" : "District call-in not complete", !!s.dl_call_in_complete)
+            : "";
+        return plan + district;
+      }
+
+      // =============================================================================================================
+      // 6. THE TABS: Overview, People and Notes
+      // =============================================================================================================
+      // The Notes tab is only there when this call-in has notes (an area has none of its own).
+      function hasNotes(d) {
+        if (d.scope.level === "area") return false;
+        if (Object.keys(d.notes || {}).length) return true;
+        return (d.children || []).some((c) => c.notes && Object.keys(c.notes).length);
+      }
+      function renderTabs(d) {
+        $("tabs").hidden = false;
+        $("tab-notes").hidden = !hasNotes(d);
+        if (state.tab === "notes" && $("tab-notes").hidden) state.tab = "overview";
+        for (const button of $("tabs").querySelectorAll("[role=tab]")) {
+          const on = button.dataset.tab === state.tab;
+          button.setAttribute("aria-selected", on ? "true" : "false");
+          button.tabIndex = on ? 0 : -1;
+          $("panel-" + button.dataset.tab).hidden = !on;
+        }
+      }
+      function selectTab(tab) {
+        if (tab === state.tab) return;
+        state.tab = tab;
+        history.replaceState(currentState(), "", urlFor(currentState()));
+        renderTabs(state.data);
+        if (tab === "people") showPeople();
+        renderBar();
+      }
+      $("tabs").addEventListener("click", (event) => {
+        const button = event.target.closest("[role=tab]");
+        if (button) selectTab(button.dataset.tab);
+      });
+      // The arrow keys move between the tabs, as in any tab list.
+      $("tabs").addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+        const tabs = [...$("tabs").querySelectorAll("[role=tab]:not([hidden])")];
+        const index = tabs.findIndex((tab) => tab.dataset.tab === state.tab);
+        const next = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+        selectTab(next.dataset.tab);
+        next.focus();
+      });
+
+      // =============================================================================================================
+      // 7. THE OVERVIEW TAB: the numbers, the big table and one card per zone, district or area
+      // =============================================================================================================
+      function renderOverview(d) {
+        const level = d.scope.level;
+        const parts = [];
+        if (level === "area") {
+          parts.push(areaCard(d.detail, true));
+        } else {
+          parts.push(d.layout === "desktop" ? kpiStrip(d) : numbersCard(d.totals));
+          const kids = d.children || [];
+          if (!kids.length) parts.push('<div class="empty">No call-in records are available for this week.</div>');
+          else {
+            if (d.layout === "desktop") parts.push(`<div id="scopeTable">${scopeTable(d)}</div>`);
+            // The managers' mission page has the big table only; everyone else also gets a card per child.
+            if (!(d.layout === "desktop" && level === "mission")) {
+              parts.push(`<h2 class="section-title">${CHILD_NAMES[d.scope.child_level]}</h2>`);
+              parts.push(`<div class="cards">${kids.map((c) => childCard(c, d)).join("")}</div>`);
+            }
+          }
+        }
+        $("panel-overview").innerHTML = parts.join("");
+      }
+      // One tile per key indicator with this week's result (the wide layout).
+      function kpiStrip(d) {
+        const tiles = d.metrics
+          .map((m) => {
+            const t = d.totals[m.key] || {};
+            // Follow-up lessons have no goal of their own from the week before.
+            const last = m.key === "follow_up_lessons" ? "" : `<small>Goal was ${num(t.previous_goal)}</small>`;
+            return `<div class="kpi"><span>${esc(m.label)}</span><strong>${num(t.actual)}</strong>${last}<small>Next week: ${num(t.goal)}</small></div>`;
+          })
+          .join("");
+        return `<p class="legend">This week’s results against the goals set the week before</p><div class="kpis">${tiles}</div>`;
+      }
+      // The same numbers as a small table (on phones, and on every card).
+      function numbersTable(metrics) {
+        const rows = state.data.metrics
+          .map((m) => {
+            const v = (metrics || {})[m.key] || {};
+            const last = m.key === "follow_up_lessons" ? DASH : num(v.previous_goal);
+            return `<tr><td>${esc(m.label)}</td><td>${last}</td><td><strong>${num(v.actual)}</strong></td><td>${num(v.goal)}</td></tr>`;
+          })
+          .join("");
+        return `<div class="table-wrap"><table class="numbers"><thead><tr><th scope="col">Number</th><th scope="col">Last goal</th><th scope="col">Actual</th><th scope="col">Next goal</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      }
+      function numbersCard(totals) {
+        return `<section class="card"><div class="card-head"><h2>Totals</h2></div><p class="legend">Last goal is the goal set the week before.</p>${numbersTable(totals)}</section>`;
+      }
+      // "Go deeper ›" into a child, when the viewer may open it (in the big table it is a smaller button).
+      function goButton(c, inTable = false) {
+        const small = inTable ? ' class="go"' : "";
+        return c.allowed
+          ? `<button type="button"${small} data-go-level="${c.level}" data-go-id="${c.id}" aria-label="Go deeper into ${esc(c.name)}">Go deeper ›</button>`
+          : "";
+      }
+
+      // --- The big table (the wide layout): one row per child, sorted by a click on a column title ---------------
+      function scopeTable(d) {
+        const sort = state.sort && state.sort.level === d.scope.level ? state.sort : null;
+        const child = d.scope.child_level;
+        const head = (column, label) =>
+          `<th scope="col" aria-sort="${sort && sort.column === column ? sort.dir : "none"}"><button type="button" data-sort="${column}">${esc(label)}</button></th>`;
+        const statusLabel = child === "zone" ? "DL call-ins" : child === "district" ? "Call-in" : "Plan";
+        const heads =
+          head("name", LEVEL_NAMES[child]) +
+          head("status", statusLabel) +
+          (child === "area" ? "" : head("reports", "Reports")) +
+          d.metrics.map((m) => head(m.key, SHORT[m.key] || m.label)).join("") +
+          '<th scope="col"><span class="visually-hidden">Open</span></th>';
+        const rows = sortedChildren(d.children, sort)
+          .map((c) => scopeRow(c, d))
+          .join("");
+        return [
+          `<section class="card spaced"><div class="card-head"><h2>${CHILD_NAMES[child]}</h2></div>`,
+          '<p class="legend">Actual / goal set the week before (follow-up lessons: actual / next goal). Choose a column title to sort.</p>',
+          `<div class="table-wrap sticky"><table class="scope-table"><thead><tr>${heads}</tr></thead><tbody>${rows}</tbody></table></div>`,
+          "</section>",
+        ].join("");
+      }
+      function sortedChildren(children, sort) {
+        const kids = [...children];
+        if (!sort) return kids;
+        return kids.sort((a, b) => {
+          const x = sortValue(a, sort.column);
+          const y = sortValue(b, sort.column);
+          return (x < y ? -1 : x > y ? 1 : 0) * (sort.dir === "ascending" ? 1 : -1);
+        });
+      }
+      // What a child is sorted by in one column: its name, how complete it is, or a key indicator's result.
+      function sortValue(c, column) {
+        if (column === "name") return (c.name || "").toLowerCase();
+        const s = c.status || {};
+        if (column === "status") {
+          if (s.dl_call_in_complete !== undefined) return s.dl_call_in_complete ? 1 : 0;
+          if (s.district_count) return (s.completed_district_count || 0) / s.district_count;
+          return s.all_reports_submitted ? 1 : 0;
+        }
+        if (column === "reports") return s.all_reports_submitted ? 1 : 0;
+        const v = (c.metrics[column] || {}).actual;
+        return v == null ? -Infinity : Number(v);
+      }
+      function scopeRow(c, d) {
+        const s = c.status || {};
+        const child = d.scope.child_level;
+        const reports = child === "area" ? "" : `<td>${s.all_reports_submitted ? "In" : "Missing"}</td>`;
+        const cells = d.metrics
+          .map((m) => {
+            const v = c.metrics[m.key] || {};
+            const goal = m.key === "follow_up_lessons" ? v.goal : v.previous_goal;
+            return `<td>${num(v.actual)} <span class="muted">/ ${num(goal)}</span></td>`;
+          })
+          .join("");
+        // The name is plain text: "Go deeper ›" at the end of the row is the one button that opens it.
+        return `<tr><td class="name">${esc(c.name)}</td><td>${esc(rowStatusText(s, child))}</td>${reports}${cells}<td class="open">${goButton(c, true)}</td></tr>`;
+      }
+      // The status column: district call-ins done in a zone, the call-in of a district, the plan of an area.
+      function rowStatusText(s, child) {
+        if (child === "zone") return `${s.completed_district_count || 0} / ${s.district_count || 0}`;
+        if (child === "district") return s.dl_call_in_complete ? "Complete" : "Not complete";
+        return s.all_reports_submitted ? "Submitted" : "Missing";
+      }
+
+      // --- The cards: one per zone, district or area ---------------------------------------------------------------
+      function childCard(c, d) {
+        if (c.level === "area") return areaCard(c, false);
+        // On phones every card has its numbers (open at once for a district); the wide layout has the big table.
+        const numbers = d.layout === "desktop" ? "" : `<details class="more" ${c.level === "district" ? "open" : ""}><summary>Numbers</summary>${numbersTable(c.metrics)}</details>`;
+        return c.level === "zone" ? zoneCard(c, numbers) : districtCard(c, numbers);
+      }
+      // A zone in the mission call-in.
+      function zoneCard(c, numbers) {
+        const notes = c.notes && c.notes.zone_notes ? `<h3>Zone notes</h3><p class="text">${esc(c.notes.zone_notes)}</p>` : "";
+        return `<article class="card"><div class="card-head"><h2>${esc(c.name)}</h2></div><div class="chips">${statusChips("zone", c.status)}</div>${numbers}${notes}<div class="go-deeper">${goButton(c)}</div></article>`;
+      }
+      // A district in the zone call-in, with the area updates its DL wrote.
+      function districtCard(c, numbers) {
+        const updates = (c.area_updates || []).map(areaUpdateHTML).join("");
+        const written = (c.area_updates || []).filter((u) => u.text).length;
+        const noteLink =
+          c.notes && Object.keys(c.notes).length ? `<button type="button" class="link" data-notes-for="${c.id}">DL and ZL notes ›</button>` : "";
+        return [
+          `<article class="card"><div class="card-head"><h2>${esc(c.name)}</h2></div>`,
+          `<div class="chips">${statusChips("district", c.status)}</div>`,
+          numbers,
+          `<details class="more"><summary>Area updates <span class="count">${written}</span></summary>`,
+          `<div class="update-list">${updates || '<p class="empty-line">No areas.</p>'}</div></details>`,
+          `<div class="go-deeper">${noteLink}${goButton(c)}</div>`,
+          "</article>",
+        ].join("");
+      }
+      function areaUpdateHTML(u) {
+        const who = u.missionaries.length ? `<p class="missionaries">${esc(u.missionaries.map((m) => m.name).join(" / "))}</p>` : "";
+        const text = u.text ? `<p class="text" style="margin-top:6px">${esc(u.text)}</p>` : '<p class="empty-line">No area update yet.</p>';
+        return `<div class="update"><strong>${esc(u.area_name)}</strong>${who}${text}</div>`;
+      }
+      // An area: its numbers, the DL's area update, the action plans, GEMIKO and the saved Weekly Planning.
+      // "detail" is the area's own page (no "Go deeper").
+      function areaCard(c, detail) {
+        const who = (c.missionaries || []).map((m) => m.name + (m.position ? ` (${m.position})` : "")).join(" / ");
+        const written = Object.values(c.plans || {}).filter(Boolean).length;
+        return [
+          `<article class="card${detail ? " spaced" : ""}" id="area-card-${c.id}">`,
+          `<div class="card-head"><div><h2>${esc(c.name)}</h2>${who ? `<p class="missionaries">${esc(who)}</p>` : ""}</div></div>`,
+          `<div class="chips">${statusChips("area", c.status)}</div>`,
+          `<h3>Numbers</h3>${numbersTable(c.metrics)}`,
+          `<h3>Area update</h3>${areaUpdateField(c)}`,
+          `<details class="more"><summary>Action plans <span class="count">${written}</span></summary>${actionPlans(c)}</details>`,
+          // GEMIKO is loaded when this is first opened (see part 13, "toggle").
+          `<details class="more" data-gemiko="${c.id}"><summary>GEMIKO</summary><div id="gemiko-${c.id}"><p class="empty-line">Loading…</p></div></details>`,
+          `<details class="more"><summary>Weekly planning details <span class="count">${(c.planning_details || []).length}</span></summary>`,
+          `${planningDetails(c.planning_details)}</details>`,
+          detail ? "" : `<div class="go-deeper">${goButton(c)}</div>`,
+          "</article>",
+        ].join("");
+      }
+      // The DL writes the area update; once the district call-in is complete it is locked until reopened.
+      function areaUpdateField(c) {
+        const d = state.data;
+        const s = d.status || {};
+        return fieldHTML({
+          id: `area-${c.id}`,
+          label: `Area update for ${c.name}`,
+          value: c.area_update,
+          editable: d.can && d.can.area_updates,
+          placeholder: "How is this companionship doing? Who are they helping, and what help do they need?",
+          locked:
+            s.dl_call_in_complete && d.can && d.can.reopen
+              ? d.scope.level === "district"
+                ? "The district call-in is complete, so area updates are locked. To change them, choose Reopen call-in."
+                : "The district call-in is complete, so area updates are locked. Reopen it on the district page to change them."
+              : "",
+          empty: "No area update yet.",
+        });
+      }
+      function actionPlans(c) {
+        return Object.entries(PLAN_LABELS)
+          .map(([name, label]) => {
+            const text = c.plans && c.plans[name];
+            return `<div class="plan-item"><h4>${esc(label)}</h4>${text ? `<p class="text">${esc(text)}</p>` : '<p class="empty-line">No plan written.</p>'}</div>`;
+          })
+          .join("");
+      }
+      // The Weekly Planning each companionship saved for this week (one per ward or branch).
+      function planningDetails(list) {
+        if (!list || !list.length) return '<p class="empty-line">No weekly planning saved for this week.</p>';
+        return list.map(planningDetail).join("");
+      }
+      function planningDetail(p) {
+        const goals = (p.other_goals || []).length
+          ? `<div class="table-wrap"><table><thead><tr><th scope="col">Goal</th><th scope="col">Actual</th><th scope="col">Next</th></tr></thead><tbody>${p.other_goals
+              .map((g) => `<tr><td>${esc(g.label || g.key)}</td><td>${num(g.actual)}</td><td>${num(g.goal)}</td></tr>`)
+              .join("")}</tbody></table></div>`
+          : "";
+        const status = p.status === "SUBMITTED" ? chip("Submitted", true) : chip("Draft", false);
+        const plan = p.weekly_action_plan ? `<h4>Weekly action plan</h4><p class="text">${esc(p.weekly_action_plan)}</p>` : "";
+        const up = p.information_up_chain ? `<h4>Information for leaders</h4><p class="text">${esc(p.information_up_chain)}</p>` : "";
+        return `<div class="unit"><h4>${esc([p.area_name, p.unit_name].filter(Boolean).join(" · "))} ${status}</h4>${goals}${plan}${up}</div>`;
+      }
+
+      // =============================================================================================================
+      // 8. THE NOTES TAB: zone notes, DL notes and ZL notes
+      // =============================================================================================================
+      // A note or area update: a box with Save when this viewer may write it, otherwise the saved text. Text typed
+      // earlier and not saved yet (a draft) is shown instead of the saved text.
+      function fieldHTML({ id, label, value, editable, placeholder, locked, empty }) {
+        const draft = draftFor(id);
+        if (!editable) {
+          const lock = locked ? `<p class="locked">${esc(locked)}</p>` : "";
+          const stored = value ? `<p class="text">${esc(value)}</p>` : `<p class="empty-line">${esc(empty || "Nothing written yet.")}</p>`;
+          return lock + stored + (draft ? keptHTML(id, label, draft.text) : "");
+        }
+        const text = draft ? draft.text : value;
+        return [
+          `<div class="field"><label for="f-${id}" class="visually-hidden">${esc(label)}</label>`,
+          `<textarea id="f-${id}" data-field="${id}" maxlength="12000" placeholder="${esc(placeholder || "")}">${esc(text || "")}</textarea>`,
+          `<div class="field-actions"><button type="button" data-save="${id}">Save</button><span class="save-state" id="state-${id}" aria-live="polite"></span></div>`,
+          `<span class="field-error" id="error-${id}" hidden></span></div>`,
+        ].join("");
+      }
+      // Text that could not be saved because the call-in was completed meanwhile. It stays on the page (read-only)
+      // until the leader copies it, discards it, or reopens the call-in and saves it.
+      function keptHTML(id, label, text) {
+        const d = state.data;
+        const canReopen = d.can && d.can.reopen;
+        const next = canReopen
+          ? d.scope.level === "district"
+            ? "To add it, choose Reopen call-in, then Save."
+            : "To add it, reopen the call-in on the district page, then Save."
+          : "Copy it so it is not lost, and share it with your leaders if it is still needed.";
+        return [
+          `<div class="unsaved" data-kept="${id}">`,
+          `<p><strong>Your text was not saved.</strong> The call-in was marked complete before you saved, so this text is kept here instead. ${esc(next)}</p>`,
+          `<label for="kept-${id}" class="visually-hidden">${esc(label || "Text")} that was not saved</label><textarea id="kept-${id}" readonly>${esc(text)}</textarea>`,
+          `<div class="field-actions"><button type="button" data-copy="${id}">Copy text</button><button type="button" class="secondary" data-discard="${id}">Discard</button>`,
+          `<span class="save-state" id="kept-state-${id}" aria-live="polite"></span></div></div>`,
+        ].join("");
+      }
+      function noteCard(title, legend, body, extra = "") {
+        return `<section class="card spaced"${extra}><div class="card-head"><h2>${esc(title)}</h2></div>${legend ? `<p class="legend">${esc(legend)}</p>` : ""}${body}</section>`;
+      }
+      function renderNotes(d) {
+        const level = d.scope.level;
+        const cards = level === "mission" ? missionNotes(d) : level === "zone" ? zoneNotes(d) : level === "district" ? districtNotes(d) : [];
+        $("panel-notes").innerHTML = cards.join("") || '<div class="empty">No notes to show here.</div>';
+      }
+      // The mission: every zone's zone notes (read only).
+      function missionNotes(d) {
+        const cards = ['<p class="legend">Zone notes are written by each zone’s zone leaders. Open a zone to read its district notes.</p>'];
+        for (const z of d.children) {
+          const body = fieldHTML({ value: z.notes && z.notes.zone_notes, editable: false, empty: "No zone notes this week." });
+          cards.push(noteCard(z.name, "", body + `<div class="go-deeper">${goButton(z)}</div>`));
+        }
+        return cards;
+      }
+      // A zone: the zone notes, then per district the DL notes (read only) and the ZL notes.
+      function zoneNotes(d) {
+        const cards = [];
+        if ("zone_notes" in d.notes) {
+          const body = fieldHTML({ id: `zone-${d.scope.id}`, label: "Zone notes", value: d.notes.zone_notes, editable: d.can.zone_notes, placeholder: "What stood out in the zone this week? What should mission leaders know, and how can they help?", empty: "No zone notes this week." });
+          cards.push(noteCard("Zone notes", "Only the zone leaders of this zone and mission leaders can see these notes.", body));
+        }
+        for (const c of d.children) {
+          if (!c.notes || !Object.keys(c.notes).length) continue;
+          const dl = "dl_notes" in c.notes ? `<h3>DL notes</h3>${fieldHTML({ value: c.notes.dl_notes, editable: false, empty: "The district leader has not written notes yet." })}` : "";
+          const zl =
+            "zl_notes" in c.notes
+              ? `<h3>ZL notes</h3>${fieldHTML({ id: `zl-${c.id}`, label: `ZL notes for ${c.name}`, value: c.notes.zl_notes, editable: c.can && c.can.zl_notes, placeholder: "What did you learn in this district's call-in? How will you support the district leader?", empty: "No ZL notes yet." })}`
+              : "";
+          cards.push(noteCard(c.name, "", `<div class="chips">${statusChips("district", c.status)}</div>${dl}${zl}`, ` id="notes-${c.id}"`));
+        }
+        return cards;
+      }
+      // A district: the DL notes (locked once the call-in is complete) and the ZL notes.
+      function districtNotes(d) {
+        const cards = [];
+        const s = d.status;
+        if ("dl_notes" in d.notes) {
+          const locked = s.dl_call_in_complete && d.can.reopen ? `This call-in is complete${s.dl_completed_at ? " (" + when(s.dl_completed_at) + ")" : ""}, so the DL notes are locked. Reopen it to change them.` : "";
+          const body = fieldHTML({ id: `dl-${d.scope.id}`, label: "DL notes", value: d.notes.dl_notes, editable: d.can.dl_notes, placeholder: "What did you learn from each companionship? What will you follow up on, and how can leaders help?", locked, empty: "No DL notes yet." });
+          cards.push(noteCard("DL notes", "Your zone leaders and mission leaders can read these notes.", body));
+        }
+        if ("zl_notes" in d.notes) {
+          const body = fieldHTML({ id: `zl-${d.scope.id}`, label: "ZL notes", value: d.notes.zl_notes, editable: d.can.zl_notes, placeholder: "What did you learn in this district's call-in? How will you support the district leader?", empty: "No ZL notes yet." });
+          cards.push(noteCard("ZL notes", "The zone leaders’ notes on this district call-in.", body));
+        }
+        return cards;
+      }
+
+      // =============================================================================================================
+      // 9. SAVING NOTES AND AREA UPDATES, AND COMPLETE / REOPEN
+      // =============================================================================================================
+      // Where a field is saved, from its id ("dl-51", "zl-51", "zone-5", "area-511"): the address, the name of the
+      // text in the request, and how to put the saved text into the bundle on screen.
+      function fieldTarget(id) {
+        const [kind, raw] = id.split("-");
+        const target = Number(raw);
+        const inChildren = (d, change) => {
+          const c = (d.children || []).find((child) => child.id === target);
+          if (c) change(c);
+        };
+        if (kind === "dl") return { path: `callins/districts/${target}/dl-notes`, body: "dl_notes", apply: (d, v) => (d.notes.dl_notes = v) };
+        if (kind === "zl")
+          return {
+            path: `callins/districts/${target}/zl-notes`,
+            body: "zl_notes",
+            apply: (d, v) => {
+              if (d.scope.level === "district") d.notes.zl_notes = v;
+              inChildren(d, (c) => (c.notes.zl_notes = v));
+            },
+          };
+        if (kind === "zone") return { path: `callins/zones/${target}`, body: "zone_notes", apply: (d, v) => (d.notes.zone_notes = v) };
+        if (kind === "area")
+          return {
+            path: `callins/areas/${target}/update`,
+            body: "update_text",
+            apply: (d, v) => {
+              if (d.detail && d.detail.id === target) d.detail.area_update = v;
+              inChildren(d, (c) => (c.area_update = v));
+            },
+          };
+        return null;
+      }
+      function showFieldError(id, message) {
+        const error = $("error-" + id);
+        if (!error) return;
+        error.textContent = message || "";
+        error.hidden = !message;
+      }
+      // "Not saved yet" under a field.
+      function markNotSaved(id) {
+        const line = $("state-" + id);
+        if (!line) return;
+        line.className = "save-state";
+        line.textContent = "Not saved yet";
+      }
+      // Saves one field. Answers "saved", "failed" (the text stays in the field with a message under it) or "locked"
+      // (the call-in was completed meanwhile: the text is kept, and the caller draws the page again once).
+      async function saveField(id) {
+        const input = document.querySelector(`[data-field="${id}"]`);
+        const target = fieldTarget(id);
+        if (!input || !target) return "saved";
+        const data = state.data;
+        const week = data.week.sunday;
+        const sent = input.value;
+        const button = document.querySelector(`[data-save="${id}"]`);
+        const line = $("state-" + id);
+        showFieldError(id, "");
+        if (button) button.disabled = true;
+        line.className = "save-state";
+        line.textContent = "Saving…";
+        try {
+          const result = await portalAPI(target.path, { method: "PUT", body: { week, [target.body]: sent } });
+          const saved = (result && result.saved) || {};
+          target.apply(data, saved[target.body] !== undefined ? saved[target.body] : sent);
+          forgetWeek(week);
+          const draft = drafts.get(draftKey(id, week));
+          // Typed on while the save was on its way: the newer text still needs saving.
+          const newer = draft && draft.text !== sent;
+          if (!newer) drafts.delete(draftKey(id, week));
+          line.className = newer ? "save-state" : "save-state saved";
+          line.textContent = newer ? "Not saved yet" : "Saved";
+          return "saved";
+        } catch (error) {
+          line.textContent = "";
+          if (error.status === 409) {
+            // Never drop what was typed: keep the latest text of the field, shown again after the page is redrawn.
+            drafts.set(draftKey(id, week), { id, week, text: input.isConnected ? input.value : sent, kept: true });
+            return "locked";
+          }
+          showFieldError(id, error.status === 403 ? error.message : `Not saved. ${error.message}`);
+          return "failed";
+        } finally {
+          if (button) button.disabled = false;
+          renderBar();
+        }
+      }
+      // Draw the page again with the call-in's new state after a save found it completed; the kept text is shown
+      // under the locked field, where the leader was working.
+      async function showLocked() {
+        const before = state.data;
+        forgetWeek(before.week.sunday); // other pages of this week loaded earlier still show the call-in as open
+        await reloadCurrent();
+        if (state.data === before) {
+          // Could not load the new state (the reason is shown at the top): put the text back into its field.
+          render();
+          return;
+        }
+        setStatus("The call-in was marked complete before you saved, so some text was not saved. It is kept on the page.", true);
+        const kept = document.querySelector(`#panel-${state.tab} [data-kept]`) || document.querySelector("[data-kept]");
+        if (kept) kept.scrollIntoView({ block: "center" });
+      }
+      async function saveOne(id) {
+        if ((await saveField(id)) === "locked") await showLocked();
+      }
+      // Field ids with text waiting to be saved, inside `within` (a tab panel) or anywhere on the page.
+      function pendingIn(within = "body") {
+        return weekDrafts()
+          .filter((draft) => !draft.kept && document.querySelector(`${within} [data-field="${draft.id}"]`))
+          .map((draft) => draft.id);
+      }
+      // Saves every waiting field (of one tab, or of the whole page). True when all were saved.
+      async function saveAll(within) {
+        const results = [];
+        for (const id of pendingIn(within)) results.push(await saveField(id));
+        if (results.includes("locked")) await showLocked();
+        return results.every((result) => result === "saved");
+      }
+      // "Complete call-in" first saves what is waiting (nothing typed may be lost), then asks; "Reopen call-in"
+      // unlocks the DL notes and area updates again.
+      async function completeOrReopen(action) {
+        const d = state.data;
+        if (action === "complete" && pendingIn().length && !(await saveAll())) {
+          if (state.data.status && !state.data.status.dl_call_in_complete)
+            setStatus("Some notes could not be saved, so the call-in was not marked complete.", true);
+          return;
+        }
+        if (action === "complete" && !confirm("Mark this district call-in complete? The DL notes and area updates are locked until it is reopened.")) return;
+        setStatus(action === "complete" ? "Marking the call-in complete…" : "Reopening the call-in…");
+        for (const button of $("barButtons").querySelectorAll("button")) button.disabled = true;
+        try {
+          await portalAPI(`callins/districts/${d.scope.district_id}/${action}`, { method: "POST", body: { week: d.week.sunday } });
+          forgetWeek(d.week.sunday);
+          await reloadCurrent();
+          setStatus(action === "complete" ? "The call-in is marked complete." : "The call-in is open again.");
+        } catch (error) {
+          setStatus(error.message, true);
+          renderBar();
+        }
+      }
+      // Kept text: Copy puts it on the clipboard, Discard throws it away (after asking).
+      async function copyKept(id) {
+        const box = $("kept-" + id);
+        const line = $("kept-state-" + id);
+        if (!box) return;
+        const copied = await copyText(box);
+        if (line) {
+          line.className = copied ? "save-state saved" : "save-state";
+          line.textContent = copied ? "Copied" : "Select the text above and copy it.";
+        }
+      }
+      // True when the text of the box is on the clipboard.
+      async function copyText(box) {
+        try {
+          await navigator.clipboard.writeText(box.value);
+          return true;
+        } catch {
+          // The portal frame may not allow the clipboard: select the text and use the older copy command.
+          box.focus();
+          box.select();
+          try {
+            return document.execCommand("copy");
+          } catch {
+            return false;
+          }
+        }
+      }
+      function discardKept(id) {
+        if (!confirm("Discard this text? It cannot be brought back.")) return;
+        drafts.delete(draftKey(id));
+        for (const block of document.querySelectorAll(`[data-kept="${id}"]`)) block.remove();
+        renderBar();
+      }
+
+      // =============================================================================================================
+      // 10. THE BAR AT THE BOTTOM: Save all, Complete call-in and Reopen call-in
+      // =============================================================================================================
+      // Shown while two or more notes on the open tab wait to be saved (Save all), and on a district page for
+      // whoever may complete or reopen its call-in.
+      function renderBar() {
+        const d = state.data;
+        if (!d) return;
+        const buttons = [];
+        let text = "";
+        const pending = pendingIn(`#panel-${state.tab}`);
+        // One waiting note has its own Save right under it; Save all is only for two or more.
+        if (pending.length > 1) buttons.push(`<button type="button" data-bar="save">Save all (${pending.length})</button>`);
+        if (pending.length) text = pending.length > 1 ? `${pending.length} notes are not saved yet` : "Not saved yet";
+        const kept = !!document.querySelector(`#panel-${state.tab} [data-kept]`);
+        if (kept && !text) text = "Some text was not saved. It is kept on this page.";
+        if (d.scope.level === "district" && (d.can.complete || d.can.reopen)) {
+          const s = d.status || {};
+          // Save all, when it is there, is the main button; Complete call-in saves what waits first anyway.
+          if (d.can.complete) buttons.push(`<button type="button" class="${pending.length > 1 ? "secondary" : ""}" data-bar="complete">Complete call-in</button>`);
+          // With kept text on the page, reopening is the way to save it: make it the main button.
+          if (d.can.reopen) buttons.push(`<button type="button" class="${kept ? "" : "secondary"}" data-bar="reopen">Reopen call-in</button>`);
+          if (!text) text = s.dl_call_in_complete ? `Complete${s.dl_completed_at ? " · " + when(s.dl_completed_at) : ""}` : "Call-in not complete yet";
+        }
+        $("barButtons").innerHTML = buttons.join("");
+        $("barState").textContent = text;
+        $("actionBar").hidden = !buttons.length;
+      }
+      $("actionBar").addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-bar]");
+        if (!button) return;
+        if (button.dataset.bar === "save") {
+          button.disabled = true;
+          await saveAll(`#panel-${state.tab}`);
+          renderBar();
+        } else completeOrReopen(button.dataset.bar);
+      });
+
+      // =============================================================================================================
+      // 11. GEMIKO (ward coordination): loaded when an area's GEMIKO is first opened
+      // =============================================================================================================
+      async function openGemiko(areaId) {
+        const d = state.data;
+        // One request brings GEMIKO for every area of the district (or for the one area on its own page).
+        const level = d.scope.level === "area" ? "area" : "district";
+        const id = level === "area" ? d.scope.id : d.scope.district_id;
+        const cacheKey = keyOf(level, id, d.week.sunday);
+        const box = () => $("gemiko-" + areaId);
+        try {
+          let result = cache.gemiko.get(cacheKey);
+          if (!result) {
+            result = await portalAPI("callins/gemiko?" + queryString({ level, id, week: d.week.sunday }));
+            cache.gemiko.set(cacheKey, result);
+          }
+          const units = result.units.filter((u) => Number(u.area_id) === Number(areaId));
+          if (box()) box().innerHTML = units.length ? units.map(gemikoUnit).join("") : '<p class="empty-line">No GEMIKO information for this week.</p>';
+        } catch (error) {
+          if (box()) box().innerHTML = `<p class="field-error">${esc(error.message)}</p>`;
+        }
+      }
+      // One ward or branch: was ward coordination held, and who came.
+      function gemikoUnit(u) {
+        const rows = u.held === false ? "" : gemikoAttendance(u.attendance);
+        return `<div class="unit"><h4>${esc(u.unit_name || "Unit")}</h4><div class="rows"><div class="row"><span>Ward coordination held</span><span>${esc(yesNo(u.held))}</span></div>${rows}</div></div>`;
+      }
+      function gemikoAttendance(attendance) {
+        if (Array.isArray(attendance)) {
+          // Older Weekly Planning answers list who came instead of a Yes / No per role.
+          return attendance.length ? `<div class="row"><span>Who came</span><span>${esc(attendance.join(", "))}</span></div>` : "";
+        }
+        const values = attendance && typeof attendance === "object" ? attendance : {};
+        return GEMIKO_ROLES.map(([role, label]) => `<div class="row"><span>${esc(label)}</span><span>${esc(gemikoValue(values[role]))}</span></div>`).join("");
+      }
+
+      // =============================================================================================================
+      // 12. THE PEOPLE TAB: friends with a baptismal date, New Members and high-potential friends
+      // =============================================================================================================
+      // Loaded when the tab is first opened for this call-in and week.
+      async function showPeople() {
+        const d = state.data;
+        const cacheKey = keyOf(d.scope.level, d.scope.id, d.week.sunday);
+        let people = cache.people.get(cacheKey);
+        if (!people) {
+          $("panel-people").innerHTML = '<div class="skeleton"></div>';
+          try {
+            people = await portalAPI("callins/people?" + queryString({ level: d.scope.level, id: d.scope.id, week: d.week.sunday }));
+          } catch (error) {
+            if (state.data === d) $("panel-people").innerHTML = `<div class="status error">${esc(error.message)}</div>`;
+            return;
+          }
+          cache.people.set(cacheKey, people);
+        }
+        if (state.data !== d) return; // the viewer moved on meanwhile
+        state.people = people;
+        renderPeople();
+      }
+      // Three lists; on a phone one at a time (chosen with the buttons above them), on a wide screen side by side.
+      function renderPeople() {
+        const people = state.people;
+        const tabs = PEOPLE_GROUPS.map(([group, label]) => {
+          const counts = people.counts[group] || { total: 0 };
+          return `<button type="button" role="tab" aria-selected="${state.peopleTab === group}" data-people-tab="${group}">${esc(label)} <span class="count">${counts.total}</span></button>`;
+        }).join("");
+        const panels = PEOPLE_GROUPS.map(([group, label]) => peoplePanel(people, group, label)).join("");
+        $("panel-people").innerHTML =
+          `<div class="subtabs" role="tablist" aria-label="People">${tabs}</div><div class="people-panels">${panels}</div>` +
+          '<p class="legend" style="margin-top:12px">At church recently: at least 2 of the last 4 Sundays. New members baptized in the last 3 weeks and high-potential friends: this Sunday.</p>';
+      }
+      // One list, with a title line per zone (mission) or district (zone) between the people.
+      function peoplePanel(people, group, label) {
+        const level = state.data.scope.level;
+        const groupBy = level === "mission" ? "zone_name" : level === "zone" ? "district_name" : null;
+        const counts = people.counts[group] || { total: 0, active: 0 };
+        let rows = "";
+        let title;
+        (people[group] || []).forEach((p, index) => {
+          if (groupBy && p[groupBy] !== title) {
+            title = p[groupBy];
+            rows += `<p class="group-title">${esc(title || "")}</p>`;
+          }
+          const where = [p.area_name, p.unit_name].filter(Boolean).join(" · ");
+          rows += `<button type="button" class="person-row" data-person="${group}" data-index="${index}"><span><span>${esc(p.name || "Name not recorded")}</span><small>${esc(where)}</small></span>${activeFlag(p)}</button>`;
+        });
+        const body = rows || `<p class="empty-line">No ${esc(label.toLowerCase())} this week.</p>`;
+        return `<section class="card people-panel" role="tabpanel" data-people-panel="${group}" ${state.peopleTab === group ? "" : "hidden"}><h2>${esc(label)}</h2><p class="legend">${counts.total} total · ${counts.active} active</p>${body}</section>`;
+      }
+      // A green or grey dot: was this person at church recently?
+      function activeFlag(p) {
+        return `<span class="active-flag"><span class="dot ${p.active ? "on" : ""}" aria-hidden="true"></span>${p.active ? "At church recently" : "Not at church recently"}</span>`;
+      }
+      $("panel-people").addEventListener("click", (event) => {
+        const tab = event.target.closest("[data-people-tab]");
+        if (tab) {
+          state.peopleTab = tab.dataset.peopleTab;
+          renderPeople();
+          const again = $("panel-people").querySelector(`[data-people-tab="${state.peopleTab}"]`);
+          if (again) again.focus();
+          return;
+        }
+        const row = event.target.closest("[data-person]");
+        if (row) openPerson(row.dataset.person, Number(row.dataset.index));
+      });
+
+      // --- One person, in a pop-up ------------------------------------------------------------------------------------
+      function openPerson(group, index) {
+        const p = ((state.people || {})[group] || [])[index];
+        if (!p) return;
+        $("personName").textContent = p.name || "Name not recorded";
+        $("personWhere").textContent = [p.area_name, p.unit_name, p.missionaries].filter(Boolean).join(" · ");
+        const details = group === "baptismal_dates" ? baptismalDateDetails(p) : group === "new_members" ? newMemberDetails(p) : friendDetails(p);
+        $("personBody").innerHTML = `<p>${activeFlag(p)}</p>` + details;
+        $("personDialog").showModal();
+      }
+      // Label and answer, one row each.
+      function detailRows(pairs) {
+        return `<div class="rows">${pairs.map(([label, value]) => `<div class="row"><span>${esc(label)}</span><span>${esc(value)}</span></div>`).join("")}</div>`;
+      }
+      // How far away the baptismal date is.
+      function timing(p) {
+        if (p.days_until == null) return DASH;
+        if (p.days_until < 0) return "Date has passed. Talk about a new date?";
+        if (p.days_until === 0) return "Today";
+        if (p.days_until <= 7) return "This week";
+        return plural(Math.round(p.days_until / 7), "week away", "weeks away");
+      }
+      function baptismalDateDetails(p) {
+        return (
+          detailRows([
+            ["Finding source", p.finding_source || DASH],
+            ["Date set", day(p.date_set)],
+            ["Baptismal date", day(p.baptismal_date)],
+            ["Timing", timing(p)],
+          ]) +
+          "<h3>Progress this week</h3>" +
+          detailRows([
+            ["Reading", yesNo(p.reading)],
+            ["Praying", yesNo(p.praying)],
+            ["At church", yesNo(p.at_church)],
+            ["Keeping commandments", yesNo(p.keeping_commandments)],
+            ["Member involvement", yesNo(p.member_involvement)],
+          ])
+        );
+      }
+      function newMemberDetails(p) {
+        const code = p.next_ordinance;
+        const ordinance = code ? (ORDINANCES[code] ? `${ORDINANCES[code]} (${code})` : code) : DASH;
+        return (
+          detailRows([
+            ["Baptism", day(p.baptism_date)],
+            ["Confirmation", day(p.confirmation_date)],
+            ["Finding source", p.finding_source || DASH],
+            ["Lessons (taught / goal)", `${num(p.lessons_actual)} / ${num(p.lessons_goal)}`],
+            ["Preach My Gospel lessons", p.pmg_lessons_percentage == null ? DASH : `${num(p.pmg_lessons_percentage)}%`],
+            ["At church", yesNo(p.at_church)],
+            ["Next ordinance", ordinance],
+          ]) +
+          `<h3>How are they doing?</h3>${p.how_are_they_doing ? `<p class="text">${esc(p.how_are_they_doing)}</p>` : '<p class="empty-line">Nothing written this week.</p>'}` +
+          "<h3>Covenant path</h3>" +
+          detailRows([
+            ["Reading", yesNo(p.reading)],
+            ["Praying", yesNo(p.praying)],
+            ["Member involvement", yesNo(p.member_involvement)],
+            ["Has a calling", threeWay(p.has_calling)],
+            ["Aaronic Priesthood", threeWay(p.has_aaronic_priesthood)],
+            ["Melchizedek Priesthood", threeWay(p.has_melchizedek_priesthood)],
+            ["Ministers to someone", threeWay(p.ministers_to_someone)],
+            ["Has ministering brothers or sisters", yesNo(p.ministered_to_by_someone)],
+            ["Temple recommend", threeWay(p.has_active_temple_recommend)],
+            ["Temple baptisms", threeWay(p.visited_temple_for_baptisms)],
+          ]) +
+          "<h3>GEMIKO</h3>" +
+          detailRows([["Discussed in GEMIKO", yesNo(p.discussed_in_gemiko)]]) +
+          (p.gemiko_support_plan ? `<p class="text" style="margin-top:10px">${esc(p.gemiko_support_plan)}</p>` : '<p class="empty-line" style="margin-top:10px">No GEMIKO plan written.</p>')
+        );
+      }
+      // A high-potential friend.
+      function friendDetails(p) {
+        return detailRows([["At church this Sunday", yesNo(p.at_church)]]) + `<h3>Notes</h3>${p.notes ? `<p class="text">${esc(p.notes)}</p>` : '<p class="empty-line">No notes.</p>'}`;
+      }
+      $("personClose").addEventListener("click", () => $("personDialog").close());
+      // A click on the dark background around the pop-up closes it too.
+      $("personDialog").addEventListener("click", (event) => {
+        if (event.target === $("personDialog")) $("personDialog").close();
+      });
+
+      // =============================================================================================================
+      // 13. CLICKS AND TYPING ANYWHERE ON THE PAGE, AND THE START
+      // =============================================================================================================
+      // One listener for the buttons that are drawn again and again (they carry what they do in a data- attribute).
+      document.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-go-level],[data-save],[data-sort],[data-notes-for],[data-copy],[data-discard]");
+        if (!target) return;
+        if (target.dataset.goLevel) go(target.dataset.goLevel, Number(target.dataset.goId));
+        else if (target.dataset.save) saveOne(target.dataset.save);
+        else if (target.dataset.copy) copyKept(target.dataset.copy);
+        else if (target.dataset.discard) discardKept(target.dataset.discard);
+        else if (target.dataset.sort) sortBy(target.dataset.sort);
+        else if (target.dataset.notesFor) showNotesOf(target.dataset.notesFor);
+      });
+      // A click on a column title sorts by it; a second click turns the order around.
+      function sortBy(column) {
+        const same = state.sort && state.sort.level === state.data.scope.level && state.sort.column === column;
+        const dir = same ? (state.sort.dir === "descending" ? "ascending" : "descending") : column === "name" ? "ascending" : "descending";
+        state.sort = { level: state.data.scope.level, column, dir };
+        // Only the table is drawn again, so notes typed in the cards below stay.
+        $("scopeTable").innerHTML = scopeTable(state.data);
+        const again = document.querySelector(`[data-sort="${column}"]`);
+        if (again) again.focus();
+      }
+      // "DL and ZL notes ›" on a district card opens the Notes tab at that district.
+      function showNotesOf(districtId) {
+        selectTab("notes");
+        const card = $("notes-" + districtId);
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      // "toggle" does not bubble, so listen while it travels down (capture).
+      document.addEventListener(
+        "toggle",
+        (event) => {
+          const details = event.target;
+          if (details.dataset && details.dataset.gemiko && details.open && !details.dataset.loaded) {
+            details.dataset.loaded = "1";
+            openGemiko(Number(details.dataset.gemiko));
+          }
+        },
+        true,
+      );
+      // Typing in a note or area update: keep the text as a draft until it is saved.
+      document.addEventListener("input", (event) => {
+        const field = event.target.closest("[data-field]");
+        if (!field) return;
+        const week = state.data.week.sunday;
+        drafts.set(draftKey(field.dataset.field, week), { id: field.dataset.field, week, text: field.value, kept: false });
+        showFieldError(field.dataset.field, "");
+        markNotSaved(field.dataset.field);
+        renderBar();
+      });
+      $("week").addEventListener("change", () => {
+        const chosen = $("week").value;
+        if (!confirmLeave()) {
+          $("week").value = state.data.week.sunday;
+          return;
+        }
+        go(state.level, state.id, chosen, state.tab);
+      });
+      // ‹ goes one week back, › one week forward (d.weeks starts with the newest week).
+      function stepWeek(offset) {
+        const weeks = state.data.weeks;
+        const index = weeks.findIndex((w) => w.sunday === state.data.week.sunday);
+        const next = weeks[index + offset];
+        if (index >= 0 && next) go(state.level, state.id, next.sunday, state.tab);
+      }
+      $("olderWeek").addEventListener("click", () => stepWeek(1));
+      $("newerWeek").addEventListener("click", () => stepWeek(-1));
+
+      const start = paramsFromSearch(window.CALLINS_START);
+      history.replaceState(start.level ? start : null, "", urlFor(start));
+      load(start);
+    </script>
+  </body>
+</html>

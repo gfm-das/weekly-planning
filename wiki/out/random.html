@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Random page — Weekly Planning Wiki</title>
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script>
+    var pages = ["dashboards", "glimpse", "glossary", "installer-overview", "overview", "presentation-library", "requirements", "roles-and-permissions", "signing-in", "weekly-planning"];
+    var tips = ["P-day is for laundry and grocery runs — not for rewriting the roster by hand.", "District council goes smoother when everyone submitted Weekly Planning on time.", "Sunday is the reporting-week key. Plans lock to area + ward/branch + that Sunday.", "A roster upload wins over a hand-closed zone, district, or area. Trust the roster.", "Hiding a menu button is not security. The API and database still decide.", "Two companions can type the same plan at once — each save only sends what changed.", "Friday planning habits are fine; the week itself still keys off Sunday.", "If health.ps1 is green, you are cleared to tract the next ticket."];
+    var tip = tips[Math.floor(Math.random() * tips.length)];
+    document.addEventListener("DOMContentLoaded", function () {
+      var el = document.getElementById("randomTip");
+      if (el) el.textContent = tip;
+    });
+    if (pages.length) {
+      setTimeout(function () {
+        location.replace(pages[Math.floor(Math.random() * pages.length)] + ".html");
+      }, 900);
+    }
+  </script>
+</head>
+<body>
+  <div class="wiki-main" style="max-width:40rem;margin:2rem auto;padding:0 1rem">
+    <div class="flavour-tip">
+      <div class="tip-label">🎲 Random page</div>
+      <p>Opening a random article… <a href="index.html">Main page</a></p>
+      <p><strong>Mission tip:</strong> <span id="randomTip">…</span></p>
+    </div>
+  </div>
+</body>
+</html>

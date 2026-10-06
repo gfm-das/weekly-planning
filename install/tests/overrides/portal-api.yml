@@ -1,0 +1,13 @@
+# Test only (see README.md): portal-api and the reminders on the test network, with their own container names.
+services:
+  portal-api:
+    container_name: gfmtest-portal-api
+    networks:
+      gfm:
+        aliases: [portal-api]
+  portal-reminders:
+    container_name: gfmtest-portal-reminders
+networks:
+  gfm:
+    external: true
+    name: gfmtest-network

@@ -1,0 +1,997 @@
+/*
+ * home.css: the look of the Overview (home.html), the first page everyone sees in the portal.
+ *
+ * Sections, top to bottom: the page, the welcome banner, buttons, key indicators, cards, lists, mission focus,
+ * messages, stewardship planning, loading, smaller screens, dialogs, then the themes (mission, light, dark), the week
+ * list and the movable cards. The mission glimpse at the top of the managers' Overview has its own file, glimpse.css.
+ * A rule further down wins over an earlier one of the same weight, so keep the order.
+ */
+/* ---- The page ---- */
+:root {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  color: #183240;
+  background: #f4f7f8;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 26px;
+}
+.wrap {
+  max-width: 1220px;
+  margin: auto;
+}
+button,
+a,
+input {
+  font: inherit;
+}
+a {
+  color: #087f8c;
+}
+
+/* ---- The welcome banner, with the next required action on the right ---- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: #153441;
+  color: #fff;
+  border-radius: 20px;
+  padding: 29px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: center;
+}
+.hero:after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border: 70px solid #ffffff09;
+  border-radius: 50%;
+  right: -100px;
+  top: -160px;
+}
+.eyebrow {
+  color: #8fd3ce;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  font-size: 30px;
+  letter-spacing: -0.04em;
+  margin: 9px 0;
+}
+.hero p {
+  margin: 0;
+  color: #c4d6dd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.action {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  color: #153441;
+  padding: 17px 19px;
+  border-radius: 14px;
+  width: 258px;
+}
+.action small {
+  display: block;
+  color: #66808c;
+  margin-bottom: 7px;
+  font-size: 11px;
+}
+.action strong {
+  font-size: 15px;
+  line-height: 1.4;
+}
+.action p {
+  color: #66808c;
+  font-size: 11px;
+  margin: 7px 0 0;
+}
+
+/* ---- Buttons ---- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: #087f8c;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px 13px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 750;
+  border: 0;
+  cursor: pointer;
+}
+.action .button {
+  display: flex;
+  margin-top: 12px;
+}
+.button:focus-visible,
+.text-link:focus-visible,
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid #83cbc6;
+  outline-offset: 3px;
+}
+.button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.button.secondary {
+  background: #edf5f5;
+  color: #17716f;
+}
+
+/* ---- Key indicators of conversion: one tile each, goal and reported actual ---- */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin: 25px 1px 13px;
+}
+.section-head h2 {
+  font-size: 16px;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.section-head p {
+  font-size: 11px;
+  color: #718690;
+  margin: 0;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+.kpi {
+  background: #fff;
+  border: 1px solid #dfe8eb;
+  border-radius: 14px;
+  padding: 17px 15px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #158d91;
+}
+.kpi h3 {
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 700;
+  margin: 0 0 15px;
+  min-height: 32px;
+  color: #4d6975;
+}
+.goal-value {
+  font-size: 30px;
+  font-weight: 760;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+.goal-caption {
+  font-size: 10px;
+  color: #718690;
+  margin: 5px 0 14px;
+}
+.actual {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  border-top: 1px solid #edf2f3;
+  padding-top: 10px;
+  font-size: 10px;
+  color: #718690;
+}
+.actual strong {
+  color: #34545f;
+}
+.progress {
+  height: 4px;
+  border-radius: 4px;
+  background: #edf2f3;
+  margin-top: 11px;
+  overflow: hidden;
+}
+.progress span {
+  display: block;
+  background: #65b4ab;
+  height: 100%;
+  width: 0;
+}
+
+/* ---- Cards (panels) and the assignment facts ---- */
+.panel {
+  background: #fff;
+  border: 1px solid #dfe8eb;
+  border-radius: 16px;
+  padding: 21px;
+  box-shadow: 0 2px 9px #17394705;
+  min-width: 0;
+}
+.panel h2 {
+  font-size: 15px;
+  margin: 0;
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+.text-link {
+  font-size: 11px;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.assignment-panel {
+  margin-top: 16px;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.fact {
+  padding: 14px;
+  background: #f5f8f9;
+  border-radius: 11px;
+}
+.fact span {
+  display: block;
+  font-size: 10px;
+  color: #718690;
+  margin-bottom: 6px;
+}
+.fact strong {
+  font-size: 13px;
+}
+.assignment-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 25px;
+  margin-top: 14px;
+  color: #66808c;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.assignment-details strong {
+  color: #34545f;
+  font-weight: 650;
+}
+
+/* ---- The grid of cards and the lists inside them (goals, plans, events, announcements, weeks) ---- */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+}
+.empty {
+  border: 1px dashed #cbdadd;
+  border-radius: 12px;
+  padding: 21px;
+  text-align: center;
+  color: #718690;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.list {
+  display: grid;
+  gap: 0;
+}
+.item {
+  padding: 13px 0;
+  border-top: 1px solid #edf2f3;
+  font-size: 12px;
+}
+.item:first-child {
+  border: 0;
+  padding-top: 0;
+}
+.item:last-child {
+  padding-bottom: 0;
+}
+.item h3 {
+  font-size: 13px;
+  margin: 0 0 6px;
+  color: #264654;
+}
+.item p {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #66808c;
+  margin: 5px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.meta {
+  font-size: 10px;
+  color: #718690;
+  line-height: 1.65;
+}
+.pill {
+  display: inline-flex;
+  background: #e9f3f2;
+  color: #17716f;
+  border-radius: 99px;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.pill.pending {
+  color: #8e713c;
+  background: #fbf3e3;
+}
+.pill.urgent {
+  color: #a14d42;
+  background: #fbefed;
+}
+.goal-list .item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+.goal-number {
+  text-align: right;
+  font-size: 19px;
+  font-weight: 750;
+  color: #153441;
+}
+.goal-number small {
+  font-size: 9px;
+  color: #718690;
+  font-weight: 500;
+  display: block;
+  margin-top: 3px;
+}
+.goal-label {
+  font-size: 12px;
+  font-weight: 650;
+}
+.goal-section {
+  font-size: 10px;
+  color: #718690;
+  margin-top: 4px;
+}
+.plan-text {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #34545f;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.plan-unit {
+  font-size: 10px;
+  color: #087f8c;
+  font-weight: 750;
+  margin-bottom: 9px;
+}
+.subplans {
+  margin-top: 17px;
+  border-top: 1px solid #edf2f3;
+  padding-top: 14px;
+}
+.subplans summary {
+  font-size: 11px;
+  font-weight: 700;
+  color: #17716f;
+  cursor: pointer;
+}
+.shared-note {
+  font-size: 10px;
+  color: #718690;
+  line-height: 1.65;
+  margin-top: 15px;
+}
+.week-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ---- Mission focus: the quote card ---- */
+.quote {
+  background: #e9f3f2;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.quote .eyebrow {
+  color: #087f8c;
+}
+.quote blockquote {
+  margin: 13px 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  line-height: 1.65;
+  color: #34545f;
+}
+.quote cite {
+  font-style: normal;
+  color: #17716f;
+  font-size: 11px;
+}
+
+/* ---- Messages: an error, and "Viewing goals and action plans for …" ---- */
+.notice {
+  padding: 13px 16px;
+  border-radius: 11px;
+  background: #fbefed;
+  color: #923c34;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 15px 0;
+  display: none;
+}
+.notice .button {
+  margin-top: 9px;
+}
+.area-view-notice {
+  background: #e9f3f2;
+  color: #34545f;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 12px 16px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+
+/* ---- Stewardship planning (leaders): which areas have submitted their plan ---- */
+.stewardship {
+  margin-top: 15px;
+}
+.completion-summary {
+  display: flex;
+  gap: 11px;
+  flex-wrap: wrap;
+  margin-bottom: 17px;
+}
+.summary-box {
+  background: #f5f8f9;
+  padding: 13px 16px;
+  border-radius: 11px;
+  min-width: 115px;
+}
+.summary-box strong {
+  font-size: 24px;
+  letter-spacing: -0.035em;
+  display: block;
+}
+.summary-box span {
+  font-size: 10px;
+  color: #718690;
+}
+.toolbar {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+.toolbar input {
+  border: 1px solid #dfe8eb;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 12px;
+  min-width: 210px;
+  flex: 1;
+  background: #fbfcfc;
+  color: #183240;
+}
+.filter {
+  border: 1px solid #dfe8eb;
+  border-radius: 9px;
+  background: #fff;
+  color: #66808c;
+  padding: 8px 12px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.filter.active {
+  border-color: #83cbc6;
+  background: #edf5f5;
+  color: #17716f;
+  font-weight: 750;
+}
+.area-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(90px, 150px) minmax(150px, 1fr);
+  gap: 15px;
+  align-items: start;
+}
+.area-title {
+  font-size: 12px;
+  font-weight: 750;
+  margin-bottom: 4px;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #17716f;
+  cursor: pointer;
+  text-align: left;
+}
+.report-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.unlock {
+  font-size: 10px;
+  padding: 6px 8px;
+  border: 1px solid #d5e6e5;
+  border-radius: 7px;
+  color: #17716f;
+  background: #fff;
+  cursor: pointer;
+}
+.unlock:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ---- While the Overview is loading ---- */
+.loading .kpi {
+  min-height: 180px;
+}
+.loading .goal-value {
+  color: #c2d3d8;
+}
+.status-line {
+  color: #718690;
+  font-size: 10px;
+  margin-top: 10px;
+}
+.hidden {
+  display: none !important;
+}
+
+/* ---- Smaller screens and phones ---- */
+@media (max-width: 1050px) {
+  .kpis {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .kpi h3 {
+    min-height: 0;
+  }
+}
+@media (max-width: 760px) {
+  body {
+    padding: 14px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 23px;
+    gap: 19px;
+  }
+  .action {
+    width: 100%;
+  }
+  .hero h1 {
+    font-size: 26px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .facts {
+    grid-template-columns: 1fr;
+  }
+  .section-head {
+    align-items: flex-start;
+  }
+  .section-head p {
+    text-align: right;
+    max-width: 120px;
+  }
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .kpi {
+    padding: 16px 14px;
+  }
+  .kpi h3 {
+    min-height: 30px;
+    font-size: 11px;
+  }
+  .goal-value {
+    font-size: 29px;
+  }
+  .panel {
+    padding: 19px;
+  }
+  .area-row {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+  .area-row .report-chips {
+    grid-column: 1/-1;
+  }
+  .quote blockquote {
+    font-size: 18px;
+  }
+  .assignment-details {
+    gap: 9px;
+  }
+  .toolbar input {
+    min-width: 100%;
+  }
+  .filter {
+    flex: 1;
+  }
+  .completion-summary {
+    gap: 8px;
+  }
+  .summary-box {
+    min-width: 0;
+    flex: 1;
+    padding: 12px;
+  }
+  .summary-box strong {
+    font-size: 22px;
+  }
+  .area-view-notice {
+    align-items: flex-start;
+  }
+}
+
+/* ---- Dialogs: Weekly mission focus, Customize overview cards ---- */
+dialog {
+  border: 0;
+  border-radius: 17px;
+  padding: 25px;
+  width: min(620px, 94vw);
+  box-shadow: 0 24px 80px #17364455;
+  color: #183240;
+}
+dialog::backdrop {
+  background: #15344166;
+}
+dialog label {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 13px 0;
+}
+dialog input,
+dialog textarea {
+  font: inherit;
+  border: 1px solid #cbdadd;
+  border-radius: 9px;
+  padding: 10px;
+}
+dialog textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+/* ---- Themes: the portal's mission (default), light and dark colours. The shell tells the page which one
+   (portal-client.js sets data-theme on <html>). ---- */
+:root {
+  --page: #f4f7f8;
+  --panel: #fff;
+  --text: #183240;
+  --muted: #66808c;
+  --line: #dfe8eb;
+  --soft: #f5f8f9;
+  color-scheme: light;
+}
+[data-theme="light"] {
+  --page: #fafbfc;
+  --panel: #fff;
+  --text: #263642;
+  --muted: #6b7b84;
+  --line: #e3e8eb;
+  --soft: #f3f5f6;
+}
+[data-theme="dark"] {
+  --page: #101a21;
+  --panel: #18262f;
+  --text: #edf7f8;
+  --muted: #a9bdc3;
+  --line: #2d414b;
+  --soft: #21343d;
+  color-scheme: dark;
+}
+body {
+  background: var(--page);
+  color: var(--text);
+}
+.panel,
+.kpi {
+  background: var(--panel);
+  border-color: var(--line);
+}
+.fact,
+.summary-box {
+  background: var(--soft);
+}
+.panel h2,
+.fact strong,
+.actual strong,
+.item h3,
+.goal-number,
+.plan-text,
+.assignment-details strong {
+  color: var(--text);
+}
+.meta,
+.item p,
+.assignment-details,
+.shared-note,
+.status-line,
+.goal-caption,
+.actual,
+.goal-section,
+.summary-box span {
+  color: var(--muted);
+}
+[data-theme="dark"] .quote,
+[data-theme="dark"] .area-view-notice {
+  background: #19353c;
+  color: var(--text);
+}
+[data-theme="dark"] .button.secondary {
+  background: #274049;
+  color: #d5eff0;
+}
+[data-theme="dark"] dialog {
+  background: var(--panel);
+  color: var(--text);
+}
+[data-theme="dark"] .quote blockquote,
+[data-theme="dark"] .quote cite {
+  color: var(--text);
+}
+
+/* ---- The reporting week list, the "Customize overview cards" button, text only for screen readers ---- */
+.week-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.week-picker select {
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+}
+.overview-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Movable Overview cards (SortableJS). A card the person may not see has the class "hidden" (set from the
+   server's answer); a card the person chose to hide has the hidden attribute. ---- */
+:root {
+  --grip: var(--muted);
+  --slot: #e9f3f2;
+  --slot-line: #65b4ab;
+}
+[data-theme="dark"] {
+  --grip: #8fa9b1;
+  --slot: #19353c;
+  --slot-line: #4fa7a0;
+}
+.card-grid {
+  margin-top: 0;
+}
+.card-grid > [data-card] {
+  margin: 0;
+  min-width: 0;
+}
+.card-grid > [data-span="full"] {
+  grid-column: 1/-1;
+}
+[data-card][hidden] {
+  display: none !important;
+}
+.card-grid > [data-card="indicators"] > .section-head {
+  margin: 2px 1px 13px;
+}
+/* The dotted handle beside each card's title: drag it, or pick it up with Space or Enter. */
+.card-grip {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin: -6px -4px -6px -8px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--grip);
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.card-grip svg,
+.row-grip svg {
+  width: 10px;
+  height: 16px;
+  fill: currentColor;
+  pointer-events: none;
+}
+.card-grip:hover,
+.card-chosen .card-grip {
+  background: var(--soft);
+  border-color: var(--line);
+  color: var(--text);
+}
+.card-grip:active {
+  cursor: grabbing;
+}
+[data-card] .card-grip + * {
+  margin-right: auto;
+}
+/* A card picked up with the keyboard. */
+.card-lifted {
+  outline: 3px solid #83cbc6;
+  outline-offset: 3px;
+  box-shadow: 0 16px 40px #17364426;
+}
+.card-lifted .card-grip {
+  background: #087f8c;
+  border-color: #087f8c;
+  color: #fff;
+  cursor: grabbing;
+}
+/* While dragging: the dashed place where the card will land, and the card following the pointer. */
+.card-drop-slot {
+  background: var(--slot) !important;
+  border: 2px dashed var(--slot-line) !important;
+  border-radius: 16px;
+  box-shadow: none !important;
+  max-height: 220px;
+  overflow: hidden;
+}
+.card-drop-slot > *,
+.row-drop-slot > * {
+  visibility: hidden;
+}
+.card-drag-float {
+  background: var(--panel) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 16px;
+  box-shadow: 0 22px 60px #17364440 !important;
+  opacity: 0.97 !important;
+  max-height: 280px;
+  overflow: hidden !important;
+}
+.card-drag-float:not(.panel) {
+  padding: 12px 16px;
+}
+.card-dragging,
+.card-dragging * {
+  cursor: grabbing !important;
+}
+/* The rows of the "Customize overview cards" dialog. */
+.card-custom-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 9px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel, #fff);
+}
+.card-custom-row label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 auto 0 0;
+  font-size: 12px;
+}
+.row-grip {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 32px;
+  border-radius: 7px;
+  color: var(--grip);
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.row-grip:hover {
+  background: var(--soft);
+  color: var(--text);
+}
+.row-moves {
+  display: flex;
+  gap: 6px;
+}
+.card-custom-row button {
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel, #fff);
+  color: var(--text);
+  cursor: pointer;
+}
+.card-custom-row button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.row-drop-slot {
+  background: var(--slot);
+  outline: 2px dashed var(--slot-line);
+  outline-offset: -2px;
+}
+.row-drag-float {
+  border-radius: 10px;
+  box-shadow: 0 12px 30px #17364433;
+  opacity: 0.97 !important;
+}
+@media (max-width: 760px) {
+  .card-grip {
+    width: 36px;
+    height: 36px;
+    margin: -9px -4px -9px -9px;
+  }
+  .card-grid > [data-card="indicators"] > .section-head {
+    flex-wrap: wrap;
+  }
+}

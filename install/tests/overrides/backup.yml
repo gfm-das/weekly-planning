@@ -1,0 +1,8 @@
+# Test only (see README.md): the nightly backup with its own container name, on the test network.
+services:
+  gfm-backup:
+    container_name: gfmtest-backup
+networks:
+  gfm-network:
+    external: true
+    name: gfmtest-network

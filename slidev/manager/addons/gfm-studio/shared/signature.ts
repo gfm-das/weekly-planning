@@ -1,0 +1,40 @@
+/**
+ * A short fingerprint of an element's opening tag, used to tell otherwise
+ * identical siblings apart.
+ *
+ * A grid of twelve `<Mascot />` elements is twelve tags with the same name. If
+ * the only thing checked when confirming a source range were the tag name, a
+ * stale line hint would happily verify against the wrong one and the editor
+ * would write to a different element than the user clicked. Hashing the tag as
+ * written makes that impossible without carrying the whole tag into the DOM.
+ */
+export function tagSignature(openingTag: string): string {
+  const normalised = openingTag
+    .replace(/\sdata-studio-[\w-]+="[^"]*"/g, '')
+    // Slidev's own `v-drag` support injects `:markdownSource` into the tag
+    // before this ever sees it, and that attribute exists nowhere in the file.
+    // Leaving it in meant every element gained a fingerprint its own source
+    // could not reproduce the moment it was moved, and the editor then refused
+    // to touch the thing it had just written.
+    .replace(/\s:?markdownSource="[^"]*"/g, '')
+    // A position is state, not identity. A drag that writes `pos` without
+    // re-rendering the slide leaves the DOM holding the fingerprint of the
+    // tag as it was, and the element could never be selected again: it had
+    // been renamed by moving it. Both sides ignore it, so it survives.
+    .replace(/\sv-drag(?:="[^"]*")?/g, '')
+    .replace(/\s:?pos="[^"]*"/g, '')
+    // The two sides read the tag from different ends, so a self-closing slash
+    // is present in one and not the other. Neither carries meaning here.
+    .replace(/\/\s*>?\s*$/, '')
+    .replace(/>\s*$/, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  // FNV-1a, chosen for being four lines rather than for its cryptography.
+  let hash = 0x811C9DC5
+  for (let i = 0; i < normalised.length; i++) {
+    hash ^= normalised.charCodeAt(i)
+    hash = Math.imul(hash, 0x01000193) >>> 0
+  }
+  return hash.toString(36)
+}

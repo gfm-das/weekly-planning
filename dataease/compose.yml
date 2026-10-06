@@ -1,0 +1,234 @@
+# DataEase v2 Community Edition (GPLv3, https://github.com/dataease/dataease): the portal's Dashboards tab.
+#
+# One compose project (gfm-dataease), six small containers:
+#   gfm-dataease          DataEase itself (Java). No port and no internet: only the private network below.
+#   gfm-dataease-mysql    DataEase's own metadata (dashboards, charts, datasets, the data source). MySQL 8.4.
+#   gfm-dataease-web      nginx in front of DataEase, the only published port (${GFM_DATAEASE_PORT:-8088} on the LAN).
+#                         Every request must carry the portal's Dashboards sign-in (see gate below), so only the
+#                         APs, the President and the Data Analysts reach DataEase, and only through the portal.
+#                         It also keeps DataEase in English, and adds i18n/gfm-i18n.js, which shows the page in the
+#                         viewer's portal language (14 languages; dataease/i18n/README.md).
+#   gfm-dataease-gate     a small Node service that nginx asks about every request: it checks the portal's signed
+#                         cookie (gfm_dataease, made by portal-api POST /api/dataease/session for managers only) and
+#                         holds DataEase's own sign-in, which nginx adds to the request. The Community Edition has
+#                         a single DataEase account ("admin"); people never see or type its password.
+#   gfm-dataease-dbproxy  a plain TCP relay to the Beta database's port 5432, and nothing else. It is the only
+#                         container on gfm-network, so DataEase can reach the database but none of the other
+#                         services there (Supabase Studio, postgres-meta, Kong, portal-api...), which matters
+#                         because DataEase can make web requests of its own (API data sources).
+#   gfm-dataease-backup   every night at 02:15 DataEase's metadata and file volumes into backups\nightly, next to
+#                         the nightly database dumps (backup/nightly.sh; checked by the gfm-backup hook, see
+#                         nightly-backup/hooks.d/dataease-sidecar.sh.example).
+# DataEase reads the database only as gfm_dashboard_reader (migrations 018/025: the dashboards views, no people
+# tables). No other database login is given to it.
+#
+# First start and updates: docs/handoff/round6/dataease.md (create .env with init-env.ps1 first; never print it).
+#   docker compose -p gfm-dataease -f dataease/compose.yml up -d
+# Never "down -v": -v deletes the volumes, and with them every dashboard people built.
+name: gfm-dataease
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+services:
+  dataease:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:v2.10.27
+    container_name: ${GFM_DATAEASE_NAME:-gfm-dataease}
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    stop_grace_period: 20s
+    mem_limit: ${GFM_DATAEASE_APP_MEMORY:-1600m}
+    logging: *logging
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      TZ: ${GFM_TIME_ZONE:-Europe/Berlin}
+      # The image's own options plus a fixed heap, so the JVM stays inside mem_limit.
+      JAVA_OPTIONS: >-
+        -Dfile.encoding=utf-8 -Dloader.path=/opt/apps -Dspring.config.additional-location=optional:/opt/apps/config/
+        -Xms256m -Xmx${GFM_DATAEASE_HEAP:-900m} -XX:MaxMetaspaceSize=300m -XX:+UseSerialGC -Duser.timezone=${GFM_TIME_ZONE:-Europe/Berlin}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mysql:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: dataease
+      SPRING_DATASOURCE_PASSWORD: ${DE_MYSQL_PASSWORD:?Create dataease/.env first (dataease/init-env.ps1)}
+      # The portal shows DataEase in its frame (another port = another origin), so allow exactly the
+      # portal addresses as frame parents; X-Frame-Options would forbid any other origin, so it is off.
+      # The https addresses: the portal's public address and DataEase's public name (a Cloudflare tunnel route to
+      # 8088, docs/handoff/round10/public-dashboards.md).
+      DATAEASE_HTTP_FRAMEOPTIONS: ""
+      DATAEASE_HTTP_FRAMEANCESTORS: ${GFM_PORTAL_FRAME_ORIGINS:-'self' http://localhost:8070 http://127.0.0.1:8070 http://${GFM_HOST_IP:-192.168.1.20}:8070${GFM_PUBLIC_DOMAIN:+ https://$GFM_PUBLIC_DOMAIN https://www.$GFM_PUBLIC_DOMAIN}}
+      DATAEASE_ORIGINLIST: ${GFM_DATAEASE_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088,http://${GFM_HOST_IP:-192.168.1.20}:8088${GFM_PUBLIC_DOMAIN:+,https://dashboards.$GFM_PUBLIC_DOMAIN}}
+    volumes:
+      # DataEase's own small settings files (for example the share-link secret).
+      - conf:/opt/dataease2.0/conf
+      # Pictures uploaded into dashboards.
+      - static:/opt/dataease2.0/data/static-resource
+    networks:
+      - internal
+
+  mysql:
+    image: mysql:8.4.11
+    container_name: ${GFM_DATAEASE_NAME:-gfm-dataease}-mysql
+    restart: unless-stopped
+    mem_limit: ${GFM_DATAEASE_MYSQL_MEMORY:-512m}
+    logging: *logging
+    environment:
+      TZ: ${GFM_TIME_ZONE:-Europe/Berlin}
+      MYSQL_ROOT_PASSWORD: ${DE_MYSQL_ROOT_PASSWORD:?Create dataease/.env first (dataease/init-env.ps1)}
+      MYSQL_DATABASE: dataease
+      MYSQL_USER: dataease
+      MYSQL_PASSWORD: ${DE_MYSQL_PASSWORD:?Create dataease/.env first (dataease/init-env.ps1)}
+    # Small settings: DataEase's metadata is a few megabytes. (DataEase's own installer asks for a 1 GB pool.)
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --max-connections=60
+      - --performance-schema=OFF
+      - --transaction-isolation=READ-COMMITTED
+      - --max-allowed-packet=64M
+      - --skip-name-resolve
+      - --binlog-expire-logs-seconds=259200
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - internal
+
+  backup:
+    # The database's own image (no other download), for its mysqldump. Sleeps until 02:15 each night.
+    image: mysql:8.4.11
+    container_name: ${GFM_DATAEASE_NAME:-gfm-dataease}-backup
+    restart: unless-stopped
+    mem_limit: 128m
+    logging: *logging
+    init: true
+    depends_on:
+      mysql:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/backup/nightly.sh"]
+    environment:
+      TZ: ${GFM_TIME_ZONE:-Europe/Berlin}
+      BACKUP_AT: "02:15"
+      DB_HOST: mysql
+      MYSQL_PWD: ${DE_MYSQL_ROOT_PASSWORD:?Create dataease/.env first (dataease/init-env.ps1)}
+    volumes:
+      - ./backup/nightly.sh:/backup/nightly.sh:ro
+      # The nightly backup folder of gfm-backup (nightly-backup/backup-compose.yml): one place, one 14-day cleanup.
+      - ${GFM_DATAEASE_BACKUP_DIR:-../backups/nightly}:/backups
+      - conf:/dataease/conf:ro
+      - static:/dataease/static:ro
+    networks:
+      - internal
+
+  gate:
+    image: node:24-alpine
+    container_name: ${GFM_DATAEASE_NAME:-gfm-dataease}-gate
+    restart: unless-stopped
+    mem_limit: 96m
+    logging: *logging
+    init: true
+    user: node
+    working_dir: /gate
+    command: ["node", "--max-old-space-size=48", "gate/gate.mjs"]
+    environment:
+      TZ: ${GFM_TIME_ZONE:-Europe/Berlin}
+      DE_BASE: http://dataease:8100
+      # Checks the portal's Dashboards cookie; portal-api/.env holds the same value as DATAEASE_PROXY_SECRET.
+      GFM_DATAEASE_PROXY_SECRET: ${GFM_DATAEASE_PROXY_SECRET:?Create dataease/.env first (dataease/init-env.ps1)}
+      # DataEase's one account. Only this service and seed-dashboards.ps1 use it. On the very first start the gate
+      # replaces DataEase's published default password with this one.
+      DE_ADMIN_PASSWORD: ${DE_ADMIN_PASSWORD:?Create dataease/.env first (dataease/init-env.ps1)}
+    volumes:
+      - ./gate:/gate/gate:ro
+      - ./lib:/gate/lib:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8099/alive').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  web:
+    image: nginx:alpine
+    container_name: ${GFM_DATAEASE_NAME:-gfm-dataease}-web
+    restart: unless-stopped
+    mem_limit: 64m
+    logging: *logging
+    depends_on:
+      - dataease
+      - gate
+    ports:
+      - "${GFM_DATAEASE_BIND:-0.0.0.0}:${GFM_DATAEASE_PORT:-8088}:80"
+    volumes:
+      - ./web/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./web/gfm:/usr/share/nginx/gfm:ro
+      # The 14 languages (default.conf includes i18n/web-i18n.conf from here; nginx does not start without it).
+      - ./i18n:/etc/nginx/gfm-i18n:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/gfm-web-health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+      - edge
+
+  dbproxy:
+    image: nginx:alpine
+    container_name: ${GFM_DATAEASE_NAME:-gfm-dataease}-dbproxy
+    restart: unless-stopped
+    mem_limit: 32m
+    logging: *logging
+    environment:
+      GFM_DB_UPSTREAM: ${GFM_DATAEASE_DB_UPSTREAM:-gfm-beta-supabase-db-1:5432}
+    # Only the stream relay; the default http site of the image is not used (no http block at all).
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        cat > /etc/nginx/nginx.conf <<EOF
+        worker_processes 1;
+        error_log /dev/stderr warn;
+        events { worker_connections 256; }
+        stream {
+          # Looked up again every 30 s, so a recreated database container is found at its new address.
+          resolver 127.0.0.11 valid=30s ipv6=off;
+          map "" \$$gfm_db { default $$GFM_DB_UPSTREAM; }
+          server {
+            listen 5432;
+            proxy_connect_timeout 5s;
+            proxy_timeout 1h;
+            proxy_pass \$$gfm_db;
+          }
+        }
+        EOF
+        exec nginx -g 'daemon off;'
+    networks:
+      - internal
+      - database
+
+networks:
+  # DataEase, its MySQL, the gate, the web front and the relay. No internet and no other containers.
+  internal:
+    name: ${GFM_DATAEASE_NAME:-gfm-dataease}-internal
+    internal: true
+  # Only the web front joins it, to publish the port.
+  edge:
+    name: ${GFM_DATAEASE_NAME:-gfm-dataease}-edge
+  # The network the Beta database is on. Only the relay joins it.
+  database:
+    external: true
+    name: ${GFM_DATAEASE_DB_NETWORK:-gfm-network}
+
+volumes:
+  conf:
+    name: ${GFM_DATAEASE_NAME:-gfm-dataease}-conf
+  static:
+    name: ${GFM_DATAEASE_NAME:-gfm-dataease}-static
+  mysql:
+    name: ${GFM_DATAEASE_NAME:-gfm-dataease}-mysql

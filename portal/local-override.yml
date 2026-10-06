@@ -1,0 +1,19 @@
+# This computer's settings for the portal container: port 8070, the nginx settings and the network. Used together with
+# portal-compose.yml (see its first lines for the command).
+
+services:
+  portal:
+    ports:
+      - "8070:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Wiki: the repository's wiki/ folder, read only; nginx serves only its out/ folder at /wiki/ (nginx.conf). The whole
+      # folder is mounted, not out/ itself, because a wiki Save rebuilds out/ (deletes and recreates it).
+      - ../wiki:/usr/share/nginx/wiki-src:ro
+    networks:
+      - gfm
+      # The gfm-dashboards network (Grafana's sign-in network) was removed in round 6 with Grafana.
+networks:
+  gfm:
+    external: true
+    name: gfm-network

@@ -1,0 +1,63 @@
+{
+  "_comment": "Dashboard 'Zones & districts'. Built by dataease/seed-dashboards.mjs (see dataease/README.md). pos = [x, y, width, height] on DataEase's 72-column grid; {column} in rich text shows a live value. Each zone and district is measured against the goals its own areas set, never ranked against the others by size.",
+  "id": "1150002000000000000",
+  "name": "Zones & districts",
+  "components": [
+    {
+      "id": "1150002000001000000", "type": "rich-text", "plain": true, "pos": [1, 1, 72, 4], "dataset": "kpi-latest",
+      "values": ["latest_week"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:22px;color:#17394b;\"><strong>Zones &amp; districts</strong></span></p><p style=\"margin:4px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">Last complete week: <strong>{latest_week}</strong>. Every zone and district is measured against the goals its own areas set the week before, so a small zone can be at 100% too.</span></p>"
+    },
+    {
+      "id": "1150002000002000000", "type": "filters", "title": "Filters", "pos": [1, 5, 72, 6],
+      "conditions": [
+        { "field": "zone", "label": "Zone" },
+        { "field": "district", "label": "District" },
+        { "field": "week", "label": "Weeks", "kind": "weeks" }
+      ]
+    },
+    {
+      "id": "1150002000003000000", "type": "bar", "title": "New People Being Taught by zone, last complete week", "pos": [1, 11, 36, 14], "dataset": "kpi-latest",
+      "note": "Result and the goal the zone's areas set the week before.",
+      "x": "zone", "y": [{ "field": "npbt_actual", "label": "Result" }, { "field": "npbt_goal", "label": "Goal set the week before" }], "labels": true
+    },
+    {
+      "id": "1150002000004000000", "type": "bar", "title": "Sacrament attendance by zone, last complete week", "pos": [37, 11, 36, 14], "dataset": "kpi-latest",
+      "note": "Result and the goal the zone's areas set the week before.",
+      "x": "zone", "y": [{ "field": "sa_actual", "label": "Result" }, { "field": "sa_goal", "label": "Goal set the week before" }], "labels": true
+    },
+    {
+      "id": "1150002000005000000", "type": "t-heatmap", "title": "New People Being Taught: % of goal, zones by week", "pos": [1, 25, 72, 16], "dataset": "zone-heat",
+      "note": "Each square is one zone in one complete week: the result as a % of the goal its areas set the week before. Darker is nearer or above the goal; an empty square had no goal. The District filter does not apply here.",
+      "x": "week", "y": "zone", "value": { "field": "npbt_pct_of_goal", "label": "% of goal" }
+    },
+    {
+      "id": "1150002000006000000", "type": "t-heatmap", "title": "Sacrament attendance: % of goal, zones by week", "pos": [1, 41, 72, 16], "dataset": "zone-heat",
+      "note": "As above, for sacrament attendance.",
+      "x": "week", "y": "zone", "value": { "field": "sa_pct_of_goal", "label": "% of goal" }
+    },
+    {
+      "id": "1150002000007000000", "type": "bar-horizontal", "title": "Districts that may need help: New People Being Taught", "pos": [1, 57, 36, 16], "dataset": "districts-help",
+      "note": "The 10 districts furthest below their own goals over the last 4 complete weeks (result as a % of the goals set the week before). A district with no goals is not shown. Talk with the leaders before drawing conclusions.",
+      "x": "district", "y": [{ "field": "npbt_pct_of_goal", "label": "% of goal", "summary": "sum" }], "sortBy": { "field": "npbt_pct_of_goal", "order": "asc" }, "top": 10, "labels": true, "legend": false
+    },
+    {
+      "id": "1150002000008000000", "type": "bar-horizontal", "title": "Districts that may need help: Sacrament attendance", "pos": [37, 57, 36, 16], "dataset": "districts-help",
+      "note": "The 10 districts furthest below their own goals over the last 4 complete weeks.",
+      "x": "district", "y": [{ "field": "sa_pct_of_goal", "label": "% of goal", "summary": "sum" }], "sortBy": { "field": "sa_pct_of_goal", "order": "asc" }, "top": 10, "labels": true, "legend": false
+    },
+    {
+      "id": "1150002000009000000", "type": "table-normal", "title": "Districts, last 4 complete weeks", "pos": [1, 73, 72, 16], "dataset": "districts-help",
+      "columns": [
+        { "field": "zone", "label": "Zone", "dimension": true, "sort": "asc" },
+        { "field": "district", "label": "District", "dimension": true },
+        { "field": "npbt_actual", "label": "New People Being Taught" },
+        { "field": "npbt_goal", "label": "Goals set the week before" },
+        { "field": "npbt_pct_of_goal", "label": "% of goal" },
+        { "field": "sa_actual", "label": "Sacrament attendance" },
+        { "field": "sa_goal", "label": "Goals set the week before " },
+        { "field": "sa_pct_of_goal", "label": "% of goal " }
+      ]
+    }
+  ]
+}

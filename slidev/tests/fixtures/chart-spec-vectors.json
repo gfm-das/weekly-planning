@@ -1,0 +1,490 @@
+{
+  "about": "Chart query test vectors, checked by portal-api/tests/test_charts.py and slidev/tests/chart-spec.test.mjs. Regenerate only on purpose: the canonical form is what decks pin.",
+  "valid": [
+    {
+      "name": "only a measure: every default",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ]
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "686460b7028734333733eaa6d651a466e022ad7f16d0d497a4e265cc848796d1"
+    },
+    {
+      "name": "the same written out differently",
+      "input": {
+        "v": 1,
+        "weeks": 12,
+        "measures": [
+          "friends_found.actual",
+          "friends_found.actual"
+        ],
+        "filter": {},
+        "top": 0.0,
+        "includeCurrent": true
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "686460b7028734333733eaa6d651a466e022ad7f16d0d497a4e265cc848796d1"
+    },
+    {
+      "name": "the same as JSON text",
+      "input": "{\"measures\":[\"friends_found.actual\"],\"level\":\"mission\"}",
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "686460b7028734333733eaa6d651a466e022ad7f16d0d497a4e265cc848796d1"
+    },
+    {
+      "name": "zones, sorted and without repeats",
+      "input": {
+        "measures": [
+          "sacrament_attendance.actual",
+          "sacrament_attendance.previous_goal"
+        ],
+        "level": "zone",
+        "filter": {
+          "zones": [
+            5,
+            3,
+            5
+          ]
+        },
+        "weeks": {
+          "last": 8
+        }
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{\"zones\":[3,5]},\"includeCurrent\":true,\"level\":\"zone\",\"measures\":[\"sacrament_attendance.actual\",\"sacrament_attendance.previous_goal\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":8}}",
+      "sha256": "cb6f96c5326cccde9fccc335c99826222224a3b1804d8b5bd171ae949512544c"
+    },
+    {
+      "name": "district by unit: stewardship by default",
+      "input": {
+        "measures": [
+          "new_members.at_church"
+        ],
+        "level": "district",
+        "by": "unit",
+        "sort": "desc",
+        "top": 5,
+        "weeks": 4
+      },
+      "canonical": "{\"audience\":\"stewardship\",\"by\":\"unit\",\"filter\":{},\"includeCurrent\":true,\"level\":\"district\",\"measures\":[\"new_members.at_church\"],\"sort\":\"desc\",\"top\":5,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":4}}",
+      "sha256": "5c6ababd4264d96df2c19490bebd98b06af665d80c1770e459bee3fd34339c2f"
+    },
+    {
+      "name": "area: empty filter lists dropped",
+      "input": {
+        "measures": [
+          "baptismal_date_friends.total"
+        ],
+        "level": "area",
+        "filter": {
+          "zones": [],
+          "areas": null,
+          "districts": [
+            12
+          ]
+        },
+        "includeCurrent": false,
+        "transform": "rolling4"
+      },
+      "canonical": "{\"audience\":\"stewardship\",\"by\":\"week\",\"filter\":{\"districts\":[12]},\"includeCurrent\":false,\"level\":\"area\",\"measures\":[\"baptismal_date_friends.total\"],\"sort\":\"none\",\"top\":0,\"transform\":\"rolling4\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "a85e4ffdb2c6f422a3d3c454dfe678f6a803bb05facdbac8fd757686f04f888d"
+    },
+    {
+      "name": "percent of goal by zone, stewardship chosen",
+      "input": {
+        "measures": [
+          "baptismal_dates.actual",
+          "baptismal_dates.previous_goal"
+        ],
+        "transform": "pct_of_goal",
+        "level": "zone",
+        "by": "unit",
+        "audience": "stewardship"
+      },
+      "canonical": "{\"audience\":\"stewardship\",\"by\":\"unit\",\"filter\":{},\"includeCurrent\":true,\"level\":\"zone\",\"measures\":[\"baptismal_dates.actual\",\"baptismal_dates.previous_goal\"],\"sort\":\"none\",\"top\":0,\"transform\":\"pct_of_goal\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "73ee0d54eaef1bd33ce9e6967fffd6fb0748bc6002d3b3131280dac6ae0585f1"
+    },
+    {
+      "name": "measure order is kept",
+      "input": {
+        "measures": [
+          "plans.submitted",
+          "plans.started"
+        ],
+        "weeks": 104,
+        "transform": "cumulative"
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"plans.submitted\",\"plans.started\"],\"sort\":\"none\",\"top\":0,\"transform\":\"cumulative\",\"v\":1,\"weeks\":{\"last\":104}}",
+      "sha256": "221a35fd13ffc943cd29fab76a2ec29c89c689e1155e057059ad548e059bf929"
+    },
+    {
+      "name": "area chart for everyone",
+      "input": {
+        "measures": [
+          "high_potentials.at_church",
+          "high_potentials.total"
+        ],
+        "level": "area",
+        "audience": "deck",
+        "filter": {
+          "areas": [
+            900,
+            7
+          ]
+        },
+        "by": "unit",
+        "transform": "per_area"
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"unit\",\"filter\":{\"areas\":[7,900]},\"includeCurrent\":true,\"level\":\"area\",\"measures\":[\"high_potentials.at_church\",\"high_potentials.total\"],\"sort\":\"none\",\"top\":0,\"transform\":\"per_area\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "daf6c2255707f9ecee2b47c066fc4bb66ad6d398d01755f539fac0d6e9c11eb5"
+    },
+    {
+      "name": "repeats within the limit are dropped",
+      "input": {
+        "measures": [
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal",
+          "friends_found.goal"
+        ]
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\",\"friends_found.goal\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":12}}",
+      "sha256": "bcc3c2180e8bd67a9b4a291c719cfb5ab7354e1e5e43388477b6b1353a765a5d"
+    }
+  ],
+  "invalid": [
+    {
+      "name": "no measures",
+      "input": {
+        "measures": []
+      },
+      "error": "Choose at least one number to show."
+    },
+    {
+      "name": "a measure not written as group.field",
+      "input": {
+        "measures": [
+          "Friends"
+        ]
+      },
+      "error": "A number in this chart is not written like \"friends_found.actual\"."
+    },
+    {
+      "name": "unknown level",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": "country"
+      },
+      "error": "Choose one of mission, zone, district, area for level."
+    },
+    {
+      "name": "a mission chart limited to zones",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "filter": {
+          "zones": [
+            1
+          ]
+        }
+      },
+      "error": "A mission chart cannot be limited to zones."
+    },
+    {
+      "name": "zero weeks",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "weeks": 0
+      },
+      "error": "Choose between 1 and 104 weeks."
+    },
+    {
+      "name": "too many weeks",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "weeks": {
+          "last": 105
+        }
+      },
+      "error": "Choose between 1 and 104 weeks."
+    },
+    {
+      "name": "sorting by week",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "sort": "desc"
+      },
+      "error": "Sorting and \"top\" work when the chart is grouped by zone, district or area."
+    },
+    {
+      "name": "running total per unit",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": "zone",
+        "by": "unit",
+        "transform": "cumulative"
+      },
+      "error": "A running total or 4-week average needs the chart grouped by week."
+    },
+    {
+      "name": "an unknown setting",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "colour": "red"
+      },
+      "error": "Unknown chart setting: colour."
+    },
+    {
+      "name": "includeCurrent as text",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "includeCurrent": "yes"
+      },
+      "error": "includeCurrent must be true or false."
+    },
+    {
+      "name": "true as a zone id",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": "zone",
+        "filter": {
+          "zones": [
+            true
+          ]
+        }
+      },
+      "error": "Choose zones as a list of numbers."
+    },
+    {
+      "name": "a later version",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "v": 2
+      },
+      "error": "This chart was made for a newer version of Presentations."
+    },
+    {
+      "name": "level null",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": null
+      },
+      "error": "Choose one of mission, zone, district, area for level."
+    },
+    {
+      "name": "not JSON",
+      "input": "not json",
+      "error": "The chart settings are not valid JSON."
+    },
+    {
+      "name": "a list instead of settings",
+      "input": [
+        "friends_found.actual"
+      ],
+      "error": "The chart settings must be a list of settings in { }."
+    },
+    {
+      "name": "a fractional week count",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "weeks": 2.5
+      },
+      "error": "Choose between 1 and 104 weeks."
+    },
+    {
+      "name": "an unknown filter",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": "area",
+        "filter": {
+          "units": [
+            1
+          ]
+        }
+      },
+      "error": "Unknown chart setting: filter.units."
+    },
+    {
+      "name": "top above 50",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": "zone",
+        "by": "unit",
+        "top": 51
+      },
+      "error": "Choose a top number between 0 and 50."
+    },
+    {
+      "name": "nine measures",
+      "input": {
+        "measures": [
+          "a.a",
+          "a.b",
+          "a.c",
+          "a.d",
+          "a.e",
+          "a.f",
+          "a.g",
+          "a.h",
+          "a.i"
+        ]
+      },
+      "error": "Choose at most 8 numbers for one chart."
+    },
+    {
+      "name": "a list longer than 32 entries, even of one number",
+      "input": {
+        "measures": [
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual"
+        ]
+      },
+      "error": "Choose at most 8 numbers for one chart."
+    },
+    {
+      "name": "a long list with a badly written number in it",
+      "input": {
+        "measures": [
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "friends_found.actual",
+          "Friends"
+        ]
+      },
+      "error": "Choose at most 8 numbers for one chart."
+    },
+    {
+      "name": "a line break after a number",
+      "input": {
+        "measures": [
+          "friends_found.actual\n"
+        ]
+      },
+      "error": "A number in this chart is not written like \"friends_found.actual\"."
+    }
+  ]
+}

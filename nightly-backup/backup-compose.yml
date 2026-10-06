@@ -1,0 +1,44 @@
+# Nightly database backups (round 6, docs/handoff/round6/ops.md).
+#
+#   powershell -ExecutionPolicy Bypass -File nightly-backup/set-db-password.ps1     (once: the password file)
+#   docker compose -p gfm-backup -f nightly-backup/backup-compose.yml up -d
+#
+# Every night at 02:30 in the mission's time zone (GFM_TIME_ZONE in nightly-backup/.env, default Europe/Berlin): pg_dump -Fc of the Beta database, into backups\nightly next to this folder;
+# files older than 14 days are deleted; nightly.log and last-run.txt there say what happened.
+# A change to nightly.sh needs `docker restart gfm-backup`.
+name: gfm-backup
+
+services:
+  gfm-backup:
+    # pg_dump 15 for the Postgres 15 servers. This exact image is already on this machine (no download).
+    image: postgres:15-alpine@sha256:fe0737ba566a2c5b2a28f34433c0a423261900ec17b9bf7ad115e1aae7e57f1b
+    container_name: gfm-backup
+    restart: unless-stopped
+    entrypoint: ["/bin/bash", "/backup/nightly.sh"]
+    environment:
+      TZ: ${GFM_TIME_ZONE:-Europe/Berlin}   # the mission's time zone (nightly-backup/.env), also the zone of BACKUP_AT
+      BACKUP_AT: "02:30"
+      KEEP_DAYS: "14"
+      # name=host[/database]. The second (older) Supabase stack, "production" (ports 3000/8000), was retired on
+      # 3 Oct 2026 and is no longer backed up.
+      BACKUP_TARGETS: "beta=gfm-beta-supabase-db-1"
+      PGUSER: postgres
+      PASSWORD_FILE: /backup/secrets/db-password
+    volumes:
+      - ./nightly.sh:/backup/nightly.sh:ro
+      - ./hooks.d:/backup/hooks.d:ro
+      # Passwords, one file each (gitignored): db-password (postgres of the Beta stack), and whatever a
+      # hook needs, e.g. dataease-db-password. Written by set-db-password.ps1, never printed.
+      - ./secrets:/backup/secrets:ro
+      - ../backups/nightly:/backups
+    networks:
+      - gfm-network
+    mem_limit: 256m
+    cpus: 1
+    logging:
+      driver: json-file
+      options: { max-size: "1m", max-file: "2" }
+
+networks:
+  gfm-network:
+    external: true

@@ -1,0 +1,3222 @@
+<!doctype html>
+<!--
+  WEEKLY PLANNING (planning.html)
+
+  What it is:  the page where a companionship plans its week together. It has the planning questions (numbers,
+               goals and plans for the key indicators, ward coordination, ...) and three lists of people the
+               companionship is helping: friends with a baptismal date, New Members and high-potential friends.
+               The plan is submitted by Sunday 18:00 (the push reminder comes then if it is not finished).
+  Who uses it: every missionary, for their own area. A district leader reads the submitted plans in Call-ins
+               (callins.html) before the call-in.
+  How it fits: the portal (index.html) shows this page inside its frame. The page talks only to portal-api
+               (/api/planning/..., portal-api/planning.py) through portalAPI() from portal-client.js. The questions
+               themselves come from the database: the Data Analysts edit them in DA Management > Planning questions.
+               i18n.js swaps every English text on the page for the reader's language (portal/i18n/*.json).
+
+  A plain-words guide to this page, how the data flows and how to test it: README-planning-callins.md.
+-->
+<html lang="en" data-theme="mission">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Weekly Planning</title>
+    <link rel="stylesheet" href="workspace.css" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+    <style>
+      /* ---------------------------------------------------------------------------------------------------------
+         The page and the week card at the top
+         --------------------------------------------------------------------------------------------------------- */
+      body {
+        padding-bottom: calc(95px + env(safe-area-inset-bottom));
+      }
+      .planning-shell {
+        max-width: 1080px;
+      }
+      .week-card {
+        background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
+        color: #fff;
+        border: 0;
+        box-shadow: 0 18px 42px #12384720;
+      }
+      .week-card label,
+      .week-card .muted {
+        color: #d8eef0;
+      }
+      .week-card .purpose {
+        margin: 0 0 4px;
+        max-width: 60ch;
+      }
+      .week-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+      }
+      .week-card h1 {
+        font-size: 30px;
+        margin: 8px 0;
+      }
+      /* The one ward or branch of an area, as text in place of the list */
+      .week-card .unit-name {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .pill {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ffffff1f;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .progress-track {
+        height: 6px;
+        background: #ffffff25;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-top: 15px;
+      }
+      .progress-track span {
+        display: block;
+        height: 100%;
+        background: #91ddd5;
+        transition: width 0.25s;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Section colours. Each section of the plan gets one, in page order (eight colours, then they start again;
+         buildSectionNav sets data-accent). The same colour marks the section's top edge and its button in the
+         bar, so one look at the bar shows where you are. White text stays easy to read on every light-theme
+         colour, dark text on every dark-theme colour.
+         --------------------------------------------------------------------------------------------------------- */
+      :root {
+        --accent-0: #0b7a8a; /* teal */
+        --accent-1: #2f64b0; /* blue */
+        --accent-2: #7048b0; /* purple */
+        --accent-3: #a8386a; /* berry */
+        --accent-4: #a3540f; /* orange */
+        --accent-5: #3b7a34; /* green */
+        --accent-6: #806a12; /* gold */
+        --accent-7: #55697a; /* slate */
+        --accent-ink: #fff; /* text on a button filled with its colour */
+        --bar-shadow: #0f2c3a40;
+      }
+      [data-theme="dark"] {
+        --accent-0: #5ccbd3;
+        --accent-1: #8db4f0;
+        --accent-2: #bca0f0;
+        --accent-3: #f29ac0;
+        --accent-4: #f2b074;
+        --accent-5: #9fd494;
+        --accent-6: #d9c56a;
+        --accent-7: #b3c3cf;
+        --accent-ink: #0d1a20;
+        --bar-shadow: #000000a0;
+      }
+      [data-accent="0"] { --accent: var(--accent-0); }
+      [data-accent="1"] { --accent: var(--accent-1); }
+      [data-accent="2"] { --accent: var(--accent-2); }
+      [data-accent="3"] { --accent: var(--accent-3); }
+      [data-accent="4"] { --accent: var(--accent-4); }
+      [data-accent="5"] { --accent: var(--accent-5); }
+      [data-accent="6"] { --accent: var(--accent-6); }
+      [data-accent="7"] { --accent: var(--accent-7); }
+      /* ---------------------------------------------------------------------------------------------------------
+         The section bar: one button per section, pinned to the top while the page scrolls
+         --------------------------------------------------------------------------------------------------------- */
+      /* The page keeps room for the pinned bar at the top and the save bar at the bottom (their heights
+         come from measureBars), so a section or a box that gets the focus never hides under them. */
+      html {
+        scroll-padding-top: calc(var(--section-nav-height, 0px) + 8px);
+        scroll-padding-bottom: calc(var(--actions-height, 0px) + 8px);
+      }
+      /* It stays pinned to the top on computers and on phones, with the page colour behind it so nothing
+         shows through. */
+      .section-nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 1px 12px;
+        background: var(--page);
+        transition: box-shadow 0.2s;
+      }
+      /* Pinned (watchPageEdges sets "stuck"): a soft shadow shows the bar floats above the page. */
+      .section-nav.stuck {
+        box-shadow: 0 12px 12px -12px var(--bar-shadow);
+      }
+      #sectionNavMarker {
+        height: 1px;
+        margin-bottom: -1px;
+      }
+      .section-nav button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+        background: var(--panel);
+        color: var(--text);
+        border: 1px solid var(--line);
+        padding: 8px 12px;
+      }
+      /* A dot in the section's colour, and a tick once the section's required questions are answered. */
+      .section-nav button::before {
+        content: "";
+        flex: none;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent, var(--teal));
+      }
+      .section-nav button.complete::before {
+        content: "✓";
+        content: "✓" / ""; /* only a picture: screen readers skip it */
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px;
+        text-align: center;
+        color: var(--accent-ink);
+      }
+      .section-nav button:hover {
+        border-color: var(--accent, var(--teal));
+      }
+      .section-nav button:focus-visible {
+        outline: 2px solid var(--accent, var(--teal));
+        outline-offset: 2px;
+      }
+      /* The section being read or edited (highlightSection sets aria-current): filled with its colour. */
+      .section-nav button[aria-current] {
+        background: var(--accent, var(--teal));
+        border-color: var(--accent, var(--teal));
+        color: var(--accent-ink);
+      }
+      .section-nav button[aria-current]::before {
+        background: var(--accent-ink);
+      }
+      .section-nav button[aria-current].complete::before {
+        color: var(--accent, var(--teal));
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Question sections and their questions (the questions come from DA Management > Planning questions)
+         --------------------------------------------------------------------------------------------------------- */
+      .section {
+        scroll-margin-top: 12px;
+        border-top: 4px solid var(--accent, var(--line));
+      }
+      /* A jump from the bar puts the keyboard on the section's heading (jumpToSection). */
+      .section h2:focus {
+        outline: none;
+      }
+      .section h2:focus-visible {
+        outline: 2px solid var(--accent, var(--teal));
+        outline-offset: 4px;
+        border-radius: 4px;
+      }
+      .section-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .section-head p {
+        margin: 5px 0 0;
+      }
+      .section-count {
+        color: var(--accent, var(--teal));
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .question-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 18px;
+      }
+      .question.long,
+      .question.grid-question {
+        grid-column: 1/-1;
+      }
+      .question label {
+        font-size: 13px;
+        color: var(--text);
+        margin-bottom: 7px;
+      }
+      .question input:not([type="checkbox"]),
+      .question textarea {
+        width: 100%;
+      }
+      .question textarea {
+        min-height: 100px;
+      }
+      .question .help {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .required-mark {
+        color: #b74c42;
+      }
+      .question .q-title {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 7px;
+      }
+      /* "Last week: ..." under a question */
+      .question .previous {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+        overflow-wrap: anywhere;
+      }
+      .question select {
+        width: 100%;
+      }
+      /* Choices shown as pills (Yes / No, one of a list, several of a list) and the grid of choices */
+      .choice-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .choice-pills label,
+      .answer-grid label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0 16px;
+        margin: 0;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .question .choice-pills input,
+      .question .answer-grid input {
+        width: 18px;
+        height: 18px;
+        flex: none;
+        margin: 0;
+        accent-color: var(--teal);
+      }
+      .choice-pills label:has(input:checked),
+      .answer-grid label:has(input:checked) {
+        border-color: var(--teal);
+        box-shadow: inset 0 0 0 1px var(--teal);
+      }
+      .choice-pills label:has(input:focus-visible),
+      .answer-grid label:has(input:focus-visible) {
+        outline: 2px solid #97d5d0;
+        outline-offset: 1px;
+      }
+      .answer-grid {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .answer-grid th,
+      .answer-grid td {
+        padding: 6px;
+        border-bottom: 1px solid var(--line);
+        text-align: center;
+      }
+      .answer-grid th[scope="row"] {
+        text-align: left;
+        font-weight: 600;
+      }
+      .answer-grid thead th {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .answer-grid label {
+        justify-content: center;
+        padding: 0 12px;
+      }
+      .answer-grid .grid-choice {
+        display: none;
+      }
+      .question.invalid .choice-pills label,
+      .question.invalid .answer-grid tr.unanswered th {
+        border-color: #c4453b;
+        color: #9f352d;
+      }
+      [data-theme="dark"] .question.invalid .answer-grid tr.unanswered th {
+        color: #ff8f85;
+      }
+      .toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--soft);
+        padding: 11px;
+        border-radius: 9px;
+        font-size: 12px;
+        margin: 0;
+      }
+      .toggle-label input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--teal);
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         People sections: one tab per person (New Members, friends with a baptismal date, high-potential friends)
+         --------------------------------------------------------------------------------------------------------- */
+      .person-tabs {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        margin-top: 16px;
+        border-bottom: 1px solid var(--line);
+        overflow-x: auto;
+        scrollbar-width: thin;
+      }
+      .person-tablist {
+        display: flex;
+        gap: 4px;
+      }
+      .person-tab {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid transparent;
+        border-bottom: 0;
+        border-radius: 10px 10px 0 0;
+        padding: 9px 14px;
+        white-space: nowrap;
+        margin-bottom: -1px;
+      }
+      .person-tab:hover {
+        color: var(--text);
+        background: var(--soft);
+      }
+      .person-tab[aria-selected="true"] {
+        background: var(--soft);
+        color: var(--text);
+        border-color: var(--line);
+        box-shadow: inset 0 3px 0 var(--teal);
+      }
+      .person-tab:focus-visible {
+        outline: 2px solid #97d5d0;
+        outline-offset: -2px;
+      }
+      .person-tab.add-tab {
+        color: var(--teal);
+        margin-left: auto;
+      }
+      [data-theme="dark"] .person-tab.add-tab {
+        color: #7fd3cb;
+      }
+      .person-panels .person-card {
+        border-top: 0;
+        border-radius: 0 0 13px 13px;
+      }
+      .person-panels .empty {
+        margin-top: 12px;
+      }
+      /* The pop-ups share their colours */
+      #createDialog,
+      #personDialog {
+        background: var(--panel);
+        color: var(--text);
+      }
+      #createDialog label,
+      #personDialog label {
+        color: var(--text);
+      }
+      #createDialog form {
+        display: flex;
+        flex-direction: column;
+        max-height: calc(92dvh - 54px);
+      }
+      #createDialog h2 {
+        margin-bottom: 6px;
+      }
+      .create-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 14px;
+        overflow-y: auto;
+        padding: 2px;
+      }
+      .create-grid .question input,
+      .create-grid .question select,
+      .create-grid .question textarea {
+        width: 100%;
+      }
+      .create-grid .question.long {
+        grid-column: 1/-1;
+      }
+      .create-grid .question textarea {
+        min-height: 90px;
+      }
+      .create-grid input:disabled {
+        background: var(--soft);
+        color: var(--muted);
+      }
+      [data-theme="dark"] .person-card label {
+        color: var(--muted);
+      }
+      [data-theme="dark"] button.secondary {
+        background: var(--soft);
+        color: var(--text);
+      }
+      /* "How will GEMIKO support them?" shows only after "Discussed in GEMIKO?" is Yes; a question hidden by its
+         show/hide rules is not shown either. */
+      .gemiko-details {
+        grid-column: 1/-1;
+        border-left: 3px solid var(--teal);
+        padding: 13px;
+        background: var(--panel);
+        border-radius: 10px;
+      }
+      .gemiko-details.hidden,
+      .question.conditional-hidden {
+        display: none;
+      }
+      .person-card {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 16px;
+        background: var(--soft);
+      }
+      .person-card h3 {
+        font-size: 15px;
+        margin: 0 0 13px;
+      }
+      .person-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .person-grid .wide {
+        grid-column: 1/-1;
+      }
+      .person-grid input:not([type="checkbox"]),
+      .person-grid select,
+      .person-grid textarea {
+        width: 100%;
+      }
+      .person-grid textarea {
+        min-height: 80px;
+      }
+      .remove-person {
+        background: transparent;
+        color: #a23a34;
+        padding: 7px 0;
+        margin-top: 9px;
+      }
+      [data-theme="dark"] .remove-person {
+        color: #ff9b91;
+      }
+      /* Person cards: details, actions, Yes / No pills, required marks and unanswered counts */
+      .person-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        margin-bottom: 12px;
+      }
+      .person-head h3 {
+        margin: 0 0 4px;
+      }
+      .person-details,
+      .person-note {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .person-note {
+        color: #9d4921;
+        font-weight: 600;
+      }
+      .person-help {
+        margin: -4px 0 10px;
+      }
+      [data-theme="dark"] .person-note {
+        color: #ffb38a;
+      }
+      .person-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .person-actions button {
+        padding: 9px 12px;
+        min-height: 40px;
+      }
+      .person-actions button.secondary {
+        border: 1px solid var(--line);
+      }
+      .person-actions button.danger,
+      #manageSave.danger {
+        background: #fff0ed;
+        color: #a33329;
+        border: 1px solid #f0c8c2;
+      }
+      [data-theme="dark"] .person-actions button.danger,
+      [data-theme="dark"] #manageSave.danger {
+        background: #3a2224;
+        color: #ff9b91;
+        border-color: #6b3a38;
+      }
+      .person-subhead {
+        margin: 18px 0 10px;
+        font-size: 11px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+      [data-theme="dark"] .person-subhead {
+        color: #7fd3cb;
+      }
+      .pill-question {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
+      }
+      .pill-question legend {
+        padding: 0;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #496673;
+      }
+      [data-theme="dark"] .pill-question legend {
+        color: var(--muted);
+      }
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .pill-option {
+        position: relative;
+        display: inline-flex;
+        margin: 0;
+      }
+      .pill-option input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+        margin: 0;
+      }
+      .pill-option span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        min-width: 64px;
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pill-option input:checked + span {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+      .pill-option input:focus-visible + span {
+        outline: 2px solid #97d5d0;
+        outline-offset: 2px;
+      }
+      .pill-option input:disabled + span {
+        cursor: default;
+        opacity: 0.65;
+      }
+      .person-field.invalid input,
+      .person-field.invalid select,
+      .person-field.invalid textarea,
+      .pill-question.invalid .pill-option span {
+        border-color: #c4453b;
+        box-shadow: 0 0 0 1px #c4453b;
+      }
+      [data-theme="dark"] .person-field.invalid input,
+      [data-theme="dark"] .person-field.invalid select,
+      [data-theme="dark"] .person-field.invalid textarea,
+      [data-theme="dark"] .pill-question.invalid .pill-option span {
+        border-color: #ff8f85;
+        box-shadow: 0 0 0 1px #ff8f85;
+      }
+      /* The number of unanswered questions on a person's tab (after a submit attempt) */
+      .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 19px;
+        height: 19px;
+        margin-left: 7px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: #c4453b;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Pop-ups: create / edit / Baptized, and Transfer / End follow-up / No longer on date / Delete
+         --------------------------------------------------------------------------------------------------------- */
+      .readonly-value {
+        padding: 11px 0;
+        font-weight: 600;
+      }
+      #manageDialog {
+        background: var(--panel);
+        color: var(--text);
+        width: min(560px, 95vw);
+      }
+      #manageDialog label {
+        color: var(--text);
+      }
+      .manage-fields {
+        display: grid;
+        gap: 14px;
+      }
+      .manage-fields select {
+        width: 100%;
+      }
+      .dialog-actions button[hidden] {
+        display: none;
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         A submitted plan's note, the save bar at the bottom, wrong answers and the loading placeholder
+         --------------------------------------------------------------------------------------------------------- */
+      .locked {
+        background: var(--soft);
+        border-radius: 12px;
+        padding: 14px;
+        color: var(--muted);
+        margin-bottom: 15px;
+      }
+      .sticky-actions {
+        position: fixed;
+        z-index: 25;
+        left: max(12px, calc((100vw - 1080px) / 2));
+        right: max(12px, calc((100vw - 1080px) / 2));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 11px 14px;
+        box-shadow: 0 12px 40px #102d3b35;
+      }
+      /* The bar and its buttons have their own display, so hidden ones (the bar on a submitted plan, Save before a
+         save failed) need saying */
+      .sticky-actions[hidden],
+      .sticky-actions button[hidden] {
+        display: none;
+      }
+      .save-state {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .question.invalid input:not([type="checkbox"]),
+      .question.invalid select,
+      .question.invalid textarea {
+        border-color: #c4453b;
+        box-shadow: 0 0 0 1px #c4453b;
+        border-radius: 8px;
+      }
+      [data-theme="dark"] .question.invalid input:not([type="checkbox"]),
+      [data-theme="dark"] .question.invalid select,
+      [data-theme="dark"] .question.invalid textarea {
+        border-color: #ff8f85;
+        box-shadow: 0 0 0 1px #ff8f85;
+      }
+      .skeleton {
+        height: 160px;
+        background: var(--soft);
+        border-radius: 15px;
+        animation: pulse 1.2s infinite alternate;
+      }
+      @keyframes pulse {
+        to {
+          opacity: 0.5;
+        }
+      }
+      /* ---------------------------------------------------------------------------------------------------------
+         Phones (720 px wide or less): one column, the bars adapted, 16 px text in the boxes (no zoom on focus),
+         44 px touch targets and pop-ups that fill the screen
+         --------------------------------------------------------------------------------------------------------- */
+      @media (max-width: 720px) {
+        body {
+          padding: 10px 10px calc(145px + env(safe-area-inset-bottom));
+        }
+        .panel {
+          padding: 16px;
+        }
+        .week-card {
+          border-radius: 16px;
+        }
+        .week-row {
+          align-items: stretch;
+          flex-direction: column;
+        }
+        .week-card h1 {
+          font-size: 25px;
+        }
+        .question-grid,
+        .person-grid,
+        .create-grid {
+          grid-template-columns: 1fr;
+        }
+        .create-grid .question.long {
+          grid-column: auto;
+        }
+        .question.long,
+        .question.grid-question,
+        .person-grid .wide {
+          grid-column: auto;
+        }
+        .section-head {
+          gap: 8px;
+        }
+        .section-count {
+          display: none;
+        }
+        .sticky-actions {
+          left: 8px;
+          right: 8px;
+          bottom: max(6px, env(safe-area-inset-bottom));
+          align-items: stretch;
+          flex-direction: column;
+          padding: 10px;
+        }
+        .sticky-actions > div:first-child {
+          display: flex;
+          justify-content: space-between;
+          gap: 8px;
+        }
+        /* Submit fills the row; after a failed save, Save (try again) sits next to it */
+        .sticky-actions .actions {
+          flex-wrap: nowrap;
+        }
+        .sticky-actions button {
+          flex: 1 1 0;
+          min-height: 45px;
+        }
+        .sticky-actions #submitBtn {
+          flex-grow: 1.3;
+        }
+        /* A grid becomes one card per row, with its choices as pills. */
+        .answer-grid,
+        .answer-grid tbody,
+        .answer-grid tr,
+        .answer-grid th,
+        .answer-grid td {
+          display: block;
+        }
+        .answer-grid thead {
+          display: none;
+        }
+        .answer-grid tr {
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          padding: 10px 10px 4px;
+          margin-bottom: 10px;
+          background: var(--panel);
+        }
+        .answer-grid th,
+        .answer-grid td {
+          border: 0;
+          padding: 0;
+        }
+        .answer-grid th[scope="row"] {
+          margin-bottom: 8px;
+          font-size: 14px;
+        }
+        .answer-grid td {
+          display: inline-block;
+          margin: 0 6px 6px 0;
+        }
+        .answer-grid .grid-choice {
+          display: inline;
+        }
+        /* On a phone the bar is one row that scrolls sideways (highlightSection slides the filled
+           button into view). It is pinned like on a computer, see .section-nav above. */
+        .section-nav {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          scrollbar-width: none;
+          padding-top: 7px;
+        }
+        .person-card {
+          padding: 13px;
+        }
+        .person-card input,
+        .person-card select,
+        .person-card textarea,
+        dialog input,
+        dialog select,
+        dialog textarea {
+          font-size: 16px;
+        }
+        .pill-option span,
+        .person-actions button,
+        .person-tab,
+        .add-existing,
+        .remove-person,
+        .section-nav button,
+        .dialog-actions button {
+          min-height: 44px;
+        }
+        #createDialog,
+        #manageDialog,
+        #personDialog {
+          width: 100vw;
+          max-width: 100vw;
+          height: 100dvh;
+          max-height: 100dvh;
+          margin: 0;
+          border-radius: 0;
+          padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+        }
+        #createDialog form {
+          max-height: none;
+          height: 100%;
+        }
+        .dialog-actions {
+          flex-wrap: wrap;
+        }
+        .dialog-actions button {
+          flex: 1 1 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="planning-shell">
+      <!-- The week card: which week, how far the plan is, and the ward or branch it is for -->
+      <section class="panel week-card">
+        <div class="week-row">
+          <div>
+            <span class="pill">SHARED COMPANIONSHIP PLAN</span>
+            <h1>Weekly Planning</h1>
+            <p class="muted purpose">Plan together for the people you are helping, then submit by Sunday at 18:00.</p>
+            <p class="muted" id="weekText">Loading this week…</p>
+            <div class="progress-track"><span id="progressBar"></span></div>
+          </div>
+          <!-- A list to choose from when the area has more than one ward or branch, otherwise just its name -->
+          <div>
+            <label for="unitSelect">Ward or branch</label
+            ><select id="unitSelect"></select
+            ><p class="unit-name" id="unitName" data-i18n-ignore hidden></p>
+          </div>
+        </div>
+      </section>
+      <div id="message" class="status" role="status"></div>
+      <!-- The section bar (one button per section) and the form itself, both drawn by the script -->
+      <div id="sectionNavMarker" aria-hidden="true"></div>
+      <nav
+        id="sectionNav"
+        class="section-nav"
+        aria-label="Planning sections"
+      ></nav>
+      <div id="form"><div class="skeleton"></div></div>
+      <div id="planEnd" aria-hidden="true"></div>
+      <!-- The save bar at the bottom (only while the plan can be changed). Saving is automatic; the Save button is
+           only there after a save failed, to try again (showRetry). -->
+      <div class="sticky-actions" id="actions" hidden>
+        <div>
+          <span class="save-state" id="saveState">Ready</span>
+        </div>
+        <div class="actions">
+          <button class="secondary" id="saveBtn" hidden>Save</button
+          ><button id="submitBtn">Submit weekly plan</button>
+        </div>
+      </div>
+      <!-- Pop-up: "+ Add from list" (a person already listed for the area) -->
+      <dialog id="personDialog">
+        <form id="personForm">
+          <h2 id="personTitle">Add from your list</h2>
+          <p class="muted" id="personHint"></p>
+          <label>Person<select id="personSelect" required></select></label>
+          <div id="personStatus" class="status"></div>
+          <div class="dialog-actions">
+            <button type="button" class="secondary" id="personCancel">
+              Cancel</button
+            ><button id="personSave">Add to this week</button>
+          </div>
+        </form>
+      </dialog>
+      <!-- Pop-up: create a person, "Edit details" and "Baptized" -->
+      <dialog id="createDialog" aria-labelledby="createTitle">
+        <form id="createForm" novalidate>
+          <h2 id="createTitle">Create New Member</h2>
+          <p class="muted" id="createHint"></p>
+          <div class="create-grid" id="createFields"></div>
+          <div id="createStatus" class="status" role="alert"></div>
+          <div class="dialog-actions">
+            <button type="button" class="secondary" id="createCancel">
+              Cancel</button
+            ><button id="createSave">Create and add</button>
+          </div>
+        </form>
+      </dialog>
+      <!-- Pop-up: Transfer, End follow-up, No longer on date and Delete -->
+      <dialog id="manageDialog" aria-labelledby="manageTitle">
+        <form id="manageForm" novalidate>
+          <h2 id="manageTitle">Manage</h2>
+          <p class="muted" id="manageHint"></p>
+          <div class="manage-fields" id="manageFields"></div>
+          <div id="manageStatus" class="status" role="alert"></div>
+          <div class="dialog-actions">
+            <button type="button" class="secondary" id="manageCancel">
+              Cancel</button
+            ><button type="button" class="secondary" id="manageAlt" hidden></button
+            ><button id="manageSave">Save</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+    <script src="portal-client.js"></script>
+    <script>
+      /* =============================================================================================================
+         HOW THIS SCRIPT WORKS (read this first)
+
+         1. load() asks portal-api for this week's plan. The answer, "data", holds the questions, the saved answers,
+            the people on the plan and whether this person may change the plan (data.can_edit).
+         2. render() draws the whole form from "data": first the question sections, then the three people sections.
+         3. When someone types or clicks, markDirty() writes down WHAT changed (in "changed") and scheduleSave()
+            saves a moment later. save() sends only what changed, so two companions working on the same plan at the
+            same time never overwrite each other. The server answers with the whole saved plan; mergeAnswers() and
+            mergePeople() then show the companion's newest answers, without touching the box someone is typing in.
+            There is no Save button to press: it only shows up after a save failed, to try again (showRetry).
+         4. Submit checks that everything needed is answered (the server checks again), then submits the plan.
+         5. The pop-ups add, change, move or remove people. The server does the work and sends the new plan back.
+
+         The script is split into 15 numbered parts; each starts with a title line in capitals. The page never decides
+         by itself who may do what: portal-api and the database check every request. Every text people see is
+         written here in English and i18n.js swaps it for the reader's language (portal/i18n/*.json), so a text may
+         only change together with the catalogs (all 14 languages).
+         ============================================================================================================= */
+
+      // =============================================================================================================
+      // 1. THE PAGE'S PARTS AND WHAT THE SCRIPT REMEMBERS
+      // =============================================================================================================
+      const $ = (id) => document.getElementById(id),
+        form = $("form"),
+        message = $("message"),
+        unitSelect = $("unitSelect"),
+        saveState = $("saveState");
+      const esc = window.escapeHTML; // makes a text safe to put inside HTML (portal-client.js)
+      let data = null, // this week's plan, as the server sent it last (load, save)
+        timer = null, // the automatic save that is waiting to start (scheduleSave)
+        saving = null, // the save on its way, while there is one (a Promise)
+        adding = false, // true while a pop-up adds or changes a person: nothing else may start meanwhile
+        needsRender = false; // the form should be drawn again as soon as nobody is using it (renderWhenIdle)
+      // What this page changed since its last save. Only these are sent, so two companions
+      // editing the same plan never overwrite or delete each other's answers and people.
+      //   answers:  the keys of the changed questions
+      //   people:   "group:rowId" -> the names of the changed fields on that person's card
+      //   removals: the row ids of the high-potential friends to take off the plan
+      const changed = { answers: new Set(), people: new Map(), removals: new Set() };
+      const hasChanges = () => !!(changed.answers.size || changed.people.size || changed.removals.size);
+
+      // =============================================================================================================
+      // 2. SHOW/HIDE RULES: some questions are only asked after a certain answer to another question
+      // =============================================================================================================
+      // Show/hide rules come with each question (DA Management → Planning questions) and work exactly
+      // like the server (planning._visibility): a question is hidden when one of its rules
+      // fails or a question it depends on is hidden. A hidden question is not required. A hidden
+      // follow-up with a "value when hidden" counts as that value (e.g. 0, "none") while the questions
+      // it depends on are answered, and as "" (no answer) when one of them is blank; see
+      // changedAnswers for when it is saved. Hidden questions without one keep their answer.
+      // portal/tests/planning-rules-check.cjs runs this whole part on the server's own test cases.
+
+      // True when there is no answer: nothing, "", an empty list or an empty grid.
+      const blank = (value) =>
+        value == null ||
+        value === "" ||
+        (Array.isArray(value) && !value.length) ||
+        (typeof value === "object" && !Array.isArray(value) && !Object.keys(value).length);
+      // An answer as a rule compares it: "true" / "false" for Yes / No, "" for no answer.
+      const ruleText = (value) => (value === true ? "true" : value === false ? "false" : String(value ?? ""));
+      // The number comparisons a rule can make.
+      const NUMBER_RULES = {
+        greater_than: (a, b) => a > b,
+        greater_than_or_equal: (a, b) => a >= b,
+        less_than: (a, b) => a < b,
+        less_than_or_equal: (a, b) => a <= b,
+      };
+      // Does this answer pass this one rule? (the server's planning._rule_passes)
+      function rulePasses(rule, value) {
+        const operator = String(rule.operator || "").trim(),
+          expected = rule.value;
+        if (operator === "equals") {
+          const wanted = String(expected).toLowerCase();
+          if (wanted === "true" || wanted === "false") return ruleText(value).toLowerCase() === wanted;
+          return ruleText(value) === String(expected);
+        }
+        if (operator === "not_equals") return ruleText(value) !== String(expected);
+        if (!NUMBER_RULES[operator]) return true; // an unknown rule shows the question, as on the server
+        const actual = Number(value),
+          limit = Number(expected);
+        if (blank(value) || typeof value === "boolean" || Number.isNaN(actual) || Number.isNaN(limit)) return false;
+        return NUMBER_RULES[operator](actual, limit);
+      }
+      // Every question of the plan, by its key.
+      const questionMap = () => new Map(data.questions.map((q) => [q.question_key, q]));
+      // A question's rules, without rules on a question that is no longer on the form (they are ignored).
+      const rulesOf = (q, byKey) => (q.rules || []).filter((rule) => byKey.has(rule.parent));
+      // Question keys with every rule's parent before its child.
+      function ruleOrder(byKey) {
+        const order = [],
+          seen = new Set();
+        const visit = (key, path) => {
+          if (seen.has(key) || path.has(key)) return;
+          for (const rule of rulesOf(byKey.get(key), byKey)) visit(rule.parent, new Set([...path, key]));
+          seen.add(key);
+          order.push(key);
+        };
+        for (const key of byKey.keys()) visit(key, new Set());
+        return order;
+      }
+      // What a hidden follow-up counts as: its value when hidden, typed like the question's answers.
+      function hiddenAnswer(q) {
+        const value = q.value_when_hidden;
+        if (q.question_type === "NUMBER") return Number(value);
+        if (q.question_type === "BOOLEAN") return String(value).toLowerCase() === "true";
+        return value;
+      }
+      // A "follow-up": a question with rules and a value to count as while they hide it.
+      const hasHiddenAnswer = (q) =>
+        q.value_when_hidden != null && q.value_when_hidden !== "" && (q.rules || []).length > 0;
+      // The keys of the questions the rules hide for these answers. Hidden follow-ups get their value in
+      // "values" (changed in place).
+      function applyConditions(values) {
+        const byKey = questionMap(),
+          hidden = new Set();
+        for (const key of ruleOrder(byKey)) {
+          const q = byKey.get(key),
+            failing = rulesOf(q, byKey).filter((rule) => hidden.has(rule.parent) || !rulePasses(rule, values[rule.parent]));
+          if (!failing.length) continue;
+          hidden.add(key);
+          if (hasHiddenAnswer(q) && key in values)
+            values[key] = failing.some((rule) => !blank(values[rule.parent])) ? hiddenAnswer(q) : "";
+        }
+        return hidden;
+      }
+
+      // =============================================================================================================
+      // 3. READING AND WRITING THE ANSWERS SHOWN ON THE PAGE
+      // =============================================================================================================
+      // The box around one question (it has data-question and data-type).
+      const questionWrap = (key) => form.querySelector(`[data-question="${CSS.escape(key)}"]`);
+      // The input of a question that has one (a number, a text, a date or a list).
+      const answerInput = (key) => form.querySelector(`[data-key="${CSS.escape(key)}"]`);
+      // The value of one input, or of a Yes / No pill group on a person card.
+      function inputValue(input) {
+        if (input.dataset.pills) return pillValue(input);
+        if (input.type === "checkbox") return input.checked;
+        if (input.type === "number") return input.value === "" ? "" : Number(input.value);
+        return input.value;
+      }
+      // The chosen pill of a person question: true / false (Yes / No), "yes" / "no" / "not_applicable", or null.
+      function pillValue(group) {
+        const checked = group.querySelector("input:checked");
+        if (!checked) return null;
+        return group.dataset.pills === "yesno" ? checked.value === "true" : checked.value;
+      }
+      function setPill(group, value) {
+        for (const input of group.querySelectorAll("input")) input.checked = input.value === String(value ?? "");
+      }
+      // The value of one field on a person card (null when the card has no such field).
+      const personValue = (card, key) => {
+        const input = card?.querySelector(`[data-field="${key}"]`);
+        return input ? inputValue(input) : null;
+      };
+      // The answer shown in a question, in the shape the server stores it.
+      function questionValue(wrap) {
+        const kind = wrap.dataset.type;
+        if (kind === "GRID") {
+          const out = {};
+          for (const input of wrap.querySelectorAll("input[data-row]:checked")) out[input.dataset.row] = input.value;
+          return out;
+        }
+        if (kind === "CHECKBOX") return [...wrap.querySelectorAll("input[data-key]:checked")].map((input) => input.value);
+        if (kind === "BOOLEAN" || kind === "RADIO") {
+          const chosen = wrap.querySelector("input[data-key]:checked");
+          return !chosen ? "" : kind === "BOOLEAN" ? chosen.value === "true" : chosen.value;
+        }
+        const input = wrap.querySelector("[data-key]");
+        return input ? inputValue(input) : "";
+      }
+      // Shows an answer in a question.
+      function setAnswer(wrap, value) {
+        const kind = wrap.dataset.type;
+        if (kind === "GRID") {
+          for (const input of wrap.querySelectorAll("input[data-row]"))
+            input.checked = !!value && typeof value === "object" && value[input.dataset.row] === input.value;
+        } else if (kind === "CHECKBOX") {
+          for (const input of wrap.querySelectorAll("input[data-key]"))
+            input.checked = Array.isArray(value) && value.includes(input.value);
+        } else if (kind === "BOOLEAN" || kind === "RADIO") {
+          const shown = kind === "BOOLEAN" ? String(value === true) : String(value);
+          for (const input of wrap.querySelectorAll("input[data-key]"))
+            input.checked = value != null && value !== "" && input.value === shown;
+        } else {
+          const input = wrap.querySelector("[data-key]");
+          if (input) input.value = value ?? "";
+        }
+      }
+      // Every answer shown on the page, by question key.
+      function formAnswerValues() {
+        const result = {};
+        for (const wrap of form.querySelectorAll("[data-question]")) result[wrap.dataset.question] = questionValue(wrap);
+        return result;
+      }
+      // A grid sends only the rows that differ from the last saved answer this page knows (the server
+      // merges them), so a companion's rows are never overwritten by this page's older copy.
+      function gridChanges(key, value) {
+        const saved = data.answers[key] && typeof data.answers[key] === "object" ? data.answers[key] : {},
+          out = {};
+        for (const [row, choice] of Object.entries(value || {})) if (saved[row] !== choice) out[row] = choice;
+        return out;
+      }
+      // After a save a grid is merged row by row, so each row shows what is saved (a companion may have
+      // answered it) unless it was changed here and not saved yet: changed after this save was sent (it
+      // differs from what was sent), or changed since the answers came back last time and not part of
+      // this save (it differs from before). The rows shown then match data.answers except this page's own
+      // unsaved changes, which are all that gridChanges sends.
+      function mergeGrid(wrap, before, fresh, sentRows) {
+        const inputs = [...wrap.querySelectorAll("input[data-row]")],
+          object = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {}),
+          old = object(before),
+          saved = object(fresh),
+          shown = {};
+        for (const input of inputs) if (input.checked) shown[input.dataset.row] = input.value;
+        const unsaved = (row) =>
+          sentRows && row in sentRows
+            ? (shown[row] ?? null) !== (sentRows[row] ?? null)
+            : (shown[row] ?? null) !== (old[row] ?? null);
+        for (const input of inputs) if (!unsaved(input.dataset.row)) input.checked = saved[input.dataset.row] === input.value;
+      }
+      // A number box holding something the browser cannot read as a number, or a number below its
+      // min or above its max, or (in a question for whole numbers) a decimal, is not saved (the server
+      // would refuse the whole save). The box says so (numberHint), keeps what was typed, and is saved
+      // once it is fixed.
+      const badNumber = (input) =>
+        input?.type === "number" &&
+        (input.validity.badInput ||
+          input.validity.rangeUnderflow ||
+          input.validity.rangeOverflow ||
+          (!!input.dataset.key && input.validity.stepMismatch));
+      // Every number box on the page (not a hidden question's) that cannot be saved right now.
+      const badNumbers = () =>
+        [...form.querySelectorAll('input[type="number"]')].filter((input) => badNumber(input) && !input.closest(".conditional-hidden"));
+      // The line under a number box that says what to type instead (removed once the number is fine).
+      function numberHint(input) {
+        if (!input) return;
+        let hint = input.parentElement.querySelector(".number-error");
+        if (!badNumber(input)) return hint?.remove();
+        if (!hint) {
+          hint = document.createElement("span");
+          hint.className = "field-error number-error";
+          input.after(hint);
+        }
+        const low = input.min || 0,
+          onlyNotWhole =
+            !input.validity.badInput && input.validity.stepMismatch && !input.validity.rangeUnderflow && !input.validity.rangeOverflow,
+          wanted = onlyNotWhole
+            ? "Enter a whole number."
+            : input.max
+              ? `Enter a number from ${low} to ${input.max}.`
+              : `Enter ${low} or a higher number.`;
+        hint.textContent = wanted + " Until then this box is not saved.";
+      }
+
+      // =============================================================================================================
+      // 4. PEOPLE: THE QUESTIONS AND CHOICES THE SERVER KNOWS TOO
+      // =============================================================================================================
+      // These lists are copies of the ones in portal-api planning.py, kept in step word for word
+      // (portal-api/tests/test_planning_people.py compares them).
+      // Highest value of the person-card numbers (the server refuses more; see planning.PEOPLE_NUMBERS).
+      const NUMBER_MAX = { lessons_actual: 1000, lessons_goal: 1000, pmg_lessons_percentage: 100 };
+      // Next ordinance: the code is saved, the name is shown.
+      const NEXT_ORDINANCES = [
+        ["SA", "Sacrament"],
+        ["AP", "Aaronic Priesthood"],
+        ["TB", "Temple baptisms"],
+        ["MP", "Melchizedek Priesthood"],
+        ["PB", "Patriarchal blessing"],
+        ["TE", "Temple endowment"]
+      ];
+      const PEOPLE_LABELS = {
+        "lessons_actual": "Lessons taught",
+        "lessons_goal": "Goal next week",
+        "pmg_lessons_percentage": "Preach My Gospel lessons taught (%)",
+        "how_are_they_doing": "How are they doing?",
+        "at_church_this_sunday": "At church on Sunday?",
+        "reading": "Reading?",
+        "praying": "Praying?",
+        "member_involvement": "Member involvement?",
+        "discussed_in_gemiko": "Discussed in GEMIKO?",
+        "gemiko_support_plan": "How will GEMIKO support them?",
+        "next_ordinance": "Next ordinance",
+        "has_calling": "Do they have a calling?",
+        "has_aaronic_priesthood": "Do they hold the Aaronic Priesthood?",
+        "has_melchizedek_priesthood": "Do they hold the Melchizedek Priesthood?",
+        "ministers_to_someone": "Do they have a ministering assignment?",
+        "ministered_to_by_someone": "Do they have ministering brothers or sisters?",
+        "has_active_temple_recommend": "Do they have an active temple recommend?",
+        "visited_temple_for_baptisms": "Have they been to the temple for baptisms?",
+        "baptismal_date_set_on": "Date first set",
+        "current_baptismal_date": "Current baptismal date",
+        "keeping_commandments": "Keeping commandments?",
+        "name": "Name",
+        "notes": "Notes"
+      };
+      // Required at submit ("How will GEMIKO support them?" only when "Discussed in GEMIKO?" is Yes).
+      const PEOPLE_REQUIRED = {
+        "new_members": [
+          "lessons_actual", "lessons_goal", "pmg_lessons_percentage", "how_are_they_doing", "at_church_this_sunday",
+          "reading", "praying", "member_involvement", "discussed_in_gemiko", "next_ordinance", "has_calling",
+          "has_aaronic_priesthood", "has_melchizedek_priesthood", "ministers_to_someone", "ministered_to_by_someone",
+          "has_active_temple_recommend", "visited_temple_for_baptisms"
+        ],
+        "baptismal_friends": [
+          "baptismal_date_set_on", "current_baptismal_date", "reading", "praying", "at_church_this_sunday",
+          "keeping_commandments", "member_involvement"
+        ],
+        "high_potential": ["name", "at_church_this_sunday"]
+      };
+      // A new high-potential friend is saved with this name (the column needs one); it counts as no name yet.
+      const HIGH_POTENTIAL_PLACEHOLDER = "New High Potential";
+      // Why a New Member's follow-up ends early, and why a friend is no longer on date: [saved code, words shown].
+      const END_REASONS = [
+        ["moved_out_of_mission", "Moved out of the mission"],
+        ["record_removed", "Membership record removed"],
+        ["deceased", "Passed away"],
+        ["duplicate", "Listed twice"],
+        ["other", "Other reason"]
+      ];
+      const DROP_REASONS = [
+        ["no_longer_on_date", "Not preparing for this date now"],
+        ["moved_out_of_mission", "Moved out of the mission"],
+        ["duplicate", "Listed twice"],
+        ["other", "Other reason"]
+      ];
+      // In a plan's row, the column with the person's own id (high-potential friends are only on the plan).
+      const PERSON_COLUMN = { new_members: "new_member_id", baptismal_friends: "baptismal_date_person_id" };
+
+      // =============================================================================================================
+      // 5. DRAWING THE QUESTION SECTIONS
+      // =============================================================================================================
+      // The red star after a question that must be answered before submitting.
+      const REQUIRED_MARK = ' <span class="required-mark" aria-hidden="true">*</span>';
+      // Question types with one input, which gets a real <label>; the others get a title.
+      const ONE_INPUT_TYPES = ["NUMBER", "TEXT", "LONG_TEXT", "DATE", "SELECT"];
+      // One control per question type (the types DA Management offers). Choices, grid rows, limits and
+      // placeholders come from the question list; a yes/no question stays unanswered until Yes or No is chosen.
+      function questionControl(q, value) {
+        const kind = String(q.question_type || "TEXT").toUpperCase(),
+          key = esc(q.question_key),
+          disabled = !data.can_edit ? "disabled" : "",
+          placeholder = q.placeholder ? `placeholder="${esc(q.placeholder)}"` : "",
+          options = q.options || [],
+          pill = (type, optionValue, label, checked) => choicePill(type, key, optionValue, label, checked, disabled);
+        if (kind === "GRID") return gridControl(q, value, key, disabled);
+        if (kind === "BOOLEAN")
+          return `<div class="choice-pills" role="radiogroup" aria-labelledby="label-${key}">${pill("radio", "true", "Yes", value === true)}${pill("radio", "false", "No", value === false)}</div>`;
+        if (kind === "RADIO")
+          return `<div class="choice-pills" role="radiogroup" aria-labelledby="label-${key}">${options.map((o) => pill("radio", o.value, o.label, value === o.value)).join("")}</div>`;
+        if (kind === "CHECKBOX") {
+          const chosen = new Set(Array.isArray(value) ? value : []);
+          return `<div class="choice-pills" role="group" aria-labelledby="label-${key}">${options.map((o) => pill("checkbox", o.value, o.label, chosen.has(o.value))).join("")}</div>`;
+        }
+        if (kind === "SELECT")
+          return `<select id="q-${key}" data-key="${key}" ${disabled}><option value="">Choose…</option>${options.map((o) => `<option value="${esc(o.value)}" ${value === o.value ? "selected" : ""}>${esc(o.label)}</option>`).join("")}</select>`;
+        if (kind === "LONG_TEXT")
+          return `<textarea id="q-${key}" data-key="${key}" maxlength="10000" ${placeholder} ${disabled}>${esc(value || "")}</textarea>`;
+        if (kind === "TEXT")
+          return `<input id="q-${key}" data-key="${key}" type="text" maxlength="1000" autocomplete="off" ${placeholder} value="${esc(value ?? "")}" ${disabled}>`;
+        if (kind === "DATE")
+          return `<input id="q-${key}" data-key="${key}" type="date" value="${esc(value ?? "")}" ${disabled}>`;
+        return numberControl(q, value, key, placeholder, disabled);
+      }
+      // One choice of a Yes / No, one-of-a-list or several-of-a-list question: a radio button or a tick box.
+      function choicePill(type, key, optionValue, label, checked, disabled) {
+        return `<label><input type="${type}" name="q-${key}" data-key="${key}" value="${esc(optionValue)}" ${checked ? "checked" : ""} ${disabled}> ${esc(label)}</label>`;
+      }
+      // A grid: one row per item (for example a ward leader) and one column per choice (for example Yes / No).
+      function gridControl(q, value, key, disabled) {
+        const options = q.options || [],
+          saved = value && typeof value === "object" && !Array.isArray(value) ? value : {},
+          head = options.map((o) => `<th scope="col">${esc(o.label)}</th>`).join("");
+        const rows = (q.rows || [])
+          .map((row, index) => {
+            const name = `q-${key}-${index}`,
+              cells = options
+                .map((o) => `<td><label><input type="radio" name="${name}" data-key="${key}" data-row="${esc(row.key)}" value="${esc(o.value)}" aria-label="${esc(row.label)}: ${esc(o.label)}" ${saved[row.key] === o.value ? "checked" : ""} ${disabled}><span class="grid-choice">${esc(o.label)}</span></label></td>`)
+                .join("");
+            return `<tr data-row="${esc(row.key)}"><th scope="row">${esc(row.label)}</th>${cells}</tr>`;
+          })
+          .join("");
+        return `<table class="answer-grid" aria-labelledby="label-${key}"><thead><tr><th></th>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+      }
+      // A number box. A whole-number box counts its steps from min, so its limits are whole too (a min of 0.5
+      // would make every whole number wrong). DA Management and the database now refuse such limits anyway.
+      function numberControl(q, value, key, placeholder, disabled) {
+        const whole = q.integer_only !== false,
+          min = whole ? Math.ceil(Number(q.min_value ?? 0)) : q.min_value ?? 0,
+          max = q.max_value != null ? `max="${esc(whole ? Math.floor(Number(q.max_value)) : q.max_value)}"` : "",
+          keyboard = whole && Number(min) >= 0 ? "numeric" : "decimal";
+        return `<input id="q-${key}" data-key="${key}" type="number" inputmode="${keyboard}" min="${esc(min)}" ${max} step="${whole ? 1 : "any"}" ${placeholder} value="${esc(value ?? "")}" ${disabled}>`;
+      }
+      // "Last week: …" under a question, from last week's plan of this unit.
+      function previousText(q) {
+        const value = q.previous,
+          label = (choice) => (q.options || []).find((o) => o.value === choice)?.label ?? choice,
+          short = (text) => (text.length > 140 ? text.slice(0, 139) + "…" : text);
+        if (blank(value)) return "";
+        switch (q.question_type) {
+          case "BOOLEAN":
+            return value === true ? "Yes" : value === false ? "No" : "";
+          case "SELECT":
+          case "RADIO":
+            return label(value);
+          case "CHECKBOX":
+            return Array.isArray(value) ? value.map(label).join(", ") : "";
+          case "GRID":
+            if (typeof value !== "object" || Array.isArray(value)) return "";
+            return short((q.rows || []).filter((row) => value[row.key] != null).map((row) => `${row.label}: ${label(value[row.key])}`).join(" · "));
+          case "DATE":
+            return new Date(value + "T12:00:00").toLocaleDateString();
+          default:
+            return short(String(value));
+        }
+      }
+      // All question sections, in the order the server sends the questions.
+      function renderQuestions() {
+        return questionSections().map(questionSectionHTML).join("");
+      }
+      // The questions grouped by their section: [{ key, title, description, items: [questions] }].
+      function questionSections() {
+        const sections = new Map();
+        for (const q of data.questions) {
+          if (!sections.has(q.section_key))
+            sections.set(q.section_key, {
+              key: q.section_key,
+              title: q.section_title,
+              description: q.section_description,
+              items: [],
+            });
+          sections.get(q.section_key).items.push(q);
+        }
+        return [...sections.values()];
+      }
+      function questionSectionHTML(section) {
+        return (
+          `<section class="panel section" id="section-${section.key}" data-section><div class="section-head"><div><h2>${esc(section.title)}</h2><p class="muted">${esc(section.description || "")}</p></div><span class="section-count">${section.items.length} ITEMS</span></div><div class="question-grid">` +
+          section.items.map(questionHTML).join("") +
+          "</div></section>"
+        );
+      }
+      // One question: its title (with a star when it must be answered), its control, its help text and last
+      // week's answer.
+      function questionHTML(q) {
+        const kind = String(q.question_type),
+          key = esc(q.question_key),
+          title = `${esc(q.question_label)}${q.required ? REQUIRED_MARK : ""}`,
+          heading = ONE_INPUT_TYPES.includes(kind)
+            ? `<label id="label-${key}" for="q-${key}">${title}</label>`
+            : `<span class="q-title" id="label-${key}">${title}</span>`,
+          help = q.help_text ? `<div class="help">${esc(q.help_text)}</div>` : "",
+          previous = previousText(q),
+          lastWeek = previous ? `<div class="previous">Last week: ${esc(previous)}</div>` : "";
+        return `<div class="question ${questionWidth(kind)}" data-question="${key}" data-type="${esc(kind)}" data-required="${!!q.required}">${heading}${questionControl(q, data.answers[q.question_key])}${help}${lastWeek}</div>`;
+      }
+      // Long texts and lists of choices use the whole width of the section, grids too.
+      function questionWidth(kind) {
+        if (kind === "LONG_TEXT" || kind === "CHECKBOX" || kind === "RADIO") return "long";
+        if (kind === "GRID") return "grid-question";
+        return "";
+      }
+
+      // =============================================================================================================
+      // 6. DRAWING THE PEOPLE SECTIONS (one tab per person)
+      // =============================================================================================================
+      // One question on a person card; a star marks what must be answered before submitting. Yes / No questions
+      // are pills (radio buttons) that stay unset until answered; data-field sits on the pill group.
+      function field(key, type = "text", value = "", { label = PEOPLE_LABELS[key], options = null, optional = false, placeholder = "" } = {}) {
+        const disabled = data.can_edit ? "" : "disabled",
+          mark = optional ? "" : REQUIRED_MARK;
+        if (type === "yesno" || type === "yesnona") return pillField(key, type, value, label, mark, disabled);
+        if (type === "select")
+          return `<label class="person-field" data-wrap="${key}">${esc(label)}${mark}<select data-field="${key}" ${disabled}><option value="">Choose…</option>${options.map(([choice, text]) => `<option value="${esc(choice)}" ${value === choice ? "selected" : ""}>${esc(text)}</option>`).join("")}</select></label>`;
+        if (type === "textarea")
+          return `<label class="person-field wide" data-wrap="${key}">${esc(label)}${mark}<textarea data-field="${key}" ${disabled}>${esc(value || "")}</textarea></label>`;
+        const max = NUMBER_MAX[key] ? `max="${NUMBER_MAX[key]}"` : "",
+          limits = type === "number" ? `inputmode="decimal" min="0" ${max} step="1"` : "";
+        return `<label class="person-field" data-wrap="${key}">${esc(label)}${mark}<input data-field="${key}" type="${type}" ${limits} ${placeholder ? `placeholder="${esc(placeholder)}"` : ""} value="${esc(value ?? "")}" ${disabled}></label>`;
+      }
+      // "yesno": Yes / No (saved as true / false); "yesnona": Yes / No / Not applicable (saved as words).
+      function pillField(key, type, value, label, mark, disabled) {
+        const name = "pf-" + Math.random().toString(36).slice(2), // the radio group's name, only needs to be unique
+          choices = type === "yesno" ? [["true", "Yes"], ["false", "No"]] : [["yes", "Yes"], ["no", "No"], ["not_applicable", "Not applicable"]],
+          current = String(value ?? "");
+        return `<fieldset class="person-field pill-question" data-wrap="${key}"><legend>${esc(label)}${mark}</legend><div class="pills" data-field="${key}" data-pills="${type}">${choices.map(([choice, text]) => `<label class="pill-option"><input type="radio" name="${name}" value="${choice}" ${current === choice ? "checked" : ""} ${disabled}><span>${text}</span></label>`).join("")}</div></fieldset>`;
+      }
+      // The start of a person card; its data-* attributes tell the script which person and plan row it is.
+      const personCardStart = (group, p) =>
+        `<article class="person-card" data-person-group="${group}" data-id="${p.id}" data-person-id="${p[PERSON_COLUMN[group]] ?? ""}" data-current="${p.is_current === false ? "false" : "true"}">`;
+      const shortDate = (value) =>
+        value ? new Date(value + "T12:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "";
+      // The name, read-only details and (on a draft this companionship may edit) the actions of a person card.
+      function personHead(p, group) {
+        const note = p.is_current === false ? '<p class="person-note">No longer assigned to your area, so this tab is not checked when you submit.</p>' : "";
+        return `<div class="person-head"><div><h3>${esc(p.display_name)}</h3><p class="person-details">${personDetails(p, group).map(esc).join(" · ")}</p>${note}</div>${personActions(p, group)}</div>`;
+      }
+      // The line of details under a person's name.
+      function personDetails(p, group) {
+        const person = p.person || {};
+        if (group !== "new_members")
+          return [person.finding_source ? "Found through " + person.finding_source : "Finding source not entered yet (use Edit details)"];
+        return [
+          person.baptism_date && "Baptized " + shortDate(person.baptism_date),
+          person.baptism_date && (person.confirmation_date ? "Confirmed " + shortDate(person.confirmation_date) : "Not confirmed yet"),
+          person.finding_source && "Found through " + person.finding_source,
+        ].filter(Boolean);
+      }
+      function personActions(p, group) {
+        if (!data.can_edit || !p[PERSON_COLUMN[group]] || p.is_current === false) return "";
+        const actions =
+          group === "new_members"
+            ? [["edit", "Edit details"], ["transfer", "Transfer"], ["end", "End follow-up"]]
+            : [["baptized", "Baptized"], ["transfer", "Transfer"], ["drop", "No longer on date"], ["edit", "Edit details"], ["delete", "Delete"]];
+        return `<div class="person-actions" role="group" aria-label="${esc("Manage " + p.display_name)}">${actions.map(([action, text]) => `<button type="button" class="${action === "baptized" ? "" : "secondary"} ${action === "delete" ? "danger" : ""}" data-person-action="${action}">${text}</button>`).join("")}</div>`;
+      }
+      function renderBaptismal() {
+        return personSection(
+          "baptismal-friends",
+          "Friends with a Baptismal Date",
+          "Friends preparing for baptism and confirmation.",
+          data.people.baptismal_friends.map(baptismalCard),
+          "No friends with a baptismal date on this week's plan yet.",
+          "baptismal_friends",
+        );
+      }
+      // A friend's card: the baptismal date, and how they progressed this week.
+      function baptismalCard(p) {
+        const dates = personGrid([
+          field("baptismal_date_set_on", "date", p.baptismal_date_set_on),
+          field("current_baptismal_date", "date", p.current_baptismal_date),
+        ]);
+        const thisWeek = personGrid([
+          field("reading", "yesno", p.reading),
+          field("praying", "yesno", p.praying),
+          field("at_church_this_sunday", "yesno", p.at_church_this_sunday),
+          field("keeping_commandments", "yesno", p.keeping_commandments),
+          field("member_involvement", "yesno", p.member_involvement),
+        ]);
+        return personCardStart("baptismal_friends", p) + personHead(p, "baptismal_friends") + dates +
+          '<h4 class="person-subhead">This week</h4>' + thisWeek + "</article>";
+      }
+      // The questions of a card, side by side (three on a computer, one below the other on a phone).
+      function personGrid(fields) {
+        return `<div class="person-grid">${fields.join("")}</div>`;
+      }
+      function renderNewMembers() {
+        return personSection(
+          "new-members",
+          "New Member Follow-up",
+          "New members in their first year. Plan with the ward how to help each one take their next step. Everything is required unless it says (optional).",
+          data.people.new_members.map(newMemberCard),
+          "No new members on this week's plan yet.",
+          "new_members",
+        );
+      }
+      // A New Member's card: lessons, this week, the covenant path and GEMIKO (ward coordination).
+      function newMemberCard(p) {
+        const lessons = personGrid([
+          field("lessons_actual", "number", p.lessons_actual),
+          field("lessons_goal", "number", p.lessons_goal),
+          field("pmg_lessons_percentage", "number", p.pmg_lessons_percentage),
+          field("how_are_they_doing", "textarea", p.how_are_they_doing),
+        ]);
+        const thisWeek = personGrid([
+          field("at_church_this_sunday", "yesno", p.at_church_this_sunday),
+          field("reading", "yesno", p.reading),
+          field("praying", "yesno", p.praying),
+          field("member_involvement", "yesno", p.member_involvement),
+        ]);
+        const covenantPath = personGrid([
+          field("next_ordinance", "select", p.next_ordinance, { options: NEXT_ORDINANCES }),
+          field("has_calling", "yesnona", p.has_calling),
+          field("has_aaronic_priesthood", "yesnona", p.has_aaronic_priesthood),
+          field("has_melchizedek_priesthood", "yesnona", p.has_melchizedek_priesthood),
+          field("ministers_to_someone", "yesnona", p.ministers_to_someone),
+          field("ministered_to_by_someone", "yesno", p.ministered_to_by_someone),
+          field("has_active_temple_recommend", "yesnona", p.has_active_temple_recommend),
+          field("visited_temple_for_baptisms", "yesnona", p.visited_temple_for_baptisms),
+        ]);
+        // The support plan is only shown while "Discussed in GEMIKO?" is Yes (toggleGemiko).
+        const gemiko = personGrid([
+          field("discussed_in_gemiko", "yesno", p.discussed_in_gemiko),
+          `<div class="gemiko-details ${p.discussed_in_gemiko === true ? "" : "hidden"}">${field("gemiko_support_plan", "textarea", p.gemiko_support_plan)}</div>`,
+        ]);
+        return [
+          personCardStart("new_members", p),
+          personHead(p, "new_members"),
+          lessons,
+          '<h4 class="person-subhead">This week</h4>',
+          thisWeek,
+          '<h4 class="person-subhead">Covenant path</h4>',
+          '<p class="person-details person-help">Choose Not applicable when a question does not apply, for example priesthood for sisters or children.</p>',
+          covenantPath,
+          '<h4 class="person-subhead">GEMIKO</h4>',
+          gemiko,
+          "</article>",
+        ].join("");
+      }
+      function renderHighPotential() {
+        return personSection(
+          "high-potential",
+          "High-Potential Friends",
+          "Friends who could soon be taught. Each tab is saved right away.",
+          data.people.high_potential.map(highCard),
+          "No high-potential friends yet.",
+          "high_potential",
+        );
+      }
+      // A high-potential friend's card: a name, church this Sunday and notes. A new friend has no name yet.
+      function highCard(p = {}) {
+        const questions = personGrid([
+          field("name", "text", p.name === HIGH_POTENTIAL_PLACEHOLDER ? "" : p.name, { placeholder: "Friend's name" }),
+          field("at_church_this_sunday", "yesno", p.at_church_this_sunday),
+          field("notes", "textarea", p.notes, { label: "Notes (optional)", optional: true }),
+        ]);
+        const remove = data.can_edit ? '<button type="button" class="remove-person">Remove from this week</button>' : "";
+        return `<article class="person-card" data-person-group="high_potential" data-id="${p.id || ""}" data-current="true">${questions}${remove}</article>`;
+      }
+      // The words on a person's tab.
+      const tabLabel = (kind, p) =>
+        kind === "high_potential" ? (p.name && p.name !== HIGH_POTENTIAL_PLACEHOLDER ? p.name : "New friend") : p.display_name;
+      // The button at the end of each tab row that creates a person.
+      const ADD_TAB_LABELS = { new_members: "+ New member", baptismal_friends: "+ Add person on date", high_potential: "+ Add friend" };
+      // One tab per person. Every card stays in the page (hidden when its tab is not
+      // selected) so changes on any of them are saved.
+      const activeTab = {}; // the row id of the selected tab, per group
+      let selectAfterLoad = null; // the tab to select when the plan is drawn next: { kind, rowId } or { kind, personId }
+      function personSection(id, title, description, cards, empty, kind) {
+        const people = data.people[kind] || [];
+        chooseActiveTab(kind, people);
+        const tabs = people.map((p) => personTabHTML(kind, p)).join(""),
+          panels = people
+            .map((p, index) => `<div role="tabpanel" id="panel-${kind}-${p.id}" aria-labelledby="tab-${kind}-${p.id}" ${String(p.id) === activeTab[kind] ? "" : "hidden"}>${cards[index]}</div>`)
+            .join(""),
+          addTab = data.can_edit ? `<button type="button" class="person-tab add-tab" data-create="${kind}">${ADD_TAB_LABELS[kind]}</button>` : "";
+        return [
+          `<section class="panel section" id="section-${id}" data-section data-people-kind="${kind}">`,
+          `<div class="section-head"><div><h2>${title}</h2><p class="muted">${description}</p></div>${addFromListButton(kind)}</div>`,
+          `<div class="person-tabs"><div class="person-tablist" role="tablist" aria-label="${esc(title)}">${tabs}</div>${addTab}</div>`,
+          `<div class="person-panels">${panels || `<div class="empty">${empty}</div>`}</div>`,
+          "</section>",
+        ].join("");
+      }
+      // Keeps the selected tab, or selects the person just added (selectAfterLoad), or else the first person.
+      function chooseActiveTab(kind, people) {
+        if (selectAfterLoad?.kind === kind) {
+          const wanted = selectAfterLoad,
+            row = people.find((p) =>
+              wanted.rowId ? String(p.id) === String(wanted.rowId) : String(p[PERSON_COLUMN[kind]]) === String(wanted.personId),
+            );
+          if (row) activeTab[kind] = String(row.id);
+          selectAfterLoad = null;
+        }
+        if (!people.some((p) => String(p.id) === activeTab[kind])) activeTab[kind] = people.length ? String(people[0].id) : null;
+      }
+      function personTabHTML(kind, p) {
+        const selected = String(p.id) === activeTab[kind];
+        return `<button type="button" role="tab" class="person-tab" id="tab-${kind}-${p.id}" aria-controls="panel-${kind}-${p.id}" aria-selected="${selected}" tabindex="${selected ? 0 : -1}" data-tab-id="${p.id}"><span class="tab-name">${esc(tabLabel(kind, p))}</span></button>`;
+      }
+      // "+ Add from list (2)": people listed for the area and not on this plan yet (not for high-potential friends).
+      function addFromListButton(kind) {
+        if (!data.can_edit || kind === "high_potential") return "";
+        const available = data.available_people?.[kind] || [];
+        return `<button class="secondary add-existing" data-kind="${kind}" type="button">+ Add from list${available.length ? " (" + available.length + ")" : ""}</button>`;
+      }
+      // The tab button of the panel a person card is in.
+      const tabOf = (panel) => panel && $(panel.getAttribute("aria-labelledby"));
+      // Shows one person's card in a people section. quiet: without scrolling the tab row.
+      function selectPersonTab(section, tab, focus = false, quiet = false) {
+        const kind = section.dataset.peopleKind;
+        activeTab[kind] = tab.dataset.tabId;
+        for (const other of section.querySelectorAll('[role="tab"]')) {
+          const on = other === tab;
+          other.setAttribute("aria-selected", on);
+          other.tabIndex = on ? 0 : -1;
+          $(other.getAttribute("aria-controls")).hidden = !on;
+        }
+        if (focus) tab.focus();
+        if (!quiet) tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+      // Opens the person tab that holds this element, when it is hidden.
+      function openTabOf(element) {
+        const panel = element.closest('[role="tabpanel"]');
+        if (panel?.hidden) selectPersonTab(panel.closest("[data-people-kind]"), tabOf(panel), false, true);
+      }
+      // The tabs work with a click, and with the arrow keys, Home and End like other tab rows.
+      function setupPersonTabs() {
+        for (const section of form.querySelectorAll("[data-people-kind]")) {
+          const list = section.querySelector('[role="tablist"]');
+          list.addEventListener("click", (event) => {
+            const tab = event.target.closest('[role="tab"]');
+            if (tab) selectPersonTab(section, tab);
+          });
+          list.addEventListener("keydown", (event) => moveBetweenTabs(event, section, list));
+          section.querySelector("[data-create]")?.addEventListener("click", (event) =>
+            section.dataset.peopleKind === "high_potential" ? addHighPotential(event.currentTarget) : openCreatePerson(section.dataset.peopleKind),
+          );
+          section.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-person-action]");
+            if (button) openPersonAction(button.dataset.personAction, button.closest("[data-person-group]"));
+          });
+        }
+      }
+      function moveBetweenTabs(event, section, list) {
+        const tabs = [...list.querySelectorAll('[role="tab"]')],
+          index = tabs.indexOf(document.activeElement);
+        if (index < 0) return;
+        const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }[event.key];
+        if (next === undefined) return;
+        event.preventDefault();
+        selectPersonTab(section, tabs[(next + tabs.length) % tabs.length], true);
+      }
+
+      // =============================================================================================================
+      // 7. DRAWING THE WHOLE PLAN
+      // =============================================================================================================
+      // Draws everything from "data": the ward or branch list, the week line, the form and the save bar.
+      function render() {
+        fillUnitSelect();
+        showWeekLine();
+        form.innerHTML = lockedNote() + renderQuestions() + renderBaptismal() + renderNewMembers() + renderHighPotential();
+        buildSectionNav();
+        wirePeopleButtons();
+        setupPersonTabs();
+        updateConditionalQuestions();
+        $("actions").hidden = !data.can_edit; // a submitted plan has nothing to save or submit
+        updateProgress();
+      }
+      // The ward or branch of the plan. Most areas have only one: then its name is shown as text, because a list with
+      // one choice does nothing.
+      function fillUnitSelect() {
+        const onlyOne = data.units.length === 1;
+        unitSelect.hidden = onlyOne;
+        $("unitName").hidden = !onlyOne;
+        $("unitName").textContent = onlyOne ? data.units[0].unit : "";
+        unitSelect.innerHTML = data.units
+          .map((u) => `<option value="${u.unit_id}" ${u.unit_id === data.report.unit_id ? "selected" : ""}>${esc(u.unit)}</option>`)
+          .join("");
+      }
+      const STATUS_WORDS = { DRAFT: "Not submitted yet", SUBMITTED: "Submitted", LOCKED: "Locked" };
+      function showWeekLine() {
+        const sunday = new Date(data.report.sunday + "T12:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+        $("weekText").textContent = `Week ending ${sunday} · ${STATUS_WORDS[data.report.status] || data.report.status}`;
+      }
+      function lockedNote() {
+        return !data.can_edit
+          ? '<div class="locked">This plan is submitted and read only. A leader must unlock it before changes can be made.</div>'
+          : "";
+      }
+      // "+ Add from list" and "Remove from this week" (their buttons are new after each drawing).
+      function wirePeopleButtons() {
+        for (const button of form.querySelectorAll(".add-existing")) button.onclick = () => openPersonPicker(button.dataset.kind);
+        for (const button of form.querySelectorAll(".remove-person")) button.onclick = () => removeFriend(button.closest(".person-card"));
+      }
+      // "Remove from this week": takes a high-potential friend off the plan (saved like any other change).
+      function removeFriend(card) {
+        const name = card.querySelector('[data-field="name"]')?.value.trim();
+        if (!confirm(`Remove ${name || "this friend"} from this week's plan?`)) return;
+        changed.people.delete("high_potential:" + card.dataset.id);
+        changed.removals.add(Number(card.dataset.id));
+        dropCard(card); // also shows "No high-potential friends" once the last one is gone
+        scheduleSave();
+      }
+      // Takes a person's card (and tab) off the page. The next tab is selected if this one was.
+      function dropCard(card) {
+        const panel = card.closest('[role="tabpanel"]');
+        if (panel) {
+          const section = panel.closest("[data-people-kind]"),
+            tab = tabOf(panel),
+            selected = tab?.getAttribute("aria-selected") === "true";
+          tab?.remove();
+          panel.remove();
+          const next = section.querySelector('[role="tab"]');
+          if (selected && next) selectPersonTab(section, next, false, true);
+        } else card.remove();
+        needsRender = true; // tidies up empty sections once the page is idle
+      }
+
+      // =============================================================================================================
+      // 8. THE SECTION BAR: the shortcut buttons at the top of the page
+      // =============================================================================================================
+      // Every section gets a colour (data-accent, see the CSS) and a button in that colour. The button of the
+      // section being read or edited is filled with its colour and has aria-current, so screen readers say
+      // "current location". Which section that is (pickActiveSection):
+      //   1. while a jump from the bar scrolls the page: the section we jump to;
+      //   2. while a box, choice or button in a section has the focus (and is on screen): that section;
+      //   3. when the end of the plan is on screen: the last section (it may be too short to reach 4);
+      //   4. otherwise: the section on the "reading line", a line a quarter of the way down the part of the
+      //      screen under the bar (between two sections the last one found stays).
+      // IntersectionObservers tell us when a section crosses the reading line, so no work runs on every scroll.
+      const ACCENT_COUNT = 8; // the colours --accent-0 … --accent-7 in the CSS
+      let activeSectionId = "", // the section whose button is filled
+        jumpTargetId = "", // set while a jump from the bar scrolls the page
+        jumpTimer = null,
+        navHeight = 0, // the bar's height in pixels (measureBars)
+        readingLine = 0, // pixels from the top of the window (watchSections)
+        pageEndVisible = false,
+        readingLineWatcher = null;
+      const sectionsOnReadingLine = new Set(); // ids of the sections crossing the reading line now
+      const planSections = () => [...form.querySelectorAll("[data-section]")];
+      // People who ask their device for less motion get jumps without the smooth slide.
+      const scrollMotion = () => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+      // Called by render(): colours the sections and makes one button per section, in page order.
+      function buildSectionNav() {
+        const sections = planSections();
+        sections.forEach((section, index) => {
+          section.dataset.accent = index % ACCENT_COUNT;
+          section.querySelector("h2").tabIndex = -1; // so a jump can move the keyboard there
+        });
+        $("sectionNav").innerHTML = sections
+          .map((s) => `<button type="button" data-target="${s.id}" data-accent="${s.dataset.accent}">${esc(s.querySelector("h2").textContent)}</button>`)
+          .join("");
+        // The same section stays highlighted when the page is rebuilt (for example after a save).
+        const keep = sections.some((s) => s.id === activeSectionId) ? activeSectionId : sections[0]?.id;
+        activeSectionId = "";
+        if (keep) highlightSection(keep);
+        watchSections();
+      }
+      function highlightSection(id) {
+        if (id === activeSectionId) return;
+        activeSectionId = id;
+        for (const button of $("sectionNav").querySelectorAll("[data-target]")) {
+          if (button.dataset.target !== id) button.removeAttribute("aria-current");
+          else {
+            button.setAttribute("aria-current", "location");
+            keepButtonInView(button);
+          }
+        }
+      }
+      // On a phone the bar is one row that scrolls sideways: slide the filled button to the middle when
+      // it is not fully visible. (On a computer every button is visible, so nothing moves.)
+      function keepButtonInView(button) {
+        const bar = $("sectionNav").getBoundingClientRect(),
+          box = button.getBoundingClientRect();
+        if (box.left >= bar.left && box.right <= bar.right) return;
+        $("sectionNav").scrollBy({ left: box.left - bar.left - (bar.width - box.width) / 2, behavior: scrollMotion() });
+      }
+      // A click on a button (or Enter or Space on it) scrolls to its section and moves the keyboard to the
+      // section's heading, so the next Tab goes to its first question.
+      function jumpToSection(id) {
+        const section = $(id);
+        if (!section) return;
+        jumpTargetId = id;
+        highlightSection(id);
+        section.scrollIntoView({ behavior: scrollMotion(), block: "start" });
+        section.querySelector("h2").focus({ preventScroll: true });
+        waitForScrollToStop(400); // in case the page does not need to move at all
+      }
+      // The jump is over when the page has not scrolled for a moment. The section jumped to stays
+      // highlighted until the reader scrolls on (near the end of the page it cannot reach the top).
+      function waitForScrollToStop(ms) {
+        clearTimeout(jumpTimer);
+        jumpTimer = setTimeout(() => {
+          jumpTargetId = "";
+        }, ms);
+      }
+      function pickActiveSection() {
+        const sections = planSections();
+        if (jumpTargetId || !sections.length) return;
+        const editing = sectionBeingEdited();
+        if (editing) return highlightSection(editing.id);
+        if (pageEndVisible && scrollY > 0) return highlightSection(sections[sections.length - 1].id);
+        const onLine = sections.find((s) => sectionsOnReadingLine.has(s.id));
+        if (onLine) highlightSection(onLine.id);
+      }
+      // The section of the focused box, choice or button when it is on screen. A heading focused by a jump
+      // (tabIndex -1) does not count: it only shows where the keyboard is.
+      function sectionBeingEdited() {
+        const focused = document.activeElement;
+        if (!focused || !form.contains(focused) || focused.tabIndex < 0) return null;
+        const box = focused.getBoundingClientRect();
+        if (box.bottom <= navHeight || box.top >= innerHeight) return null;
+        return focused.closest("[data-section]");
+      }
+      // A quarter of the way down the part of the window under the bar.
+      const readingLineNow = () => Math.round(navHeight + (innerHeight - navHeight) / 4);
+      // Watches the sections against the reading line: the observer looks at a 1 pixel high strip of the
+      // window at that line. root: document measures against this page's own window, which is also right
+      // when the page is inside the portal's frame.
+      function watchSections() {
+        readingLineWatcher?.disconnect();
+        sectionsOnReadingLine.clear();
+        readingLine = readingLineNow();
+        readingLineWatcher = new IntersectionObserver(readingLineChanged, {
+          root: document,
+          rootMargin: `-${readingLine}px 0px -${Math.max(0, innerHeight - readingLine - 1)}px 0px`,
+        });
+        for (const section of planSections()) readingLineWatcher.observe(section);
+      }
+      function readingLineChanged(entries) {
+        for (const entry of entries) {
+          if (entry.isIntersecting) sectionsOnReadingLine.add(entry.target.id);
+          else sectionsOnReadingLine.delete(entry.target.id);
+        }
+        pickActiveSection();
+      }
+      // Two markers: one just above the bar (out of sight above: the bar is pinned, so it gets a shadow)
+      // and one after the last section (in sight: the end of the plan is on screen).
+      function watchPageEdges() {
+        const watcher = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.target.id === "sectionNavMarker") {
+                const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+                $("sectionNav").classList.toggle("stuck", scrolledPast);
+              }
+              if (entry.target.id === "planEnd") {
+                pageEndVisible = entry.isIntersecting;
+                pickActiveSection();
+              }
+            }
+          },
+          { root: document },
+        );
+        watcher.observe($("sectionNavMarker"));
+        watcher.observe($("planEnd"));
+      }
+      // The heights of the bar at the top and the save bar at the bottom, for the page's scroll room (the
+      // CSS variables) and the reading line. Measured again whenever a bar or the window changes size.
+      function measureBars() {
+        const height = $("sectionNav").offsetHeight,
+          actions = $("actions");
+        document.documentElement.style.setProperty("--section-nav-height", height + "px");
+        document.documentElement.style.setProperty(
+          "--actions-height",
+          actions.hidden ? "0px" : Math.max(0, innerHeight - actions.getBoundingClientRect().top) + "px",
+        );
+        navHeight = height;
+        if (readingLineNow() !== readingLine) watchSections();
+      }
+      $("sectionNav").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-target]");
+        if (button) jumpToSection(button.dataset.target);
+      });
+      addEventListener(
+        "scroll",
+        () => {
+          if (jumpTargetId) waitForScrollToStop(150); // a jump is still moving the page
+        },
+        { passive: true },
+      );
+      form.addEventListener("focusin", pickActiveSection);
+      form.addEventListener("focusout", () => setTimeout(pickActiveSection));
+      const barSizeWatcher = new ResizeObserver(measureBars);
+      barSizeWatcher.observe($("sectionNav"));
+      barSizeWatcher.observe($("actions"));
+      addEventListener("resize", measureBars);
+      watchPageEdges();
+
+      // =============================================================================================================
+      // 9. WHAT IS STILL TO ANSWER: hidden questions, the progress bar and the checks before submitting
+      // =============================================================================================================
+      // Hides the questions whose show/hide rules are not met (and their error marks).
+      function updateConditionalQuestions() {
+        const hidden = applyConditions(formAnswerValues()),
+          byKey = questionMap();
+        for (const wrap of form.querySelectorAll("[data-question]")) {
+          const key = wrap.dataset.question,
+            q = byKey.get(key);
+          if (!q || !(q.rules || []).length) continue;
+          wrap.classList.toggle("conditional-hidden", hidden.has(key));
+          if (hidden.has(key)) {
+            wrap.classList.remove("invalid");
+            wrap.querySelector(".field-error")?.remove();
+          } else if (hasHiddenAnswer(q)) numberHint(answerInput(key));
+        }
+      }
+      // Removes every error mark on the page (questions and person cards).
+      function clearFieldErrors() {
+        form.querySelectorAll(".field-error").forEach((error) => error.remove());
+        form.querySelectorAll(".invalid").forEach((wrap) => wrap.classList.remove("invalid"));
+      }
+      // Removes the error mark of the question this input belongs to.
+      function clearFieldError(input) {
+        const wrap = input?.closest?.(".question.invalid");
+        if (!wrap) return;
+        wrap.classList.remove("invalid");
+        wrap.querySelector(".field-error")?.remove();
+      }
+      // Marks the questions still to answer, by key. messages: the server's text per key, if any.
+      function showFieldErrors(missing, messages = {}) {
+        clearFieldErrors();
+        const values = formAnswerValues();
+        for (const key of missing) {
+          const wrap = questionWrap(key);
+          if (!wrap) continue;
+          wrap.classList.add("invalid");
+          if (wrap.dataset.type === "GRID")
+            for (const row of wrap.querySelectorAll("tr[data-row]")) row.classList.toggle("unanswered", !values[key]?.[row.dataset.row]);
+          const error = document.createElement("div");
+          error.className = "field-error";
+          error.id = "error-" + key;
+          error.textContent = messages[key] || "Please answer this question.";
+          const control = wrap.querySelector(".answer-grid,.choice-pills,input,select,textarea");
+          if (control) {
+            control.setAttribute("aria-describedby", error.id);
+            control.after(error);
+          } else wrap.append(error);
+        }
+      }
+      // The server's required check at submit names questions by key. A key this page does not show is a
+      // question added in DA Management after the page's last save: a save brings the new questions and the
+      // form is rebuilt (as nothing is being typed), so it can be marked too.
+      async function showServerFieldErrors(fields) {
+        if (Object.keys(fields).some((key) => !questionWrap(key))) {
+          await save(true).catch(() => {}); // save() shows its own error
+          renderWhenIdle();
+        }
+        showFieldErrors(Object.keys(fields).filter((key) => questionWrap(key)), fields);
+      }
+      // Keys of the required questions not answered yet, in form order (the server checks the same
+      // at submit: planning._missing_question_answers). Questions hidden by their show/hide rules are
+      // not required; a yes/no question needs Yes or No; a grid needs an answer in every row. A choice
+      // question without choices (or a grid without rows) cannot be answered and never blocks.
+      function requiredMissing() {
+        const values = formAnswerValues(),
+          hidden = applyConditions({ ...values }),
+          missing = [];
+        for (const q of data.questions.filter((q) => q.required)) {
+          const key = q.question_key;
+          if (hidden.has(key) || !questionWrap(key) || cannotBeAnswered(q)) continue;
+          if (!isAnswered(q, values[key])) missing.push(key);
+        }
+        return missing;
+      }
+      function cannotBeAnswered(q) {
+        const choice = ["SELECT", "RADIO", "CHECKBOX", "GRID"].includes(q.question_type);
+        return choice && (!(q.options || []).length || (q.question_type === "GRID" && !(q.rows || []).length));
+      }
+      function isAnswered(q, value) {
+        if (q.question_type === "BOOLEAN") return typeof value === "boolean";
+        if (q.question_type === "GRID") return (q.rows || []).every((row) => !blank(value?.[row.key]));
+        return !blank(typeof value === "string" ? value.trim() : value);
+      }
+      // The bar in the week card, and the tick on a section's button once its required questions are answered.
+      function updateProgress() {
+        if (!data) return;
+        const required = data.questions.filter((q) => q.required),
+          missing = requiredMissing();
+        $("progressBar").style.width = (required.length ? ((required.length - missing.length) / required.length) * 100 : 100) + "%";
+        for (const section of form.querySelectorAll("[data-section]")) {
+          const keys = [...section.querySelectorAll('[data-required="true"]')].map((x) => x.dataset.question),
+            button = $("sectionNav").querySelector(`[data-target="${section.id}"]`);
+          button?.classList.toggle("complete", keys.length > 0 && keys.every((k) => !missing.includes(k)));
+        }
+      }
+      // ---- People still to finish ----------------------------------------------------------------------------
+      const blankAnswer = (value) => value == null || (typeof value === "string" && !value.trim());
+      // What to say under an unanswered person question.
+      function missingText(card, key) {
+        const input = card.querySelector(`[data-field="${key}"]`);
+        if (key === "name") return "Enter the friend's name.";
+        if (input?.dataset.pills) return input.dataset.pills === "yesno" ? "Choose Yes or No." : "Choose Yes, No or Not applicable.";
+        if (input?.tagName === "SELECT") return "Choose the next ordinance.";
+        if (input?.type === "date") return "Enter the date.";
+        if (input?.type === "number") return "Enter a number (0 if none).";
+        return "Please fill this in.";
+      }
+      function markPersonField(card, key, text) {
+        const wrap = card.querySelector(`[data-wrap="${key}"]`);
+        if (!wrap) return;
+        wrap.classList.add("invalid");
+        if (!wrap.querySelector(".field-error.person-error")) {
+          const error = document.createElement("span");
+          error.className = "field-error person-error";
+          error.textContent = text;
+          wrap.append(error);
+        }
+      }
+      function clearPersonError(target) {
+        const wrap = target.closest?.("[data-wrap].invalid");
+        if (!wrap) return;
+        wrap.classList.remove("invalid");
+        wrap.querySelector(".person-error")?.remove();
+        updateTabBadge(wrap.closest("[data-person-group]"));
+      }
+      // The number of unanswered questions, on the person's tab (after a submit attempt).
+      function updateTabBadge(card) {
+        const tab = tabOf(card?.closest('[role="tabpanel"]'));
+        if (!tab) return;
+        const count = card.querySelectorAll("[data-wrap].invalid").length;
+        let badge = tab.querySelector(".tab-badge");
+        if (!count) return badge?.remove();
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "tab-badge";
+          tab.append(badge);
+        }
+        badge.textContent = count;
+        badge.title = `${count} question${count === 1 ? "" : "s"} to answer`;
+      }
+      // The page side of the submit check for people (the server repeats it: planning._missing_person_fields).
+      // Marks every unanswered question, puts the count on each person's tab and opens the first one.
+      function peopleIncomplete() {
+        const incomplete = [];
+        for (const card of form.querySelectorAll("[data-person-group]")) {
+          if (card.dataset.current === "false") continue;
+          const keys = [...PEOPLE_REQUIRED[card.dataset.personGroup]];
+          if (card.dataset.personGroup === "new_members" && personValue(card, "discussed_in_gemiko") === true) keys.push("gemiko_support_plan");
+          incomplete.push({ card, missing: keys.filter((key) => blankAnswer(personValue(card, key))) });
+        }
+        return showIncompletePeople(incomplete);
+      }
+      // Shows a list of { card, missing: [question keys] } (earlier marks are cleared first): marks each question,
+      // puts the count on each person's tab, opens the first person's tab and says who is not finished.
+      // Returns false when nobody has anything missing.
+      function showIncompletePeople(list) {
+        clearPersonMarks();
+        const incomplete = list.filter((item) => item.card && item.missing.length).map((item) => item.card);
+        for (const { card, missing } of list.filter((item) => item.card)) {
+          for (const key of missing) markPersonField(card, key, missingText(card, key));
+          if (missing.length) updateTabBadge(card);
+        }
+        if (!incomplete.length) return false;
+        openTabOf(incomplete[0]);
+        const names = incomplete.map((card) => card.querySelector("h3")?.textContent || personValue(card, "name") || "a new friend");
+        message.textContent =
+          (incomplete.length === 1
+            ? `Almost there. A few questions about ${names[0]} are not answered yet.`
+            : `Almost there. Some questions about ${incomplete.length} people are not answered yet: ${names.join(", ")}.`) +
+          " Each one is marked, with a count on the person's tab.";
+        message.className = "status error";
+        incomplete[0].querySelector("[data-wrap].invalid")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return true;
+      }
+      function clearPersonMarks() {
+        for (const badge of form.querySelectorAll(".tab-badge")) badge.remove();
+        for (const wrap of form.querySelectorAll("[data-wrap].invalid")) {
+          wrap.classList.remove("invalid");
+          wrap.querySelector(".person-error")?.remove();
+        }
+      }
+      // The server's list when it refuses a submit (400 with fields.people: [{ group, id, name, fields }]), for
+      // example when the companion added a friend or cleared an answer while this page was submitting: the same
+      // marks, counts and jump as the page's own check. When the list does not match the page (a person it does
+      // not show, or an answer it shows), the plan is loaded again first; then only what is still unanswered is
+      // marked. If nothing can be marked, the server's message is shown.
+      async function showServerIncomplete(people, text) {
+        const cardOf = (person) =>
+            form.querySelector(`[data-person-group="${CSS.escape(String(person.group))}"][data-id="${CSS.escape(String(person.id))}"]`),
+          listed = (person) => (Array.isArray(person.fields) ? person.fields : []),
+          check = () =>
+            people.map((person) => {
+              const card = cardOf(person);
+              return { card, missing: card ? listed(person).filter((key) => blankAnswer(personValue(card, key))) : [], listed: listed(person) };
+            });
+        try {
+          if (check().some((item) => !item.card || item.missing.length < item.listed.length)) {
+            await flush();
+            await load(data.report.unit_id);
+          }
+          if (showIncompletePeople(check())) return;
+        } catch {
+          // The server's message below says who is not finished.
+        }
+        message.textContent = text;
+        message.className = "status error";
+      }
+      // ---- What Submit says when something is not ready ------------------------------------------------------
+      // A number box that cannot be saved: the plan would be submitted with the saved number, not this one.
+      function showUnsavedNumber(box) {
+        openTabOf(box);
+        message.textContent = "A number on this plan is not saved yet. Fix the marked box, then submit.";
+        message.className = "status error";
+        box.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      function showMissingQuestions(missing) {
+        showFieldErrors(missing);
+        message.textContent = `${missing.length} required question${missing.length === 1 ? " is" : "s are"} not answered yet. Each one is marked.`;
+        message.className = "status error";
+        questionWrap(missing[0])?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      // =============================================================================================================
+      // 10. SAVING: only what changed, a moment after the last change
+      // =============================================================================================================
+      // Notes that an answer or a person's field changed, and saves soon.
+      function markDirty(target) {
+        if (!data?.can_edit) return;
+        const card = target.closest?.("[data-person-group]");
+        if (target.dataset.key) changed.answers.add(target.dataset.key);
+        else if (card && target.dataset.field) {
+          const row = card.dataset.personGroup + ":" + card.dataset.id;
+          if (!changed.people.has(row)) changed.people.set(row, new Set());
+          changed.people.get(row).add(target.dataset.field);
+        }
+        scheduleSave();
+      }
+      // Saves 0.65 seconds after the last change, so typing a word is one save and not one per letter.
+      function scheduleSave() {
+        if (!data?.can_edit) return;
+        saveState.textContent = "Saving…";
+        updateProgress();
+        clearTimeout(timer);
+        timer = setTimeout(() => save().catch(() => {}), 650); // save() shows its own error
+      }
+      // The answers to save: the ones changed here, plus the follow-ups those changes hide or show.
+      // Hidden by a changed answer: the follow-up's value when hidden (0) when that answer is given, ""
+      // when it was cleared. Shown again by a changed answer: the saved follow-up is still that value
+      // or "", so the number typed here before it was hidden (mergeAnswers keeps it in the box) is
+      // saved again. Anything else is left out, because this page's copy of the answers it did not
+      // change may be out of date and must never overwrite or delete the companion's follow-up.
+      function changedAnswers(keys) {
+        const raw = formAnswerValues(),
+          values = { ...raw },
+          byKey = questionMap(),
+          hidden = applyConditions(values),
+          out = {};
+        for (const key of keys) {
+          if (!(key in values) || badNumber(answerInput(key))) continue; // a number the server would refuse waits
+          if (byKey.get(key)?.question_type !== "GRID") out[key] = values[key];
+          else if (Object.keys(gridChanges(key, values[key])).length) out[key] = gridChanges(key, values[key]);
+        }
+        addFollowUpChanges(out, raw, values, hidden, byKey);
+        return out;
+      }
+      // Adds to "out" the follow-ups whose parent question is in "out" (see changedAnswers).
+      function addFollowUpChanges(out, raw, values, hidden, byKey) {
+        const hiddenBefore = applyConditions({ ...data.answers });
+        for (const key of ruleOrder(byKey)) {
+          const q = byKey.get(key);
+          if (!hasHiddenAnswer(q) || !(key in values)) continue;
+          const changedRules = rulesOf(q, byKey).filter((rule) => rule.parent in out);
+          if (!changedRules.length) continue;
+          const failing = changedRules.filter((rule) => hidden.has(rule.parent) || !rulePasses(rule, values[rule.parent]));
+          if (failing.some((rule) => !blank(values[rule.parent]))) out[key] = hiddenAnswer(q);
+          else if (failing.length) out[key] = "";
+          else if (!hidden.has(key) && hiddenBefore.has(key) && raw[key] !== "" && !badNumber(answerInput(key)))
+            out[key] = raw[key];
+        }
+      }
+      const personCard = (group, id) => form.querySelector(`[data-person-group="${group}"][data-id="${id}"]`);
+      // The person fields to save, per group: [{ id, field: value, ... }], and the friends to remove.
+      function changedPeople(rows, removals) {
+        const out = { new_members: [], baptismal_friends: [], high_potential: [] };
+        for (const [row, fields] of rows) {
+          const [group, id] = row.split(":"),
+            card = personCard(group, id),
+            values = { id: Number(id) };
+          if (!card) continue;
+          for (const field of fields) {
+            const input = card.querySelector(`[data-field="${field}"]`);
+            if (input && !badNumber(input)) values[field] = inputValue(input);
+          }
+          // A friend needs a name: a blank one is not sent, so the saved name stays.
+          if (group === "high_potential" && "name" in values && !String(values.name).trim()) delete values.name;
+          if (Object.keys(values).length > 1) out[group].push(values);
+        }
+        for (const id of removals) out.high_potential.push({ id, removed: true });
+        return out;
+      }
+      let saveError = null; // the last failed save's message, so the next good save can take it away
+      // Saves what changed. force: save even without changes here (the reply brings the companion's newest
+      // answers). Only one save runs at a time; changes made meanwhile go with the next one.
+      async function save(force = false) {
+        if (!data?.can_edit || (!force && !hasChanges())) return saving;
+        clearTimeout(timer);
+        if (saving) {
+          await saving;
+          return hasChanges() ? save() : undefined;
+        }
+        const reportId = data.report.report_id,
+          sent = takeChanges(),
+          answers = changedAnswers(sent.answers),
+          people = changedPeople(sent.people, sent.removals),
+          wrote = Object.keys(answers).length > 0 || Object.values(people).some((rows) => rows.length > 0);
+        saving = sendChanges(reportId, answers, people)
+          .then((replies) => useSaveReplies(replies, reportId, sent, answers, wrote))
+          .catch(showSaveError)
+          .finally(() => (saving = null));
+        await saving;
+        if (hasChanges()) return save();
+        renderWhenIdle();
+      }
+      // Hands over the list of changes to a save and starts a new, empty one.
+      function takeChanges() {
+        const sent = { answers: changed.answers, people: changed.people, removals: changed.removals };
+        changed.answers = new Set();
+        changed.people = new Map();
+        changed.removals = new Set();
+        return sent;
+      }
+      // Sends the answers and the people at the same time; each reply is kept, whether it went through or not.
+      // changes_only: an older planning service refuses it instead of deleting what is left out.
+      function sendChanges(reportId, answers, people) {
+        const put = (part, body) => portalAPI(`planning/reports/${reportId}/${part}`, { method: "PUT", body });
+        return Promise.allSettled([
+          put("answers", { answers: { changes_only: true, catalog_version: data.catalog_version ?? undefined, ...answers } }),
+          put("people", { people: { changes_only: true, ...people } }),
+        ]);
+      }
+      // What the server answered to a save. Nothing is shown for a plan that is no longer on the page (another
+      // ward or branch was chosen meanwhile). Throws the error of a part that did not go through.
+      function useSaveReplies([answersReply, peopleReply], reportId, sent, answers, wrote) {
+        const current = reportId === data.report.report_id;
+        if (current) keepFailedChanges(answersReply, peopleReply, sent);
+        if (current) mergeSaveReplies(answersReply, peopleReply, sent, answers);
+        const failed = [answersReply, peopleReply].find((result) => result.status === "rejected");
+        if (failed) throw failed.reason;
+        // The error is cleared only while it is still what the message shows; i18n.js may already show it
+        // in the reader's language, so the translated text counts too.
+        if (saveError && [saveError, window.MissionI18n?.translate(saveError)].includes(message.textContent))
+          message.textContent = "";
+        showRetry(false);
+        saveState.textContent = hasChanges()
+          ? "Saving…"
+          : badNumbers().length
+            ? "Fix the marked number to save it"
+            : wrote
+              ? "Saved just now"
+              : "All changes saved";
+      }
+      // A part that failed stays changed, so the next save sends it again.
+      function keepFailedChanges(answersReply, peopleReply, sent) {
+        if (answersReply.status === "rejected") for (const key of sent.answers) changed.answers.add(key);
+        if (peopleReply.status === "rejected") {
+          for (const [row, fields] of sent.people) changed.people.set(row, new Set([...fields, ...(changed.people.get(row) || [])]));
+          for (const id of sent.removals) changed.removals.add(id);
+        }
+      }
+      // A part that went through shows the saved plan (a companion may have changed it meanwhile). Only a reply
+      // that carries the saved plan is merged (an older service sends just "ok").
+      function mergeSaveReplies(answersReply, peopleReply, sent, answers) {
+        if (answersReply.status === "fulfilled" && answersReply.value?.answers)
+          mergeAnswers(answersReply.value.answers, new Set([...sent.answers, ...Object.keys(answers)]), answers);
+        if (answersReply.status === "fulfilled") catalogUpdate(answersReply.value);
+        if (peopleReply.status === "fulfilled" && peopleReply.value?.people) mergePeople(peopleReply.value.people, sent.people);
+      }
+      function showSaveError(e) {
+        saveState.textContent = "Not saved";
+        message.textContent = saveError = e.message;
+        message.className = "status error";
+        showRetry(true);
+        throw e;
+      }
+      // Saving is automatic, so the Save button in the bar is only shown after a save failed: it tries again.
+      function showRetry(on) {
+        $("saveBtn").hidden = !on;
+      }
+      // Saves everything changed so far, after any save that is already running.
+      async function flush() {
+        while (saving || (data?.can_edit && hasChanges())) await (saving || save());
+      }
+
+      // =============================================================================================================
+      // 11. SHOWING WHAT THE SERVER SAVED (a companion may be working on the same plan)
+      // =============================================================================================================
+      // After each save the server sends the whole plan back. Fields then show the saved values
+      // (a companion may have changed them), except fields changed here and not saved yet, the
+      // ones this save just sent, the box being typed in and a box with a number not saved yet.
+      const typing = (input) => input === document.activeElement && input.type !== "checkbox";
+      function setInput(input, value) {
+        if (input.dataset.pills) setPill(input, value);
+        else if (input.type !== "checkbox") input.value = value ?? "";
+        else input.checked = value === true;
+      }
+      // Follow-ups: questions that a show/hide rule can hide and that then save their value when hidden.
+      const followUps = () => new Set(data.questions.filter(hasHiddenAnswer).map((q) => q.question_key));
+      // payload: the answers this save sent (a grid's changed rows; see mergeGrid).
+      function mergeAnswers(fresh, sent, payload = {}) {
+        const before = data.answers || {};
+        data.answers = fresh;
+        const later = followUps(),
+          keep = (wrap) =>
+            [...wrap.querySelectorAll("[data-key]")].some((input) => typing(input) && input.type !== "radio") ||
+            [...wrap.querySelectorAll('input[type="number"]')].some(badNumber) ||
+            changed.answers.has(wrap.dataset.question) ||
+            sent.has(wrap.dataset.question);
+        for (const wrap of form.querySelectorAll("[data-question]")) {
+          const key = wrap.dataset.question;
+          if (wrap.dataset.type === "GRID") mergeGrid(wrap, before[key], fresh[key], sent.has(key) ? payload[key] : undefined);
+          else if (!later.has(key) && !keep(wrap)) setAnswer(wrap, fresh[key]);
+        }
+        // A follow-up takes the saved value only while the answers above show it. While hidden it
+        // keeps the number typed here, which changedAnswers saves again if a change here shows it.
+        for (const key of later) {
+          const wrap = questionWrap(key);
+          if (wrap && !keep(wrap) && !applyConditions(formAnswerValues()).has(key)) setAnswer(wrap, fresh[key]);
+        }
+        updateConditionalQuestions();
+        updateProgress();
+      }
+      // The questions were changed in DA Management since this page loaded them. The save that noticed
+      // it kept every answer whose question is still asked; the new questions are shown as soon as
+      // nothing is being typed or saved (renderWhenIdle), with the answers saved so far.
+      function catalogUpdate(reply) {
+        const lost = lostAnswerNames(reply);
+        if (reply.catalog_version != null) data.catalog_version = reply.catalog_version;
+        if (reply.catalog_changed && Array.isArray(reply.questions)) {
+          data.questions = reply.questions;
+          needsRender = true;
+        }
+        if (lost.length) {
+          message.textContent = `The planning questions were just updated. ${lost.join(", ")} ${lost.length === 1 ? "is" : "are"} no longer asked like this, so what you entered there was not saved.`;
+          message.className = "status";
+        }
+      }
+      // The names of the answers (or parts of answers) the server could no longer keep, in quotes.
+      function lostAnswerNames(reply) {
+        const labels = new Map(data.questions.map((q) => [q.question_key, q.question_label])),
+          // A grid row or tick-box choice no longer offered: only that part of the answer was left out.
+          part = (key, item) => {
+            const q = data.questions.find((question) => question.question_key === key),
+              name = (q?.rows || []).find((row) => row.key === item)?.label ?? (q?.options || []).find((o) => o.value === item)?.label ?? item;
+            return `“${name}” in “${labels.get(key) || key}”`;
+          };
+        return [
+          ...(reply.dropped || []).map((key) => `“${labels.get(key) || key}”`),
+          ...Object.entries(reply.dropped_parts || {}).flatMap(([key, items]) => items.map((item) => part(key, item))),
+        ];
+      }
+      // The hidden follow-ups' boxes, put back after the same plan is rebuilt while they are still
+      // hidden (see mergeAnswers).
+      function hiddenFollowUps() {
+        const kept = {},
+          later = followUps();
+        for (const key of applyConditions(formAnswerValues()))
+          if (later.has(key) && questionWrap(key)) kept[key] = questionValue(questionWrap(key));
+        return kept;
+      }
+      function restoreFollowUps(kept) {
+        const hidden = applyConditions(formAnswerValues());
+        for (const [key, value] of Object.entries(kept))
+          if (hidden.has(key) && questionWrap(key)) {
+            setAnswer(questionWrap(key), value);
+            numberHint(answerInput(key));
+          }
+        updateConditionalQuestions();
+      }
+      const personName = (card) =>
+        card.querySelector("h3")?.textContent ||
+        data.people.high_potential.find((p) => String(p.id) === card.dataset.id)?.name ||
+        "A friend";
+      // The saved people: each card shows its saved values (see showSavedPerson); a card of a person the server
+      // no longer has is taken off; people added elsewhere appear once the page is idle.
+      function mergePeople(fresh, sent) {
+        const rows = new Map(),
+          lost = [],
+          gone = [];
+        for (const [group, list] of Object.entries(fresh))
+          for (const row of list) rows.set(group + ":" + row.id, row);
+        for (const card of form.querySelectorAll("[data-person-group]")) {
+          const key = card.dataset.personGroup + ":" + card.dataset.id,
+            row = rows.get(key);
+          rows.delete(key);
+          if (!row) {
+            // Removed by the companion (or on another device): drop the card here too.
+            (sent.has(key) || changed.people.has(key) ? lost : gone).push(personName(card));
+            changed.people.delete(key);
+            dropCard(card);
+            continue;
+          }
+          showSavedPerson(card, row, key, sent);
+        }
+        for (const id of changed.removals) rows.delete("high_potential:" + id);
+        data.people = fresh;
+        if (rows.size) needsRender = true; // people added elsewhere appear once the page is idle
+        sayWhoWasRemoved(lost, gone);
+      }
+      function showSavedPerson(card, row, key, sent) {
+        for (const input of card.querySelectorAll("[data-field]")) {
+          const field = input.dataset.field;
+          if (typing(input) || badNumber(input) || changed.people.get(key)?.has(field) || sent.get(key)?.has(field)) continue;
+          setInput(input, field === "name" && row[field] === HIGH_POTENTIAL_PLACEHOLDER ? "" : row[field]);
+          if (field === "discussed_in_gemiko") toggleGemiko(card);
+        }
+      }
+      // lost: people whose last change here could not be saved; gone: other people removed elsewhere.
+      function sayWhoWasRemoved(lost, gone) {
+        if (!lost.length && !gone.length) return;
+        message.textContent = lost.length
+          ? `${lost.join(", ")} ${lost.length === 1 ? "was" : "were"} removed from this plan by someone else, so your last change there was not saved.`
+          : `${gone.join(", ")} ${gone.length === 1 ? "was" : "were"} removed from this plan by someone else.`;
+        message.className = "status";
+      }
+      // Rebuilds the form from the saved plan, but never while something in it is focused (a box or a
+      // button), pressed, saved or added, or while a box holds a number that is not saved yet. A button
+      // takes the focus when the mouse goes down, and rebuilding then would swallow its click.
+      let pressing = false;
+      addEventListener("pointerdown", () => (pressing = true), true);
+      addEventListener("pointerup", () => (pressing = false), true);
+      addEventListener("pointercancel", () => (pressing = false), true);
+      // Also tried after leaving a box (focusout below), after each save, and after a click outside the
+      // form once that click's own handlers have run.
+      addEventListener("click", (event) => {
+        if (!form.contains(event.target)) setTimeout(renderWhenIdle);
+      });
+      function renderWhenIdle() {
+        if (!needsRender || pageIsBusy()) return;
+        needsRender = false;
+        const kept = hiddenFollowUps();
+        render();
+        restoreFollowUps(kept);
+      }
+      // Something is being typed, pressed, saved or added, a pop-up is open, or a number is not saved yet.
+      function pageIsBusy() {
+        return !!(
+          saving ||
+          adding ||
+          pressing ||
+          hasChanges() ||
+          badNumbers().length ||
+          document.querySelector("dialog[open]") ||
+          form.contains(document.activeElement)
+        );
+      }
+
+      // =============================================================================================================
+      // 12. LOADING THE PLAN
+      // =============================================================================================================
+      // Loads this week's plan of a ward or branch (none: the one the server picks) and draws it.
+      async function load(unit) {
+        message.textContent = "Loading your shared plan…";
+        message.className = "status";
+        try {
+          const fresh = await portalAPI("planning/form" + (unit ? "?unit_id=" + unit : ""));
+          clearTimeout(timer);
+          const kept = data?.report.report_id === fresh.report.report_id ? hiddenFollowUps() : {};
+          data = fresh;
+          changed.answers.clear();
+          changed.people.clear();
+          changed.removals.clear();
+          needsRender = false;
+          render();
+          restoreFollowUps(kept);
+          message.textContent = "";
+          saveState.textContent = "All changes saved";
+          showRetry(false);
+        } catch (e) {
+          // Keep the plan (and unit) already on screen, if there is one.
+          if (data) unitSelect.value = data.report.unit_id;
+          else form.innerHTML = "";
+          message.textContent = e.message;
+          message.className = "status error";
+        }
+      }
+      // Another ward or branch: saves this one's changes first, and stays when they cannot be saved.
+      async function changeUnit() {
+        const unit = Number(unitSelect.value);
+        try {
+          await flush();
+        } catch (e) {
+          // This unit's changes are not saved yet, so stay on it (save() shows why).
+          unitSelect.value = data.report.unit_id;
+          message.textContent = e.message + " Your ward or branch was not changed.";
+          message.className = "status error";
+          return;
+        }
+        await load(unit);
+      }
+
+      // =============================================================================================================
+      // 13. THE PEOPLE POP-UPS: add, edit, Baptized, Transfer, End follow-up, No longer on date, Delete
+      // =============================================================================================================
+      // True (and says so) while a person is still being added: nothing else may start then.
+      function stillAdding() {
+        if (!adding) return false;
+        message.textContent = "Still adding the last person. Please wait a moment.";
+        message.className = "status";
+        return true;
+      }
+      // While a person is being added the pop-up stays open and its controls are disabled, so a
+      // double tap, or Esc and a second try, cannot add the same person twice.
+      function lockDialog(dialogForm, on) {
+        adding = on;
+        for (const control of dialogForm.elements) control.disabled = on;
+      }
+      // ---- 13a. Create a person, "Edit details" and "Baptized" (one form, #createDialog) ---------------------
+      // One form creates a New Member or a friend with a baptismal date. The same form also edits a person's
+      // details and, for "Baptized", turns a friend into a New Member. Everything is
+      // required except what says "(optional)" (the server checks the same: planning.validate_new_person).
+      // The choice lists come from portal-api. A field: [key, label, input type, always required].
+      const CREATE_FORMS = {
+        new_members: {
+          title: "Create New Member",
+          hint: "Adds this person to the mission records for the selected ward or branch, and to this week's plan.",
+          endpoint: "new_member",
+          fields: [
+            ["first_name", "First name", "text", true],
+            ["last_name", "Last name", "text"],
+            ["baptismal_date_extended", "Baptismal invitation extended on", "date"],
+            ["baptism_date", "Baptism date", "date"],
+            ["confirmation_date", "Confirmation date", "date"],
+            ["date_of_birth", "Birth date", "date"],
+            ["age_range", "Age range", "select"],
+            ["finding_source", "Finding source", "select"],
+            ["gender", "Gender", "select"],
+            ["living_situation", "Living situation", "select"],
+            ["marital_status", "Marital status", "select"],
+            ["mission_language_competency", "Mission language competency", "select"],
+            ["native_language", "Native language", "text"],
+            ["second_language", "Second language (optional)", "text"],
+            ["country_of_origin", "Country of origin", "text"],
+            ["child_dependents", "Children (0 if none)", "number"],
+            ["conversion_success_notes", "What went well in this person's conversion?", "textarea"],
+          ],
+        },
+        baptismal_friends: {
+          title: "Add a friend with a baptismal date",
+          hint: "Adds this friend for the selected ward or branch, and to this week's plan.",
+          endpoint: "baptismal",
+          fields: [
+            ["first_name", "First name", "text", true],
+            ["last_name", "Last name", "text", true],
+            ["finding_source", "Finding source", "select", true],
+          ],
+        },
+      };
+      // Same words as planning.REQUIRED_MESSAGES.
+      const CREATE_REQUIRED_TEXT = {
+        first_name: "Enter the first name.",
+        last_name: "Enter the last name.",
+        baptismal_date_extended: "Enter the date the baptismal invitation was extended.",
+        baptism_date: "Enter the baptism date.",
+        confirmation_date: "Enter the confirmation date.",
+        date_of_birth: "Enter the birth date.",
+        native_language: "Enter their native language.",
+        country_of_origin: "Enter their country of origin.",
+        child_dependents: "Enter the number of children (0 if none).",
+        conversion_success_notes: "Tell what went well in their conversion.",
+      };
+      // Same words as planning.DATE_LABELS.
+      const CREATE_DATE_LABELS = {
+        baptismal_date_extended: "The baptismal invitation date",
+        baptism_date: "The baptism date",
+        confirmation_date: "The confirmation date",
+        date_of_birth: "Birth date",
+      };
+      // "Baptized": these come from the friend's record and are shown, not asked.
+      const FROM_FRIEND_RECORD = ["first_name", "last_name", "finding_source"];
+      let createKind = null, // "new_members" or "baptismal_friends"
+        createMode = "create", // "create", "edit" (Edit details) or "convert" (Baptized)
+        createRow = null; // the plan's row of the person being edited or baptized
+      function createFieldHTML([key, label, type, required], value = "") {
+        const id = "create-" + key,
+          mark = required ? REQUIRED_MARK : "",
+          req = required ? 'aria-required="true"' : "";
+        if (type === "readonly")
+          return `<div class="question" data-create-field="${key}"><label>${esc(label)}</label><div class="readonly-value">${esc(value || "Not entered")}</div></div>`;
+        let control;
+        if (type === "select")
+          control = `<select id="${id}" name="${key}" ${req}><option value="">Choose…</option>${(data.person_options?.[key] || []).map((o) => `<option value="${esc(o)}" ${o === value ? "selected" : ""}>${esc(o)}</option>`).join("")}</select>`;
+        else if (type === "textarea") control = `<textarea id="${id}" name="${key}" maxlength="5000" ${req}>${esc(value ?? "")}</textarea>`;
+        else if (type === "number") control = `<input id="${id}" name="${key}" type="number" inputmode="numeric" min="0" max="30" step="1" value="${esc(value ?? "")}" ${req}>`;
+        else control = `<input id="${id}" name="${key}" type="${type}" ${type === "text" ? 'maxlength="100" autocomplete="off"' : ""} value="${esc(value ?? "")}" ${req}>`;
+        return `<div class="question ${type === "textarea" ? "long" : ""}" data-create-field="${key}"><label for="${id}">${esc(label)}${mark}</label>${control}</div>`;
+      }
+      // The fields a New Member needs (the mission's own list, from portal-api); for "Baptized" not the ones
+      // taken from the friend's record.
+      function createRequired(kind, mode) {
+        const required = new Set(kind === "new_members" ? data.person_options?.new_member_required || [] : []);
+        if (mode === "convert") for (const key of FROM_FRIEND_RECORD) required.delete(key);
+        return required;
+      }
+      // mode "edit" fills in row.person; "convert" (Baptized) shows the friend's name and finding source and
+      // starts with the friend's two dates from the card (card = the friend's card).
+      function openCreatePerson(kind, mode = "create", row = null, card = null) {
+        if (stillAdding()) return;
+        const spec = CREATE_FORMS[kind],
+          required = createRequired(kind, mode),
+          name = row?.display_name || "",
+          values = createStartValues(mode, row, card);
+        createKind = kind;
+        createMode = mode;
+        createRow = row;
+        $("createTitle").textContent = mode === "edit" ? `Edit details: ${name}` : mode === "convert" ? `Congratulations on ${name}'s baptism!` : spec.title;
+        $("createHint").textContent = createHint(mode, name, spec);
+        $("createFields").innerHTML = spec.fields
+          .map(([key, label, type, req]) =>
+            createFieldHTML([key, label, mode === "convert" && FROM_FRIEND_RECORD.includes(key) ? "readonly" : type, req || required.has(key)], values[key]),
+          )
+          .join("");
+        $("createSave").textContent = mode === "edit" ? "Save details" : mode === "convert" ? "Move to New Members" : "Create and add";
+        $("createCancel").textContent = mode === "convert" ? "Not now" : "Cancel";
+        $("createStatus").textContent = "";
+        $("createStatus").className = "status";
+        for (const control of $("createForm").elements) control.disabled = false;
+        $("createDialog").showModal();
+        $("createFields").querySelector("input:not([type=checkbox]),select,textarea")?.focus();
+      }
+      // What the form starts with: nothing for a new person, the saved details for "edit", and for "convert"
+      // the friend's details with the two dates from the friend's card.
+      function createStartValues(mode, row, card) {
+        if (mode === "edit") return { ...(row.person || {}) };
+        if (mode !== "convert") return {};
+        return {
+          ...(row.person || {}),
+          baptismal_date_extended: personValue(card, "baptismal_date_set_on") || row.baptismal_date_set_on || "",
+          baptism_date: personValue(card, "current_baptismal_date") || row.current_baptismal_date || "",
+        };
+      }
+      function createHint(mode, name, spec) {
+        if (mode === "edit") return "Changes are saved in the mission records. Everything is required unless it says (optional).";
+        if (mode === "convert")
+          return `Add a few details to start ${name}'s New Member record. ${name} then moves to New Member Follow-up, so you and the ward can keep helping on the covenant path.`;
+        const unit = data.units.find((u) => u.unit_id === data.report.unit_id)?.unit || "not chosen yet";
+        return spec.hint + " Ward or branch: " + unit + ". Everything is required unless it says (optional).";
+      }
+      function createValues() {
+        const values = {};
+        for (const input of $("createFields").querySelectorAll("[name]"))
+          values[input.name] = input.type === "checkbox" ? input.checked : input.value.trim();
+        return values;
+      }
+      // The page's own check of the form, before anything is sent: { field key: what to fix }.
+      function createErrors(values) {
+        const errors = {},
+          spec = CREATE_FORMS[createKind],
+          required = createRequired(createKind, createMode),
+          today = new Date().toLocaleDateString("en-CA"); // today as yyyy-mm-dd, like the date boxes
+        for (const [key, , type, req] of spec.fields) {
+          const input = $("create-" + key);
+          if (!input) continue;
+          if ((req || required.has(key)) && !values[key])
+            errors[key] = CREATE_REQUIRED_TEXT[key] || (type === "select" ? "Please choose one." : "Please fill this in.");
+          else if (input.validity && input.validity.badInput) errors[key] = type === "date" ? "Enter a valid date." : "Enter a whole number from 0 to 30.";
+          else if (type === "date" && values[key] && values[key] > today) errors[key] = `${CREATE_DATE_LABELS[key]} cannot be in the future.`;
+        }
+        const confirmedBeforeBaptism =
+          values.baptism_date && values.confirmation_date && values.confirmation_date < values.baptism_date;
+        if (confirmedBeforeBaptism && !errors.baptism_date && !errors.confirmation_date)
+          errors.confirmation_date = "Confirmation cannot be before the baptism date.";
+        const baptizedBeforeInvitation =
+          values.baptismal_date_extended && values.baptism_date && values.baptism_date < values.baptismal_date_extended;
+        if (baptizedBeforeInvitation && !errors.baptism_date && !errors.baptismal_date_extended)
+          errors.baptism_date = "Baptism cannot be before the date it was extended.";
+        if (values.child_dependents !== undefined && values.child_dependents !== "" && !/^(\d|[12]\d|30)$/.test(values.child_dependents))
+          errors.child_dependents = "Enter a whole number from 0 to 30.";
+        return errors;
+      }
+      function clearCreateError(input) {
+        const wrap = input?.closest?.("[data-create-field].invalid");
+        if (!wrap) return;
+        wrap.classList.remove("invalid");
+        wrap.querySelector(".field-error")?.remove();
+        input.removeAttribute("aria-invalid");
+        input.removeAttribute("aria-describedby");
+      }
+      // Marks each field with what to fix and puts the keyboard on the first one.
+      function showCreateErrors(errors) {
+        for (const wrap of $("createFields").querySelectorAll("[data-create-field]")) clearCreateError(wrap.querySelector("[name]"));
+        let first = null;
+        for (const [key, text] of Object.entries(errors)) {
+          const wrap = $("createFields").querySelector(`[data-create-field="${CSS.escape(key)}"]`),
+            input = wrap?.querySelector("[name]");
+          if (!input) continue;
+          wrap.classList.add("invalid");
+          const error = document.createElement("div");
+          error.className = "field-error";
+          error.id = "create-error-" + key;
+          error.textContent = text;
+          input.after(error);
+          input.setAttribute("aria-invalid", "true");
+          input.setAttribute("aria-describedby", error.id);
+          if (!first) first = input;
+        }
+        first?.focus();
+        return first;
+      }
+      async function submitCreateForm(event) {
+        event.preventDefault();
+        if (adding) return;
+        const values = createValues(),
+          errors = createErrors(values),
+          status = $("createStatus"),
+          kind = createKind;
+        if (Object.keys(errors).length) {
+          showCreateErrors(errors);
+          status.textContent = "Please fix the marked field" + (Object.keys(errors).length === 1 ? "." : "s.");
+          status.className = "status error";
+          return;
+        }
+        // Edit details and "Baptized" change a person already on the plan.
+        if (createMode !== "create") {
+          const group = createMode === "convert" ? "baptismal_friends" : kind,
+            action = createMode === "convert" ? "baptized" : "edit";
+          runPersonAction(group, createRow, action, values, $("createForm"), status, showCreateErrors);
+          return;
+        }
+        await createPerson(kind, values, status);
+      }
+      // A new person: created by the server, added to this week's plan, then shown on their own tab.
+      async function createPerson(kind, values, status) {
+        let created;
+        lockDialog($("createForm"), true);
+        try {
+          status.textContent = "Adding…";
+          status.className = "status";
+          await flush();
+          created = await portalAPI(`planning/reports/${data.report.report_id}/people/${CREATE_FORMS[kind].endpoint}`, { method: "POST", body: values });
+        } catch (e) {
+          lockDialog($("createForm"), false);
+          if (e.fields) showCreateErrors(e.fields);
+          status.textContent = e.message;
+          status.className = "status error";
+          if (!$("createDialog").open) {
+            message.textContent = e.message;
+            message.className = "status error";
+          }
+          return;
+        }
+        lockDialog($("createForm"), false);
+        $("createDialog").close();
+        selectAfterLoad = { kind, personId: created.id };
+        await load(data.report.unit_id);
+        message.textContent = `${[values.first_name, values.last_name].filter(Boolean).join(" ")} was added to this week's plan.`;
+        message.className = "status";
+      }
+      // ---- 13b. "+ Add from list" (#personDialog) -------------------------------------------------------------
+      let addKind = null; // the group the person is added to
+      function openPersonPicker(kind) {
+        if (stillAdding()) return;
+        addKind = kind;
+        const items = data.available_people?.[kind] || [],
+          // An empty list means either everyone is already on this plan or no one is listed for the area yet.
+          onPlan = (data.people?.[kind] || []).some((p) => p.is_current !== false);
+        $("personTitle").textContent =
+          kind === "new_members" ? "Add a new member from your list" : "Add a friend with a baptismal date from your list";
+        $("personHint").textContent = items.length
+          ? "Choose someone assigned to your area."
+          : onPlan
+            ? "Everyone on your area's list is already on this week's plan."
+            : kind === "new_members"
+              ? 'No new members are listed for your area in this ward or branch yet. Use "+ New member" to add one.'
+              : 'No friends with a baptismal date are listed for your area yet. Use "+ Add person on date" to add one.';
+        $("personSelect").innerHTML = items.length
+          ? '<option value="">Choose a person…</option>' + items.map((p) => `<option value="${p.id}">${esc(p.display_name)}</option>`).join("")
+          : `<option value="">${onPlan ? "No one else to add" : "No one to add yet"}</option>`;
+        $("personSave").disabled = !items.length;
+        $("personStatus").textContent = "";
+        $("personDialog").showModal();
+      }
+      async function addPersonFromList(event) {
+        event.preventDefault();
+        const personId = Number($("personSelect").value),
+          kind = addKind;
+        if (!personId || adding) return;
+        lockDialog($("personForm"), true);
+        try {
+          $("personStatus").textContent = "Adding…";
+          await flush();
+          await portalAPI(`planning/reports/${data.report.report_id}/people/${kind === "new_members" ? "existing_new_member" : "existing_baptismal"}`, {
+            method: "POST",
+            body: { person_id: personId },
+          });
+        } catch (e) {
+          lockDialog($("personForm"), false);
+          $("personStatus").textContent = e.message;
+          if (!$("personDialog").open) {
+            message.textContent = e.message;
+            message.className = "status error";
+          }
+          return;
+        }
+        lockDialog($("personForm"), false);
+        $("personDialog").close();
+        selectAfterLoad = { kind, personId };
+        await load(data.report.unit_id);
+      }
+      // ---- 13c. The buttons on a person card -----------------------------------------------------------------
+      // A new high-potential friend: added at once (without a name yet) and shown on a new tab.
+      async function addHighPotential(button) {
+        if (adding) return; // a double tap must not add two friends
+        adding = true;
+        button.disabled = true;
+        try {
+          await flush();
+          saveState.textContent = "Adding a friend…";
+          const created = await portalAPI(`planning/reports/${data.report.report_id}/people/high_potential`, { method: "POST", body: {} });
+          await flush();
+          selectAfterLoad = { kind: "high_potential", rowId: created.id };
+          await load(data.report.unit_id);
+          form.querySelector(`[data-person-group="high_potential"][data-id="${created.id}"] [data-field="name"]`)?.focus();
+        } catch (e) {
+          message.textContent = e.message;
+          message.className = "status error";
+        } finally {
+          adding = false;
+          button.disabled = false;
+        }
+      }
+      const personRow = (card) => data.people[card.dataset.personGroup].find((p) => String(p.id) === card.dataset.id);
+      // Edit details, Baptized, Transfer, End follow-up, No longer on date or Delete, for the person on this card.
+      function openPersonAction(action, card) {
+        if (stillAdding() || !card) return;
+        if (badNumbers().length) {
+          message.textContent = "A number on this plan is not saved yet. Fix the marked box first.";
+          message.className = "status error";
+          return;
+        }
+        const group = card.dataset.personGroup,
+          row = personRow(card);
+        if (!row) return;
+        if (action === "edit") return openCreatePerson(group, "edit", row);
+        if (action === "baptized") return openCreatePerson("new_members", "convert", row, card);
+        openManage(action, group, row);
+      }
+      // Saves what is still open, runs the action, then shows the plan the server sends back.
+      async function runPersonAction(group, row, action, body, dialogForm, status, onFields) {
+        let result;
+        lockDialog(dialogForm, true);
+        try {
+          status.textContent = "Saving…";
+          status.className = "status";
+          await flush();
+          result = await portalAPI(`planning/reports/${data.report.report_id}/people/${group}/${row[PERSON_COLUMN[group]]}/${action}`, { method: "POST", body });
+        } catch (e) {
+          lockDialog(dialogForm, false);
+          if (e.fields) onFields?.(e.fields);
+          status.textContent = e.message;
+          status.className = "status error";
+          return { error: e };
+        }
+        lockDialog(dialogForm, false);
+        dialogForm.closest("dialog").close();
+        applyPeople(
+          result.people,
+          tabAfterAction(result),
+          result.available_people,
+        );
+        message.textContent = result.message;
+        message.className = "status";
+        return result;
+      }
+      // After Baptized or Transfer the tab of the person the server names is opened (if they are on this plan).
+      function tabAfterAction(result) {
+        if (result.new_member_id) return { kind: "new_members", personId: result.new_member_id };
+        if (result.baptismal_date_person_id) return { kind: "baptismal_friends", personId: result.baptismal_date_person_id };
+        return null;
+      }
+      // The plan after an action on a person: shown at once, without loading the page again.
+      // available: the "Add from list" lists the server sends back, so their counts are right at once.
+      function applyPeople(people, select = null, available = null) {
+        data.people = people;
+        if (available) data.available_people = available;
+        selectAfterLoad = select;
+        const kept = hiddenFollowUps();
+        render();
+        restoreFollowUps(kept);
+      }
+      // ---- 13d. Transfer, End follow-up, No longer on date ("drop") and Delete (#manageDialog) ---------------
+      let manage = null, // { action, group, row } of the open pop-up
+        transferTargets = null; // the areas a person can move to (loaded once, when first needed)
+      function loadTransferTargets() {
+        if (!transferTargets)
+          transferTargets = portalAPI("planning/transfer-targets").catch((e) => {
+            transferTargets = null; // try again next time
+            throw e;
+          });
+        return transferTargets;
+      }
+      const selectField = (key, label, options, placeholder) =>
+        `<div class="question" data-manage-field="${key}"><label for="manage-${key}">${esc(label)}${REQUIRED_MARK}</label><select id="manage-${key}" name="${key}" aria-required="true"><option value="">${esc(placeholder)}</option>${options}</select></div>`;
+      function openManage(action, group, row) {
+        const name = row.display_name,
+          instead = group === "new_members" ? ["end", "End follow-up"] : ["drop", "No longer on date"];
+        manage = { action, group, row };
+        resetManageDialog(action, name);
+        $("manageAlt").onclick = () => openManage(instead[0], group, row);
+        if (action === "transfer") showTransferForm(name);
+        else if (action === "end" || action === "drop") showReasonForm(action, name);
+        else showDeleteQuestion(row, name, instead[1]);
+        if (!$("manageDialog").open) $("manageDialog").showModal();
+        $("manageFields").querySelector("select:not(:disabled)")?.focus();
+      }
+      function resetManageDialog(action, name) {
+        const save = $("manageSave");
+        $("manageStatus").textContent = "";
+        $("manageStatus").className = "status";
+        for (const control of $("manageForm").elements) control.disabled = false;
+        save.hidden = false;
+        save.classList.toggle("danger", action === "delete");
+        $("manageCancel").textContent = action === "delete" ? `Keep ${name}` : "Cancel";
+        $("manageAlt").hidden = true;
+      }
+      function showTransferForm(name) {
+        $("manageTitle").textContent = `Transfer ${name} to another area`;
+        $("manageHint").textContent = `Choose the area and ward or branch ${name} is moving to. ${name} leaves this week's plan now and appears on the new area's plan, so the missionaries there can keep helping.`;
+        $("manageFields").innerHTML =
+          selectField("area_id", "New area", "", "Loading the areas…") + selectField("unit_id", "Ward or branch", "", "Choose the area first");
+        $("manage-unit_id").disabled = true;
+        $("manageSave").textContent = "Transfer";
+        fillTransferAreas();
+      }
+      // End follow-up (a New Member) and No longer on date (a friend): both ask for a reason.
+      function showReasonForm(action, name) {
+        const ending = action === "end",
+          reasons = ending ? END_REASONS : DROP_REASONS;
+        $("manageTitle").textContent = ending ? `End follow-up for ${name}` : `${name} is no longer on date`;
+        $("manageHint").textContent = ending
+          ? "New members stay in follow-up for their first year. End it early only for one of these reasons. Their ward keeps caring for them."
+          : `This takes ${name} off the baptismal date list. You can keep teaching ${name}, and add them again when a new date is set.`;
+        $("manageFields").innerHTML = selectField("reason", "Reason", reasons.map(([value, text]) => `<option value="${value}">${esc(text)}</option>`).join(""), "Choose a reason…");
+        $("manageSave").textContent = ending ? "End follow-up" : "Take off date list";
+      }
+      // Delete is only for someone added by mistake; insteadLabel names the other way to take them off the list.
+      function showDeleteQuestion(row, name, insteadLabel) {
+        $("manageTitle").textContent = `Delete ${name}?`;
+        $("manageFields").innerHTML = "";
+        if (row.on_submitted_plan)
+          return showKeptInstead(`${name} is already on an earlier or submitted weekly plan, so the record is kept for the mission's reports. To take ${name} off your list, use "${insteadLabel}" instead.`);
+        $("manageHint").textContent = `Use this only if ${name} was added by mistake, for example twice or with the wrong name. The record is deleted for good and cannot be brought back. Not a mistake? Use "${insteadLabel}" instead.`;
+        $("manageSave").textContent = "Delete for good";
+        $("manageAlt").textContent = `${insteadLabel} instead`;
+        $("manageAlt").hidden = false;
+      }
+      // Delete is refused for someone on an earlier or submitted plan: explain and offer End follow-up / No longer on date.
+      function showKeptInstead(text) {
+        $("manageHint").textContent = text;
+        $("manageStatus").textContent = "";
+        $("manageSave").hidden = true;
+        $("manageAlt").textContent = manage.group === "new_members" ? "End follow-up instead" : "No longer on date instead";
+        $("manageAlt").hidden = false;
+        $("manageAlt").focus();
+      }
+      async function fillTransferAreas() {
+        const areaSelect = $("manage-area_id");
+        let targets;
+        try {
+          targets = await loadTransferTargets();
+        } catch (e) {
+          $("manageStatus").textContent = e.message;
+          $("manageStatus").className = "status error";
+          return;
+        }
+        if (!areaSelect.isConnected) return; // the pop-up changed meanwhile
+        areaSelect.innerHTML = '<option value="">Choose the new area…</option>' + areaOptions(targets);
+        areaSelect.onchange = () =>
+          showUnitsOf(targets.areas.find((item) => String(item.area_id) === areaSelect.value), areaSelect);
+      }
+      // The areas grouped by "zone · district", with this companionship's own area marked.
+      function areaOptions(targets) {
+        const groups = new Map();
+        for (const area of targets.areas) {
+          const label = `${area.zone} · ${area.district}`;
+          if (!groups.has(label)) groups.set(label, []);
+          groups.get(label).push(area);
+        }
+        return [...groups]
+          .map(([label, areas]) => `<optgroup label="${esc(label)}">${areas.map((area) => `<option value="${area.area_id}">${esc(area.area)}${area.area_id === targets.current_area_id ? " (your area)" : ""}</option>`).join("")}</optgroup>`)
+          .join("");
+      }
+      // The wards and branches of the chosen area (chosen already when there is only one).
+      function showUnitsOf(area, areaSelect) {
+        const wardSelect = $("manage-unit_id");
+        clearManageError(areaSelect);
+        clearManageError(wardSelect);
+        wardSelect.disabled = !area;
+        wardSelect.innerHTML = area
+          ? (area.units.length > 1 ? '<option value="">Choose the ward or branch…</option>' : "") + area.units.map((unit) => `<option value="${unit.unit_id}">${esc(unit.unit)}</option>`).join("")
+          : '<option value="">Choose the area first</option>';
+      }
+      function clearManageError(input) {
+        const wrap = input?.closest?.("[data-manage-field].invalid");
+        if (!wrap) return;
+        wrap.classList.remove("invalid");
+        wrap.querySelector(".field-error")?.remove();
+      }
+      function showManageErrors(errors) {
+        for (const [key, text] of Object.entries(errors)) {
+          const wrap = $("manageFields").querySelector(`[data-manage-field="${CSS.escape(key)}"]`),
+            input = wrap?.querySelector("[name]");
+          if (!input) continue;
+          clearManageError(input);
+          wrap.classList.add("invalid");
+          const error = document.createElement("div");
+          error.className = "field-error";
+          error.textContent = text;
+          input.after(error);
+        }
+        $("manageFields").querySelector(".invalid [name]")?.focus();
+      }
+      // What is missing in the manage pop-up: { field key: what to choose }.
+      function manageErrors(action, body) {
+        const errors = {};
+        if (action === "transfer" && !body.area_id) errors.area_id = "Choose the new area.";
+        else if (action === "transfer" && !body.unit_id) errors.unit_id = "Choose the ward or branch.";
+        if ((action === "end" || action === "drop") && !body.reason) errors.reason = "Choose a reason.";
+        return errors;
+      }
+      async function submitManageForm(event) {
+        event.preventDefault();
+        if (adding || !manage || $("manageSave").hidden) return;
+        const { action, group, row } = manage,
+          body = {};
+        for (const input of $("manageFields").querySelectorAll("[name]")) body[input.name] = input.value;
+        const errors = manageErrors(action, body);
+        if (Object.keys(errors).length) {
+          showManageErrors(errors);
+          $("manageStatus").textContent = "Please choose what is marked.";
+          $("manageStatus").className = "status error";
+          return;
+        }
+        if (action === "transfer") Object.assign(body, { area_id: Number(body.area_id), unit_id: Number(body.unit_id) });
+        const result = await runPersonAction(group, row, action, body, $("manageForm"), $("manageStatus"), showManageErrors);
+        if (result?.error?.status === 409) showKeptInstead(result.error.message);
+      }
+
+      // =============================================================================================================
+      // 14. TYPING AND CLICKING IN THE FORM
+      // =============================================================================================================
+      // "How will GEMIKO support them?" is shown only while "Discussed in GEMIKO?" is Yes.
+      function toggleGemiko(card) {
+        card?.querySelector(".gemiko-details")?.classList.toggle("hidden", personValue(card, "discussed_in_gemiko") !== true);
+      }
+      // A friend needs a name: a blank one is not saved, and leaving the box shows the saved name again
+      // (a new friend has none yet). The tab shows the name as it is typed.
+      function friendNameHint(input) {
+        const card = input.closest("[data-person-group]"),
+          row = data.people.high_potential.find((p) => String(p.id) === card?.dataset.id),
+          tab = tabOf(card?.closest('[role="tabpanel"]'));
+        if (tab) tab.querySelector(".tab-name").textContent = input.value.trim() || tabLabel("high_potential", row || {});
+        let hint = input.closest("label").querySelector(".field-error.name-hint");
+        if (input.value.trim() || !row || row.name === HIGH_POTENTIAL_PLACEHOLDER) return hint?.remove();
+        if (hint) return;
+        hint = document.createElement("span");
+        hint.className = "field-error name-hint";
+        hint.textContent = "A friend needs a name. The last saved name is kept until you type a new one.";
+        input.after(hint);
+      }
+      // Leaving a friend's name box empty puts the saved name back.
+      function restoreFriendName(input) {
+        const id = input.closest("[data-id]")?.dataset.id,
+          row = data.people.high_potential.find((p) => String(p.id) === id),
+          fields = changed.people.get("high_potential:" + id);
+        if (!row) return;
+        input.value = row.name === HIGH_POTENTIAL_PLACEHOLDER ? "" : row.name;
+        friendNameHint(input);
+        // The saved name is back, so there is nothing to send for it.
+        fields?.delete("name");
+        if (fields && !fields.size) changed.people.delete("high_potential:" + id);
+        if (!hasChanges() && !saving) {
+          clearTimeout(timer);
+          saveState.textContent = "All changes saved";
+          showRetry(false);
+        }
+      }
+      // A Yes / No choice is a change of the whole question (data-field is on the pill group), so the shared
+      // input/change handlers below never see the radio button itself.
+      function pillChosen(event, type) {
+        const group = event.target.closest?.("[data-pills]");
+        if (!group) return;
+        event.stopPropagation();
+        if (type === "input") return;
+        clearPersonError(group);
+        if (group.dataset.field === "discussed_in_gemiko") toggleGemiko(group.closest("[data-person-group]"));
+        markDirty(group);
+      }
+      for (const type of ["input", "change"]) form.addEventListener(type, (event) => pillChosen(event, type), true);
+      form.addEventListener("input", (event) => {
+        clearPersonError(event.target);
+        clearFieldError(event.target);
+        if (event.target.dataset.key) updateConditionalQuestions();
+        if (event.target.dataset.field === "name") friendNameHint(event.target);
+        if (event.target.type === "number") numberHint(event.target);
+        markDirty(event.target);
+      });
+      form.addEventListener("change", (event) => {
+        clearPersonError(event.target);
+        clearFieldError(event.target);
+        if (event.target.dataset.key) updateConditionalQuestions();
+        // Typed text was noted by "input" already. Its "change" when leaving the box is not a new
+        // edit, and re-sending it could overwrite what the companion saved in the meantime.
+        if (!event.target.matches("textarea, input[type=text], input[type=number]")) markDirty(event.target);
+      });
+      form.addEventListener("focusout", (event) => {
+        const input = event.target;
+        if (input.dataset?.field === "name" && !input.value.trim()) restoreFriendName(input);
+        setTimeout(renderWhenIdle);
+      });
+
+      // =============================================================================================================
+      // 15. THE BUTTONS AND POP-UP FORMS, AND THE START
+      // =============================================================================================================
+      unitSelect.onchange = changeUnit;
+      // Save is only shown after a save failed (showRetry): it tries again. save() shows its own error.
+      $("saveBtn").onclick = () => save(true).catch(() => {});
+      $("submitBtn").onclick = async () => {
+        // Save first even without changes here: the reply brings the companion's saved answers
+        // into this page, so the check below sees the plan that will actually be submitted.
+        try {
+          await save(true);
+        } catch {
+          return; // save() shows why
+        }
+        const bad = badNumbers()[0];
+        if (bad) return showUnsavedNumber(bad);
+        const missing = requiredMissing();
+        if (missing.length) return showMissingQuestions(missing);
+        if (peopleIncomplete()) return;
+        if (!confirm("Submit your weekly plan? Your district leader will see it before your call-in. A leader must unlock it before it can be changed again."))
+          return;
+        try {
+          await flush();
+          await portalAPI(`planning/reports/${data.report.report_id}/submit`, { method: "POST" });
+          await load(data.report.unit_id);
+          message.textContent = "Your plan is submitted. Your district leader will see it before your call-in. Thank you for planning together.";
+        } catch (e) {
+          if (e.fields?.people) return showServerIncomplete(e.fields.people, e.message);
+          message.textContent = e.message;
+          message.className = "status error";
+          if (e.fields) await showServerFieldErrors(e.fields);
+        }
+      };
+      $("personCancel").onclick = () => $("personDialog").close();
+      $("createCancel").onclick = () => $("createDialog").close();
+      $("manageCancel").onclick = () => $("manageDialog").close();
+      // Esc does not close a pop-up while it is adding or changing a person (see lockDialog).
+      for (const dialog of [$("manageDialog"), $("createDialog"), $("personDialog")])
+        dialog.addEventListener("cancel", (event) => {
+          if (adding) event.preventDefault();
+        });
+      $("createFields").addEventListener("input", (event) => clearCreateError(event.target));
+      $("createFields").addEventListener("change", (event) => {
+        clearCreateError(event.target);
+      });
+      $("manageFields").addEventListener("change", (event) => clearManageError(event.target));
+      $("createForm").onsubmit = submitCreateForm;
+      $("personForm").onsubmit = addPersonFromList;
+      $("manageForm").onsubmit = submitManageForm;
+      load();
+    </script>
+  </body>
+</html>

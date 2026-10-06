@@ -1,0 +1,424 @@
+WEEKLY PLANNING 3.0
+GERMANY FRANKFURT MISSION SYSTEM
+PROJECT DESCRIPTION, TECHNICAL OVERVIEW, AND MISSION
+
+Generated: 2026-09-26
+Workspace: /path/to/weekly-planning
+
+
+1. EXECUTIVE SUMMARY
+
+Weekly Planning 3.0 is the digital operating system being built for the Germany Frankfurt Mission. Its purpose is to give missionaries and mission leaders one coherent place to plan missionary work, communicate priorities, report progress, review meaningful data, coordinate leadership, manage mission information, and prepare presentations.
+
+The project is replacing a fragmented collection of forms, embedded Appsmith applications, manual reporting processes, spreadsheets, separate dashboards, and disconnected administrative tools. The goal is not merely to make the old forms prettier. The goal is to create a mission-focused system that helps missionaries plan deliberately, helps leaders minister with better context, and gives authorized mission leadership dependable information without adding unnecessary reporting burden.
+
+The system is currently in a hybrid migration. Native portal implementations called Weekly Planning Alpha and Call-ins Alpha are being developed while the existing Appsmith implementations remain available as Beta fallbacks. Supabase and PostgreSQL remain the source of truth. Superset remains the analytics platform. Slidev remains the presentation platform. A separate management application handles roster imports, accounts, assignments, languages, historical data, and area mappings. These services are presented through one portal so users experience them as parts of the same mission system.
+
+
+2. OUR MISSION
+
+Our mission is to build a trustworthy, useful, and dignified digital system that supports the actual work of missionaries and mission leaders.
+
+The system should help missionaries answer practical questions:
+
+- Who are we helping right now?
+- What did we learn during the past week?
+- What goals should we set for the next week?
+- What specific actions will help us reach those goals?
+- What coordination is needed with members and local leaders?
+- What information should be passed to mission leadership?
+
+It should help leaders answer different questions:
+
+- Which areas need help, attention, or encouragement?
+- Are submitted plans thoughtful, current, and complete?
+- What patterns are visible across districts, zones, and the mission?
+- Which goals are supported by concrete action plans?
+- What should be discussed during call-ins, councils, and leadership meetings?
+- How can leaders respond without turning missionary work into impersonal statistics?
+
+Data should inform ministering and decisions. It should not replace revelation, personal knowledge, local context, or direct communication. The portal should reduce friction and duplicate work so missionaries can spend more time teaching, finding, serving, working with members, and helping people make and keep covenants.
+
+The intended experience is elegant, professional, mission-focused, and mobile-friendly. Navy and teal form the core visual identity. The design should feel calm and purposeful rather than corporate or flashy. Appropriate scripture and Preach My Gospel content can add warmth and spiritual direction. Content from the Song of Solomon is intentionally excluded from random scripture selections.
+
+
+3. INTENDED USERS
+
+Normal missionaries
+
+Most missionaries will use the system primarily on phones. They need a clear Overview and a dependable Weekly Planning experience. They should see information for their actual assignment, area, unit, reporting week, and assigned language. Companions in the same area should work from shared planning data.
+
+District Leaders (DL)
+
+District Leaders need read-only leadership visibility into Call-ins and appropriately assigned presentations. Their visibility must remain limited to their stewardship. They may need to inspect specific areas within the district, but they should not gain general mission-wide administrative access.
+
+Zone Leaders (ZL)
+
+Zone Leaders need read-only Call-ins and assigned presentations for their zone stewardship. They should be able to review district and area information relevant to those they lead.
+
+Sister Training Leaders (STL)
+
+STLs receive assigned presentations according to the established access model. Their access should follow their role and stewardship rather than expose unrelated mission data.
+
+Office missionaries
+
+Office missionaries need calendar editing and selected administrative capabilities appropriate to their assignment. They do not automatically receive the full data-administrator role.
+
+Assistants to the President (AP)
+
+APs need mission-wide access to planning summaries, Call-ins, dashboards, calendar management, announcements, presentations, roster and account management, language assignment, historical import, area mappings, and mission focus editing.
+
+Mission President
+
+The President needs the same broad mission-level visibility and management capabilities as the AP and Data Administrator roles.
+
+Data Administrators (DA)
+
+Data Administrators need full operational access to maintain the system, data quality, accounts, imports, reporting, presentation access, and administrative configuration.
+
+
+4. MAJOR PRODUCT AREAS
+
+4.1 Portal and Overview
+
+The portal at local port 8070 is the common entry point. It provides authentication, navigation, themes, translations, responsive behavior, iframe integration, and native pages.
+
+The Overview is intended to be useful without being overwhelming. It presents the six key indicators first, then other goals and weekly action plans. It can show mission focus, announcements, upcoming calendar events, stewardship summaries, reporting progress, and spiritually relevant content. Users can choose the reporting week being viewed. Overview cards can be reordered or hidden without changing the order of the main portal navigation.
+
+The mission name and icon act as a consistent home link. The current visual direction uses navy, teal, restrained cards, readable typography, and layouts that adapt to mobile screens.
+
+4.2 Weekly Planning Alpha
+
+Weekly Planning Alpha is the native replacement for the legacy Appsmith planning form. It is not intended to be a static questionnaire. It must behave as a dynamic planning workspace.
+
+Reports are shared at the companionship level through the area, reporting unit, and reporting week. Companion changes should operate on the same report. Work is saved during planning, but final submission is explicit. Once submitted or locked, a report cannot be edited until an authorized leader reopens or unlocks it.
+
+The six key indicators are:
+
+1. New people being taught (Preach My Gospel's name; formerly "Friends found").
+2. Baptisms and confirmations.
+3. Friends with a baptismal date.
+4. Sacrament meeting attendance.
+5. Lessons with members participating.
+6. New-member sacrament meeting attendance.
+
+The system also retains all other planning goals, action plans, flexible questions, weekly action plans, and information that should be passed to leadership.
+
+People-oriented sections are dynamic. New members, friends with baptismal dates, and high-potential friends can be selected or created and viewed in carousel-style interfaces instead of one endlessly stacked form. New-member selections should come from the database where possible. Modals support adding or selecting people. Conditional information such as GEMIKO details or attendance details should appear only when the related event or condition applies. Validation messages should appear under the relevant field.
+
+Weekly Planning Beta remains available through Appsmith until the Alpha implementation has demonstrated complete functional and mobile parity.
+
+4.3 Call-ins Alpha
+
+Call-ins Alpha is the native leadership reporting view. It combines existing Call-ins summaries with the details produced during Weekly Planning. It supports week selection, stewardship summaries, six-KPI totals, other goals, weekly action plans, and information passed up the leadership chain.
+
+Mission managers can save zone leadership notes. DL and ZL access remains read-only under the current authorization decision. Role and stewardship determine whether the user receives mission, zone, or district summaries.
+
+Call-ins Beta remains available through Appsmith while Alpha is evaluated.
+
+4.4 Calendar and Attendance
+
+The calendar is a native portal capability. APs, the President, Data Administrators, and office missionaries can edit calendar events. Events can include descriptions, locations, meeting links, targeted roles or zones, recurrence rules, reminder offsets, and attachments.
+
+Attendance can be recorded after an event has occurred. Recording future attendance is blocked. Calendar announcements and important scheduled items should also be visible from the Overview where appropriate.
+
+4.5 Announcements
+
+Announcements can be targeted by role, zone, district, area, or individual user. They can be pinned, marked urgent, given an expiration time, and supplied with attachments. Read receipts are stored. Authorized authors and mission managers can edit or delete announcements. Announcements are available both from their dedicated page and as a summary on the Overview.
+
+4.6 Mission Focus
+
+Mission Focus is selected for each reporting week. It can be updated by mission managers and translated into multiple languages. Each user receives the focus in an assigned or selected mission language. If no scripture or external passage is connected to the focus, the interface should not show an empty link.
+
+4.7 Dashboard and Analytics
+
+The Dashboard is an embedded Apache Superset implementation, not a custom imitation. The protected wrapper is at local port 8089, while Superset itself runs at 8088.
+
+The browser supplies a Supabase access token to the wrapper. The wrapper immediately removes the token from the visible URL and sends it to a Supabase Edge Function. The Edge Function validates the user through Supabase Auth, verifies an active mission assignment and an AP, President, or Data Administrator role, signs into Superset, and returns a short-lived guest token. The configured guest-token lifetime is 300 seconds.
+
+Superset 6.0.0 is backed by PostgreSQL 18 and Redis 8. The two documented datasets retain mission-2 and submitted-report filtering and read from the shared planning-metrics view so Call-ins and Superset use consistent KPI values.
+
+A confirmed issue remains in the live Superset metadata: thirteen charts exist, but dashboard 2 has only one dashboard-slice association, and all listed charts use datasource 1. The dashboard membership and layout therefore require deliberate repair and verification.
+
+4.8 Presentations
+
+Presentations are managed by Slidev through a library embedded in the portal. The presentation service runs locally at port 3030 and keeps deck files in a persistent Docker volume.
+
+Verified installed components are:
+
+- @slidev/cli 52.19.1
+- @slidev/theme-default 0.25.0
+- slidev-addon-studio 0.3.1
+- archiver 8.0.0
+- http-proxy 1.18.1
+
+The presentation manager supplies the deck library, source editing, save and publish behavior, viewer routes, duplication, renaming, access management, and background Slidev processes. APs, the President, and Data Administrators can manage decks. DLs, ZLs, and STLs can view decks assigned by role, stewardship, or individual assignment.
+
+Unconfigured decks default to manager-only access. Presentation access follows a deck when it is renamed or duplicated. The current source editor provides controls to save and publish, return to the library, and view the presentation. A real authenticated save and reload test remains an important acceptance step.
+
+4.9 Roster, Accounts, Languages, and Historical Data
+
+The management application runs at port 8090 and stays inside the portal. It supports:
+
+- Complete transfer-roster CSV or XLSX import.
+- Validation preview and explicit confirmation.
+- Transactional application of roster changes.
+- Account status, activation, roles, assignments, and leadership scope.
+- Primary mission language and additional learning languages.
+- Historical Weekly Planning CSV import.
+- Old-area to current-area mappings.
+- Import history, audit records, and guarded undo.
+
+Roster imports require a complete active roster because missing missionaries may be marked released. Missionary ID is the stable person key. Existing assignment history is retained. Roster abbreviations can manage DL, ZL, STL, and AP assignments, while President and Data Administrator roles are intentionally managed rather than inferred automatically.
+
+Historical imports preserve original companionship labels, original unit names, detailed answers, and historical person details. Normalized metrics enter current reporting structures. Administrators can decide whether an existing report should be replaced or whether the import should stop. Multiple old areas can be mapped and combined into one current area for the same week. Closing or deactivating an old area is an explicit selectable action instead of an automatic side effect.
+
+The importer uses transaction and audit tables so a batch can be reversed only when later edits or new dependent data have not made reversal unsafe.
+
+On 2026-09-25, all ten importer integration tests passed against a disposable database. A separate test confirmed that two old areas can be combined into one current area and week, their metrics are summed, and the batch can be undone successfully.
+
+
+5. LANGUAGE AND LOCALIZATION
+
+Missionaries are assigned a primary mission language. APs can assign additional learning languages. Users may select among languages that are actually assigned to them. Different missionaries in the same mission can therefore use different languages.
+
+The database accepts BCP-47-like language codes. Assigning a code does not automatically create translated interface content. Common interface catalogs are maintained separately, and missing translations fall back to English. Mission Focus translations are stored by reporting week.
+
+The long-term aspiration is broad coverage comparable to the languages in which the Book of Mormon is available, but translation quality and review remain separate content work.
+
+
+6. AUTHENTICATION, AUTHORIZATION, AND STEWARDSHIP
+
+Supabase Auth provides user identity. The portal API requires a Supabase bearer token, validates it through the Auth service, and loads the user's current mission context and stewardship.
+
+Authorization combines role with assignment scope. Mission-wide roles do not rely only on what the browser says. Database views and functions such as current_user_context, current_user_scope, can_access_area, and planning edit/unlock checks form part of the security boundary. Planning and Call-ins write guards enforce important rules in PostgreSQL.
+
+Frontend navigation hiding is a convenience, not security. Every sensitive operation must also be authorized by the API or database. Presentation access is mediated by the portal API and a service-to-service key. Superset access is mediated by its guest-token Edge Function. Management sessions check live account status, mission, and effective role and use CSRF protection for form submissions.
+
+The guiding permission model is least privilege within stewardship:
+
+- Normal missionaries see and edit their shared planning work.
+- DL and ZL users see leadership information for those they lead.
+- STL presentation access is assignment-based.
+- Office access is limited to relevant office workflows such as calendar editing.
+- AP, President, and Data Administrator roles receive mission-level management access.
+
+
+7. DATA MODEL AND REPORTING STRUCTURE
+
+The central organizational hierarchy is:
+
+Mission
+  → Zone
+    → District
+      → Area
+        → Reporting unit and assigned missionaries
+
+Missionary assignments and leadership assignments are effective-dated so the system can determine who belonged to an area or stewardship during a particular reporting period.
+
+Weekly reports are connected to a reporting_weeks record whose canonical date is Sunday. The report connects the reporting week, area, and unit. Flexible planning answers and people-oriented details are stored in child tables.
+
+Important planning objects include:
+
+- reporting_weeks
+- weekly_area_reports
+- weekly_planning_answers
+- weekly_new_members
+- weekly_baptismal_date_friends
+- weekly_high_potential_friends
+- weekly_area_reports_with_planning_metrics
+- call_in_planning_details
+
+Important identity and hierarchy objects include:
+
+- missions
+- zones
+- districts
+- areas
+- units
+- missionaries
+- missionary_assignments
+- leadership_assignments
+- user_profiles
+- missionary_language_assignments
+- current_user_context
+- current_user_scope
+
+Portal-specific data is stored under the portal schema, including events, announcements, reads, attendance, attachments, push subscriptions, activity, reminder deliveries, user preferences, presentation access, and mission focus.
+
+These names and relationships must not be casually renamed or removed. They are referenced by APIs, Appsmith actions, Superset datasets, database triggers, permission functions, importers, and background services.
+
+
+8. REMINDERS AND NOTIFICATIONS
+
+The portal uses browser/mobile push notifications. Weekly Planning reminders are intended for Sunday at 18:00 Europe/Berlin. A reminder is sent only when the plan is incomplete. Recent activity during the preceding five minutes suppresses the notification while a companionship is actively working. If work stops and the plan remains incomplete, a pending reminder can still be sent later that evening.
+
+Calendar reminders use the event's configured offset. Browser permission is required. Mobile deployment requires a reachable HTTPS origin. On iOS, push behavior generally depends on using the installed home-screen web application.
+
+
+9. TECHNICAL ARCHITECTURE
+
+The browser enters through the Portal nginx service at port 8070.
+
+Native portal pages are served as static HTML, CSS, and JavaScript. Requests under /api/ are proxied to the Flask portal API on internal port 8091.
+
+The portal embeds or opens specialized services:
+
+- Appsmith at 8080 for retained Beta planning and Call-ins.
+- Superset wrapper at 8089, which authorizes and embeds Superset at 8088.
+- Slidev manager at 3030.
+- Roster and account management at 8090.
+
+The portal API and management services connect to the Beta Supabase/PostgreSQL stack. The portal-reminders service runs alongside the API and processes scheduled push work.
+
+The services communicate through the external Docker network gfm-network. Some Coolify-managed services retain their original external networks and labels so legacy routing and persistent resources remain available.
+
+
+10. IMPORTANT SERVICES AND PORTS
+
+- Portal: 8070
+- Appsmith: 8080
+- Superset: 8088
+- Superset protected wrapper: 8089
+- Roster importer and account manager: 8090
+- Slidev presentation manager: 3030
+- Portal API: internal 8091, reached through portal /api/
+- Production Supabase Studio/Kong checks: 3000 and 8000
+- Beta Supabase Studio/Kong checks: 13000 and 18000
+
+Important persistent storage includes the Appsmith stacks volume, Slidev deck volume, portal static volume, portal upload volume, Superset PostgreSQL and Redis volumes, and the Supabase database/storage volumes. Stateful volumes must never be casually deleted. In particular, do not run docker compose down -v against Appsmith or other stateful services.
+
+
+11. CURRENT DEVELOPMENT STATE
+
+The foundation is working and the system is actively being migrated.
+
+Confirmed working or present in code:
+
+- Portal authentication and role-aware navigation.
+- Native Overview, calendar, and announcements.
+- Native planning data endpoints, people records, submission, locking, and unlocking.
+- Native Call-ins summaries and manager zone notes.
+- Superset protected embedding and mission-manager authorization.
+- Slidev library and presentation access controls.
+- Roster, account, assignment, language, historical import, audit, and undo workflows.
+- Announcement deletion and read receipts.
+- Weekly mission focus with translations.
+- Browser push configuration and reminder scheduler.
+
+On 2026-09-25, local HTTP checks returned status 200 for the Portal, Portal API health, Appsmith health, Superset health, Superset wrapper, importer health, and Slidev. Docker reported the relevant application and database containers running and healthy where health checks are configured.
+
+Partially working or awaiting acceptance:
+
+- Weekly Planning Alpha needs full real-user and mobile parity testing.
+- Call-ins Alpha needs role-by-role acceptance testing.
+- Presentation editing needs an authenticated save, publish, reload, and return-to-view test.
+- Theme propagation needs visual checking across embedded pages.
+- Historical import behavior passes backend tests but still needs browser acceptance with representative files.
+- Superset dashboard chart membership and layout require repair.
+- Appsmith's complete live action inventory is not stored in this repository; checked-in helper scripts document only targeted modifications.
+
+
+12. DESIGN AND ENGINEERING PRINCIPLES
+
+Mission focused
+
+Features should support planning, teaching, coordination, leadership, communication, and wise use of data. Product flows should not expose implementation details that missionaries do not need.
+
+Mobile first
+
+Normal missionaries primarily use phones. Forms, modals, carousels, navigation, controls, and error messages must work comfortably on small screens.
+
+Shared and dynamic
+
+Weekly Planning is shared companionship work, not a collection of isolated static forms. People records and conditional questions should behave dynamically.
+
+Secure by scope
+
+Visibility and editing follow role and stewardship. UI hiding alone is insufficient. API and database enforcement must remain intact.
+
+Explicit submission
+
+Autosave protects work in progress, while explicit submission communicates that a plan is complete. Reopening requires an authorized leader.
+
+Stable identifiers
+
+Database IDs and historical mappings are more reliable than display names. Renaming an area must not corrupt historical consistency.
+
+Reversible administration
+
+Imports must preview, validate, apply transactionally, preserve audit details, and support safe undo when later activity has not made undo dangerous.
+
+Consistent data
+
+Planning, Call-ins, and Superset should read the same normalized KPI values. Parallel definitions of the same metric should be eliminated.
+
+Progressive replacement
+
+Legacy Appsmith tools remain available until native replacements are demonstrably better and complete. Migration should not remove a working fallback prematurely.
+
+Minimal, verified changes
+
+Diagnose first, inspect current code and active configuration, make the smallest safe change, test it, and document the result.
+
+
+13. IMMEDIATE PRIORITIES
+
+1. Repair Superset dashboard 2 so its intended KPI cards and charts are actually associated with the dashboard and render correctly.
+
+2. Perform an authenticated presentation test with a disposable deck: edit Markdown, save and publish, open presentation mode, return to the library, reload, and confirm persistence.
+
+3. Complete a Weekly Planning Alpha acceptance matrix on desktop and phone. Test every person type, add/select modals, carousels, conditional GEMIKO and attendance content, validation placement, autosave, week switching, submission, lock, and leader unlock.
+
+4. Complete Call-ins Alpha acceptance with AP, President or DA, ZL, and DL accounts. Confirm mission, zone, and district scope, manager note saving, read-only leader behavior, and reporting-week switching.
+
+5. Test the historical importer through the browser using representative CSV files. Confirm replacement versus stop, area combination, explicit old-area deactivation, preview messages, application, audit records, and undo.
+
+6. Reconcile stale READMEs and clearly mark which compose files are active, historical, or local overrides.
+
+7. Document real production domains, remote Coolify state, backups, and recovery procedures once verified on the deployment host.
+
+
+14. DEVELOPMENT AND OPERATIONAL WARNINGS
+
+- Never publish live .env contents, service-role keys, JWT secrets, database passwords, VAPID private keys, access tokens, or personal missionary data.
+- Back up Beta before applying database migrations.
+- Apply numbered migrations deliberately and in order. They are not automatically applied merely because the files exist.
+- Do not delete or rename persistent Docker volumes without a verified backup and explicit authorization.
+- Do not remove Appsmith yet.
+- Do not assume a file named original, before, backup, or legacy is active configuration.
+- Confirm the intended Compose project name before recreating a service. Existing containers may belong to a different Compose project label.
+- Use disposable databases or rollback-only fixtures for integration tests that write data.
+- Treat current_user_context, current_user_scope, reporting week functions, planning permission functions, shared metric views, and presentation ACL objects as critical interfaces.
+- Keep mission-wide access restricted to authorized mission managers.
+
+
+15. DEFINITION OF SUCCESS
+
+Weekly Planning 3.0 succeeds when missionaries can open the portal on a phone, understand what matters, plan together without fighting the interface, save their work reliably, submit deliberately, and return later without losing context.
+
+It succeeds when leaders can see only the people and areas they are assigned to lead, review plans and trends without requesting duplicate reports, prepare for call-ins quickly, and identify where personal follow-up is needed.
+
+It succeeds when APs, the President, and Data Administrators can maintain the roster, assignments, languages, areas, mission focus, events, announcements, dashboards, and presentations without fragile manual database work.
+
+It succeeds when the data shown in Weekly Planning, Call-ins, Overview, and Superset is consistent; when historical changes preserve meaning; when administrative actions are auditable and reversible; and when authorization is enforced at the server and database layers.
+
+Most importantly, it succeeds when the technology becomes quiet and dependable. Missionaries should spend less time wrestling with forms and more time focusing on people, inspired goals, meaningful action plans, and the work they were called to do.
+
+
+16. PRIMARY REFERENCE MATERIAL
+
+The detailed technical handoff is located in:
+
+/path/to/weekly-planning\docs\handoff\
+
+Begin with:
+
+- 00_START_HERE.md
+- 10_CURRENT_STATE.md
+- 02_ARCHITECTURE.md
+- 11_KNOWN_ISSUES.md
+- 13_NEXT_STEPS.md
+- 14_FILE_AND_SERVICE_MAP.md
+
+The source code and configuration remain authoritative when documentation and implementation disagree. Any material architectural, operational, database, or deployment change should be reflected in the handoff documentation.

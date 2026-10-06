@@ -1,0 +1,934 @@
+<!doctype html>
+<!--
+  home.html: the Overview, the first page everyone sees in the portal (menu: Overview).
+
+  What it shows, top to bottom:
+    - the mission glimpse (managers only, glimpse.js): the last finished week of the whole mission;
+    - a welcome with the next required action (usually: submit this week's plan in Weekly Planning);
+    - movable cards: key indicators of conversion (goal and reported actual), your assignment, additional weekly
+      goals, the weekly action plan, upcoming events, announcements, recent reporting weeks, the mission focus and,
+      for leaders, Stewardship planning (which areas have submitted their plan; a leader can unlock a submitted plan
+      or look at an area's goals).
+  Everyone can drag the cards into their own order or hide some ("Customize overview cards"); the layout is kept per
+  person in this browser.
+
+  How it fits: it opens inside the portal shell's frame. portal-client.js brings portalAPI; GET /api/overview
+  (portal-api app.py) answers everything for the signed-in person's stewardship; PUT /api/mission-focus saves the
+  weekly focus (managers); POST /api/planning/reports/<id>/unlock unlocks a plan (leaders). The look is home.css
+  (and glimpse.css); SortableJS (Sortable.min.js, vendored) moves the cards; i18n.js translates every English text.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Mission overview</title>
+    <link rel="stylesheet" href="home.css?v=1" />
+    <link rel="stylesheet" href="glimpse.css" />
+    <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+  </head>
+  <body>
+    <main class="wrap loading" id="overview">
+      <!-- The mission glimpse (glimpse.js): the managers' Overview starts with it; empty and hidden for everyone else. -->
+      <section id="glimpse" hidden aria-labelledby="glTitle"></section>
+
+      <!-- Welcome, and the next required action. -->
+      <section class="hero">
+        <div>
+          <div class="eyebrow" id="missionEyebrow">Germany Frankfurt Mission</div>
+          <h1 id="welcome">Welcome back</h1>
+          <p id="assignment">Preparing your mission overview…</p>
+        </div>
+        <div class="action">
+          <small id="nextLabel">Next required action</small>
+          <strong id="nextTitle">Weekly Planning</strong>
+          <p id="nextDescription">Your companionship’s plan for the week.</p>
+          <button class="button" type="button" id="planningLink">
+            Open Weekly Planning <span aria-hidden="true" data-i18n="common.arrowForward">→</span>
+          </button>
+        </div>
+      </section>
+      <div id="notice" class="notice" role="alert"></div>
+      <!-- A leader looking at another area's goals and plans. -->
+      <div id="areaView" class="area-view-notice hidden">
+        <span id="areaViewLabel"></span>
+        <button id="myOverview" class="button secondary">Back to my overview</button>
+      </div>
+      <div class="overview-tools">
+        <button class="button secondary" id="customizeCards" type="button">Customize overview cards</button>
+      </div>
+      <p id="cardGripHelp" class="visually-hidden">Press Space or Enter to pick up this card. Use the arrow keys to move it, then press Space or Enter to drop it. Press Escape to cancel.</p>
+      <div id="cardLive" class="visually-hidden" aria-live="assertive" aria-atomic="true" data-i18n-ignore></div>
+
+      <!-- The movable cards. Each has data-card (its name in the saved layout); the script adds a grip to its title. -->
+      <div class="grid card-grid" id="overviewCards">
+        <section data-card="indicators" data-span="full" aria-labelledby="indicatorTitle">
+          <div class="section-head">
+            <h2 id="indicatorTitle">Key indicators of conversion</h2>
+            <label class="week-picker">Reporting week<select id="weekSelect" aria-label="Reporting week"></select></label>
+          </div>
+          <div class="kpis" id="indicators" aria-live="polite"></div>
+        </section>
+
+        <section class="panel assignment-panel" data-card="assignment" data-span="full">
+          <div class="panel-head">
+            <h2 id="assignmentTitle">Your assignment</h2>
+            <span class="pill" id="role">Missionary</span>
+          </div>
+          <div class="facts">
+            <div class="fact"><span>Area</span><strong id="area">—</strong></div>
+            <div class="fact"><span>District</span><strong id="district">—</strong></div>
+            <div class="fact"><span>Zone</span><strong id="zone">—</strong></div>
+          </div>
+          <div class="assignment-details">
+            <div><strong>Companionship</strong> <span id="companions">—</span></div>
+            <div><strong>Assigned units</strong> <span id="units">—</span></div>
+          </div>
+        </section>
+
+        <div class="panel" data-card="goals">
+          <div class="panel-head">
+            <h2>Additional weekly goals</h2>
+            <span class="meta">Goal / actual</span>
+          </div>
+          <div id="goals" class="empty">Loading your saved goals…</div>
+        </div>
+
+        <div class="panel" data-card="plan">
+          <div class="panel-head">
+            <h2>Weekly action plan</h2>
+            <span class="pill" id="planStatus">Shared plan</span>
+          </div>
+          <div id="plans" class="empty">Loading your companionship’s plan…</div>
+          <details class="subplans hidden" id="subplans">
+            <summary>Indicator and supporting action plans</summary>
+            <div class="list" id="supportingPlans"></div>
+          </details>
+          <p class="shared-note">
+            Plans are shared by companions. Submit when your plan is ready; a leader must unlock a submitted plan before
+            it can be edited.
+          </p>
+        </div>
+
+        <div class="panel" data-card="events">
+          <div class="panel-head">
+            <h2>Upcoming events</h2>
+            <a href="/#calendar" target="_parent" class="text-link" data-open="calendar">View calendar →</a>
+          </div>
+          <div id="events" class="empty">Loading your mission calendar…</div>
+        </div>
+
+        <div class="panel" data-card="announcements">
+          <div class="panel-head">
+            <h2>Announcements</h2>
+            <a href="/#announcements" target="_parent" class="text-link" data-open="announcements">View all →</a>
+          </div>
+          <div id="announcements" class="empty">Loading announcements…</div>
+        </div>
+
+        <div class="panel" data-card="weeks">
+          <div class="panel-head"><h2>Recent reporting weeks</h2></div>
+          <div id="weeks" class="empty">Loading reports…</div>
+        </div>
+
+        <div class="panel quote" data-card="focus">
+          <div class="panel-head">
+            <div class="eyebrow" id="inspirationSource">Mission focus</div>
+            <button class="button secondary hidden" id="editFocus" type="button">Edit this week</button>
+          </div>
+          <blockquote id="inspirationText">Serve with faith. Plan with purpose.</blockquote>
+          <cite id="inspirationReference"></cite>
+        </div>
+
+        <!-- Leaders only (the server's answer has "stewardship"). -->
+        <section class="panel stewardship hidden" id="stewardship" data-card="stewardship" data-span="full">
+          <div class="panel-head">
+            <h2 id="stewardshipTitle">Stewardship planning</h2>
+            <span class="meta" id="stewardshipWeek"></span>
+          </div>
+          <div class="completion-summary" id="completionSummary"></div>
+          <div class="toolbar">
+            <input type="search" id="areaSearch" aria-label="Find an area, district, or zone" placeholder="Find an area, district, or zone" />
+            <button class="filter active" data-filter="all">All areas</button>
+            <button class="filter" data-filter="incomplete">
+            Not submitted yet</button>
+            <button class="filter" data-filter="complete">Submitted</button>
+          </div>
+          <div id="stewardshipAreas" class="list"></div>
+          <div id="stewardshipMessage" class="status-line" role="status"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- The weekly mission focus (managers: "Edit this week"). -->
+    <dialog id="focusDialog">
+      <form id="focusForm">
+        <h2>Weekly mission focus</h2>
+        <p class="meta">Save a translation for the selected mission language. Other language versions remain available.</p>
+        <label>Language code<input id="focusLanguage" maxlength="35" required /></label>
+        <label>Focus<textarea id="focusText" maxlength="1000" required></textarea></label>
+        <label>Reference<input id="focusReference" maxlength="300" /></label>
+        <label>Link<input id="focusUrl" type="url" placeholder="https://" /></label>
+        <div id="focusStatus" class="notice"></div>
+        <div class="dialog-actions">
+          <button type="button" class="button secondary" id="focusCancel">Cancel</button>
+          <button class="button">Save focus</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Customize overview cards: show, hide and reorder. -->
+    <dialog id="cardDialog" aria-labelledby="cardDialogTitle">
+      <form method="dialog">
+        <h2 id="cardDialogTitle">Customize overview cards</h2>
+        <p class="meta">Show, hide, and reorder your cards. Your layout is saved for you on this device. You can also drag a card by the dotted handle beside its title.</p>
+        <div id="cardRows"></div>
+        <div class="dialog-actions">
+          <button type="button" data-close="reset" class="button secondary">Reset to default</button>
+          <button type="button" data-close="cancel" class="button secondary">Cancel</button>
+          <button value="save" class="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- glimpse.js first: it reads ?glimpse=1 before portal-client.js takes the query off the address. -->
+    <script src="glimpse.js"></script>
+    <!-- portal-client.js: portalAPI refreshes the sign-in token through the portal shell, handles portal-theme/mission-language messages and removes portal_token from the address. -->
+    <script src="portal-client.js"></script>
+    <script src="Sortable.min.js?v=1.15.6"></script>
+    <script>
+      if (window.GFM_SITE && window.GFM_SITE.missionName) document.getElementById("missionEyebrow").textContent = window.GFM_SITE.missionName;
+      // ==== Small helpers ========================================================================================
+      // The six key indicators of conversion, in Weekly Planning's order (portal-api planning.KEY_INDICATORS; the
+      // test test_wording.py compares the two). Shown empty while the Overview loads.
+      const indicatorLabels = [
+        "New member sacrament attendance",
+        "Baptisms and confirmations",
+        "Baptismal dates",
+        "Sacrament attendance",
+        "Members at lessons",
+        "New people being taught",
+      ];
+      const el = (id) => document.getElementById(id);
+      const escape = window.escapeHTML; // from portal-client.js
+      const number = (value) =>
+        value === null || value === undefined ? "—" : new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(value);
+      // Puts text into an element; "—" when there is none.
+      const text = (id, value) => (el(id).textContent = value || "—");
+      // "29 Sep 2026" (a date alone is read at noon, so no time zone moves it to another day).
+      const day = (value) =>
+        value ? new Date(value.length === 10 ? value + "T12:00:00" : value).toLocaleDateString(undefined, { dateStyle: "medium" }) : "";
+      const dateTime = (value) =>
+        value ? new Date(value).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "";
+      const statusLabel = (status) =>
+        ({
+          SUBMITTED: "Submitted",
+          LOCKED: "Locked",
+          DRAFT: "In progress",
+          NOT_STARTED: "Not started",
+        })[status] || "Not started";
+      // Only http(s) links are shown (a link from the server is never trusted to be safe on its own).
+      const safeUrl = (value) => {
+        if (typeof value !== "string" || !value.trim()) return null;
+        try {
+          const url = new URL(value.trim());
+          return ["http:", "https:"].includes(url.protocol) ? url.href : null;
+        } catch {
+          return null;
+        }
+      };
+      // A card's list: the rows, or the "nothing here yet" text.
+      function setList(id, rows, empty) {
+        el(id).className = rows.length ? "list" : "empty";
+        el(id).innerHTML = rows.length ? rows.join("") : escape(empty);
+      }
+
+      // ==== Key indicators ======================================================================================
+      // With two or more unit plans, each unit's own numbers go under the area total.
+      function unitLines(units) {
+        if (!units || units.length < 2) return "";
+        return `<div class="unit-lines">${units.map((u) => `<div class="meta"><span>${escape(u.unit || "Area plan")}</span> · <span>${number(u.actual)}</span> / <span>${number(u.previous_goal)}</span></div>`).join("")}</div>`;
+      }
+
+      // Big number: the goal for next week. Small numbers: this plan's reported actual / the goal the week before set for
+      // it (the dashboards' rule). No goal set last week: "—" and no bar, not zero.
+      function indicatorTile(k) {
+        const hasPrevious = k.previous_goal !== null && k.previous_goal !== undefined;
+        const progress = hasPrevious && k.previous_goal > 0 && k.actual !== null ? Math.min(100, Math.max(0, (k.actual / k.previous_goal) * 100)) : 0;
+        const bar = hasPrevious ? `<div class="progress" aria-hidden="true"><span style="width:${progress}%"></span></div>` : "";
+        return `<article class="kpi"><h3>${escape(k.label)}</h3><div class="goal-value">${number(k.goal)}</div><div class="goal-caption">Goal for next week</div><div class="actual"><span>Actual / goal set last week</span><strong>${number(k.actual)} / ${number(k.previous_goal)}</strong></div>${bar}${unitLines(k.units)}</article>`;
+      }
+
+      function renderIndicators(indicators) {
+        const tiles = indicators?.length ? indicators : indicatorLabels.map((label) => ({ label, goal: null, actual: null }));
+        el("indicators").innerHTML = tiles.map(indicatorTile).join("");
+      }
+      renderIndicators();
+
+      // ==== What the page remembers ===============================================================================
+      let currentData = null; // the last answer of /api/overview
+      let currentAreaId = null; // the area a leader is looking at (null: their own Overview)
+      let currentWeek = null; // the reporting week chosen in the list (null: the server's choice)
+      let areaFilter = "all"; // Stewardship planning: "all", "incomplete" or "complete"
+      let stewardshipLabel = ""; // the Stewardship card's heading from the server ("District planning" …)
+
+      // "Open Weekly Planning", "View calendar →" and "View all →" ask the portal shell to open their page in its frame,
+      // at once (following the link would load the whole portal again). A link opened on its own works as a link.
+      const openInPortal = (page) => parent.postMessage({ type: "gfm-open-page", page }, location.origin);
+      el("planningLink").addEventListener("click", () => openInPortal("planning"));
+      document.querySelectorAll("a[data-open]").forEach((link) =>
+        link.addEventListener("click", (event) => {
+          if (window.parent === window || event.ctrlKey || event.metaKey || event.shiftKey) return;
+          event.preventDefault();
+          openInPortal(link.dataset.open);
+        }),
+      );
+
+      // portalAPI (portal-client.js) asks the shell for a fresh token on every call, so the page keeps working after
+      // the first token expires. A token that changed in another tab is tried once more.
+      async function api(path, options = {}, retry = true) {
+        try {
+          return await portalAPI(path, { ...options });
+        } catch (error) {
+          if (retry && error.message === "Your session changed. Please retry.") return api(path, options, false);
+          if (error.status === 401) throw Error("Your portal session has expired. Please sign in again.");
+          throw error.status && error.message === "The request could not be completed."
+            ? Error("Your overview could not load. Check your connection and try again.")
+            : error;
+        }
+      }
+
+      // ==== The welcome, the assignment and the planning cards ==================================================
+      // "DL · Data Analyst": the API's label for the main role and any additional roles (portal-api/roles.py). Each
+      // label is its own element so the interface translation can translate it.
+      function renderRole(assignment) {
+        const role = assignment.role || assignment.leadership_role || assignment.app_role || "MISSIONARY";
+        const roleLabels = assignment.role_label ? assignment.role_label.split(" · ") : [role.replaceAll("_", " ")];
+        el("role").replaceChildren(
+          ...roleLabels.flatMap((label, index) => {
+            const part = document.createElement("span");
+            part.textContent = label;
+            return index ? [document.createTextNode(" · "), part] : [part];
+          }),
+        );
+      }
+
+      // viewing: another area a leader is looking at (its name replaces the welcome).
+      function renderAssignment(assignment, viewing) {
+        text("welcome", viewing ? viewing.area : assignment.display_name ? `Welcome, ${assignment.display_name}` : "Welcome back");
+        renderRole(assignment);
+        text(
+          "assignment",
+          viewing
+            ? [viewing.district, viewing.zone].filter(Boolean).join(" · ")
+            : [assignment.missionary_type, assignment.mission || (window.GFM_SITE && window.GFM_SITE.missionName) || "Germany Frankfurt Mission"].filter(Boolean).join(" · "),
+        );
+        text("assignmentTitle", viewing ? "Area assignment" : "Your assignment");
+        text("area", assignment.area);
+        text("district", assignment.district);
+        text("zone", assignment.zone);
+        const companions = [...(!viewing ? [assignment.display_name] : []), ...(assignment.companions || []).map((c) => c.display_name)];
+        text("companions", companions.filter(Boolean).join(" & "));
+        text("units", (assignment.units || []).map((u) => u.unit).join(" · "));
+      }
+
+      function renderWeekList(planning) {
+        const weekOptions = planning.recent_weeks || [];
+        el("weekSelect").innerHTML = weekOptions.map(w => `<option value="${escape(w.sunday)}" ${w.sunday === planning.week?.sunday ? "selected" : ""}>${day(w.sunday)}${w.scope_plans ? ` · ${tr("overview.weekPlans", w.scope_plans === 1 ? "{count} plan" : "{count} plans", { count: w.scope_plans })}` : ""}${w.is_closed ? " · Closed" : ""}</option>`).join("");
+      }
+
+      function nextStepTitle(planning, viewing) {
+        if (planning.complete) return viewing ? "This area’s plan is submitted" : "Your plan is submitted";
+        if (viewing) return "This area’s plan is not submitted yet";
+        return planning.status === "DRAFT" ? "Finish and submit your plan" : "Begin your weekly plan";
+      }
+
+      function nextStepDescription(planning) {
+        if (!planning.unit_count) return "Open Weekly Planning to prepare your companionship’s plan.";
+        const due = planning.week?.planning_due_at ? " · Due " + dateTime(planning.week.planning_due_at) : " · Sunday by 18:00";
+        return `${planning.completed_units || 0} of ${planning.unit_count} unit plans submitted${due}`;
+      }
+
+      // The box on the right of the welcome, and the Weekly action plan card's status.
+      function renderNextAction(planning, viewing) {
+        text("nextLabel", viewing ? "Area planning status" : "Next required action");
+        text("nextTitle", nextStepTitle(planning, viewing));
+        text("nextDescription", nextStepDescription(planning));
+        text("planStatus", planning.complete ? "Submitted" : "Shared plan");
+        el("planStatus").className = "pill" + (planning.complete ? "" : " pending");
+        const linkText = viewing ? "Open my Weekly Planning" : planning.complete ? "View Weekly Planning" : "Open Weekly Planning";
+        el("planningLink").innerHTML = linkText + ' <span aria-hidden="true" data-i18n="common.arrowForward">→</span>';
+      }
+
+      function renderAreaView(viewing) {
+        el("areaView").classList.toggle("hidden", !viewing);
+        if (viewing) text("areaViewLabel", "Viewing goals and action plans for " + viewing.area + ".");
+      }
+
+      function renderGoals(planning) {
+        const goals = (planning.other_goals || []).map(
+          (g) =>
+            `<div class="item"><div><div class="goal-label">${escape(g.label)}</div><div class="goal-section">${escape(g.section || "")}${g.unit ? " · " + escape(g.unit) : ""}</div>${unitLines(g.units)}</div><div class="goal-number">${number(g.goal)}<small>Actual ${number(g.actual)}</small></div></div>`,
+        );
+        setList("goals", goals, "Your additional goals will appear here after they are saved in Weekly Planning.");
+        if (goals.length) el("goals").classList.add("goal-list");
+      }
+
+      // The companionship's weekly action plan, and (folded) the plans for each indicator.
+      function renderPlans(planning) {
+        const plans = (planning.weekly_action_plans || []).map(
+          (p) =>
+            `<div class="item"><div class="plan-unit">${escape(p.unit || "Companionship plan")}</div>${p.text ? `<div class="plan-text">${escape(p.text)}</div>` : '<div class="meta">No action plan saved for this unit yet.</div>'}</div>`,
+        );
+        setList("plans", plans, "Your shared weekly action plan will appear here after it is saved.");
+        const supporting = planning.action_plans || [];
+        el("subplans").classList.toggle("hidden", !supporting.length);
+        el("supportingPlans").innerHTML = supporting
+          .map((p) => `<div class="item"><h3>${escape(p.label)}</h3><div class="meta">${escape(p.unit || "")}</div><p>${escape(p.text)}</p></div>`)
+          .join("");
+      }
+
+      function renderRecentWeeks(planning) {
+        const weeks = (planning.recent_weeks || []).slice(0, 4).map((w) => {  // the card shows the latest four; the picker has them all
+          const complete = w.report_count > 0 && w.submitted_count === w.report_count;
+          const label = w.report_count ? `${w.submitted_count} of ${w.report_count} submitted` : w.is_closed ? "Closed" : "Not started";
+          return `<div class="item week-row"><span>${day(w.sunday)}</span><span class="pill${complete || w.is_closed ? "" : " pending"}">${label}</span></div>`;
+        });
+        setList("weeks", weeks, "No reporting weeks are available yet.");
+      }
+
+      function renderPlanning(data) {
+        const assignment = data.assignment || {};
+        const planning = data.planning || {};
+        const viewing = data.viewing_area;
+        renderAssignment(assignment, viewing);
+        renderWeekList(planning);
+        renderNextAction(planning, viewing);
+        renderIndicators(planning.key_indicators);
+        renderAreaView(viewing);
+        renderGoals(planning);
+        renderPlans(planning);
+        renderRecentWeeks(planning);
+      }
+
+      // ==== Events, announcements, mission focus ================================================================
+      function eventRow(event) {
+        const start = event.occurrence || event.starts_at || event.start_at || event.start;
+        const link = safeUrl(event.video_url || event.meeting_url);
+        return `<article class="item"><h3>${escape(event.title)}</h3><div class="meta">${escape(dateTime(start))}${event.location ? " · " + escape(event.location) : ""}</div>${event.description ? `<p>${escape(event.description)}</p>` : ""}${link ? `<a class="text-link" href="${escape(link)}" target="_blank" rel="noopener">Join meeting →</a>` : ""}</article>`;
+      }
+
+      function renderEvents(data) {
+        const events = data.events || data.calendar?.events || [];
+        setList("events", events.slice(0, 5).map(eventRow), "No upcoming events for your role and zone.");
+      }
+
+      function announcementRow(item) {
+        const badges = [item.urgent ? '<span class="pill urgent">Urgent</span>' : "", item.pinned ? '<span class="pill">Pinned</span>' : ""]
+          .filter(Boolean)
+          .join(" ");
+        return `<article class="item">${badges ? '<div style="margin-bottom:7px">' + badges + "</div>" : ""}<h3>${escape(item.title)}</h3><p>${escape(item.body || item.content || "")}</p>${item.publisher_name || item.created_at ? `<div class="meta">${escape([item.publisher_name, day(item.created_at)].filter(Boolean).join(" · "))}</div>` : ""}${item.attachments?.length ? `<div class="meta" style="margin-top:8px">${item.attachments.length} ${item.attachments.length === 1 ? "attachment" : "attachments"} · Open Announcements to view</div>` : ""}</article>`;
+      }
+
+      function renderAnnouncements(data) {
+        const announcements = Array.isArray(data.announcements) ? data.announcements : data.announcements?.items || [];
+        setList(
+          "announcements",
+          announcements.slice(0, 6).map(announcementRow),
+          "You’re all caught up. Announcements from your leaders will appear here.",
+        );
+      }
+
+      // The quote card: this week's mission focus (or a scripture), its reference and link. Managers may edit it.
+      function renderInspiration(data) {
+        const inspiration = data.inspiration;
+        if (!inspiration) return;
+        if (typeof inspiration === "string") {
+          text("inspirationText", inspiration);
+          return;
+        }
+        text("inspirationText", inspiration.text || inspiration.quote);
+        text(
+          "inspirationSource",
+          inspiration.source || inspiration.book || (inspiration.paraphrase ? "Preach My Gospel · paraphrase" : "Mission focus"),
+        );
+        const reference = el("inspirationReference");
+        reference.textContent = inspiration.reference || inspiration.citation || "";
+        const url = safeUrl(inspiration.url);
+        reference.hidden = !url && !(inspiration.reference || inspiration.citation);
+        if (url) {
+          const link = document.createElement("a");
+          link.href = url;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = inspiration.reference || "Read passage";
+          reference.replaceChildren(link);
+        }
+        el("editFocus").classList.toggle("hidden", !data.mission_focus?.can_edit);
+      }
+
+      // ==== Stewardship planning (leaders) ======================================================================
+      function reportChip(area, report) {
+        const unlock =
+          report.status === "SUBMITTED" && report.report_id
+            ? `<button class="unlock" data-report="${Number(report.report_id)}" aria-label="Unlock ${escape(area.area)} ${escape(report.unit || "plan")}">Unlock plan</button>`
+            : "";
+        return `<span class="meta">${escape(report.unit || "Area plan")}: ${statusLabel(report.status)}</span>${unlock}`;
+      }
+
+      // One area: its name (a click shows its goals), district and zone, how many unit plans are submitted, and each
+      // plan's status (a submitted one can be unlocked).
+      function areaRow(area) {
+        const chips = (area.reports || []).map((report) => reportChip(area, report)).join("");
+        return `<div class="item area-row"><div><button class="area-title" data-area="${Number(area.area_id)}" aria-label="View goals for ${escape(area.area)}">${escape(area.area)} <span aria-hidden="true">↗</span></button><div class="meta">${escape([area.district, area.zone].filter(Boolean).join(" · "))}</div></div><div><span class="pill${area.complete ? "" : " pending"}">${area.completed_units} of ${area.unit_count} submitted</span></div><div class="report-chips">${chips}</div></div>`;
+      }
+
+      // The filter buttons (All areas, Not submitted yet, Submitted) and the search box.
+      function areaShown(area, search) {
+        const status = areaFilter === "all" || (areaFilter === "complete" ? area.complete : !area.complete);
+        return status && [area.area, area.district, area.zone].join(" ").toLowerCase().includes(search);
+      }
+
+      function renderStewardship(data) {
+        const stewardship = data.stewardship;
+        el("stewardship").classList.toggle("hidden", !stewardship);
+        if (!stewardship) return;
+        text("stewardshipTitle", stewardship.label);
+        stewardshipLabel = stewardship.label || "";
+        labelGrips(); // the grip, dialog and move messages use the same name as the heading
+        text("stewardshipWeek", data.planning?.week?.sunday ? day(data.planning.week.sunday) : "");
+        el("completionSummary").innerHTML = [
+          [stewardship.complete_areas, "Submitted"],
+          [stewardship.incomplete_areas, "Not submitted yet"],
+          [stewardship.total_areas, "Areas"],
+        ]
+          .map(([value, label]) => `<div class="summary-box"><strong>${number(value)}</strong><span>${label}</span></div>`)
+          .join("");
+        const search = el("areaSearch").value.trim().toLowerCase();
+        const areas = (stewardship.areas || []).filter((area) => areaShown(area, search));
+        setList("stewardshipAreas", areas.map(areaRow), "No areas match this view.");
+        el("stewardshipMessage").textContent = areas.length
+          ? `${areas.length} ${areas.length === 1 ? "area" : "areas"} shown`
+          : "No areas shown";
+      }
+
+      // ==== Loading ===========================================================================================
+      function showLoadError(error, areaId) {
+        el("notice").style.display = "block";
+        el("notice").innerHTML =
+          escape(error.message) +
+          '<div><button class="button secondary" id="retry">Try again</button> <a class="text-link" href="/#login" target="_parent">Return to sign in</a></div>';
+        el("retry").addEventListener("click", () => load(areaId));
+        if (currentData) return;
+        for (const id of ["goals", "plans", "events", "announcements", "weeks"]) {
+          el(id).className = "empty";
+          el(id).textContent = "Sign in to view your mission information.";
+        }
+      }
+
+      // Asks /api/overview (for another area, or another week, when chosen) and draws everything.
+      async function load(areaId = currentAreaId) {
+        el("notice").style.display = "none";
+        try {
+          const params = new URLSearchParams();
+          if (areaId) params.set("area_id", areaId);
+          if (currentWeek) params.set("week", currentWeek);
+          const data = await api("overview" + (params.size ? "?" + params : ""));
+          currentData = data;
+          currentAreaId = areaId;
+          renderPlanning(data);
+          renderEvents(data);
+          renderAnnouncements(data);
+          renderInspiration(data);
+          renderStewardship(data);
+          // The managers' Overview starts with the mission glimpse (glimpse.js); it steps aside while they look at
+          // another area's goals.
+          window.MissionGlimpse?.update({ allowed: !!data.glimpse, viewingArea: !!data.viewing_area });
+          el("overview").classList.remove("loading");
+        } catch (error) {
+          el("overview").classList.remove("loading");
+          showLoadError(error, areaId);
+        }
+      }
+
+      // ==== Buttons and lists ==================================================================================
+      el("areaSearch").addEventListener("input", () => currentData && renderStewardship(currentData));
+      el("weekSelect").addEventListener("change", () => {
+        currentWeek = el("weekSelect").value;
+        load(currentAreaId);
+      });
+      document.querySelectorAll("[data-filter]").forEach((button) =>
+        button.addEventListener("click", () => {
+          areaFilter = button.dataset.filter;
+          document.querySelectorAll("[data-filter]").forEach((b) => b.classList.toggle("active", b === button));
+          if (currentData) renderStewardship(currentData);
+        }),
+      );
+      el("myOverview").addEventListener("click", () => load(null));
+
+      // A leader unlocks a submitted plan, so the companionship can change it and submit it again.
+      async function unlockPlan(button) {
+        button.disabled = true;
+        button.textContent = "Unlocking…";
+        try {
+          await api(`planning/reports/${button.dataset.report}/unlock`, { method: "POST", body: {} });
+          await load();
+          el("stewardshipMessage").textContent = "Plan unlocked. The companionship can edit and submit it again.";
+        } catch (error) {
+          button.disabled = false;
+          button.textContent = "Unlock plan";
+          el("stewardshipMessage").textContent = error.message;
+        }
+      }
+
+      el("stewardshipAreas").addEventListener("click", async (event) => {
+        const areaButton = event.target.closest("[data-area]");
+        if (areaButton) {
+          await load(Number(areaButton.dataset.area));
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+        const button = event.target.closest("[data-report]");
+        if (button) await unlockPlan(button);
+      });
+
+      // ==== The weekly mission focus (managers) =================================================================
+      // The dialog opens with the focus in the chosen language (or the one shown).
+      el("editFocus").onclick = () => {
+        const focus = currentData?.mission_focus || {};
+        const value = focus.translations?.[focus.language] || focus.focus || {};
+        el("focusLanguage").value = focus.language || "en";
+        el("focusText").value = value.text || "";
+        el("focusReference").value = value.reference || "";
+        el("focusUrl").value = value.url || "";
+        el("focusStatus").style.display = "none";
+        el("focusDialog").showModal();
+      };
+      el("focusCancel").onclick = () => el("focusDialog").close();
+      el("focusForm").onsubmit = async (event) => {
+        event.preventDefault();
+        try {
+          await api("mission-focus", {
+            method: "PUT",
+            body: {
+              language: el("focusLanguage").value,
+              text: el("focusText").value,
+              reference: el("focusReference").value,
+              url: el("focusUrl").value,
+            },
+          });
+          el("focusDialog").close();
+          await load();
+        } catch (error) {
+          el("focusStatus").textContent = error.message;
+          el("focusStatus").style.display = "block";
+        }
+      };
+
+      // ==== Movable cards ===========================================================================================
+      // Each person can reorder the cards (drag, keyboard or the Customize dialog) and hide some. The layout
+      // {order, hidden} is saved per signed-in person in this browser.
+      const cardRegistry = [
+        ["indicators", "Key indicators of conversion"],
+        ["assignment", "Your assignment"],
+        ["goals", "Additional weekly goals"],
+        ["plan", "Weekly action plan"],
+        ["events", "Upcoming events"],
+        ["announcements", "Announcements"],
+        ["weeks", "Recent reporting weeks"],
+        ["focus", "Mission focus"],
+        ["stewardship", "Stewardship planning"],
+      ];
+      const cardIds = cardRegistry.map(([id]) => id);
+      const cardLabels = Object.fromEntries(cardRegistry);
+      const cardGrid = el("overviewCards");
+      const cards = Object.fromEntries(cardIds.map((id) => [id, cardGrid.querySelector(`[data-card="${id}"]`)]));
+      const motion = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180; // animation time in ms
+
+      // Translated text when the language catalog has it, English otherwise.
+      const tr = (key, english, values = {}) => {
+        const i18n = window.MissionI18n;
+        const message = i18n?.state?.loaded ? i18n.t(key, values) : key;
+        return message !== key ? message : english.replace(/\{(\w+)\}/g, (match, name) => values[name] ?? match);
+      };
+      // English card name; Stewardship uses its heading from the server ("District planning", "Zone planning" or "Mission planning").
+      const cardSource = (id) => (id === "stewardship" && stewardshipLabel) || cardLabels[id];
+      const cardName = (id) => (window.MissionI18n?.state?.loaded ? MissionI18n.translate(cardSource(id)) : cardSource(id));
+
+      // ---- The saved layout ----
+      // The signed-in person (the token's "sub"), so two people on one computer each keep their own layout.
+      const cardUser = (() => {
+        try {
+          const raw = localStorage.getItem("mission_access_token").split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+          return String(JSON.parse(atob(raw + "=".repeat((4 - (raw.length % 4)) % 4))).sub || "");
+        } catch {
+          return "";
+        }
+      })();
+      const cardKey = "gfm_overview_cards_v2" + (cardUser ? ":" + cardUser : "");
+      const oldCardKey = "gfm_overview_cards_v1"; // the older layout, one per browser
+
+      // A saved layout made safe: only known cards, each once; a card missing from it (for example a new card)
+      // goes to its default place.
+      function normalizeLayout(value) {
+        const order = [];
+        const hidden = Array.isArray(value?.hidden) ? value.hidden : [];
+        for (const id of Array.isArray(value?.order) ? value.order : []) {
+          if (cardIds.includes(id) && !order.includes(id)) order.push(id);
+        }
+        cardIds.forEach((id, index) => order.includes(id) || order.splice(Math.min(index, order.length), 0, id));
+        return { order, hidden: cardIds.filter((id) => hidden.includes(id)) };
+      }
+      function writeLayout(layout) {
+        try {
+          localStorage.setItem(cardKey, JSON.stringify({ order: layout.order, hidden: layout.hidden }));
+        } catch {}
+      }
+      function readLayout() {
+        const read = (key) => {
+          try {
+            return JSON.parse(localStorage.getItem(key));
+          } catch {
+            return null;
+          }
+        };
+        let value = read(cardKey);
+        if (!value && (value = read(oldCardKey))) writeLayout(normalizeLayout(value)); // first visit: copy the old per-device layout
+        return normalizeLayout(value);
+      }
+      // The layout on screen now.
+      const currentLayout = () => ({
+        order: [...cardGrid.children].map((card) => card.dataset.card).filter((id) => cards[id]),
+        hidden: cardIds.filter((id) => cards[id].hidden),
+      });
+      const saveLayout = () => writeLayout(currentLayout());
+      function applyLayout(layout) {
+        const hidden = new Set(layout.hidden);
+        for (const id of layout.order) {
+          cardGrid.append(cards[id]);
+          cards[id].hidden = hidden.has(id);
+        }
+      }
+
+      // ---- Grips, and what a screen reader hears ----
+      const visibleCards = () => [...cardGrid.children].filter((card) => cards[card.dataset.card] && !card.hidden && !card.classList.contains("hidden"));
+      const cardPosition = (card) => {
+        const list = visibleCards();
+        return { card: cardName(card.dataset.card), position: list.indexOf(card) + 1, total: list.length };
+      };
+      const announce = (message) => (el("cardLive").textContent = message);
+      const gripIcon = '<svg viewBox="0 0 10 16" aria-hidden="true" focusable="false"><circle cx="2" cy="2" r="1.6"/><circle cx="8" cy="2" r="1.6"/><circle cx="2" cy="8" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="2" cy="14" r="1.6"/><circle cx="8" cy="14" r="1.6"/></svg>';
+      function labelGrips() {
+        for (const id of cardIds) {
+          const grip = cards[id].querySelector(".card-grip");
+          grip.setAttribute("aria-label", tr("overview.moveCard", "Move {card}", { card: cardName(id) }));
+          grip.setAttribute("aria-roledescription", tr("overview.draggableCard", "draggable card"));
+        }
+      }
+      for (const id of cardIds) {
+        const grip = document.createElement("button");
+        grip.type = "button";
+        grip.className = "card-grip";
+        grip.title = "Drag to move this card";
+        grip.setAttribute("aria-describedby", "cardGripHelp");
+        grip.innerHTML = gripIcon;
+        cards[id].querySelector(".panel-head,.section-head").prepend(grip);
+      }
+      labelGrips();
+      addEventListener("mission-i18n-change", labelGrips);
+      applyLayout(readLayout());
+
+      // ---- Moving a card with the keyboard ----
+      // Space/Enter picks up and drops, arrows move one visible position, Home/End, Escape cancels.
+      let lifted = null; // {card, grip, order before the move}
+      // Keep the moved card's grip on screen; a card taller than the window is shown from its top (where the grip is).
+      function revealCard(card, grip) {
+        grip.focus({ preventScroll: true }); // moving the card drops focus in some browsers
+        card.scrollIntoView({ block: card.offsetHeight > innerHeight - 24 ? "start" : "nearest", behavior: motion ? "smooth" : "auto" });
+      }
+      function dropLifted(cancel) {
+        if (!lifted) return;
+        const { card, grip, order } = lifted;
+        lifted = null;
+        card.classList.remove("card-lifted");
+        if (cancel) {
+          applyLayout({ order, hidden: currentLayout().hidden });
+          revealCard(card, grip);
+        }
+        saveLayout();
+        announce(
+          cancel
+            ? tr("overview.cardMoveCancelled", "Move cancelled. {card} is back at position {position} of {total}.", cardPosition(card))
+            : tr("overview.cardDropped", "{card} dropped at position {position} of {total}.", cardPosition(card)),
+        );
+      }
+      const KEY_STEPS = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1, Home: -Infinity, End: Infinity };
+      cardGrid.addEventListener("keydown", (event) => {
+        const grip = event.target.closest?.(".card-grip");
+        if (!grip || event.altKey || event.ctrlKey || event.metaKey) return;
+        const card = grip.closest("[data-card]");
+        const key = event.key;
+        if (key === " " || key === "Enter") {
+          event.preventDefault();
+          if (lifted?.card === card) return dropLifted(false);
+          dropLifted(false);
+          lifted = { card, grip, order: currentLayout().order };
+          card.classList.add("card-lifted");
+          return announce(
+            tr("overview.cardPickedUp", "{card} picked up, position {position} of {total}. Use the arrow keys to move it. Press Space or Enter to drop it, or Escape to cancel.", cardPosition(card)),
+          );
+        }
+        if (lifted?.card !== card) return;
+        if (key === "Escape") {
+          event.preventDefault();
+          return dropLifted(true);
+        }
+        if (!(key in KEY_STEPS)) return;
+        event.preventDefault();
+        const list = visibleCards();
+        const index = list.indexOf(card);
+        const next = Math.max(0, Math.min(list.length - 1, index + KEY_STEPS[key]));
+        if (next !== index) {
+          list[next][next < index ? "before" : "after"](card);
+          revealCard(card, grip);
+          saveLayout();
+        }
+        announce(tr("overview.cardPosition", "{card}, position {position} of {total}", cardPosition(card)));
+      });
+      cardGrid.addEventListener("focusout", () =>
+        setTimeout(() => lifted && document.activeElement !== lifted.grip && dropLifted(false)),
+      );
+
+      // ---- Dragging with mouse, pen or touch (SortableJS, portal/Sortable.min.js) ----
+      let dragOrder = null; // the order before the drag
+      let dragCancelled = false;
+      // Escape while dragging: end the drag now; onEnd puts the cards back.
+      addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || !dragOrder) return;
+        dragCancelled = true;
+        document.dispatchEvent(new (window.PointerEvent || MouseEvent)("pointerup", { bubbles: true }));
+        if (dragOrder) document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+      });
+      // SortableJS 1.15.6 auto-scroll throws when a drag's first moves are outside this frame
+      // (for example over the portal menu); ignore those moves while a drag is running.
+      addEventListener(
+        "pointermove",
+        (event) => window.Sortable?.active && !document.elementFromPoint(event.clientX, event.clientY) && event.stopImmediatePropagation(),
+        true,
+      );
+      if (window.Sortable) {
+        new Sortable(cardGrid, {
+          draggable: "[data-card]",
+          handle: ".card-grip",
+          filter: "a,button:not(.card-grip),select,input,textarea,label,summary,details,[contenteditable]",
+          preventOnFilter: false,
+          animation: motion,
+          easing: "cubic-bezier(.2,.8,.2,1)",
+          forceFallback: true,
+          fallbackOnBody: true,
+          fallbackTolerance: 4,
+          ghostClass: "card-drop-slot",
+          chosenClass: "card-chosen",
+          fallbackClass: "card-drag-float",
+          scroll: true,
+          scrollSensitivity: 90,
+          scrollSpeed: 14,
+          onStart: () => {
+            dropLifted(false);
+            dragOrder = currentLayout().order;
+            dragCancelled = false;
+            document.body.classList.add("card-dragging");
+          },
+          onEnd: (event) => {
+            document.body.classList.remove("card-dragging");
+            if (dragCancelled) applyLayout({ order: dragOrder, hidden: currentLayout().hidden });
+            saveLayout();
+            announce(
+              dragCancelled
+                ? tr("overview.cardMoveCancelled", "Move cancelled. {card} is back at position {position} of {total}.", cardPosition(event.item))
+                : tr("overview.cardDropped", "{card} dropped at position {position} of {total}.", cardPosition(event.item)),
+            );
+            dragOrder = null;
+            dragCancelled = false;
+          },
+        });
+        // The rows of the Customize dialog can be dragged too.
+        new Sortable(el("cardRows"), {
+          draggable: ".card-custom-row",
+          handle: ".row-grip",
+          filter: "input,button,label",
+          preventOnFilter: false,
+          animation: motion ? 150 : 0,
+          forceFallback: true,
+          fallbackTolerance: 3,
+          ghostClass: "row-drop-slot",
+          fallbackClass: "row-drag-float",
+          onEnd: updateRowButtons,
+        });
+      }
+
+      // ---- The "Customize overview cards" dialog: only the cards this person can see, in the current order ----
+      // ↑ is off on the first row, ↓ on the last.
+      function updateRowButtons() {
+        const rows = [...el("cardRows").querySelectorAll(".card-custom-row")];
+        rows.forEach((row, index) => {
+          row.querySelector("[data-up]").disabled = !index;
+          row.querySelector("[data-down]").disabled = index === rows.length - 1;
+        });
+      }
+      function customizeRow(id, hidden) {
+        const up = escape(tr("overview.moveCardUp", "Move {card} up", { card: cardName(id) }));
+        const down = escape(tr("overview.moveCardDown", "Move {card} down", { card: cardName(id) }));
+        return `<div class="card-custom-row" data-key="${id}"><span class="row-grip" aria-hidden="true">${gripIcon}</span><label><input type="checkbox"${hidden.has(id) ? "" : " checked"}> ${escape(cardSource(id))}</label><span class="row-moves"><button type="button" data-up aria-label="${up}">↑</button><button type="button" data-down aria-label="${down}">↓</button></span></div>`;
+      }
+      el("customizeCards").onclick = () => {
+        dropLifted(false);
+        const layout = currentLayout();
+        const hidden = new Set(layout.hidden);
+        el("cardRows").innerHTML = layout.order
+          .filter((id) => !cards[id].classList.contains("hidden"))
+          .map((id) => customizeRow(id, hidden))
+          .join("");
+        updateRowButtons();
+        el("cardDialog").returnValue = ""; // Escape closes without saving
+        el("cardDialog").showModal();
+      };
+      el("cardRows").onclick = (event) => {
+        const button = event.target.closest("[data-up],[data-down]");
+        const row = button?.closest(".card-custom-row");
+        const up = button?.hasAttribute("data-up");
+        const sibling = up ? row?.previousElementSibling : row?.nextElementSibling;
+        if (!sibling) return;
+        up ? sibling.before(row) : sibling.after(row);
+        updateRowButtons();
+        (button.disabled ? row.querySelector(up ? "[data-down]" : "[data-up]") : button).focus();
+      };
+      // Save is the dialog's only submit button, so Enter on a checkbox saves; Reset and Cancel only run when clicked.
+      el("cardDialog").querySelector(".dialog-actions").onclick = (event) => {
+        const button = event.target.closest("[data-close]");
+        if (button) el("cardDialog").close(button.dataset.close);
+      };
+      el("cardDialog").addEventListener("close", () => {
+        const action = el("cardDialog").returnValue;
+        if (action === "reset") {
+          applyLayout(normalizeLayout({}));
+          saveLayout();
+          announce(tr("overview.cardsReset", "Cards are back in their original order."));
+        } else if (action === "save") {
+          const rows = [...el("cardRows").querySelectorAll(".card-custom-row")];
+          const listed = rows.map((row) => row.dataset.key);
+          const queue = [...listed];
+          const layout = currentLayout();
+          const hidden = new Set(layout.hidden.filter((id) => !listed.includes(id)));
+          rows.forEach((row) => row.querySelector("input").checked || hidden.add(row.dataset.key));
+          // Listed cards take the dialog order; cards not listed (e.g. stewardship for other roles) keep their places.
+          applyLayout({ order: layout.order.map((id) => (listed.includes(id) ? queue.shift() : id)), hidden: [...hidden] });
+          saveLayout();
+        }
+      });
+
+      // ==== Start ===============================================================================================
+      load();
+    </script>
+  </body>
+</html>

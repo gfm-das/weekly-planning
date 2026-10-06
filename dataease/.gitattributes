@@ -1,0 +1,2 @@
+# gfm-dataease-backup runs backup/nightly.sh with bash: keep LF line endings even with core.autocrlf=true on Windows.
+*.sh text eol=lf

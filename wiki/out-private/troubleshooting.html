@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Troubleshooting — Weekly Planning Wiki</title>
+  <meta name="description" content="Common problems and first checks.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="troubleshooting" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li class="current"><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="troubleshooting">
+          <a class="tab is-active" href="troubleshooting.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=troubleshooting" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=troubleshooting" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Troubleshooting</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Troubleshooting</strong> collects common problems and first checks for portal users and analysts.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#first-checks-analysts">First checks (analysts)</a></li>
+<li><a href="#portal-users">Portal users</a></li>
+<li><a href="#dashboards-presentations">Dashboards / Presentations</a></li>
+<li><a href="#data-imports">Data / imports</a></li>
+<li><a href="#known-soft-spots-not-always-bugs">Known soft spots (not always “bugs”)</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="first-checks-analysts">First checks (analysts)</h2>
+<ol><li>Run <a href="health-check.html">health.ps1</a> — read which row failed.</li><li>Check that Docker Desktop is running; if the PC rebooted badly, run <code>start-gfm.ps1</code>.</li><li>Look at logs for the failing part: <code>docker logs --tail 50 &lt;container&gt;</code>.</li><li>If a change just went live, consider rolling back only that part (see ops start-here guide in the repo).</li></ol>
+<h2 id="portal-users">Portal users</h2>
+<table><thead><tr><th>Symptom</th><th>Likely cause / action</th></tr></thead><tbody><tr><td>Cannot sign in</td><td>Account inactive or wrong email — ask Data Analyst</td></tr><tr><td>Wrong menu items</td><td>Role/stewardship — see <a href="roles-and-permissions.html">Roles</a></td></tr><tr><td>Plan read-only</td><td>Submitted — ask DL/ZL/manager to unlock</td></tr><tr><td>No push reminders on phone</td><td>Need https or localhost</td></tr><tr><td>Presentations signed out</td><td>Slidev restart — wait for portal renew</td></tr><tr><td>Screen mirroring unavailable</td><td>Insecure http on LAN — present without mirror or use localhost/https</td></tr></tbody></table>
+<h2 id="dashboards-presentations">Dashboards / Presentations</h2>
+<table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Dashboards won’t open</td><td>Manager role? Health row for DataEase / sign-in boundary</td></tr><tr><td>Language copy stale</td><td>Re-run translate script after English dashboard edits</td></tr><tr><td>PDF missing</td><td>Use Download PDF / export on published deck</td></tr><tr><td>Chart interactions differ on two windows</td><td>Expected — see <a href="presentation-library.html">Presentation Library</a></td></tr></tbody></table>
+<h2 id="data-imports">Data / imports</h2>
+<table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Undo blocked</td><td>Later edits — use backup path if critical</td></tr><tr><td>Closed place reopened</td><td>Roster wins — see <a href="management.html">Places</a></td></tr><tr><td>People not carried</td><td>Carry-forward rules / upload week coverage</td></tr></tbody></table>
+<h2 id="known-soft-spots-not-always-bugs">Known soft spots (not always “bugs”)</h2>
+<ul><li>Manager Overview can feel slow on a phone (chart library).</li><li>All backups currently on one computer (no off-site copy yet).</li><li>Older unused Supabase stack may still appear in health until fully retired.</li></ul>
+<div class="needs-checking"><strong>Needs checking:</strong> Refresh this list against the latest <code>docs/handoff/11_KNOWN_ISSUES.md</code> after each major round.</div>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="health-check.html">Health check</a></li><li><a href="server-overview.html">Server overview</a></li><li><a href="signing-in.html">Signing in</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Troubleshooting</div>
+<div class="infobox-icon" aria-hidden="true">🔧</div>
+<table>
+<tr><th>First step</th><td>health.ps1</td></tr>
+<tr><th>Logs</th><td>docker logs --tail 50 …</td></tr>
+<tr><th>Data safety</th><td>Backup before risky fixes</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Troubleshooting</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "slidev-addon-gfm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mission charts for GFM presentations: <MissionChart> and <MissionKpiChart>, drawn with the vendored ECharts 6.0.0 and echarts-stat 1.2.0.",
+  "keywords": [
+    "slidev-addon",
+    "slidev"
+  ],
+  "engines": {
+    "slidev": ">=52.19.0 <53.0.0"
+  }
+}

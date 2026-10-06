@@ -1,0 +1,448 @@
+<!doctype html>
+<!--
+  The presentation library: the first page of Presentations (GET / on the manager address, inside the portal's frame).
+  It shows one card per deck the person may open. A card (or its title, with the keyboard) opens the deck; its menu
+  (the three dots) offers Download PDF, and for people who may change the deck also Edit, Manage access (managers
+  only), Duplicate, Download source, Rename and Delete. "+ New Presentation" makes a deck and opens it in the editor.
+  The server fills in the tab icon (manager-routes.mjs). All data comes from /api/presentations through
+  portal-bridge.js, which also renews the sign-in and loads the portal's translations (i18n.js).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Presentations</title>
+<link rel="icon" href="__FAVICON__" />
+<script src="/_manager/portal-bridge.js"></script>
+<style>
+:root { font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #17202a; background: #f5f7fa }
+* { box-sizing: border-box }
+body { margin: 0; background: #f5f7fa }
+button, input { font: inherit }
+
+/* The bar at the top */
+header { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); border-bottom: 1px solid #dde3ea; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px }
+h1 { font-size: 26px; margin: 0; color: #17394b }
+.sub { font-size: 13px; color: #6b7280; margin-top: 4px }
+.hdr-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
+.primary { border: 0; background: #087f8c; color: white; border-radius: 12px; padding: 11px 16px; font-weight: 700; cursor: pointer }
+.primary:active { transform: translateY(1px) }
+
+/* The cards */
+main { padding: 22px; max-width: 1200px; margin: 0 auto }
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; color: #6b7280; font-size: 14px }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px }
+.card { position: relative; background: white; border: 1px solid #dce3ea; border-radius: 16px; min-height: 128px; padding: 20px 58px 20px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.03); cursor: pointer; transition: .14s ease }
+.card:active { transform: scale(.995) }
+.card:hover { border-color: #aeb9c5; box-shadow: 0 5px 16px rgba(0,0,0,.06) }
+.card h2 { font-size: 19px; margin: 0 0 9px }
+.card h2 a { color: inherit; text-decoration: none; border-radius: 6px }
+.card h2 a:focus-visible { outline: 3px solid rgba(8,127,140,.4); outline-offset: 3px }
+.meta { font-size: 13px; color: #7b8794 }
+.hint { font-size: 12px; color: #9aa5b1; margin-top: 25px }
+.kebab { position: absolute; right: 12px; top: 12px; width: 42px; height: 42px; border: 0; border-radius: 11px; background: transparent; font-size: 24px; cursor: pointer; color: #4b5563 }
+.kebab:hover, .kebab:focus { background: #eef2f6; outline: none }
+
+/* A card's menu */
+.menu { position: fixed; z-index: 100; background: white; border: 1px solid #d5dce4; border-radius: 12px; min-width: 190px; padding: 6px; box-shadow: 0 14px 38px rgba(20,30,40,.18) }
+.menu button { display: block; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 8px; padding: 10px 12px; cursor: pointer }
+.menu button:hover { background: #f1f4f7 }
+.menu .danger { color: #b42318; border-top: 1px solid #e5e9ee; border-radius: 0; margin-top: 5px; padding-top: 12px }
+.menu-note { max-width: 240px; margin: 5px 0 0; padding: 10px 12px 6px; border-top: 1px solid #e5e9ee; font-size: 13px; line-height: 1.45; color: #64707d; cursor: default }
+.empty { background: white; border: 1px dashed #cbd5df; border-radius: 16px; padding: 45px; text-align: center; color: #6b7280 }
+.hidden { display: none !important }
+
+/* The dialogs (name, delete, access) */
+dialog { border: 0; border-radius: 16px; padding: 0; width: min(460px, calc(100vw - 30px)); box-shadow: 0 30px 80px rgba(0,0,0,.25) }
+dialog::backdrop { background: rgba(10,20,30,.45) }
+.modal { padding: 22px }
+.modal h3 { margin: 0 0 8px; font-size: 21px }
+.modal p { color: #64707d; line-height: 1.45 }
+.modal input { width: 100%; border: 1px solid #cfd7df; border-radius: 10px; padding: 11px 12px; margin: 8px 0 14px }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px }
+.btn { border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 650; cursor: pointer }
+.btn-secondary { background: #edf1f5; color: #243140 }
+.btn-danger { background: #b42318; color: white }
+.error { color: #b42318 }
+.loading { opacity: .65; pointer-events: none }
+
+/* Phones */
+@media (max-width: 620px) {
+  header { padding: 15px; align-items: stretch; flex-direction: column }
+  .primary { width: 100% }
+  main { padding: 15px }
+  .grid { grid-template-columns: 1fr }
+  .card { min-height: 118px; padding: 18px 56px 18px 18px }
+  .hint { margin-top: 20px }
+  .menu { min-width: 210px }
+  .modal-actions { flex-direction: column-reverse }
+  .modal-actions .btn { width: 100% }
+}
+
+/* Manage access */
+.access-dialog { width: min(660px, calc(100vw - 30px)); max-height: 90vh; overflow: auto }
+.access-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0 }
+.access-fields label { display: block; font-size: 14px; font-weight: 650; color: #17394b }
+.access-fields select { font: inherit; width: 100%; margin-top: 7px; border: 1px solid #cfd7df; border-radius: 10px; padding: 8px; min-height: 130px; background: white }
+.access-wide { grid-column: 1/-1 }
+.access-checks { display: flex; gap: 18px; flex-wrap: wrap; margin: 12px 0 }
+.access-checks label, .access-everyone { display: flex; align-items: center; gap: 8px; font-size: 14px }
+.modal .access-checks input, .modal .access-everyone input { width: auto; margin: 0; accent-color: #087f8c }
+.access-note { font-size: 13px; color: #64707d; line-height: 1.5 }
+.access-error { min-height: 20px; font-size: 14px; margin: 10px 0 }
+.access-dialog h4 { margin: 18px 0 8px; color: #17394b }
+.access-owner { font: inherit; width: 100%; border: 1px solid #cfd7df; border-radius: 10px; padding: 9px; background: white }
+@media (max-width: 620px) {
+  .access-fields { grid-template-columns: 1fr }
+  .access-wide { grid-column: auto }
+}
+
+/* "Creating presentation…" while a deck is made or renamed */
+.loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.28); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(2px) }
+.loading-overlay.hidden { display: none }
+.loading-box { background: white; border-radius: 16px; padding: 22px 28px; display: flex; align-items: center; gap: 14px; font-weight: 600; box-shadow: 0 16px 50px rgba(0,0,0,.18) }
+.spinner { width: 22px; height: 22px; border: 3px solid #ddd; border-top-color: #333; border-radius: 50%; animation: spin .8s linear infinite }
+@keyframes spin { to { transform: rotate(360deg) } }
+
+/* Dark mode (the portal's theme, set by portal-bridge.js) */
+html[data-theme="dark"] { color-scheme: dark }
+html[data-theme="dark"], html[data-theme="dark"] body { background: #101a21; color: #edf7f8 }
+html[data-theme="dark"] header, html[data-theme="dark"] .card, html[data-theme="dark"] dialog, html[data-theme="dark"] .menu, html[data-theme="dark"] .loading-box { background: #18262f; color: #edf7f8; border-color: #2d414b }
+html[data-theme="dark"] h1, html[data-theme="dark"] .card h2, html[data-theme="dark"] .modal h3, html[data-theme="dark"] .access-dialog h4 { color: #edf7f8 }
+html[data-theme="dark"] .sub, html[data-theme="dark"] .meta, html[data-theme="dark"] .hint { color: #a9bdc3 }
+html[data-theme="dark"] input, html[data-theme="dark"] select { background: #101a21 !important; color: #edf7f8 !important; border-color: #39515d !important }
+html[data-theme="dark"] .btn-secondary, html[data-theme="dark"] .menu button:hover { background: #263a44; color: #edf7f8 }
+html[data-theme="dark"] .empty { background: #18262f; border-color: #39515d; color: #a9bdc3 }
+html[data-theme="dark"] .toolbar, html[data-theme="dark"] .modal p, html[data-theme="dark"] .access-note { color: #a9bdc3 }
+html[data-theme="dark"] label, html[data-theme="dark"] .access-fields label, html[data-theme="dark"] .access-checks label, html[data-theme="dark"] .access-everyone { color: #edf7f8 }
+html[data-theme="dark"] .error, html[data-theme="dark"] .menu .danger { color: #ff9b91 }
+html[data-theme="dark"] .menu button { color: #edf7f8 }
+html[data-theme="dark"] .menu .danger, html[data-theme="dark"] .menu-note { border-top-color: #2d414b }
+html[data-theme="dark"] .menu-note { color: #a9bdc3 }
+html[data-theme="dark"] .kebab { color: #c9dade }
+html[data-theme="dark"] .kebab:hover, html[data-theme="dark"] .kebab:focus { background: #263a44 }
+html[data-theme="dark"] .spinner { border-color: #39515d; border-top-color: #edf7f8 }
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Presentations</h1><div id="userInfo" class="sub">Connecting to portal…</div></div>
+  <div class="hdr-actions"><a class="btn btn-secondary" id="v2Link" href="/library-v2" style="text-decoration:none">Presentations V2 (new)</a><button id="newBtn" class="primary hidden">+ New Presentation</button></div>
+</header>
+<main><div class="toolbar"><span id="status">Loading…</span></div><div id="grid" class="grid"></div></main>
+<div id="menu" class="menu hidden"></div>
+
+<dialog id="nameDialog"><div class="modal">
+  <h3 id="nameTitle">New presentation</h3>
+  <p id="nameText">Choose a name.</p>
+  <input id="nameInput" autocomplete="off" />
+  <div class="modal-actions"><button class="btn btn-secondary" id="nameCancel">Cancel</button><button class="btn primary" id="nameConfirm">Save</button></div>
+</div></dialog>
+
+<dialog id="deleteDialog"><div class="modal">
+  <h3>Delete presentation?</h3>
+  <p id="deleteText"></p>
+  <p><strong>This permanently removes the presentation and its files.</strong></p>
+  <div class="modal-actions"><button class="btn btn-secondary" id="deleteCancel">Cancel</button><button class="btn btn-danger" id="deleteConfirm">Delete Presentation</button></div>
+</div></dialog>
+
+<dialog id="accessDialog" class="access-dialog"><div class="modal">
+  <h3>Presentation access</h3>
+  <p id="accessTitle"></p>
+  <p class="access-note">APs, the President, and DAs can always view and edit. Other leaders can view assigned presentations.</p>
+  <h4 data-i18n="presentations.zone.ownedBy">Owned by</h4>
+  <select id="accessOwner" class="access-owner" aria-label="Owned by"></select>
+  <p class="access-note" data-i18n="presentations.zone.ownerNote">The Zone Leaders and Sister Training Leaders of the owning zone make, edit and present it. A mission presentation is changed only by APs, the President and Data Analysts.</p>
+  <h4 data-i18n="presentations.zone.alsoShared">Also shared with</h4>
+  <label class="access-everyone"><input type="checkbox" id="accessEveryone" /> All eligible leaders within their stewardship</label>
+  <h4>Target roles</h4>
+  <div class="access-checks">
+    <label><input type="checkbox" name="accessRole" value="ZL" /> Zone Leaders</label>
+    <label><input type="checkbox" name="accessRole" value="STL" /> Sister Training Leaders</label>
+  </div>
+  <div class="access-fields">
+    <label>Zones<select id="accessZones" multiple size="5" aria-label="Presentation zones"></select></label>
+    <label>Districts<select id="accessDistricts" multiple size="5" aria-label="Presentation districts"></select></label>
+    <label class="access-wide">Individual assignments<select id="accessUsers" multiple size="6" aria-label="Individual presentation assignments"></select></label>
+  </div>
+  <div class="access-note">Leave zones and districts empty to use the selected roles' stewardship. Individual assignments can grant a deck beyond that scope. Leaving every choice empty keeps this deck with APs, the President, and DAs.</div>
+  <div id="accessError" class="error access-error" role="status"></div>
+  <div class="modal-actions"><button class="btn btn-secondary" id="accessCancel">Cancel</button><button class="btn primary" id="accessSave">Save access</button></div>
+</div></dialog>
+
+<script>
+// What the page knows: the library answer (data), the deck a dialog is for, and which name dialog is open.
+const state = { data: null, selected: null, nameMode: null, accessDeck: null };
+const byId = id => document.getElementById(id);
+// Every call goes through portal-bridge.js, which renews the sign-in through the portal when it has ended.
+const api = (url, options = {}) => PresentationSession.api(url, options);
+
+// ---- opening ----
+const deckAddress = p => '/p/' + encodeURIComponent(p.slug) + '/';
+function openEditor(p) { location.href = '/studio/' + encodeURIComponent(p.slug); }
+function openDeck(p) { location.href = deckAddress(p); }
+
+// "Updated 5 min ago" and so on (portal-bridge.js loads i18n.js, which shows it in the person's language).
+function fmt(iso) {
+  const d = new Date(iso), s = Math.round((Date.now() - d) / 1000);
+  if (s < 60) return 'Updated just now';
+  if (s < 3600) return 'Updated {n} min ago'.replace('{n}', Math.floor(s / 60));
+  if (s < 86400) return 'Updated {n} hr ago'.replace('{n}', Math.floor(s / 3600));
+  return 'Updated {date}'.replace('{date}', () => d.toLocaleDateString());
+}
+
+// ---- a card's menu ----
+function closeMenu() { byId('menu').classList.add('hidden'); }
+
+function menuFor(p, anchor) {
+  const m = byId('menu');
+  m.innerHTML = '';
+  const add = (label, fn, cls = '') => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.className = cls;
+    b.onclick = e => { e.stopPropagation(); closeMenu(); fn(); };
+    m.appendChild(b);
+  };
+  // Everyone who may open the deck (the card itself opens the deck): its PDF page (Slidev's browser exporter, built into published decks).
+  add('Download PDF', () => { location.href = '/p/' + encodeURIComponent(p.slug) + '/export'; });
+  if (p.can_edit) {
+    add('Edit', () => openEditor(p));
+    // The menu is open on a deck the person may change: get its editor started now, so Edit finds it ready sooner.
+    api('/api/presentations/' + encodeURIComponent(p.slug) + '/prestart', { method: 'POST', body: '{}' }).catch(() => {});
+    if (state.data.can_manage) add('Manage access', () => showAccess(p));
+    add('Duplicate', () => duplicateDeck(p));
+    add('Download source (.zip)', () => location.href = '/api/presentations/' + p.slug + '/download');
+    if (p.protected) {
+      // A protected deck (opened by its name elsewhere) shows why instead of Rename and Delete.
+      const n = document.createElement('p');
+      n.className = 'menu-note';
+      n.setAttribute('role', 'note');
+      n.textContent = p.protected_reason;
+      m.appendChild(n);
+    } else {
+      add('Rename', () => showName('rename', p));
+      add('Delete', () => showDelete(p), 'danger');
+    }
+  }
+  // Beside the three dots, kept inside the window.
+  const r = anchor.getBoundingClientRect();
+  m.classList.remove('hidden');
+  m.style.left = Math.max(8, Math.min(window.innerWidth - m.offsetWidth - 8, r.right - m.offsetWidth)) + 'px';
+  m.style.top = Math.max(8, Math.min(window.innerHeight - m.offsetHeight - 8, r.bottom + 6)) + 'px';
+}
+
+// ---- the cards ----
+function render() {
+  const g = byId('grid'), s = byId('status');
+  g.innerHTML = '';
+  const list = state.data.presentations;
+  s.textContent = (list.length === 1 ? '{count} presentation' : '{count} presentations').replace('{count}', list.length);
+  if (!list.length) {
+    g.innerHTML = '<div class="empty">' + (state.data.can_create ? 'No presentations yet.' : 'No presentations are assigned to you yet.') + '</div>';
+    return;
+  }
+  for (const p of list) {
+    const c = document.createElement('article');
+    c.className = 'card';
+    c.innerHTML = '<h2><a></a></h2><div class="meta"></div><div class="hint">Tap or click to open</div><button class="kebab" aria-label="Presentation actions">⋮</button>';
+    // The title is a link, so the keyboard (Tab, Enter) opens the deck too.
+    const link = c.querySelector('h2 a');
+    link.textContent = p.title;
+    link.href = deckAddress(p);
+    c.querySelector('.meta').textContent = (p.zone_name ? p.zone_name + ' · ' : '') + fmt(p.updated_at);
+    c.onclick = e => { if (!e.target.closest('a')) openDeck(p); };
+    const k = c.querySelector('.kebab');
+    k.onclick = e => { e.stopPropagation(); menuFor(p, k); };
+    g.appendChild(c);
+  }
+}
+
+async function load() {
+  const d = await api('/api/presentations');
+  state.data = d;
+  const info = byId('userInfo');
+  info.textContent = d.can_manage ? 'Manage mission presentations' : d.can_create ? "Your zone's presentations" : 'Assigned presentations · Read only';
+  if (!d.can_manage && d.can_create) info.dataset.i18n = 'presentations.zone.library';
+  byId('newBtn').classList.toggle('hidden', !d.can_create);
+  render();
+}
+
+// ---- Manage access (managers) ----
+function fillAccessOptions(id, items, selected, valueOf, labelOf) {
+  const el = byId(id);
+  el.innerHTML = '';
+  const wanted = new Set((selected || []).map(String));
+  for (const item of items || []) {
+    const option = document.createElement('option');
+    option.value = String(valueOf(item));
+    option.textContent = labelOf(item);
+    option.selected = wanted.has(option.value);
+    el.appendChild(option);
+  }
+}
+
+function fillOwner(zones, owner) {
+  const el = byId('accessOwner');
+  el.innerHTML = '';
+  const mission = document.createElement('option');
+  mission.value = '';
+  mission.textContent = 'The mission (managers only)';
+  mission.dataset.i18n = 'presentations.zone.missionOwner';
+  el.appendChild(mission);
+  for (const z of zones || []) {
+    const option = document.createElement('option');
+    option.value = String(z.id);
+    option.textContent = z.name;
+    el.appendChild(option);
+  }
+  el.value = owner == null ? '' : String(owner);
+}
+
+async function showAccess(p) {
+  state.accessDeck = p;
+  byId('accessTitle').textContent = p.title;
+  byId('accessError').textContent = 'Loading access…';
+  byId('accessSave').disabled = true;
+  byId('accessDialog').showModal();
+  try {
+    const data = await api('/api/presentations/' + p.slug + '/access');
+    const a = data.access || {}, o = data.options || {};
+    fillOwner(o.zones, a.owner_zone_id);
+    byId('accessEveryone').checked = !!a.everyone;
+    for (const input of document.querySelectorAll('[name="accessRole"]')) input.checked = (a.roles || []).includes(input.value);
+    fillAccessOptions('accessZones', o.zones, a.zone_ids, x => x.id, x => x.name);
+    fillAccessOptions('accessDistricts', o.districts, a.district_ids, x => x.id, x => x.name);
+    fillAccessOptions('accessUsers', o.users, a.user_ids, x => x.user_id, x => x.name || x.display_name || x.user_id);
+    byId('accessError').textContent = '';
+    byId('accessSave').disabled = false;
+  } catch (e) {
+    byId('accessError').textContent = e.message;
+  }
+}
+
+function chosenValues(id) { return Array.from(byId(id).selectedOptions, x => x.value); }
+
+byId('accessCancel').onclick = () => byId('accessDialog').close();
+byId('accessSave').onclick = async () => {
+  const button = byId('accessSave');
+  button.disabled = true;
+  byId('accessError').textContent = '';
+  try {
+    const owner = byId('accessOwner').value;
+    const rule = {
+      owner_zone_id: owner ? Number(owner) : null,
+      everyone: byId('accessEveryone').checked,
+      roles: Array.from(document.querySelectorAll('[name="accessRole"]:checked'), x => x.value),
+      zone_ids: chosenValues('accessZones').map(Number),
+      district_ids: chosenValues('accessDistricts').map(Number),
+      user_ids: chosenValues('accessUsers'),
+    };
+    await api('/api/presentations/' + state.accessDeck.slug + '/access', { method: 'POST', body: JSON.stringify({ rule }) });
+    byId('accessDialog').close();
+    await load();
+  } catch (e) {
+    byId('accessError').textContent = e.message;
+  } finally {
+    button.disabled = false;
+  }
+};
+
+// ---- new, rename, copy, delete ----
+function showName(mode, p = null) {
+  if (mode === 'rename' && p?.protected) return alert(p.protected_reason);
+  state.nameMode = mode;
+  state.selected = p;
+  byId('nameTitle').textContent = mode === 'create' ? 'New presentation' : 'Rename presentation';
+  byId('nameText').textContent = mode === 'create' ? 'Choose a name for the deck.' : 'Enter the new presentation name.';
+  byId('nameInput').value = p?.title || '';
+  byId('nameDialog').showModal();
+  setTimeout(() => byId('nameInput').focus(), 50);
+}
+
+async function duplicateDeck(p) {
+  document.body.classList.add('loading');
+  try {
+    const d = await api('/api/presentations/' + p.slug + '/duplicate', { method: 'POST' });
+    await load();
+    if (d.build_error) alert('The copy was made, but it could not be published yet. Open it with Edit and use Publish to see why.');
+  } catch (e) {
+    alert(e.message);
+  } finally {
+    document.body.classList.remove('loading');
+  }
+}
+
+function showDelete(p) {
+  if (p.protected) return alert(p.protected_reason);
+  state.selected = p;
+  byId('deleteText').textContent = 'Delete “{name}”?'.replace('{name}', () => p.title);
+  byId('deleteDialog').showModal();
+}
+
+byId('newBtn').onclick = () => showName('create');
+byId('nameCancel').onclick = () => byId('nameDialog').close();
+byId('deleteCancel').onclick = () => byId('deleteDialog').close();
+
+byId('nameConfirm').onclick = async () => {
+  const title = byId('nameInput').value.trim();
+  if (!title) return;
+  const overlay = byId('loadingOverlay');
+  const message = byId('loadingMessage');
+  try {
+    byId('nameDialog').close();
+    message.textContent = state.nameMode === 'create' ? 'Creating presentation…' : 'Renaming presentation…';
+    overlay.classList.remove('hidden');
+    if (state.nameMode === 'create') {
+      const created = await api('/api/presentations', { method: 'POST', body: JSON.stringify({ title }) });
+      message.textContent = 'Opening the editor…';
+      location.href = '/studio/' + encodeURIComponent(created.slug);
+      return;
+    }
+    const renamed = await api('/api/presentations/' + state.selected.slug + '/rename', { method: 'POST', body: JSON.stringify({ title }) });
+    await load();
+    overlay.classList.add('hidden');
+    if (renamed.build_error) alert('The presentation was renamed, but it could not be published yet. Open it with Edit and use Publish to see why.');
+  } catch (e) {
+    overlay.classList.add('hidden');
+    alert(e.message);
+  }
+};
+
+byId('deleteConfirm').onclick = async () => {
+  try {
+    await api('/api/presentations/' + state.selected.slug, { method: 'DELETE' });
+    byId('deleteDialog').close();
+    await load();
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+// A click elsewhere, resizing or scrolling closes the menu.
+document.addEventListener('click', e => { if (!e.target.closest('#menu') && !e.target.closest('.kebab')) closeMenu(); });
+window.addEventListener('resize', closeMenu);
+window.addEventListener('scroll', closeMenu, true);
+
+// Start: make sure there is a sign-in, then show the decks.
+(async () => {
+  try {
+    await PresentationSession.ensure();
+    await load();
+  } catch (e) {
+    byId('userInfo').textContent = 'Not connected';
+    byId('status').className = 'error';
+    byId('status').textContent = e.message;
+  }
+})();
+</script>
+
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div id="loadingMessage">Creating presentation…</div>
+  </div>
+</div>
+
+</body>
+</html>

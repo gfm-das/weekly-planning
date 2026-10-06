@@ -1,0 +1,277 @@
+<!doctype html>
+<!-- form.html: the setup form of the Weekly Planning installer. Served by setup.mjs on this computer only. Plain page, no libraries. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up Weekly Planning</title>
+<style>
+  :root { --bg:#f4f7f8; --card:#ffffff; --ink:#173644; --muted:#587080; --line:#cfdbe0; --accent:#1d6f7d; --accent-ink:#ffffff; --bad:#b3261e; --good:#1b7a43; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#10202a; --card:#172c38; --ink:#e6f0f3; --muted:#9fb6c0; --line:#2c4553; --accent:#5cc2d1; --accent-ink:#0b1a22; --bad:#ff8a80; --good:#7bd69b; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:44rem; margin:0 auto; padding:1.5rem 1rem 4rem; }
+  h1 { font-size:1.8rem; margin:.5rem 0 .25rem; }
+  .lead { color:var(--muted); margin:0 0 1.5rem; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.1rem 1.25rem 1.25rem; margin:0 0 1.1rem; }
+  section > h2 { font-size:1.15rem; margin:0 0 .15rem; }
+  .step { display:inline-block; min-width:1.7rem; height:1.7rem; line-height:1.7rem; text-align:center; border-radius:50%; background:var(--accent); color:var(--accent-ink); font-size:.95rem; margin-right:.5rem; }
+  .help { color:var(--muted); font-size:.93rem; margin:.1rem 0 .8rem; }
+  label { display:block; font-weight:600; margin:.8rem 0 .2rem; }
+  label .opt { font-weight:400; color:var(--muted); }
+  input, select { width:100%; font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:.55rem .65rem; }
+  input:focus, select:focus, button:focus-visible { outline:3px solid var(--accent); outline-offset:1px; }
+  input[type=file] { padding:.4rem; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:0 1rem; }
+  .row.three { grid-template-columns:2fr 1fr; }
+  @media (max-width:560px) { .row, .row.three { grid-template-columns:1fr; } }
+  .code-box { display:flex; align-items:center; gap:.9rem; }
+  .code-box input { max-width:9rem; text-transform:uppercase; font-weight:700; letter-spacing:.06em; }
+  .icon { width:64px; height:64px; border-radius:14px; background:var(--accent); color:var(--accent-ink); display:grid; place-items:center; font-weight:800; font-size:1.05rem; overflow:hidden; flex:none; }
+  .icon img { width:100%; height:100%; object-fit:cover; }
+  details { border-top:1px solid var(--line); margin-top:.9rem; padding-top:.7rem; }
+  summary { cursor:pointer; font-weight:600; }
+  .error { color:var(--bad); font-size:.92rem; margin:.25rem 0 0; min-height:0; }
+  input.bad, select.bad { border-color:var(--bad); }
+  .show { display:flex; gap:.5rem; align-items:center; font-weight:400; margin:.4rem 0 0; font-size:.93rem; }
+  .show input { width:auto; }
+  button.go { width:100%; font:inherit; font-weight:700; font-size:1.1rem; padding:.85rem; border:0; border-radius:10px; background:var(--accent); color:var(--accent-ink); cursor:pointer; }
+  button.go[disabled] { opacity:.6; cursor:wait; }
+  .summary-error { background:color-mix(in srgb, var(--bad) 12%, transparent); border:1px solid var(--bad); border-radius:10px; padding:.7rem .9rem; margin:0 0 1rem; display:none; }
+  .done { text-align:center; padding:2rem 1rem; }
+  .done h2 { color:var(--good); font-size:1.5rem; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Set up Weekly Planning</h1>
+  <p class="lead">Answer these questions once. The installer then builds your mission's own copy: the portal, DA Management, Dashboards and Presentations, with nightly backups. Everything stays on this computer.</p>
+
+  <form id="form" novalidate autocomplete="off">
+    <div class="summary-error" id="summaryError" role="alert"></div>
+
+    <section>
+      <h2><span class="step">1</span>Your mission</h2>
+      <label for="missionName">Mission name</label>
+      <input id="missionName" placeholder="Germany Frankfurt Mission" maxlength="80" required>
+      <div class="error" data-for="missionName"></div>
+
+      <label for="missionCode">Short code <span class="opt">(made from the first letters; you may change it)</span></label>
+      <div class="code-box">
+        <input id="missionCode" maxlength="6" placeholder="GFM">
+        <div class="icon" id="iconPreview" aria-hidden="true">GFM</div>
+      </div>
+      <div class="error" data-for="missionCode"></div>
+
+      <label for="logo">Mission logo or icon <span class="opt">(optional, PNG, JPG or SVG, up to 300 KB)</span></label>
+      <input id="logo" type="file" accept="image/png,image/jpeg,image/svg+xml">
+      <p class="help">Without a picture, the short code is used as the icon.</p>
+      <div class="error" data-for="logo"></div>
+    </section>
+
+    <section>
+      <h2><span class="step">2</span>Default language</h2>
+      <p class="help">The language missionaries see until they or the APs choose another one.</p>
+      <label for="language">Language for missionaries</label>
+      <select id="language"></select>
+      <div class="error" data-for="language"></div>
+      <details id="requestBox">
+        <summary>My language is not in the list</summary>
+        <p class="help">We cannot add a language for you during setup, but we will note your request.</p>
+        <label for="requestLanguageName">Language you would like</label>
+        <input id="requestLanguageName" maxlength="60">
+        <div class="error" data-for="requestLanguageName"></div>
+        <label for="requestLanguageEmail">Your email <span class="opt">(optional, so we can tell you)</span></label>
+        <input id="requestLanguageEmail" type="email" maxlength="254">
+        <div class="error" data-for="requestLanguageEmail"></div>
+      </details>
+    </section>
+
+    <section>
+      <h2><span class="step">3</span>First Data Analyst account</h2>
+      <p class="help">This is the person who signs in first, opens DA Management and creates everyone else's account. The roster is loaded later, in DA Management.</p>
+      <label for="adminName">Display name</label>
+      <input id="adminName" maxlength="120" autocomplete="name">
+      <div class="error" data-for="adminName"></div>
+      <label for="adminEmail">Email <span class="opt">(you sign in with it)</span></label>
+      <input id="adminEmail" type="email" maxlength="254" autocomplete="email">
+      <div class="error" data-for="adminEmail"></div>
+      <div class="row">
+        <div>
+          <label for="adminPassword">Password <span class="opt">(at least 10 characters)</span></label>
+          <input id="adminPassword" type="password" autocomplete="new-password">
+          <div class="error" data-for="adminPassword"></div>
+        </div>
+        <div>
+          <label for="adminPasswordAgain">Password again</label>
+          <input id="adminPasswordAgain" type="password" autocomplete="new-password">
+          <div class="error" data-for="adminPasswordAgain"></div>
+        </div>
+      </div>
+      <label class="show"><input type="checkbox" id="showPassword"> Show the passwords</label>
+    </section>
+
+    <section>
+      <h2><span class="step">4</span>More settings <span class="opt" style="font-weight:400;color:var(--muted)">(optional: skip them if unsure)</span></h2>
+      <details>
+        <summary>Email for sign-in links and invitations</summary>
+        <p class="help">The mail server of your email service (for example Brevo). You can set this up later; until then people are given their password in person.</p>
+        <div class="row three">
+          <div><label for="emailHost">Mail server</label><input id="emailHost" placeholder="smtp-relay.brevo.com"><div class="error" data-for="emailHost"></div></div>
+          <div><label for="emailPort">Port</label><input id="emailPort" inputmode="numeric" placeholder="587"><div class="error" data-for="emailPort"></div></div>
+        </div>
+        <div class="row">
+          <div><label for="emailUser">User name</label><input id="emailUser" autocomplete="off"></div>
+          <div><label for="emailPassword">Password or key</label><input id="emailPassword" type="password" autocomplete="new-password"></div>
+        </div>
+        <div class="row">
+          <div><label for="emailSender">Emails come from</label><input id="emailSender" type="email" placeholder="office@example.org"><div class="error" data-for="emailSender"></div></div>
+          <div><label for="emailSenderName">Sender name <span class="opt">(optional)</span></label><input id="emailSenderName"></div>
+        </div>
+      </details>
+      <details>
+        <summary>Web address and time zone</summary>
+        <label for="publicDomain">Public web name <span class="opt">(for example example.org; leave empty for the office network only)</span></label>
+        <input id="publicDomain" placeholder="example.org" autocapitalize="none">
+        <div class="error" data-for="publicDomain"></div>
+        <label for="timeZone">Time zone</label>
+        <select id="timeZone"></select>
+        <div class="error" data-for="timeZone"></div>
+      </details>
+    </section>
+
+    <section>
+      <h2><span class="step">5</span>Cloudflare tunnel <span class="opt" style="font-weight:400;color:var(--muted)">(optional)</span></h2>
+      <p class="help">A tunnel makes the portal reachable from the internet at your public web name (step 4), through your own Cloudflare account. Create a tunnel in Cloudflare, copy its token (or the whole install command it shows) and paste it here. After the installation you add a few routes in Cloudflare: the installer prints the list. Skip this and the portal works on your local network only.</p>
+      <label for="cloudflareToken">Tunnel token</label>
+      <input id="cloudflareToken" type="password" autocomplete="off" placeholder="Paste your tunnel token here">
+      <div class="error" data-for="cloudflareToken"></div>
+    </section>
+
+    <button class="go" id="go" type="submit">Save my settings and install</button>
+  </form>
+
+  <section class="done" id="done" hidden>
+    <h2>Your settings are saved</h2>
+    <p id="doneText"></p>
+    <p class="help">You can close this page. Go back to the window where you started the installer.</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var codeTouched = false;
+  var logoData = '';
+
+  // The short code: first letter of each word, until the person types their own.
+  function shortCode(name) {
+    var letters = name.split(/[\s\-_/]+/).map(function (w) { var m = w.match(/[\p{L}\p{N}]/u); return m ? m[0] : ''; }).join('');
+    return letters.normalize('NFD').replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6);
+  }
+  function showIcon() {
+    var box = $('iconPreview');
+    box.textContent = '';
+    if (logoData) { var img = document.createElement('img'); img.src = logoData; img.alt = ''; box.appendChild(img); }
+    else box.textContent = ($('missionCode').value || '?').toUpperCase();
+  }
+  $('missionName').addEventListener('input', function () {
+    if (!codeTouched) $('missionCode').value = shortCode($('missionName').value);
+    showIcon();
+  });
+  $('missionCode').addEventListener('input', function () { codeTouched = $('missionCode').value !== ''; showIcon(); });
+
+  $('logo').addEventListener('change', function () {
+    var file = $('logo').files[0];
+    clearError('logo');
+    if (!file) { logoData = ''; showIcon(); return; }
+    if (file.size > 300 * 1024) { logoData = ''; $('logo').value = ''; setError('logo', 'The logo is too big (at most 300 KB).'); showIcon(); return; }
+    var reader = new FileReader();
+    reader.onload = function () { logoData = String(reader.result); showIcon(); };
+    reader.readAsDataURL(file);
+  });
+
+  $('showPassword').addEventListener('change', function () {
+    var type = $('showPassword').checked ? 'text' : 'password';
+    $('adminPassword').type = type; $('adminPasswordAgain').type = type;
+  });
+
+  function setError(field, text) {
+    var holder = document.querySelector('[data-for="' + field + '"]');
+    if (holder) holder.textContent = text;
+    if ($(field)) $(field).classList.add('bad');
+    var d = holder && holder.closest('details'); if (d) d.open = true;
+  }
+  function clearError(field) {
+    var holder = document.querySelector('[data-for="' + field + '"]');
+    if (holder) holder.textContent = '';
+    if ($(field)) $(field).classList.remove('bad');
+  }
+  function clearAll() {
+    document.querySelectorAll('[data-for]').forEach(function (h) { h.textContent = ''; });
+    document.querySelectorAll('.bad').forEach(function (e) { e.classList.remove('bad'); });
+    $('summaryError').style.display = 'none';
+  }
+
+  fetch('/api/options').then(function (r) { return r.json(); }).then(function (o) {
+    var lang = $('language');
+    o.languages.forEach(function (l) {
+      var opt = document.createElement('option');
+      opt.value = l.code;
+      opt.textContent = l.name === l.english ? l.english : l.name + ' (' + l.english + ')';
+      lang.appendChild(opt);
+    });
+    var guess = (navigator.language || 'en').slice(0, 2).toLowerCase();
+    lang.value = o.languages.some(function (l) { return l.code === guess; }) ? guess : 'en';
+    var zone = $('timeZone');
+    var mine = ''; try { mine = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+    o.timeZones.forEach(function (z) {
+      var opt = document.createElement('option'); opt.value = z; opt.textContent = z; zone.appendChild(opt);
+    });
+    zone.value = o.timeZones.indexOf(mine) >= 0 ? mine : 'UTC';
+  });
+
+  $('form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    clearAll();
+    var go = $('go');
+    var body = {
+      missionName: $('missionName').value, missionCode: $('missionCode').value, logo: logoData, language: $('language').value,
+      requestLanguageName: $('requestLanguageName').value, requestLanguageEmail: $('requestLanguageEmail').value,
+      admin: { name: $('adminName').value, email: $('adminEmail').value, password: $('adminPassword').value, passwordAgain: $('adminPasswordAgain').value },
+      email: { host: $('emailHost').value, port: $('emailPort').value, user: $('emailUser').value, password: $('emailPassword').value,
+               sender: $('emailSender').value, senderName: $('emailSenderName').value },
+      publicDomain: $('publicDomain').value, timeZone: $('timeZone').value, cloudflareToken: $('cloudflareToken').value
+    };
+    go.disabled = true; go.textContent = 'Saving...';
+    fetch('/api/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+      .then(function (res) {
+        if (res.body.ok) {
+          $('form').hidden = true; document.querySelector('.lead').hidden = true;
+          $('doneText').textContent = 'The installer now builds ' + body.missionName + '. This takes a few minutes: it is shown in the window where you started the installer.';
+          $('done').hidden = false; window.scrollTo(0, 0);
+          return;
+        }
+        var errors = res.body.errors || {};
+        var keys = Object.keys(errors);
+        if (!keys.length) { throw new Error(res.body.error || 'The installer did not accept the form.'); }
+        keys.forEach(function (k) { setError(k, errors[k]); });
+        var box = $('summaryError');
+        box.textContent = 'Please check the ' + keys.length + ' field' + (keys.length > 1 ? 's' : '') + ' marked in red.';
+        box.style.display = 'block';
+        var first = $(keys[0]); if (first) { first.scrollIntoView({ block: 'center' }); first.focus(); }
+        go.disabled = false; go.textContent = 'Save my settings and install';
+      })
+      .catch(function (err) {
+        var box = $('summaryError');
+        box.textContent = 'Could not reach the installer: ' + err.message + ' Is the installer window still open?';
+        box.style.display = 'block';
+        go.disabled = false; go.textContent = 'Save my settings and install';
+      });
+  });
+})();
+</script>
+</body>
+</html>

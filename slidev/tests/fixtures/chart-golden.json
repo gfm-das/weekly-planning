@@ -1,0 +1,946 @@
+{
+ "about": "Fingerprints of the chart options drawn by lib/charts.ts at commit 0465b09 (before chart-core), with one change made in round 3: KPI_NAMES.friends_found is \"New people being taught\" (7 key indicator charts without their own title show the new name). See make-chart-golden.mjs.",
+ "locale": "en-US",
+ "cases": [
+  {
+   "name": "001 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "6e39bdeb612e55786c04df75"
+  },
+  {
+   "name": "002 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends foun",
+   "digest": "acabf9786ea471937979c1c0"
+  },
+  {
+   "name": "003 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "422742374f07e0ef3c7c4c29"
+  },
+  {
+   "name": "004 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends fo",
+   "digest": "4d451d716c0d250827d9279d"
+  },
+  {
+   "name": "005 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "d7116d3c45b6e8cbf09b2e90"
+  },
+  {
+   "name": "006 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friend",
+   "digest": "a036406d1299a0af3b61f067"
+  },
+  {
+   "name": "007 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "dea3af3cf998a4868c4b9482"
+  },
+  {
+   "name": "008 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found",
+   "digest": "ca99d7eb792d97500d1da040"
+  },
+  {
+   "name": "009 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "a60427e51fe90101ca1c092d"
+  },
+  {
+   "name": "010 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends fou",
+   "digest": "6f9dd786e6516303d6fa9203"
+  },
+  {
+   "name": "011 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "9f07fbee0d9095c40ff15f94"
+  },
+  {
+   "name": "012 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends",
+   "digest": "18b8ce3300bffd8e0b9d5f10"
+  },
+  {
+   "name": "013 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "13f7496d4840ae0edd118716"
+  },
+  {
+   "name": "014 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends foun",
+   "digest": "5e742c5e0b21e119e5867928"
+  },
+  {
+   "name": "015 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "d7ebb068ea28661ed75d30d7"
+  },
+  {
+   "name": "016 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends fo",
+   "digest": "0d69b52ef740be69cf2ff2f9"
+  },
+  {
+   "name": "017 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "22d38dc42097222fa7494513"
+  },
+  {
+   "name": "018 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friend",
+   "digest": "1d289ece1ee822c74afa5ef4"
+  },
+  {
+   "name": "019 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "b71b387f1a0d992fbaf962e4"
+  },
+  {
+   "name": "020 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends f",
+   "digest": "1363315c4797d194db0a61ab"
+  },
+  {
+   "name": "021 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "ef86909f88445f2190fff6e0"
+  },
+  {
+   "name": "022 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends",
+   "digest": "afd999dca3a0f4e1ee706fe6"
+  },
+  {
+   "name": "023 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "401e0f75cb66e97a1718e3c5"
+  },
+  {
+   "name": "024 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Fri",
+   "digest": "350e043f806fd7c60ed4da71"
+  },
+  {
+   "name": "025 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":fa",
+   "digest": "39d5675a55efafd1f4aa26b8"
+  },
+  {
+   "name": "026 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":tr",
+   "digest": "5266e00d038d001eeb9607ee"
+  },
+  {
+   "name": "027 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":",
+   "digest": "92e1cb755f5195a0bfa76987"
+  },
+  {
+   "name": "028 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":",
+   "digest": "ff3231453c576b3c1bff1c4c"
+  },
+  {
+   "name": "029 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValu",
+   "digest": "590934534403578140db987a"
+  },
+  {
+   "name": "030 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValu",
+   "digest": "b2dd86f02c35565550acbd00"
+  },
+  {
+   "name": "031 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":fal",
+   "digest": "fbf7ce2f83a59b427aa57807"
+  },
+  {
+   "name": "032 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":tru",
+   "digest": "e02f7b19d4ab71c9b4d7fec9"
+  },
+  {
+   "name": "033 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":f",
+   "digest": "29305eb2baa3e3e68edfd39e"
+  },
+  {
+   "name": "034 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":t",
+   "digest": "b856cfc53ae301c22a6e0be1"
+  },
+  {
+   "name": "035 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValue",
+   "digest": "25d7984b4ed985717a9ef29a"
+  },
+  {
+   "name": "036 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValue",
+   "digest": "03afbe6a8955cbae9e977845"
+  },
+  {
+   "name": "037 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":fa",
+   "digest": "6c18d63448b7f220ee002c0c"
+  },
+  {
+   "name": "038 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":tr",
+   "digest": "1259dc5057177454f5f683b5"
+  },
+  {
+   "name": "039 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":",
+   "digest": "027fa5748810d185f33ce304"
+  },
+  {
+   "name": "040 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":",
+   "digest": "2e7e117e1273b2dbcd34033b"
+  },
+  {
+   "name": "041 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValu",
+   "digest": "5556d592e52889d3773ea40e"
+  },
+  {
+   "name": "042 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValu",
+   "digest": "fb21991793ac24b6aed13757"
+  },
+  {
+   "name": "043 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\"",
+   "digest": "bc92cbc8088b37cf4aa9e350"
+  },
+  {
+   "name": "044 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\"",
+   "digest": "24389c677a951f02d982d57e"
+  },
+  {
+   "name": "045 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValue",
+   "digest": "c799c6ddcf81aee120b19853"
+  },
+  {
+   "name": "046 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValue",
+   "digest": "1fbb3a12bd53595765740567"
+  },
+  {
+   "name": "047 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showV",
+   "digest": "78b0b4823d4c1127063c69ec"
+  },
+  {
+   "name": "048 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showV",
+   "digest": "ba407d328f56193bb28a1b97"
+  },
+  {
+   "name": "049 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "357dec64d319b25adf8eeffb"
+  },
+  {
+   "name": "050 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "10d209019e20ad3ac7f64bfe"
+  },
+  {
+   "name": "051 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "e0dc8ae905d26fc1c2098189"
+  },
+  {
+   "name": "052 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "1df646816de8c2b44226e91e"
+  },
+  {
+   "name": "053 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "c0ccacb0763af2e596abce02"
+  },
+  {
+   "name": "054 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree\":3",
+   "digest": "47181da415afd36820970eb1"
+  },
+  {
+   "name": "055 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "e014dbfbf944430327ac5cb6"
+  },
+  {
+   "name": "056 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "be7034855e91dd5fc46e5b0d"
+  },
+  {
+   "name": "057 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "44f60bd899747f50ee508964"
+  },
+  {
+   "name": "058 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "187ab684244cc2bb78fc073e"
+  },
+  {
+   "name": "059 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "428b7f2d617aca53f788a298"
+  },
+  {
+   "name": "060 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "219ef2ac51cf5c17e3cd01f1"
+  },
+  {
+   "name": "061 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "4704fcc89c28d91f12fff087"
+  },
+  {
+   "name": "062 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "2c2cfe7f9d1c6c3443d021a4"
+  },
+  {
+   "name": "063 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "a530e7d74ed20121730d9f57"
+  },
+  {
+   "name": "064 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "ef4985c95752de2a72e1485e"
+  },
+  {
+   "name": "065 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "31ccf724faf21bce0158fc30"
+  },
+  {
+   "name": "066 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree\":3",
+   "digest": "0cfba71087fdff9e118b40a9"
+  },
+  {
+   "name": "067 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "8f30653d01bbe2ce4f366481"
+  },
+  {
+   "name": "068 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "e0b9518decc7317d79d3a2b5"
+  },
+  {
+   "name": "069 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "d364c26c19c1599483726fb8"
+  },
+  {
+   "name": "070 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "7d8d830ec5d1cfd046ffd0a9"
+  },
+  {
+   "name": "071 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "4c34ba2a8e0d722524da0b2a"
+  },
+  {
+   "name": "072 chart {\"csv\":\"Week;A;B\\n1;12;\\n2;;9\\n3;14;11\\n4;19;\\n5;22;14\\n6;;16\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "42576aeb990de57a8d9fd7ec"
+  },
+  {
+   "name": "073 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "4823c6006eeb02ac7118fc2e"
+  },
+  {
+   "name": "074 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "00008d6f00b97ecc022e40da"
+  },
+  {
+   "name": "075 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "2e223810af2881ab2386e7a9"
+  },
+  {
+   "name": "076 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "37f46a8d1f486baa93a77daa"
+  },
+  {
+   "name": "077 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "0efe43a3d88c70e98c113952"
+  },
+  {
+   "name": "078 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree\":3}",
+   "digest": "ac6b16e8b55ab4b60b39f55d"
+  },
+  {
+   "name": "079 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "43bc71cd51a3ca9d73bff52f"
+  },
+  {
+   "name": "080 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "b77b1102cb243f4289a97125"
+  },
+  {
+   "name": "081 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "3eddd9a305eb34895c4dc98a"
+  },
+  {
+   "name": "082 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "1da903e3766ffcb934171304"
+  },
+  {
+   "name": "083 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "350985bd97da82ca425ab6ba"
+  },
+  {
+   "name": "084 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "68aa2e509125fa0fc099ebb6"
+  },
+  {
+   "name": "085 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "702d57655201b182f0dc0d6f"
+  },
+  {
+   "name": "086 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "db1c19156740a2b27d4bda91"
+  },
+  {
+   "name": "087 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "814a57a340fd4b3c4874b814"
+  },
+  {
+   "name": "088 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "0d3d9b2dfb35579110e97824"
+  },
+  {
+   "name": "089 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "6a7104487cee371ca58a95f0"
+  },
+  {
+   "name": "090 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree\":3}",
+   "digest": "13ff6ac5751bf57a4b8b5aea"
+  },
+  {
+   "name": "091 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "2ce8168534197da61218246a"
+  },
+  {
+   "name": "092 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "4304280ecdecdbb184a08a54"
+  },
+  {
+   "name": "093 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "3a276f7a3582c7d2dcd6b9c9"
+  },
+  {
+   "name": "094 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "6e98b60991150b7e90e0c1dd"
+  },
+  {
+   "name": "095 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "60b4f17a9066b383b37c4b91"
+  },
+  {
+   "name": "096 chart {\"csv\":\"Week,Rate; 1,0.5; 2,1.25; 3,2.125; 4,3.75\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "558545e7c95c55bc33cd5a64"
+  },
+  {
+   "name": "097 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "4b13c805e8228bba03029ff9"
+  },
+  {
+   "name": "098 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "a67e55547c9779f411388047"
+  },
+  {
+   "name": "099 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "2f92313b1e3c66f91fcf507b"
+  },
+  {
+   "name": "100 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "45fe4af1cb3181c11f69f77e"
+  },
+  {
+   "name": "101 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "4e77edf3a523d651f16401ff"
+  },
+  {
+   "name": "102 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree",
+   "digest": "023e4d48e1463260d7ec0808"
+  },
+  {
+   "name": "103 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "49ecb5e20f32f381a6e0b3ff"
+  },
+  {
+   "name": "104 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "9f093dd199c3431270f14b71"
+  },
+  {
+   "name": "105 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "f6bb36e8f1a2275eb38626e5"
+  },
+  {
+   "name": "106 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "4e064260ab722c2e6454e799"
+  },
+  {
+   "name": "107 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "33b33a8a51d7546bf58a5278"
+  },
+  {
+   "name": "108 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "5dcbb99f02afca836816fbfa"
+  },
+  {
+   "name": "109 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "7b20fb936274461e4371198f"
+  },
+  {
+   "name": "110 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "222e1047208f0bb8ce70987d"
+  },
+  {
+   "name": "111 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "b5241063be381ed22c1a551e"
+  },
+  {
+   "name": "112 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "8c5b8e5708aa01eaef334ba0"
+  },
+  {
+   "name": "113 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "8d764c570818f5cf6ab3f028"
+  },
+  {
+   "name": "114 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree",
+   "digest": "ecdb48f0938f7c84fb0cac10"
+  },
+  {
+   "name": "115 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "6c1d35a407dfb6645fc28ece"
+  },
+  {
+   "name": "116 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "f9fcf0399401c5b0a1022ade"
+  },
+  {
+   "name": "117 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "68fddeaca47d54a4476eeec8"
+  },
+  {
+   "name": "118 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "0f714ca5e6ce839a1bff9530"
+  },
+  {
+   "name": "119 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "89841c2c1fd8a712ff58c9e5"
+  },
+  {
+   "name": "120 chart {\"csv\":\"Month;People\\nJan;12000\\nFeb;15500\\nMar;14250\\nApr;19875\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "b562680f2108674ff29bd606"
+  },
+  {
+   "name": "121 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "3acc3bb75cdd19973571581c"
+  },
+  {
+   "name": "122 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"line\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "72515f336325618b60248718"
+  },
+  {
+   "name": "123 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "08e65a80112abd07dfb8e78a"
+  },
+  {
+   "name": "124 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"line\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "4d24fd3954f9012ddeae3804"
+  },
+  {
+   "name": "125 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "612d8d374624d991bca58c66"
+  },
+  {
+   "name": "126 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"line\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree\":3}",
+   "digest": "8d6833b0da030481f7370e8c"
+  },
+  {
+   "name": "127 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "c7fbe4cb58a512b13c221108"
+  },
+  {
+   "name": "128 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"bar\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "a8bd037dd62c480d9518b7b2"
+  },
+  {
+   "name": "129 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "f8ceffd011abc601926ea6fe"
+  },
+  {
+   "name": "130 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"bar\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "10cf6bb14495e368a4743885"
+  },
+  {
+   "name": "131 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "fc168fcffcc24c6c148fd00e"
+  },
+  {
+   "name": "132 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"bar\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "92652d6a822c6f2d1649ed85"
+  },
+  {
+   "name": "133 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "5be9fbbde6f540308f0b50be"
+  },
+  {
+   "name": "134 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"area\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "13fcab474a6c90061fbfea92"
+  },
+  {
+   "name": "135 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "120c7de2ecde7c83a5823af0"
+  },
+  {
+   "name": "136 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"area\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "98a380f112ee8c299e530457"
+  },
+  {
+   "name": "137 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "3e2b33276a2fbda0d62c91b8"
+  },
+  {
+   "name": "138 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"area\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\",\"degree\":3}",
+   "digest": "2839a1c555827bb09ac29b2e"
+  },
+  {
+   "name": "139 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":false}",
+   "digest": "e94986f13cb6568044e2b26d"
+  },
+  {
+   "name": "140 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"scatter\",\"trend\":\"none\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "c4df5a5b7bf6b4be4d697752"
+  },
+  {
+   "name": "141 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":false}",
+   "digest": "77e55746df8018873ebcee40"
+  },
+  {
+   "name": "142 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"scatter\",\"trend\":\"linear\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "5d9bb9112ab5092f31f5d975"
+  },
+  {
+   "name": "143 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":false}",
+   "digest": "cc16c3cc28f55effd246daca"
+  },
+  {
+   "name": "144 chart {\"csv\":\"Week,Change; 1,-3; 2,4; 3,-1; 4,6\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"showValues\":true,\"title\":\"Friends found\"}",
+   "digest": "f04ff40b4d5ac0c6ed34e559"
+  },
+  {
+   "name": "145 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "5a3f60c232eb188ba820b3a4"
+  },
+  {
+   "name": "146 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "dc5ed0bb47a3d1c5376848f0"
+  },
+  {
+   "name": "147 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "82a3b0a0d7210047be74f6b1"
+  },
+  {
+   "name": "148 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "cae8e2ca90ae4e4b64c9a7e7"
+  },
+  {
+   "name": "149 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "b900dcd260112186fc5af14e"
+  },
+  {
+   "name": "150 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "54162a2aba3577ba2fa4dd01"
+  },
+  {
+   "name": "151 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "bc9a60f5a66987bb270f27b3"
+  },
+  {
+   "name": "152 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "aedbc840a2b5e4d2eb343031"
+  },
+  {
+   "name": "153 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "d78f5b53d912a5ddaa103c83"
+  },
+  {
+   "name": "154 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "84142e8703074c78d1a8cf59"
+  },
+  {
+   "name": "155 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "116f84abda957773265c0c61"
+  },
+  {
+   "name": "156 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "192a8dfebd70d17d6e5f7c61"
+  },
+  {
+   "name": "157 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "68495236026c21900f670cd7"
+  },
+  {
+   "name": "158 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "cacba8a47fae8beefd288cb5"
+  },
+  {
+   "name": "159 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "f71e78bf6ba77f7794467fb0"
+  },
+  {
+   "name": "160 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "fcf872648aaf5dfc5dd6330e"
+  },
+  {
+   "name": "161 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "aaef4243c8610632fc94254b"
+  },
+  {
+   "name": "162 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "52cc3dd11fd45e52ddf18c11"
+  },
+  {
+   "name": "163 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "f922a1f8091ffa2e927280fc"
+  },
+  {
+   "name": "164 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "d40768ebb0f31d679fb2bb17"
+  },
+  {
+   "name": "165 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "33e7e927a957b4870220e290"
+  },
+  {
+   "name": "166 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "f11ae08d9a72d9d5a6ed59a9"
+  },
+  {
+   "name": "167 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "5d46070df85a502ae11d2295"
+  },
+  {
+   "name": "168 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "00e2a313215a7297f0613caa"
+  },
+  {
+   "name": "169 chart {\"csv\":\"Lessons,Baptismal dates; 20,2; 35,4; 28,3; 50,7; 44,5; 61,8\",\"type\":\"scatter\",\"trend\":\"none\",\"degree\":2,\"title\":\"Lessons\"}",
+   "digest": "c309f57b4e79458ac4f399b6"
+  },
+  {
+   "name": "170 chart {\"csv\":\"Lessons,Baptismal dates; 20,2; 35,4; 28,3; 50,7; 44,5; 61,8\",\"type\":\"scatter\",\"trend\":\"none\",\"degree\":3,\"title\":\"Lessons\"}",
+   "digest": "12a02a5a493cf0091361bddf"
+  },
+  {
+   "name": "171 chart {\"csv\":\"Lessons,Baptismal dates; 20,2; 35,4; 28,3; 50,7; 44,5; 61,8\",\"type\":\"scatter\",\"trend\":\"linear\",\"degree\":2,\"title\":\"Lessons\"}",
+   "digest": "ea7cd4c795a7fef11b1bb948"
+  },
+  {
+   "name": "172 chart {\"csv\":\"Lessons,Baptismal dates; 20,2; 35,4; 28,3; 50,7; 44,5; 61,8\",\"type\":\"scatter\",\"trend\":\"linear\",\"degree\":3,\"title\":\"Lessons\"}",
+   "digest": "540fa9950281ac29f94fd7ad"
+  },
+  {
+   "name": "173 chart {\"csv\":\"Lessons,Baptismal dates; 20,2; 35,4; 28,3; 50,7; 44,5; 61,8\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"degree\":2,\"title\":\"Lessons\"}",
+   "digest": "7ca9289d2321c1a3b5ee837e"
+  },
+  {
+   "name": "174 chart {\"csv\":\"Lessons,Baptismal dates; 20,2; 35,4; 28,3; 50,7; 44,5; 61,8\",\"type\":\"scatter\",\"trend\":\"polynomial\",\"degree\":3,\"title\":\"Lessons\"}",
+   "digest": "1dea8c438d08d9bac2fc23a8"
+  },
+  {
+   "name": "175 chart {\"csv\":\"Source,Friends; Members,18; Online,9; Finding,12; Service,5\",\"type\":\"pie\",\"showValues\":false}",
+   "digest": "328acbb492b9336d54ec9f70"
+  },
+  {
+   "name": "176 chart {\"csv\":\"Source,Friends; Members,18; Online,9; Finding,12; Service,5\",\"type\":\"pie\",\"showValues\":true,\"title\":\"Where friends were found\"}",
+   "digest": "167415ec736e37eab2e80a5f"
+  },
+  {
+   "name": "177 chart {\"csv\":\"Source,Friends; Members,18; Online,9; Finding,12; Service,5\",\"type\":\"donut\",\"showValues\":false}",
+   "digest": "e03a4104065e8a5a1be6c630"
+  },
+  {
+   "name": "178 chart {\"csv\":\"Source,Friends; Members,18; Online,9; Finding,12; Service,5\",\"type\":\"donut\",\"showValues\":true,\"title\":\"Where friends were found\"}",
+   "digest": "f582f3a03879834507bc75a1"
+  },
+  {
+   "name": "179 chart {\"csv\":\"Source,Friends; Members,0; Online,9; Finding,-2; Service,5\",\"type\":\"pie\",\"showValues\":false}",
+   "digest": "a655014b8abaab1879461f8b"
+  },
+  {
+   "name": "180 chart {\"csv\":\"Source,Friends; Members,0; Online,9; Finding,-2; Service,5\",\"type\":\"pie\",\"showValues\":true,\"title\":\"Where friends were found\"}",
+   "digest": "f60fe0f40e87b3d7f71d462d"
+  },
+  {
+   "name": "181 chart {\"csv\":\"Source,Friends; Members,0; Online,9; Finding,-2; Service,5\",\"type\":\"donut\",\"showValues\":false}",
+   "digest": "723c24d7025fe0b45ce18a46"
+  },
+  {
+   "name": "182 chart {\"csv\":\"Source,Friends; Members,0; Online,9; Finding,-2; Service,5\",\"type\":\"donut\",\"showValues\":true,\"title\":\"Where friends were found\"}",
+   "digest": "b59055e23ee32d0e039658c6"
+  },
+  {
+   "name": "183 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"pie\",\"showValues\":false}",
+   "digest": "d63eb1a952f15d01508b5b01"
+  },
+  {
+   "name": "184 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"pie\",\"showValues\":true,\"title\":\"Wher",
+   "digest": "c6b838c1c846f5ef5eac3933"
+  },
+  {
+   "name": "185 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"donut\",\"showValues\":false}",
+   "digest": "92168469763427170d3f63fb"
+  },
+  {
+   "name": "186 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"donut\",\"showValues\":true,\"title\":\"Wh",
+   "digest": "f0d5e51815b831ad6f50ebd8"
+  },
+  {
+   "name": "187 chart {\"csv\":\"Measure,Actual,Goal; This week,412,450\",\"type\":\"gauge\",\"title\":\"This week\"}",
+   "digest": "edb2eda150f0d2fb710fa350"
+  },
+  {
+   "name": "188 chart {\"csv\":\"Measure,Actual,Goal; This week,412,450\",\"type\":\"gauge\",\"max\":500,\"title\":\"This week\"}",
+   "digest": "45726f3abba77c3681134df3"
+  },
+  {
+   "name": "189 chart {\"csv\":\"Measure,Actual; This week,72\",\"type\":\"gauge\"}",
+   "digest": "475e5052805c904582d13d78"
+  },
+  {
+   "name": "190 chart {\"csv\":\"Measure,Actual; This week,72\",\"type\":\"gauge\",\"max\":500}",
+   "digest": "c554e415dbfdec72278474d6"
+  },
+  {
+   "name": "191 chart {\"csv\":\"Week,Actual,Goal; 1,300,400; 2,350,420; 3,,\",\"type\":\"gauge\"}",
+   "digest": "9766abaf157744a565166c99"
+  },
+  {
+   "name": "192 chart {\"csv\":\"Week,Actual,Goal; 1,300,400; 2,350,420; 3,,\",\"type\":\"gauge\",\"max\":500}",
+   "digest": "cd9cba1ed165ab7ff2f20a7f"
+  },
+  {
+   "name": "193 chart {\"csv\":\"Measure,Actual,Goal; This week,412,450\",\"type\":\"gauge\",\"seriesLabel\":\"Sacrament\"}",
+   "digest": "77b6903d3a38e8a7e49f733a"
+  },
+  {
+   "name": "194 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "b900dcd260112186fc5af14e"
+  },
+  {
+   "name": "195 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "331655f801115852a9f9fadf"
+  },
+  {
+   "name": "196 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "c1be2279a5320cf5aade462e"
+  },
+  {
+   "name": "197 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "c1be2279a5320cf5aade462e"
+  },
+  {
+   "name": "198 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "2e419dc5625d29d482d337b6"
+  },
+  {
+   "name": "199 chart {\"csv\":\"Week,Friends found\\nW1,20\\nW2,26\\nW3,27\\nW4,23\\nW5,18\\nW6,18\\nW7,23\\nW8,29\\nW9,32\\nW10,29\\nW11,24\\nW12,22\\nW13,25\\nW14,32\\nW15,36\\nW16,34\\nW17",
+   "digest": "b900dcd260112186fc5af14e"
+  },
+  {
+   "name": "200 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"Linear\"}",
+   "digest": "e47598f41446ccca9d0b85b8"
+  },
+  {
+   "name": "201 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\" polynomial \"}",
+   "digest": "1c8d41131ad871f04c4d5e74"
+  },
+  {
+   "name": "202 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"\"}",
+   "digest": "fbf7ce2f83a59b427aa57807"
+  },
+  {
+   "name": "203 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\",\"trend\":\"exponential-ish\"}",
+   "digest": "4ab2117d475b9d18a435e85c"
+  },
+  {
+   "name": "204 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"bar\"}",
+   "digest": "87b11416735af29dd554633e"
+  },
+  {
+   "name": "205 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"Bar\",\"trend\":\"linear\"}",
+   "digest": "87315627c8097ae6370f0941"
+  },
+  {
+   "name": "206 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\" area \",\"trend\":\"linear\"}",
+   "digest": "0ddbdbd448a822e13154a83e"
+  },
+  {
+   "name": "207 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"unknown\",\"trend\":\"linear\"}",
+   "digest": "422742374f07e0ef3c7c4c29"
+  },
+  {
+   "name": "208 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"\",\"trend\":\"linear\"}",
+   "digest": "ba7ebdbc141dc05c94c5635e"
+  },
+  {
+   "name": "209 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"trend\":\"linear\"}",
+   "digest": "ba7ebdbc141dc05c94c5635e"
+  },
+  {
+   "name": "210 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"linear\",\"colors\":[\"#1",
+   "digest": "19a7b8020911a7036b0fe9db"
+  },
+  {
+   "name": "211 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"linear\",\"colors\":\"#aa",
+   "digest": "0e5303dfbe9a2e6d6555869e"
+  },
+  {
+   "name": "212 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"linear\",\"colors\":[]}",
+   "digest": "2ea7e9be938c74f876d63940"
+  },
+  {
+   "name": "213 chart {\"csv\":\"Week\\tZone North\\tZone South\\nJul 6\\t4\\t3\\nJul 13\\t6\\t4\\nJul 20\\t5\\t6\\nJul 27\\t8\\t5\\nAug 3\\t9\\t7\",\"type\":\"line\",\"trend\":\"linear\",\"colors\":[\"te",
+   "digest": "70e71c5e4b8eb89fbdba140c"
+  },
+  {
+   "name": "214 chart {\"rows\":[\"Week, Friends found\",\"Aug 3, 12\",\"Aug 10, 15\",\"Aug 17, 14\"],\"type\":\"bar\",\"trend\":\"linear\"}",
+   "digest": "d51fc86dabdef6302952ee41"
+  },
+  {
+   "name": "215 chart {\"rows\":[\"Week\\tNorth\\tSouth\",\"1\\t4\\t5\",\"2, 6, 7\"],\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\"}",
+   "digest": "ae02c18e1049583631f1852b"
+  },
+  {
+   "name": "216 chart {\"data\":{\"labels\":[\"Q1\",\"Q2\",\"Q3\"],\"series\":{\"North\":[4,6,9],\"South\":[3,5,4]}},\"type\":\"bar\",\"trend\":\"polynomial\"}",
+   "digest": "6a50fcee0e8e02b0b8be5a66"
+  },
+  {
+   "name": "217 chart {\"data\":[{\"Week\":\"A\",\"X\":\"1,5\",\"Y\":2},{\"Week\":\"B\",\"X\":\"2,5\",\"Y\":3}],\"type\":\"line\"}",
+   "digest": "92a8592a663f54bd339bed3d"
+  },
+  {
+   "name": "218 chart {\"csv\":\"Week,Friends\\nAug 3,12,5\\nAug 10,15\",\"type\":\"line\"}",
+   "digest": "01b3266c068b6e791a0823fa"
+  },
+  {
+   "name": "219 chart {\"csv\":\"Week,Friends\\nAug 3,\\nAug 10,\",\"type\":\"bar\"}",
+   "digest": "79292689aab2b7d04d1da663"
+  },
+  {
+   "name": "220 chart {\"csv\":\"Week,Friends found; Aug 3,12; Aug 10,15; Aug 17,14; Aug 24,19; Aug 31,22\",\"type\":\"line\",\"trend\":\"linear\"}",
+   "digest": "cf0131433c72a00017a126f2"
+  },
+  {
+   "name": "221 kpi {\"kpi\":\"Friends found\",\"chart\":\"bar\",\"trend\":\"linear\",\"showGoal\":true,\"weeks\":16}",
+   "digest": "35af07de4f3c9c66c6aef777"
+  },
+  {
+   "name": "222 kpi {\"kpi\":\"Friends found\",\"chart\":\"bar\",\"trend\":\"linear\",\"showGoal\":false,\"weeks\":16,\"showValues\":true}",
+   "digest": "1c5989ab9da30a1d8448502f"
+  },
+  {
+   "name": "223 kpi {\"kpi\":\"Friends found\",\"chart\":\"bar\",\"trend\":\"polynomial\",\"showGoal\":true,\"weeks\":16,\"degree\":3}",
+   "digest": "a8998ffc974d30fed9be08da"
+  },
+  {
+   "name": "224 kpi {\"kpi\":\"Friends found\",\"chart\":\"bar\",\"trend\":\"polynomial\",\"showGoal\":false,\"weeks\":16,\"showValues\":true,\"degree\":3}",
+   "digest": "eecbdbfc0f761a2d88dcf9cd"
+  },
+  {
+   "name": "225 kpi {\"kpi\":\"Friends found\",\"chart\":\"bar\",\"trend\":\"none\",\"showGoal\":true,\"weeks\":26}",
+   "digest": "0f04a5cf9120d0fe6bd63a54"
+  },
+  {
+   "name": "226 kpi {\"kpi\":\"Friends found\",\"chart\":\"bar\",\"trend\":\"none\",\"showGoal\":false,\"weeks\":26,\"showValues\":true}",
+   "digest": "1bf7868559580b4e73088538"
+  },
+  {
+   "name": "227 kpi {\"kpi\":\"sacrament_attendance\",\"chart\":\"line\",\"trend\":\"linear\",\"showGoal\":true,\"weeks\":16}",
+   "digest": "9d7ec7f9f232f84a46e81194"
+  },
+  {
+   "name": "228 kpi {\"kpi\":\"sacrament_attendance\",\"chart\":\"line\",\"trend\":\"linear\",\"showGoal\":false,\"weeks\":16,\"showValues\":true}",
+   "digest": "fa594290aaaf6c0c296dca51"
+  },
+  {
+   "name": "229 kpi {\"kpi\":\"sacrament_attendance\",\"chart\":\"line\",\"trend\":\"polynomial\",\"showGoal\":true,\"weeks\":16,\"degree\":3}",
+   "digest": "a0c1211cfa0ea7ec5aeba6fd"
+  },
+  {
+   "name": "230 kpi {\"kpi\":\"sacrament_attendance\",\"chart\":\"line\",\"trend\":\"polynomial\",\"showGoal\":false,\"weeks\":16,\"showValues\":true,\"degree\":3}",
+   "digest": "2ca82768d784531b9be7f33e"
+  },
+  {
+   "name": "231 kpi {\"kpi\":\"sacrament_attendance\",\"chart\":\"line\",\"trend\":\"none\",\"showGoal\":true,\"weeks\":26}",
+   "digest": "051a334e25737a51c40af475"
+  },
+  {
+   "name": "232 kpi {\"kpi\":\"sacrament_attendance\",\"chart\":\"line\",\"trend\":\"none\",\"showGoal\":false,\"weeks\":26,\"showValues\":true}",
+   "digest": "a293262a88cabc92d1b546ce"
+  },
+  {
+   "name": "233 kpi {\"kpi\":\"baptismal_dates\",\"chart\":\"line\",\"trend\":\"none\",\"showGoal\":true,\"weeks\":12,\"title\":\"Mission total per week\"}",
+   "digest": "ab5b8f63b1bb33046e32f94f"
+  },
+  {
+   "name": "234 kpi {\"kpi\":\"constructor\",\"weeks\":1}",
+   "digest": "afcf65d258aa5ed1710618ad"
+  },
+  {
+   "name": "235 kpi {\"kpi\":\"Members at lessons\",\"chart\":\"bar\",\"trend\":\"none\",\"showGoal\":false,\"showValues\":true,\"weeks\":12}",
+   "digest": "c873dfeb0c01ec1c948a9715"
+  }
+ ]
+}

@@ -1,0 +1,4 @@
+# Passwords for the gfm-backup container (set-db-password.ps1). Never commit them.
+secrets/
+# Hooks switched on for this server (copied from hooks.d/*.example); local settings, not code.
+hooks.d/*.sh

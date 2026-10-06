@@ -1,0 +1,40 @@
+Create a GFM Slidev presentation (GFM AI PRESENTATION SPEC v1).
+
+Return ONLY the complete slides.md as plain text: no explanation, no code fence around it.
+
+Rules:
+- Slides are separated by a line with three dashes (---). The first block is the deck settings and the first slide settings: theme: default, title, layout, fonts: { provider: none, sans: Inter }, transition: fade.
+- Use the GFM layouts and components below. Do not import packages, add <script> blocks, use <iframe>, inline event handlers or external scripts. Do not invent components or settings.
+- A layout's heading is the setting "heading" (Slidev keeps "title" for itself). Parts of a slide are started with a line like ::right::.
+- Pictures only from files the deck already has (a path like /photo.jpg). Never invent mission numbers: use <GfmKpiGrid /> for key indicators or label example values as examples.
+- Write for a video call: few words, one idea per slide. Speaker notes go in an HTML comment at the end of a slide.
+
+Layouts: gfm-chart-insight [heading, kicker; parts ::right::]; gfm-comparison [heading, kicker, leftTitle, rightTitle; parts ::right::]; gfm-cover [kicker, footer]; gfm-freeform []; gfm-full-chart [heading, kicker, caption]; gfm-hero [kicker]; gfm-image-message [image, imageSide, kicker]; gfm-kpi-grid [heading, kicker, note]; gfm-section [kicker]; gfm-three-column [heading, kicker; parts ::middle:: ::right::]; gfm-two-chart [heading, kicker; parts ::right::]; default; center; cover; end; fact; quote; section; statement; two-cols; two-cols-header.
+
+Components:
+- GfmBigNumber (value, label, change, tone=good|warn|bad|neutral, note): One number shown large, with its label, the change from before and a short note.
+- GfmCallout (title, tone=info|good|warn|bad): A box that points something out - an invitation, a reminder or a warning - with a small heading.
+- GfmComparison (leftLabel, leftValue, rightLabel, rightValue, unit): Two numbers side by side with the change between them - this week and last week, or two zones.
+- GfmInsight (label): What the numbers mean, in one or two sentences, set apart with a teal bar.
+- GfmKpi (weeks, height, highlight): One key indicator of the mission as a tile - the last finished week against the goal set the week before, with a small line of the weeks.
+- GfmKpiGrid (metrics, weeks, columns, highlightFirst): Key indicators of the mission as a grid of tiles, live from the weekly plans.
+- GfmProgress (label, value, goal, unit): How far along a goal is: a bar with the numbers and the percentage.
+- GfmQuote (author): A quotation or scripture, large, with the source underneath.
+- MissionChart: <MissionChart chart-id="c1" preset="trend" :height="330" :rows="['Week, Value', 'Aug 3, 12', 'Aug 10, 15']" />
+  preset: trend, goal-vs-actual, ranked-bar, comparison, big-number, progress, cumulative-goal, funnel, conversion-funnel, leaderboard, small-multiples, or type-<name> (line, area, stacked-area, bar, stacked-bar, horizontal-bar, scatter, effect-scatter, pictorial-bar, pie, donut, gauge, radar, heatmap, matrix-heatmap, calendar-heatmap, treemap, sunburst, boxplot, candlestick, waterfall, range, errorbar, tree, graph, sankey, chord, theme-river, parallel, polar-bar).
+  Optional: :calc='[{"name":"Rate","formula":"[A] / [B]","format":"percent"}]' (functions: SUM, AVG, MIN, MAX, COUNT, IF, SAFE_DIVIDE, DIFFERENCE, PERCENT_CHANGE, CUMULATIVE_SUM, MOVING_AVG, LAG, ROUND, ABS), :shape='{"only":["A"],"sort":"desc","top":5}', :story='[{"label":"Step 1","shape":{"only":["A"]}},{"label":"All","shape":{}}]' for a chart that changes with each click.
+
+Example slide:
+---
+layout: gfm-chart-insight
+heading: New people being taught
+kicker: Trend
+---
+
+<MissionChart chart-id="t1" preset="trend" :height="330" :rows="['Week, Taught', 'Aug 3, 12', 'Aug 10, 15']" />
+
+::right::
+
+<GfmInsight>Teaching rose two weeks in a row.</GfmInsight>
+
+Now create the presentation about: 

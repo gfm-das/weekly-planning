@@ -1,0 +1,35 @@
+# portal-api and portal-reminders: the portal's server program (Flask) and its timed reminder jobs: two containers from one
+# image. Start or update: docker compose -p gfm-portal -f portal-api/compose.yml up -d --build
+# Settings come from portal-api/.env (portal-api/.env.example lists them). The Docker network gfm-network must exist.
+
+services:
+  portal-api:
+    build: .
+    container_name: portal-api
+    env_file: .env
+    volumes:
+      - portal-files:/data/uploads
+      # Wiki editing: the repository's wiki/ folder (pages, build.py, out/), so Save can write a page and rebuild out/.
+      # .env sets WIKI_DIR=/data/wiki and WIKI_GIT_COMMIT=0. The path is relative to this file (portal-api/).
+      - ../wiki:/data/wiki
+    networks: [gfm]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8091/health')"]
+      interval: 30s
+      timeout: 5s
+  portal-reminders:
+    build: .
+    container_name: portal-reminders
+    env_file: .env
+    command: [python, reminders.py]
+    volumes:
+      - portal-files:/data/uploads
+    networks: [gfm]
+    restart: unless-stopped
+volumes:
+  portal-files:
+networks:
+  gfm:
+    external: true
+    name: gfm-network

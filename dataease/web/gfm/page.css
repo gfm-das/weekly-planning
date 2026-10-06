@@ -1,0 +1,8 @@
+:root{--teal:#087f8c;--navy:#17394b;--page:#eef4f5;--panel:#fff;--muted:#556d7a;--line:#d9e5e8;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--navy);background:var(--page)}
+@media (prefers-color-scheme:dark){:root{--navy:#edf7f8;--page:#101a21;--panel:#18262f;--muted:#a9bdc3;--line:#2d414b;color-scheme:dark}}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--page);padding:20px;box-sizing:border-box}
+.box{max-width:480px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px 26px}
+h1{font-size:20px;line-height:1.3;margin:0 0 8px}p{color:var(--muted);line-height:1.5;margin:0 0 16px}
+a.button{display:inline-block;background:var(--teal);color:#fff;text-decoration:none;font-weight:650;border-radius:10px;padding:10px 16px;min-height:24px}
+/* Arabic and Persian (../../i18n/gfm-i18n.js marks the page): the whole box reads from right to left, button included. */
+html[data-gfm-rtl] .box{direction:rtl;text-align:right}

@@ -1,0 +1,4 @@
+# Shell scripts must keep Unix line endings on Windows too (Git Bash cannot run a script with CRLF).
+*.sh text eol=lf
+# psql meta-commands such as \set must not end in a carriage return.
+*.sql text eol=lf

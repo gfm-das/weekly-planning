@@ -1,0 +1,55 @@
+{
+  "_comment": "Dashboard 'Covenant path'. Built by dataease/seed-dashboards.mjs (see dataease/README.md). Counts only, from the count-only views of migration 025: no names, notes or person ids. pos = [x, y, width, height] on DataEase's 72-column grid; {column} in rich text shows a live value.",
+  "id": "1150003000000000000",
+  "name": "Covenant path",
+  "components": [
+    {
+      "id": "1150003000001000000", "type": "rich-text", "plain": true, "pos": [1, 1, 72, 4], "dataset": "people-latest",
+      "values": ["latest_week"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:22px;color:#17394b;\"><strong>Covenant path</strong></span></p><p style=\"margin:4px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">Last complete week: <strong>{latest_week}</strong>. People on the companionships' weekly plans, counted (no names). A 0 means no one has been added to the plans yet.</span></p>"
+    },
+    {
+      "id": "1150003000002000000", "type": "filters", "title": "Filters", "pos": [1, 5, 72, 6],
+      "conditions": [
+        { "field": "zone", "label": "Zone" },
+        { "field": "district", "label": "District" },
+        { "field": "week", "label": "Weeks", "kind": "weeks", "datasets": ["people-weeks"] }
+      ]
+    },
+    {
+      "id": "1150003000003000000", "type": "rich-text", "pos": [1, 11, 24, 8], "dataset": "people-latest",
+      "values": ["new_members", "new_members_at_church", "new_members_temple_recommend", "new_members_calling", "new_members_aaronic_priesthood", "new_members_melchizedek_priesthood"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#087f8c;\"><strong>New members</strong></span></p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{new_members}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">At church: {new_members_at_church} · Temple recommend: {new_members_temple_recommend} · Calling: {new_members_calling}</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">Aaronic Priesthood: {new_members_aaronic_priesthood} · Melchizedek Priesthood: {new_members_melchizedek_priesthood}</span></p>"
+    },
+    {
+      "id": "1150003000004000000", "type": "rich-text", "pos": [25, 11, 24, 8], "dataset": "people-latest",
+      "values": ["baptismal_date_friends", "baptismal_date_friends_next_4_weeks", "baptismal_date_friends_at_church"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#087f8c;\"><strong>Friends with a baptismal date</strong></span></p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{baptismal_date_friends}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">Date within 4 weeks: {baptismal_date_friends_next_4_weeks}</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">At church: {baptismal_date_friends_at_church}</span></p>"
+    },
+    {
+      "id": "1150003000005000000", "type": "rich-text", "pos": [49, 11, 24, 8], "dataset": "people-latest",
+      "values": ["high_potentials", "high_potentials_at_church"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#087f8c;\"><strong>High-potential friends</strong></span></p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{high_potentials}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">At church: {high_potentials_at_church}</span></p>"
+    },
+    {
+      "id": "1150003000006000000", "type": "line", "title": "New members, and those at church", "pos": [1, 19, 36, 14], "dataset": "people-weeks",
+      "note": "New members on the weekly plans each complete week, and how many of them were at church.",
+      "x": "week", "y": [{ "field": "new_members", "label": "New members" }, { "field": "new_members_at_church", "label": "At church" }]
+    },
+    {
+      "id": "1150003000007000000", "type": "line", "title": "New members: next steps", "pos": [37, 19, 36, 14], "dataset": "people-weeks",
+      "note": "Temple recommend, calling, Aaronic and Melchizedek Priesthood (the priesthood questions are 'Not applicable' for sisters and children).",
+      "x": "week", "y": [{ "field": "new_members_temple_recommend", "label": "Temple recommend" }, { "field": "new_members_calling", "label": "Calling" }, { "field": "new_members_aaronic_priesthood", "label": "Aaronic Priesthood" }, { "field": "new_members_melchizedek_priesthood", "label": "Melchizedek Priesthood" }]
+    },
+    {
+      "id": "1150003000008000000", "type": "line", "title": "Friends with a baptismal date", "pos": [1, 33, 36, 14], "dataset": "people-weeks",
+      "note": "All friends with a baptismal date on the weekly plans, those whose date is within 4 weeks, and those at church.",
+      "x": "week", "y": [{ "field": "baptismal_date_friends", "label": "With a baptismal date" }, { "field": "baptismal_date_friends_next_4_weeks", "label": "Date within 4 weeks" }, { "field": "baptismal_date_friends_at_church", "label": "At church" }]
+    },
+    {
+      "id": "1150003000009000000", "type": "line", "title": "High-potential friends", "pos": [37, 33, 36, 14], "dataset": "people-weeks",
+      "note": "High-potential friends on the weekly plans, and those at church.",
+      "x": "week", "y": [{ "field": "high_potentials", "label": "High-potential friends" }, { "field": "high_potentials_at_church", "label": "At church" }]
+    }
+  ]
+}

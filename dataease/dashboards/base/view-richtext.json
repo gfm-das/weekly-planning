@@ -1,0 +1,506 @@
+{
+ "id": null,
+ "title": null,
+ "sceneId": null,
+ "tableId": null,
+ "type": "rich-text",
+ "render": "custom",
+ "resultCount": 1000,
+ "resultMode": "all",
+ "extStack": [],
+ "extBubble": [],
+ "extLabel": [],
+ "extTooltip": [],
+ "customAttr": {
+  "basicStyle": {
+   "alpha": 100,
+   "tableBorderColor": "#E6E7E4",
+   "tableScrollBarColor": "#00000024",
+   "tableColumnMode": "adapt",
+   "tableColumnWidth": 100,
+   "tablePageMode": "page",
+   "tablePageSize": 20,
+   "gaugeStyle": "default",
+   "colorScheme": "default",
+   "colors": [
+    "#1E90FF",
+    "#90EE90",
+    "#00CED1",
+    "#E2BD84",
+    "#7A90E0",
+    "#3BA272",
+    "#2BE7FF",
+    "#0A8ADA",
+    "#FFD700"
+   ],
+   "mapVendor": "amap",
+   "gradient": true,
+   "lineWidth": 2,
+   "lineSymbol": "circle",
+   "lineSymbolSize": 4,
+   "lineSmooth": true,
+   "barDefault": true,
+   "barWidth": 40,
+   "barGap": 0.4,
+   "lineType": "solid",
+   "scatterSymbol": "circle",
+   "scatterSymbolSize": 8,
+   "radarShape": "polygon",
+   "mapStyle": "normal",
+   "areaBorderColor": "#303133",
+   "suspension": true,
+   "areaBaseColor": "#FFFFFF",
+   "mapSymbolOpacity": 0.7,
+   "mapSymbolStrokeWidth": 2,
+   "mapSymbol": "circle",
+   "mapSymbolSize": 20,
+   "radius": 100,
+   "innerRadius": 60
+  },
+  "misc": {
+   "pieInnerRadius": 0,
+   "pieOuterRadius": 80,
+   "radarShape": "polygon",
+   "radarSize": 80,
+   "gaugeMinType": "fix",
+   "gaugeMinField": {
+    "id": "",
+    "summary": ""
+   },
+   "gaugeMin": 0,
+   "gaugeMaxType": "fix",
+   "gaugeMaxField": {
+    "id": "",
+    "summary": ""
+   },
+   "gaugeMax": 100,
+   "gaugeStartAngle": 225,
+   "gaugeEndAngle": -45,
+   "nameFontSize": 18,
+   "valueFontSize": 18,
+   "nameValueSpace": 10,
+   "valueFontColor": "#5470c6",
+   "valueFontFamily": "Microsoft YaHei",
+   "valueFontIsBolder": false,
+   "valueFontIsItalic": false,
+   "valueLetterSpace": 0,
+   "valueFontShadow": false,
+   "showName": true,
+   "nameFontColor": "#000000",
+   "nameFontFamily": "Microsoft YaHei",
+   "nameFontIsBolder": false,
+   "nameFontIsItalic": false,
+   "nameLetterSpace": "0",
+   "nameFontShadow": false,
+   "treemapWidth": 80,
+   "treemapHeight": 80,
+   "liquidMax": 100,
+   "liquidMaxType": "fix",
+   "liquidMaxField": {
+    "id": "",
+    "summary": ""
+   },
+   "liquidSize": 80,
+   "liquidShape": "circle",
+   "hPosition": "center",
+   "vPosition": "center",
+   "mapPitch": 0,
+   "mapLineType": "arc",
+   "mapLineWidth": 1,
+   "mapLineAnimateDuration": 3,
+   "mapLineGradient": false,
+   "mapLineSourceColor": "#146C94",
+   "mapLineTargetColor": "#576CBC"
+  },
+  "label": {
+   "show": false,
+   "position": "top",
+   "color": "#000000",
+   "fontSize": 10,
+   "formatter": "",
+   "labelLine": {
+    "show": true
+   },
+   "labelFormatter": {
+    "type": "auto",
+    "unit": 1,
+    "suffix": "",
+    "decimalCount": 2,
+    "thousandSeparator": true
+   },
+   "reserveDecimalCount": 2,
+   "labelShadow": false,
+   "labelBgColor": "",
+   "labelShadowColor": "",
+   "quotaLabelFormatter": {
+    "type": "auto",
+    "unit": 1,
+    "suffix": "",
+    "decimalCount": 2,
+    "thousandSeparator": true
+   },
+   "showDimension": true,
+   "showQuota": false,
+   "showProportion": true,
+   "seriesLabelFormatter": []
+  },
+  "tooltip": {
+   "show": true,
+   "trigger": "item",
+   "confine": true,
+   "fontSize": 12,
+   "color": "#000000",
+   "tooltipFormatter": {
+    "type": "auto",
+    "unit": 1,
+    "suffix": "",
+    "decimalCount": 2,
+    "thousandSeparator": true
+   },
+   "backgroundColor": "#FFFFFF",
+   "seriesTooltipFormatter": []
+  },
+  "tableTotal": {
+   "row": {
+    "showGrandTotals": true,
+    "showSubTotals": true,
+    "reverseLayout": false,
+    "reverseSubLayout": false,
+    "label": "Total",
+    "subLabel": "Subtotal",
+    "subTotalsDimensions": [],
+    "calcTotals": {
+     "aggregation": "SUM"
+    },
+    "calcSubTotals": {
+     "aggregation": "SUM"
+    },
+    "totalSort": "none",
+    "totalSortField": ""
+   },
+   "col": {
+    "showGrandTotals": true,
+    "showSubTotals": true,
+    "reverseLayout": false,
+    "reverseSubLayout": false,
+    "label": "Total",
+    "subLabel": "Subtotal",
+    "subTotalsDimensions": [],
+    "calcTotals": {
+     "aggregation": "SUM"
+    },
+    "calcSubTotals": {
+     "aggregation": "SUM"
+    },
+    "totalSort": "none",
+    "totalSortField": ""
+   }
+  },
+  "tableHeader": {
+   "indexLabel": "No.",
+   "showIndex": false,
+   "tableHeaderAlign": "left",
+   "tableHeaderBgColor": "#1E90FF",
+   "tableHeaderFontColor": "#000000",
+   "tableTitleFontSize": 12,
+   "tableTitleHeight": 36
+  },
+  "tableCell": {
+   "tableFontColor": "#000000",
+   "tableItemAlign": "right",
+   "tableItemBgColor": "#FFFFFF",
+   "tableItemFontSize": 12,
+   "tableItemHeight": 36
+  },
+  "map": {
+   "id": "",
+   "level": "world"
+  },
+  "modifyName": "gradient"
+ },
+ "customAttrMobile": null,
+ "customStyle": {
+  "text": {
+   "show": true,
+   "fontSize": "18",
+   "hPosition": "left",
+   "vPosition": "top",
+   "isItalic": false,
+   "isBolder": true,
+   "remarkShow": false,
+   "remark": "",
+   "fontFamily": "Microsoft YaHei",
+   "letterSpace": "0",
+   "fontShadow": false,
+   "color": "#000000",
+   "remarkBackgroundColor": "#ffffff"
+  },
+  "legend": {
+   "show": true,
+   "hPosition": "center",
+   "vPosition": "bottom",
+   "orient": "horizontal",
+   "icon": "circle",
+   "color": "#000000",
+   "fontSize": 12
+  },
+  "xAxis": {
+   "show": true,
+   "position": "bottom",
+   "name": "",
+   "color": "#000000",
+   "fontSize": 12,
+   "axisLabel": {
+    "show": true,
+    "color": "#000000",
+    "fontSize": 12,
+    "rotate": 0,
+    "formatter": "{value}"
+   },
+   "axisLine": {
+    "show": true,
+    "lineStyle": {
+     "color": "#cccccc",
+     "width": 1,
+     "style": "solid"
+    }
+   },
+   "splitLine": {
+    "show": false,
+    "lineStyle": {
+     "color": "#CCCCCC",
+     "width": 1,
+     "style": "solid"
+    }
+   },
+   "axisValue": {
+    "auto": true,
+    "min": 10,
+    "max": 100,
+    "split": 10,
+    "splitCount": 10
+   },
+   "axisLabelFormatter": {
+    "type": "auto",
+    "unit": 1,
+    "suffix": "",
+    "decimalCount": 2,
+    "thousandSeparator": true
+   }
+  },
+  "yAxis": {
+   "show": true,
+   "position": "left",
+   "name": "",
+   "color": "#000000",
+   "fontSize": 12,
+   "axisLabel": {
+    "show": true,
+    "color": "#000000",
+    "fontSize": 12,
+    "rotate": 0,
+    "formatter": "{value}"
+   },
+   "axisLine": {
+    "show": false,
+    "lineStyle": {
+     "color": "#cccccc",
+     "width": 1,
+     "style": "solid"
+    }
+   },
+   "splitLine": {
+    "show": true,
+    "lineStyle": {
+     "color": "#CCCCCC",
+     "width": 1,
+     "style": "solid"
+    }
+   },
+   "axisValue": {
+    "auto": true,
+    "min": 10,
+    "max": 100,
+    "split": 10,
+    "splitCount": 10
+   },
+   "axisLabelFormatter": {
+    "type": "auto",
+    "unit": 1,
+    "suffix": "",
+    "decimalCount": 2,
+    "thousandSeparator": true
+   }
+  },
+  "yAxisExt": {
+   "show": true,
+   "position": "right",
+   "name": "",
+   "color": "#000000",
+   "fontSize": 12,
+   "axisLabel": {
+    "show": true,
+    "color": "#000000",
+    "fontSize": 12,
+    "rotate": 0,
+    "formatter": "{value}"
+   },
+   "axisLine": {
+    "show": false,
+    "lineStyle": {
+     "color": "#cccccc",
+     "width": 1,
+     "style": "solid"
+    }
+   },
+   "splitLine": {
+    "show": true,
+    "lineStyle": {
+     "color": "#CCCCCC",
+     "width": 1,
+     "style": "solid"
+    }
+   },
+   "axisValue": {
+    "auto": true,
+    "min": null,
+    "max": null,
+    "split": null,
+    "splitCount": null
+   },
+   "axisLabelFormatter": {
+    "type": "auto",
+    "unit": 1,
+    "suffix": "",
+    "decimalCount": 2,
+    "thousandSeparator": true
+   }
+  },
+  "misc": {
+   "showName": false,
+   "color": "#000000",
+   "fontSize": 12,
+   "axisColor": "#999",
+   "splitNumber": 5,
+   "axisLine": {
+    "show": true,
+    "lineStyle": {
+     "color": "#CCCCCC",
+     "width": 1,
+     "type": "solid"
+    }
+   },
+   "axisTick": {
+    "show": false,
+    "length": 5,
+    "lineStyle": {
+     "color": "#000000",
+     "width": 1,
+     "type": "solid"
+    }
+   },
+   "axisLabel": {
+    "show": false,
+    "rotate": 0,
+    "margin": 8,
+    "color": "#000000",
+    "fontSize": "12",
+    "formatter": "{value}"
+   },
+   "splitLine": {
+    "show": true,
+    "lineStyle": {
+     "color": "#CCCCCC",
+     "width": 1,
+     "type": "solid"
+    }
+   },
+   "splitArea": {
+    "show": true
+   }
+  }
+ },
+ "customStyleMobile": null,
+ "customFilter": {
+  "logic": null,
+  "items": null
+ },
+ "drillFields": [],
+ "senior": {
+  "functionCfg": {
+   "sliderShow": false,
+   "sliderRange": [
+    0,
+    10
+   ],
+   "sliderBg": "#FFFFFF",
+   "sliderFillBg": "#BCD6F1",
+   "sliderTextColor": "#999999",
+   "emptyDataStrategy": "breakLine",
+   "emptyDataFieldCtrl": []
+  },
+  "assistLineCfg": {
+   "enable": false,
+   "assistLine": []
+  },
+  "threshold": {
+   "enable": false,
+   "gaugeThreshold": "",
+   "labelThreshold": [],
+   "tableThreshold": [],
+   "textLabelThreshold": []
+  },
+  "scrollCfg": {
+   "open": false,
+   "row": 1,
+   "interval": 2000,
+   "step": 50
+  },
+  "areaMapping": {}
+ },
+ "createBy": null,
+ "createTime": null,
+ "updateTime": null,
+ "snapshot": null,
+ "stylePriority": "panel",
+ "chartType": "private",
+ "isPlugin": null,
+ "dataFrom": "calc",
+ "viewFields": [],
+ "refreshViewEnable": false,
+ "refreshUnit": "minute",
+ "refreshTime": 5,
+ "linkageActive": false,
+ "jumpActive": false,
+ "aggregate": null,
+ "flowMapStartName": [],
+ "flowMapEndName": [],
+ "calParams": [],
+ "extColor": [],
+ "sortPriority": [],
+ "privileges": null,
+ "isLeaf": null,
+ "pid": null,
+ "sql": null,
+ "drill": false,
+ "drillFilters": null,
+ "position": null,
+ "totalPage": 0,
+ "totalItems": 0,
+ "datasetMode": 0,
+ "datasourceType": null,
+ "chartExtRequest": null,
+ "isExcelExport": false,
+ "exportDatasetOriginData": false,
+ "cache": false,
+ "sourceTableId": null,
+ "downloadType": null,
+ "yaxisExt": [],
+ "xaxisExt": [],
+ "xaxis": [],
+ "yaxis": [],
+ "xAxis": [],
+ "xAxisExt": [],
+ "yAxis": [],
+ "yAxisExt": []
+}

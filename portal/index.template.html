@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<!--
+  The portal shell: the one page people open (port 8070). deploy.ps1 turns this file into index.html by writing the
+  public Supabase key into it.
+
+  What is on it: the sign-in card, the menu on the left, the header, and one big frame (#appFrame) where every page of
+  the portal opens (Overview, Weekly Planning, Call-ins, Calendar, …).
+
+  How it works, step by step:
+    1. startPortal() looks for a sign-in: an invitation or password-reset link, a token saved in this browser, or
+       nothing (then the sign-in card shows).
+    2. After signing in, showPortal() reads who the person is (current_user_context), waits for
+       portal-enhancements.js, lets it build the menu for that role (applyRoleNavigation) and opens the first page.
+    3. openPage(name) puts the page's address into the frame. portal-enhancements.js wraps it with a loading chip and
+       the extra sign-ins that Presentations and Dashboards need.
+
+  Files it loads: portal.css (the look), i18n.js (translation), portal-session.js (keeps the sign-in fresh),
+  portal-enhancements.js (the menu, header buttons, language, theme, reminders). See portal/README.md.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>Mission System</title>
+<link rel="icon" type="image/png" href="/favicon.png?v=3">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/portal.css?v=11">
+<script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+</head>
+
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h1 id="loginHeading">Mission System</h1>
+    <div class="login-subtitle" id="loginSubtitle">Germany Frankfurt Mission</div>
+
+    <div id="normalLogin">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" autocomplete="email" placeholder="Email">
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
+      <button id="loginButton">Sign In</button>
+    </div>
+
+    <!-- After an invitation or a password reset link: choose a password. -->
+    <div id="passwordSetup">
+      <label for="newPassword">Create Password</label>
+      <input id="newPassword" type="password" autocomplete="new-password" placeholder="New password">
+      <label for="confirmPassword">Confirm Password</label>
+      <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Confirm password">
+      <button id="setupPasswordButton">Create Password</button>
+    </div>
+
+    <div id="loginError"></div>
+  </div>
+</div>
+<script>
+  // Someone already signed in on this device: the sign-in card stays out of sight while the portal checks that
+  // sign-in, instead of showing for a moment on every visit. It comes back if the check fails (showLogin).
+  try {
+    if (localStorage.getItem("mission_access_token")) document.getElementById("loginScreen").classList.add("hidden");
+  } catch {}
+</script>
+
+<!-- Phones: the dark layer behind the open menu; a tap on it closes the menu. -->
+<div class="mobile-overlay" id="overlay"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-title">GFM | Mission System</div>
+      <div class="brand-subtitle">Germany Frankfurt Mission</div>
+    </div>
+
+    <!-- portal-enhancements.js adds Overview, Calendar, Announcements, Archetypal Health, Whiteboard and DA Management.
+         The entries not everyone has stay hidden until the person's roles are known (applyRoleNavigation). -->
+    <div class="nav-group-title">WORK</div>
+    <button class="nav-item" id="navPlanning" data-page="planning">Weekly Planning</button>
+    <button class="nav-item" id="navCallIns" data-page="callins" style="display: none">Call-ins</button>
+
+    <div class="nav-group-title" id="insightsGroupTitle" style="display: none">INSIGHTS</div>
+    <button class="nav-item" id="navInsights" data-page="insights" style="display: none">Dashboards</button>
+    <button class="nav-item" id="navPresentations" data-page="presentations" style="display: none">Presentations</button>
+
+    <div class="sidebar-bottom">
+      <div id="userSummary" class="user-summary"></div>
+      <button class="nav-item" id="logoutButton">Sign Out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu" id="menuButton" aria-label="Open navigation">☰</button>
+      <div class="page-title" id="pageTitle">Mission System</div>
+    </header>
+
+    <div class="frame-wrap">
+      <!-- display-capture: the Presentations presenter view mirrors the projector (screen capture).
+           The script below also allows both for the presentation address, port 8089 (round 8). -->
+      <iframe id="appFrame" allow="fullscreen; display-capture"></iframe>
+    </div>
+  </main>
+</div>
+
+
+<script src="portal-session.js?v=3"></script>
+<script>
+// ---- Addresses ------------------------------------------------------------------------------------------------------
+// Other services are reached on the same host name the portal was opened with (localhost on the server, the LAN
+// address elsewhere), each on its own port.
+// The public address (https://<domain> and www., through the Cloudflare tunnel): there Supabase
+// is reached through the portal's own address (nginx.conf passes the sign-in requests on), and the programs on other
+// ports have their own public names, each a Cloudflare tunnel route to its port (round 10,
+// docs/handoff/round10/public-everything.md): dashboards. (8088, portal-enhancements.js), presentations. (3030),
+// decks. (8089) and management. (8090, portal-enhancements.js).
+// The public domain comes from site-config.js (GFM_PUBLIC_DOMAIN); without one there is no public address.
+const PUBLIC_DOMAIN = (window.GFM_SITE && window.GFM_SITE.publicDomain || "").toLowerCase();
+const PORTAL_PUBLIC_SITE = !!PUBLIC_DOMAIN && (location.hostname.toLowerCase() === PUBLIC_DOMAIN || location.hostname.toLowerCase().endsWith("." + PUBLIC_DOMAIN));
+const PORTAL_HOST = location.protocol + "//" + location.hostname;
+const SUPABASE_URL = PORTAL_PUBLIC_SITE ? location.origin : PORTAL_HOST + ":18000";
+const SUPABASE_ANON_KEY = "__ANON_KEY__";
+// The mission's name comes from site-config.js (the deploy writes it from the database); without one the page keeps the Frankfurt name it always had.
+const MISSION_NAME = (window.GFM_SITE && window.GFM_SITE.missionName) || "Germany Frankfurt Mission";
+if (window.GFM_SITE && window.GFM_SITE.missionName) {
+  document.querySelector(".brand-title").textContent = "Mission System";
+}
+document.querySelector(".brand-subtitle").textContent = MISSION_NAME;
+document.getElementById("loginSubtitle").textContent = MISSION_NAME;
+
+// The shell's own pages. portal-enhancements.js adds the others (Overview, Calendar, Announcements, Dashboards …).
+const URLS = {
+  planning: "/planning.html",
+  callins: "/callins.html",
+  presentations: PORTAL_PUBLIC_SITE ? "https://presentations." + PUBLIC_DOMAIN : PORTAL_HOST + ":3030",
+};
+
+// Published presentations and their editor run on their own address (port 8089, round 8; on the public address the
+// name decks.), so a Zone Leader's slides never run with a manager's sign-in (slidev/manager/deck-origin.mjs). They
+// open inside the same frame.
+const PRESENTATION_DECKS = PORTAL_PUBLIC_SITE ? "https://decks." + PUBLIC_DOMAIN : PORTAL_HOST + ":8089";
+
+// The page names in the header (English; i18n.js translates them).
+const TITLES = {
+  login: "Login",
+  planning: "Weekly Planning",
+  callins: "Call-ins",
+  presentations: "Presentations",
+};
+
+
+// ---- The parts of the page ------------------------------------------------------------------------------------------
+const frame = document.getElementById("appFrame");
+const title = document.getElementById("pageTitle");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const loginScreen = document.getElementById("loginScreen");
+const loginHeading = document.getElementById("loginHeading");
+const loginSubtitle = document.getElementById("loginSubtitle");
+const loginError = document.getElementById("loginError");
+const normalLogin = document.getElementById("normalLogin");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginButton = document.getElementById("loginButton");
+const passwordSetup = document.getElementById("passwordSetup");
+const newPassword = document.getElementById("newPassword");
+const confirmPassword = document.getElementById("confirmPassword");
+const setupPasswordButton = document.getElementById("setupPasswordButton");
+
+// A deck opened from the Presentations library moves this frame to the presentation address (port 8089): allow
+// fullscreen and screen capture there too. 'src' is the page the frame was opened with. Set before the frame opens
+// anything, so every page it shows gets it.
+frame.setAttribute("allow", "fullscreen 'src' " + PRESENTATION_DECKS + "; display-capture 'src' " + PRESENTATION_DECKS);
+
+// Who is signed in (one row of current_user_context), and the pages they may open. portal-enhancements.js fills
+// allowedPages from the person's roles; until then only Weekly Planning.
+let currentUserContext = null;
+let allowedPages = new Set(["planning"]);
+
+
+// ---- The sign-in saved in this browser --------------------------------------------------------------------------------
+// localStorage keeps: mission_access_token (a short-lived Supabase token), mission_refresh_token (gets a new one;
+// portal-session.js does that), mission_user and mission_user_context.
+function storeMissionSession(accessToken, refreshToken, user = null) {
+  localStorage.setItem("mission_access_token", accessToken);
+  if (refreshToken) localStorage.setItem("mission_refresh_token", refreshToken);
+  if (user) localStorage.setItem("mission_user", JSON.stringify(user));
+}
+
+function clearMissionSession() {
+  localStorage.removeItem("mission_access_token");
+  localStorage.removeItem("mission_refresh_token");
+  localStorage.removeItem("mission_user");
+  localStorage.removeItem("mission_user_context");
+  currentUserContext = null;
+  allowedPages = new Set(["planning"]);
+}
+
+// A request to Supabase's sign-in service (port 18000, or the portal's own address on the public address) with the
+// public key.
+function authHeaders(accessToken, json = false) {
+  const headers = { "apikey": SUPABASE_ANON_KEY };
+  if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+  if (json) headers["Content-Type"] = "application/json";
+  return headers;
+}
+
+
+// ---- Invitation and password-reset links ------------------------------------------------------------------------------
+// Supabase sends people back here with access_token, refresh_token and type (invite, recovery, …) in the address.
+function parseAuthCallback() {
+  const hash = new URLSearchParams(location.hash.startsWith("#") ? location.hash.slice(1) : location.hash);
+  const query = new URLSearchParams(location.search);
+  const read = key => hash.get(key) || query.get(key);
+  const accessToken = read("access_token");
+  if (!accessToken) return null;
+  return { accessToken, refreshToken: read("refresh_token"), type: read("type") };
+}
+
+async function fetchCurrentAuthUser(accessToken) {
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, { method: "GET", headers: authHeaders(accessToken) });
+  return response.ok ? await response.json() : null;
+}
+
+// Returns true when the address held a sign-in link (then that link decides what shows next).
+async function handleAuthCallback() {
+  const callback = parseAuthCallback();
+  if (!callback) return false;
+  storeMissionSession(callback.accessToken, callback.refreshToken);
+  const authUser = await fetchCurrentAuthUser(callback.accessToken);
+  if (authUser) localStorage.setItem("mission_user", JSON.stringify(authUser));
+  if (callback.type === "invite" || callback.type === "recovery") {
+    showPasswordSetup();
+    return true;
+  }
+  history.replaceState(null, "", "#planning");
+  await showPortal();
+  return true;
+}
+
+function showPasswordSetup() {
+  loginScreen.classList.remove("hidden");
+  normalLogin.classList.add("hidden-form");
+  passwordSetup.classList.add("active");
+  loginHeading.textContent = "Create your password";
+  loginSubtitle.textContent = "Finish setting up your Mission System account.";
+  loginError.textContent = "";
+  frame.src = "";
+  title.textContent = "Account Setup";
+}
+
+// The problem with the new password, or "" when it is fine.
+function passwordProblem(password, confirmation) {
+  if (!password || !confirmation) return "Enter your new password twice.";
+  if (password.length < 8) return "Use at least 8 characters.";
+  if (password !== confirmation) return "The passwords do not match.";
+  return "";
+}
+
+async function completeInviteSetup() {
+  loginError.textContent = "";
+  const password = newPassword.value;
+  const problem = passwordProblem(password, confirmPassword.value);
+  if (problem) {
+    loginError.textContent = problem;
+    return;
+  }
+  const accessToken = localStorage.getItem("mission_access_token");
+  if (!accessToken) {
+    loginError.textContent = "The invitation session is missing or expired. Open a fresh invitation email.";
+    return;
+  }
+  setupPasswordButton.disabled = true;
+  setupPasswordButton.textContent = "Saving password...";
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: "PUT",
+      headers: authHeaders(accessToken, true),
+      body: JSON.stringify({ password }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.msg || data.message || data.error_description || "Unable to create password.");
+    }
+    if (data) localStorage.setItem("mission_user", JSON.stringify(data));
+    newPassword.value = "";
+    confirmPassword.value = "";
+    history.replaceState(null, "", "#planning");
+    showSignInForm();
+    await showPortal();
+  } catch (error) {
+    loginError.textContent = error.message || "Unable to create password.";
+  } finally {
+    setupPasswordButton.disabled = false;
+    setupPasswordButton.textContent = "Create Password";
+  }
+}
+
+
+// ---- Who is signed in -----------------------------------------------------------------------------------------------
+async function loadUserContext() {
+  const token = await ensureMissionSession();
+  if (!token) throw new Error("No login session.");
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/current_user_context?select=*`, {
+    method: "GET",
+    headers: authHeaders(token),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Could not load user context: ${text}`);
+  }
+  const rows = await response.json();
+  // One row per current leadership assignment: take the highest, in the order of portal-api/roles.py.
+  const rank = row => ["AP", "ZL", "STL", "DL", ""].indexOf(String(row?.leadership_role || "").toUpperCase());
+  const context = [...(rows || [])].sort((a, b) => rank(a) - rank(b))[0];
+  if (!context) throw new Error("No user profile was found for this login.");
+  localStorage.setItem("mission_user_context", JSON.stringify(context));
+  return context;
+}
+
+// Shows or hides a menu entry by its id.
+function setVisible(id, visible) {
+  const element = document.getElementById(id);
+  if (element) element.style.display = visible ? "" : "none";
+}
+
+// portal-enhancements.js replaces this with the full role rules of portal-api/roles.py (a main role plus the
+// additional roles Data Analyst and Office). Until it loads, only the page every missionary has is offered.
+function applyRoleNavigation(context) {
+  for (const id of ["navCallIns", "navInsights", "navPresentations", "insightsGroupTitle"]) setVisible(id, false);
+  allowedPages = new Set(["planning"]);
+  const userSummary = document.getElementById("userSummary");
+  if (userSummary) userSummary.textContent = context?.display_name || "";
+}
+
+// portal-enhancements.js (the script after this one) replaces applyRoleNavigation and openPage: the full role rules,
+// the language list and the reminder switches. It has run by DOMContentLoaded, so showPortal waits for that before
+// using them (a quick sign-in answer used to win the race on a slow connection and open Weekly Planning without
+// them). Signing in starts at once; only the last step waits. If the file cannot load, the shell's own versions work.
+const enhancementsReady = new Promise(resolve => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => resolve(), { once: true });
+  } else {
+    resolve();
+  }
+});
+
+async function showPortal() {
+  try {
+    const context = await loadUserContext();
+    await enhancementsReady;
+    currentUserContext = context;
+    applyRoleNavigation(context);
+    loginScreen.classList.add("hidden");
+    // The page in the address (#calendar …) when the person may open it, otherwise the Overview.
+    const requestedPage = location.hash.replace("#", "");
+    const pageToOpen = requestedPage && requestedPage !== "login" && allowedPages.has(requestedPage) ? requestedPage : "overview";
+    openPage(pageToOpen);
+  } catch (error) {
+    console.error(error);
+    if (!localStorage.getItem("mission_access_token")) clearMissionSession();
+    showLogin();
+    loginError.textContent = error.message || "Your session has expired. Please sign in again.";
+  }
+}
+
+
+// ---- The sign-in card -------------------------------------------------------------------------------------------------
+// The card with email and password (not the "create your password" form).
+function showSignInForm() {
+  normalLogin.classList.remove("hidden-form");
+  passwordSetup.classList.remove("active");
+  loginHeading.textContent = "Mission System";
+  loginSubtitle.textContent = MISSION_NAME;
+}
+
+function showLogin() {
+  loginScreen.classList.remove("hidden");
+  showSignInForm();
+  frame.src = "";
+  title.textContent = "Login";
+  history.replaceState(null, "", "#login");
+}
+
+async function login() {
+  loginError.textContent = "";
+  const email = loginEmail.value.trim();
+  const password = loginPassword.value;
+  if (!email || !password) {
+    loginError.textContent = "Enter your email and password.";
+    return;
+  }
+  loginButton.disabled = true;
+  loginButton.textContent = "Signing in...";
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: authHeaders(null, true),
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error_description || data.msg || "Invalid email or password.");
+    storeMissionSession(data.access_token, data.refresh_token, data.user);
+    loginPassword.value = "";
+    await showPortal();
+  } catch (error) {
+    loginError.textContent = error.message || "Unable to sign in.";
+  } finally {
+    loginButton.disabled = false;
+    loginButton.textContent = "Sign In";
+  }
+}
+
+loginButton.addEventListener("click", login);
+loginPassword.addEventListener("keydown", event => { if (event.key === "Enter") login(); });
+setupPasswordButton.addEventListener("click", completeInviteSetup);
+confirmPassword.addEventListener("keydown", event => { if (event.key === "Enter") completeInviteSetup(); });
+
+document.getElementById("logoutButton").addEventListener("click", () => {
+  clearMissionSession();
+  showLogin();
+});
+
+
+// ---- The menu and the frame -------------------------------------------------------------------------------------------
+function closeMenu() {
+  sidebar.classList.remove("open");
+  overlay.classList.remove("open");
+}
+
+// url with ?key=value (or &key=value) added.
+function withParameter(url, key, value) {
+  return url + (url.includes("?") ? "&" : "?") + key + "=" + encodeURIComponent(value);
+}
+
+// Opens a page in the frame. portal-enhancements.js wraps it (a loading chip, the Presentations and Dashboards
+// sign-ins, pages for each role).
+function openPage(name) {
+  if (name !== "login" && currentUserContext && !allowedPages.has(name)) name = "planning";
+  let url = URLS[name];
+  if (!url) {
+    console.warn(`No URL configured for page: ${name}`);
+    return;
+  }
+  // Weekly Planning and Call-ins start afresh every time they are opened.
+  if (["planning", "callins"].includes(name)) url = withParameter(url, "gfm_refresh", Date.now());
+  // These pages take the sign-in from the address (portal-client.js removes it at once). Not Presentations:
+  // portal-enhancements.js signs its frame in with a cookie, so no token goes into its address.
+  const token = localStorage.getItem("mission_access_token");
+  if (token && ["planning", "callins", "overview", "management"].includes(name)) url = withParameter(url, "portal_token", token);
+  frame.src = url;
+  title.textContent = TITLES[name] || "Mission System";
+  document.querySelectorAll(".nav-item[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === name);
+  });
+  history.replaceState(null, "", "#" + name);
+  closeMenu();
+}
+
+document.querySelectorAll(".nav-item[data-page]").forEach(button => {
+  button.addEventListener("click", () => openPage(button.dataset.page));
+});
+
+document.getElementById("menuButton").addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("open");
+});
+overlay.addEventListener("click", closeMenu);
+
+
+// ---- Start ----------------------------------------------------------------------------------------------------------------
+async function startPortal() {
+  if (await handleAuthCallback()) return;
+  if (localStorage.getItem("mission_access_token")) await showPortal();
+  else showLogin();
+}
+
+startPortal();
+</script>
+
+<script src="/portal-enhancements.js?v=28"></script>
+</body>
+</html>

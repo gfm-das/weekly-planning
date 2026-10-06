@@ -1,0 +1,84 @@
+{
+  "_comment": "Dashboard 'Key indicators'. Built by dataease/seed-dashboards.mjs (see dataease/README.md). pos = [x, y, width, height] on DataEase's 72-column grid. In rich text, {column} shows a live number of the chart's dataset. The id is fixed: the portal's Dashboards button opens it.",
+  "id": "1150001000000000000",
+  "name": "Key indicators",
+  "components": [
+    {
+      "id": "1150001000001000000", "type": "rich-text", "plain": true, "pos": [1, 1, 72, 4], "dataset": "kpi-latest",
+      "values": ["latest_week"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:22px;color:#17394b;\"><strong>Key indicators</strong></span></p><p style=\"margin:4px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">Last complete week: <strong>{latest_week}</strong> (Sunday). Results are measured against the goal the areas set the week before; the week still being reported is left out, so the lines do not dip.</span></p>"
+    },
+    {
+      "id": "1150001000002000000", "type": "filters", "title": "Filters", "pos": [1, 5, 72, 6],
+      "conditions": [
+        { "field": "zone", "label": "Zone" },
+        { "field": "district", "label": "District" },
+        { "field": "week", "label": "Weeks", "kind": "weeks" }
+      ]
+    },
+    {
+      "id": "1150001000003000000", "type": "rich-text", "pos": [1, 11, 12, 10], "dataset": "kpi-latest",
+      "values": ["npbt_actual", "npbt_goal", "npbt_pct", "npbt_week_before"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#087f8c;\"><strong>New People Being Taught</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">The key indicator</span></p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{npbt_actual}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">{npbt_pct}% of the goal ({npbt_goal})</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">Week before: {npbt_week_before}</span></p>"
+    },
+    {
+      "id": "1150001000004000000", "type": "rich-text", "pos": [13, 11, 12, 10], "dataset": "kpi-latest",
+      "values": ["bc_actual", "bc_goal", "bc_pct", "bc_week_before"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#17394b;\"><strong>Baptisms and confirmations</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\">&nbsp;</p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{bc_actual}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">{bc_pct}% of the goal ({bc_goal})</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">Week before: {bc_week_before}</span></p>"
+    },
+    {
+      "id": "1150001000005000000", "type": "rich-text", "pos": [25, 11, 12, 10], "dataset": "kpi-latest",
+      "values": ["bd_actual", "bd_goal", "bd_pct", "bd_week_before"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#17394b;\"><strong>Baptismal dates</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\">&nbsp;</p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{bd_actual}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">{bd_pct}% of the goal ({bd_goal})</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">Week before: {bd_week_before}</span></p>"
+    },
+    {
+      "id": "1150001000006000000", "type": "rich-text", "pos": [37, 11, 12, 10], "dataset": "kpi-latest",
+      "values": ["sa_actual", "sa_goal", "sa_pct", "sa_week_before"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#17394b;\"><strong>Sacrament attendance</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\">&nbsp;</p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{sa_actual}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">{sa_pct}% of the goal ({sa_goal})</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">Week before: {sa_week_before}</span></p>"
+    },
+    {
+      "id": "1150001000007000000", "type": "rich-text", "pos": [49, 11, 12, 10], "dataset": "kpi-latest",
+      "values": ["ml_actual", "ml_goal", "ml_pct", "ml_week_before"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#17394b;\"><strong>Members at lessons</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\">&nbsp;</p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{ml_actual}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">{ml_pct}% of the goal ({ml_goal})</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">Week before: {ml_week_before}</span></p>"
+    },
+    {
+      "id": "1150001000008000000", "type": "rich-text", "pos": [61, 11, 12, 10], "dataset": "kpi-latest",
+      "values": ["nms_actual", "nms_goal", "nms_pct", "nms_week_before"],
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:14px;color:#17394b;\"><strong>New member sacrament attendance</strong></span></p><p style=\"margin:6px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:28px;color:#17394b;\"><strong>{nms_actual}</strong></span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#3d5866;\">{nms_pct}% of the goal ({nms_goal})</span></p><p style=\"margin:2px 0 0 0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">Week before: {nms_week_before}</span></p>"
+    },
+    {
+      "id": "1150001000009000000", "type": "line", "title": "New People Being Taught", "pos": [1, 21, 36, 14], "dataset": "kpi-weeks",
+      "note": "Result each complete week, the goal the areas set the week before, and a straight trend line over the 26 weeks (least squares).",
+      "x": "week", "y": [{ "field": "npbt_actual", "label": "Result" }, { "field": "npbt_goal", "label": "Goal set the week before" }, { "field": "npbt_trend", "label": "Trend" }]
+    },
+    {
+      "id": "1150001000010000000", "type": "line", "title": "Baptisms and confirmations", "pos": [37, 21, 36, 14], "dataset": "kpi-weeks",
+      "note": "Result each complete week, the goal set the week before, and a straight trend line over the 26 weeks.",
+      "x": "week", "y": [{ "field": "bc_actual", "label": "Result" }, { "field": "bc_goal", "label": "Goal set the week before" }, { "field": "bc_trend", "label": "Trend" }]
+    },
+    {
+      "id": "1150001000011000000", "type": "line", "title": "Baptismal dates", "pos": [1, 35, 36, 14], "dataset": "kpi-weeks",
+      "note": "Result each complete week, the goal set the week before, and a straight trend line over the 26 weeks.",
+      "x": "week", "y": [{ "field": "bd_actual", "label": "Result" }, { "field": "bd_goal", "label": "Goal set the week before" }, { "field": "bd_trend", "label": "Trend" }]
+    },
+    {
+      "id": "1150001000012000000", "type": "line", "title": "Sacrament attendance", "pos": [37, 35, 36, 14], "dataset": "kpi-weeks",
+      "note": "Result each complete week, the goal set the week before, and a straight trend line over the 26 weeks.",
+      "x": "week", "y": [{ "field": "sa_actual", "label": "Result" }, { "field": "sa_goal", "label": "Goal set the week before" }, { "field": "sa_trend", "label": "Trend" }]
+    },
+    {
+      "id": "1150001000013000000", "type": "line", "title": "Members at lessons", "pos": [1, 49, 36, 14], "dataset": "kpi-weeks",
+      "note": "Result each complete week, the goal set the week before, and a straight trend line over the 26 weeks.",
+      "x": "week", "y": [{ "field": "ml_actual", "label": "Result" }, { "field": "ml_goal", "label": "Goal set the week before" }, { "field": "ml_trend", "label": "Trend" }]
+    },
+    {
+      "id": "1150001000014000000", "type": "line", "title": "New member sacrament attendance", "pos": [37, 49, 36, 14], "dataset": "kpi-weeks",
+      "note": "Result each complete week, the goal set the week before, and a straight trend line over the 26 weeks.",
+      "x": "week", "y": [{ "field": "nms_actual", "label": "Result" }, { "field": "nms_goal", "label": "Goal set the week before" }, { "field": "nms_trend", "label": "Trend" }]
+    },
+    {
+      "id": "1150001000015000000", "type": "rich-text", "plain": true, "pos": [1, 63, 72, 4], "dataset": "kpi-latest",
+      "html": "<p style=\"margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;\"><span style=\"font-size:13px;color:#556d7a;\">The trend is a straight line fitted to the last 26 complete weeks of the zones and districts chosen; a shorter week range shows its part of that line. To change a chart, choose All dashboards and Edit at the top right, then Edit (the change is for everyone). Numbers come read-only from the mission database, the same as Call-ins.</span></p>"
+    }
+  ]
+}

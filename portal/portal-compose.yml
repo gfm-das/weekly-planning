@@ -1,0 +1,21 @@
+# The portal: an nginx container that serves the pages in a Docker volume (portal/deploy.ps1 copies the files in).
+# Used together with local-override.yml (port 8070, nginx settings, the network):
+#   docker compose -p portal -f portal/portal-compose.yml -f portal/local-override.yml up -d --no-deps portal
+# The names are settings, so a new install can choose its own; the defaults are what this server uses. Set them in the
+# environment (or a .env file in this folder) BEFORE the first start, and keep them the same in portal/deploy.ps1's
+# environment (GFM_PORTAL_CONTAINER).
+#   GFM_PORTAL_CONTAINER  the container's name
+#   GFM_PORTAL_VOLUME     the Docker volume that holds the served pages (create it once: docker volume create <name>)
+services:
+  portal:
+    image: 'nginx:alpine'
+    restart: unless-stopped
+    container_name: ${GFM_PORTAL_CONTAINER:-portal-ydpgd5zwrjrvz5aa188sa60u}
+    volumes:
+      - 'portal-data:/usr/share/nginx/html'
+    expose:
+      - '80'
+volumes:
+  portal-data:
+    external: true
+    name: ${GFM_PORTAL_VOLUME:-ydpgd5zwrjrvz5aa188sa60u_portal-data}

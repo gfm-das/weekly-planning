@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Server overview — Weekly Planning Wiki</title>
+  <meta name="description" content="Docker stacks, ports, Cloudflare tunnel (generic).">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="server-overview" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li class="current"><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="server-overview">
+          <a class="tab is-active" href="server-overview.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=server-overview" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=server-overview" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Server overview</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Server overview</strong> is a generic map of Docker stacks, ports, and how public access can be wired with a Cloudflare tunnel — without secrets.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#docker-stacks-generic">Docker stacks (generic)</a></li>
+<li><a href="#cloudflare-tunnel-generic">Cloudflare tunnel (generic)</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>Everything runs in <strong>Docker Desktop</strong> on one office Windows computer. Browsers talk to published ports; containers talk on the shared Docker network <code>gfm-network</code>.</p>
+<h2 id="docker-stacks-generic">Docker stacks (generic)</h2>
+<table><thead><tr><th>What people see</th><th>Port</th><th>Compose project (typical)</th></tr></thead><tbody><tr><td>Portal (nginx pages)</td><td>8070</td><td><code>portal</code></td></tr><tr><td>portal-api / reminders</td><td>(internal 8091) via <code>/api/</code></td><td><code>gfm-portal</code></td></tr><tr><td>DA Management</td><td>8090</td><td><code>roster-importer</code></td></tr><tr><td>Presentations library / Studio</td><td>3030</td><td><code>slidev</code></td></tr><tr><td>Presentations decks</td><td>8089</td><td><code>slidev</code></td></tr><tr><td>Dashboards (DataEase)</td><td>8088</td><td><code>gfm-dataease</code></td></tr><tr><td>Beta database API / Studio</td><td>18000 / 13000</td><td><code>gfm-beta</code></td></tr><tr><td>PostgreSQL for DBeaver</td><td>54322</td><td><code>gfm-beta</code> (override)</td></tr><tr><td>Nightly backup</td><td>(none)</td><td><code>gfm-backup</code></td></tr></tbody></table>
+<p>The database is the <strong>one source of truth</strong>. Code lives in Git; the live checkout on the server must not be edited directly — use a worktree.</p>
+<h2 id="cloudflare-tunnel-generic">Cloudflare tunnel (generic)</h2>
+<p>Optional public hostnames can point through a Cloudflare tunnel to <code>localhost</code> ports, for example:</p>
+<table><thead><tr><th>Purpose</th><th>Local target</th></tr></thead><tbody><tr><td>Portal</td><td><code>http://localhost:8070</code></td></tr><tr><td>Dashboards</td><td><code>http://localhost:8088</code></td></tr><tr><td>Presentations</td><td><code>http://localhost:3030</code></td></tr><tr><td>Decks</td><td><code>http://localhost:8089</code></td></tr><tr><td>DA Management</td><td><code>http://localhost:8090</code></td></tr></tbody></table>
+<p>Do <strong>not</strong> put PostgreSQL (54322) on the tunnel. Never publish secrets, tunnel tokens, or <code>.env</code> values in docs or Git.</p>
+<div class="needs-checking"><strong>Needs checking:</strong> Exact public subdomain names for this mission belong in private ops notes; this page stays generic on purpose.</div>
+<h2 id="how-it-works">How it works</h2>
+<ul><li>Portal nginx serves static pages and proxies <code>/api/</code> to portal-api.</li><li>Dashboards sit behind a gate that checks a portal-signed cookie.</li><li>The <strong>updater</strong> is a Windows scheduled task (not a container) driven from DA Management → Updates.</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>Server operators. Public routes should require the same auth boundaries as the office setup.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>See <a href="troubleshooting.html">Troubleshooting</a> and <a href="health-check.html">Health check</a>.</p>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 6</td><td>Appsmith/Grafana/Superset retired</td></tr><tr><td>Round 10</td><td>Public-everything hostname patterns documented</td></tr><tr><td>Round 12</td><td>Appsmith removed from disk</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="health-check.html">Health check</a></li><li><a href="backups-and-restore.html">Backups and restore</a></li><li><a href="requirements.html">Requirements</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Server</div>
+<div class="infobox-icon" aria-hidden="true">🖥️</div>
+<table>
+<tr><th>Host</th><td>One Windows PC</td></tr>
+<tr><th>Network</th><td>Docker gfm-network</td></tr>
+<tr><th>Portal</th><td>8070</td></tr>
+<tr><th>Tunnel</th><td>Cloudflare (optional)</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Server overview</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

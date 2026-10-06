@@ -1,0 +1,233 @@
+[
+  {
+    "title": "Accounts",
+    "href": "accounts.html",
+    "summary": "Portal and staff accounts.",
+    "tags": [
+      "admin",
+      "accounts"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Backups and restore",
+    "href": "backups-and-restore.html",
+    "summary": "Nightly backups and restore caution.",
+    "tags": [
+      "admin",
+      "ops"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Dashboards",
+    "href": "dashboards.html",
+    "summary": "",
+    "tags": [],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "DBeaver access",
+    "href": "dbeaver-access.html",
+    "summary": "DBeaver connection settings for analysts.",
+    "tags": [
+      "admin",
+      "database"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Editing the wiki",
+    "href": "editing-the-wiki.html",
+    "summary": "In-browser wiki edit (analysts/managers), preview, history, deploy mounts.",
+    "tags": [
+      "admin",
+      "wiki",
+      "docs"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Glimpse",
+    "href": "glimpse.html",
+    "summary": "Mission Glimpse for managers on Overview.",
+    "tags": [
+      "users",
+      "managers",
+      "analytics"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Glossary",
+    "href": "glossary.html",
+    "summary": "Plain-English glossary.",
+    "tags": [
+      "glossary"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Health check",
+    "href": "health-check.html",
+    "summary": "How to run health.ps1.",
+    "tags": [
+      "admin",
+      "ops"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Main page",
+    "href": "index.html",
+    "summary": "Welcome to the Weekly Planning 3.0 documentation wiki.",
+    "tags": [
+      "main",
+      "welcome"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Installer overview",
+    "href": "installer-overview.html",
+    "summary": "Planned installer for other missions (stub).",
+    "tags": [
+      "install",
+      "planned"
+    ],
+    "stub": true,
+    "private": false
+  },
+  {
+    "title": "Management (Places)",
+    "href": "management.html",
+    "summary": "Places admin — close/open zones, districts, areas.",
+    "tags": [
+      "admin",
+      "places"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Overview",
+    "href": "overview.html",
+    "summary": "Portal Overview page for missionaries and managers.",
+    "tags": [
+      "users",
+      "overview"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Presentation Library",
+    "href": "presentation-library.html",
+    "summary": "Presentations library, Studio, presenter view, second screen.",
+    "tags": [
+      "users",
+      "presentations"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Requirements",
+    "href": "requirements.html",
+    "summary": "Hardware and software requirements.",
+    "tags": [
+      "install"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Roles and permissions",
+    "href": "roles-and-permissions.html",
+    "summary": "Roles, stewardship, and capabilities.",
+    "tags": [
+      "users",
+      "admin",
+      "security"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Roster",
+    "href": "roster.html",
+    "summary": "Roster Import in DA Management.",
+    "tags": [
+      "admin",
+      "roster"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Server overview",
+    "href": "server-overview.html",
+    "summary": "Docker stacks, ports, Cloudflare tunnel (generic).",
+    "tags": [
+      "admin",
+      "ops",
+      "infra"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Signing in",
+    "href": "signing-in.html",
+    "summary": "How to sign in to the portal.",
+    "tags": [
+      "users",
+      "auth"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
+    "title": "Troubleshooting",
+    "href": "troubleshooting.html",
+    "summary": "Common problems and first checks.",
+    "tags": [
+      "admin",
+      "users",
+      "ops"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Uploads / Importer",
+    "href": "uploads-importer.html",
+    "summary": "Data uploads, historical CSV, people upload, import history.",
+    "tags": [
+      "admin",
+      "uploads"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Weekly Planning",
+    "href": "weekly-planning.html",
+    "summary": "How to use Weekly Planning including new members, baptismal dates, high potentials, and key indicators.",
+    "tags": [
+      "users",
+      "planning"
+    ],
+    "stub": false,
+    "private": false
+  }
+]
