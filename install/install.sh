@@ -63,6 +63,8 @@ run_in_container() {  # run_in_container [docker options] -- node arguments
   shift
   # (an empty list is written ${x[@]+"${x[@]}"} because macOS's old bash stops on an empty one)
   local run=(docker)
+  # On Linux the container would write files as root, and this person could not read them: it runs as this person.
+  [ "$OS" = linux ] && opts+=(--user "$(id -u):$(id -g)")
   # In Git Bash a terminal for Docker needs winpty.
   if [ "$OS" = windows ] && command -v winpty >/dev/null 2>&1 && [[ " ${opts[*]-} " == *" -it "* ]]; then run=(winpty docker); fi
   "${run[@]}" run --rm ${opts[@]+"${opts[@]}"} -v "$INSTALL_HOST:/install" -v "$I18N_HOST:/i18n:ro" -w /install/app "$IMAGE" node setup.mjs "$@"

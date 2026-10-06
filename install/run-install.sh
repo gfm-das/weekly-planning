@@ -57,6 +57,8 @@ node_run() {   # node_run [docker options] -- script and arguments (the reposito
   local opts=()
   while [ "$1" != "--" ]; do opts+=("$1"); shift; done
   shift
+  # On Linux the container would write files as root, and this person could not read them: it runs as this person.
+  [ "$OS" = linux ] && opts+=(--user "$(id -u):$(id -g)")
   docker run --rm ${opts[@]+"${opts[@]}"} -v "$(host_path "$REPO"):/r" -v "$(host_path "$WORK"):/work" -w /r/install/app "$IMAGE" node "$@"
 }
 
