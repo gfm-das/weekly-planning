@@ -3216,5 +3216,7 @@
  "dam.newMembersAndFriendsWith": "yeni üyeler ve vaftiz tarihi olan arkadaşlar",
  "dam.alreadyStoredJoinedBlanksFilled": "zaten kayıtlı (birleştirildi, boşluklar dolduruldu)",
  "dam.theyAreSavedAsReal": "Gerçek kişi olarak kaydedilir, adlarının geçtiği haftalık planlara eklenir; hâlâ geçerli olanlar (vaftizden bir yıl sonrasına kadar yeni üyeler; geçen haftanın planındaki arkadaşlar ve yüksek potansiyelli arkadaşlar) bu haftanın planlarına yüklenir.",
- "dam.places": "Yerler"
+ "dam.places": "Yerler",
+ "shell.exitFullScreen": "Tam ekrandan çık",
+ "shell.fullScreenHelp": "Bu sayfayı tam ekranda göster"
 }

@@ -3216,5 +3216,7 @@
  "dam.newMembersAndFriendsWith": "neue Mitglieder und Freunde mit Taufdatum",
  "dam.alreadyStoredJoinedBlanksFilled": "bereits gespeichert (zusammengeführt, Lücken gefüllt)",
  "dam.theyAreSavedAsReal": "Sie werden als echte Personen gespeichert, in die Wochenpläne eingetragen, in denen sie genannt wurden, und wer noch relevant ist (neue Mitglieder bis ein Jahr nach der Taufe; Freunde und Freunde mit hohem Potenzial aus dem Plan der Vorwoche), kommt in die Pläne dieser Woche.",
- "dam.places": "Orte"
+ "dam.places": "Orte",
+ "shell.exitFullScreen": "Vollbild beenden",
+ "shell.fullScreenHelp": "Diese Seite auf dem ganzen Bildschirm zeigen"
 }

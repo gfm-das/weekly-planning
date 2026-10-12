@@ -3219,5 +3219,7 @@
  "dam.newMembersAndFriendsWith": "novos membros e amigos com data de batismo",
  "dam.alreadyStoredJoinedBlanksFilled": "já guardadas (unidas, lacunas preenchidas)",
  "dam.theyAreSavedAsReal": "São guardadas como pessoas reais, colocadas nos planos semanais em que foram citadas, e as que ainda são relevantes (novos membros até um ano após o batismo; amigos e amigos de alto potencial do plano da semana passada) são carregadas nos planos desta semana.",
- "dam.places": "Locais"
+ "dam.places": "Locais",
+ "shell.exitFullScreen": "Sair da tela cheia",
+ "shell.fullScreenHelp": "Mostrar esta página na tela inteira"
 }

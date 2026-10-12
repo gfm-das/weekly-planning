@@ -3219,5 +3219,7 @@
  "dam.newMembersAndFriendsWith": "nouveaux membres et amis avec une date de baptême",
  "dam.alreadyStoredJoinedBlanksFilled": "déjà enregistrées (fusionnées, vides remplis)",
  "dam.theyAreSavedAsReal": "Elles sont enregistrées comme personnes réelles, placées dans les plans hebdomadaires où elles étaient nommées, et celles qui sont encore pertinentes (nouveaux membres jusqu’à un an après le baptême ; amis et amis à fort potentiel du plan de la semaine dernière) sont chargées dans les plans de cette semaine.",
- "dam.places": "Lieux"
+ "dam.places": "Lieux",
+ "shell.exitFullScreen": "Quitter le plein écran",
+ "shell.fullScreenHelp": "Afficher cette page sur tout l’écran"
 }

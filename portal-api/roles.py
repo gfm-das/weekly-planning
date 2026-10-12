@@ -152,9 +152,20 @@ def can_edit_wiki(c):
     return is_manager(c)
 
 
+# The portal's interface languages (portal/i18n/catalogs.json; tests/test_roles.py checks the two stay the same).
+INTERFACE_LANGUAGES = ('en', 'de', 'es', 'fr', 'pt', 'uk', 'ru', 'it', 'tr', 'fa', 'ro', 'sv', 'da', 'ar')
+
+
+def can_choose_all_languages(c):
+    """Every interface language, not only the ones DA Management assigned: managers (AP, President, Data Analyst,
+    also as an additional role), the same people as can_edit_wiki. app.py language_choices uses it."""
+    return is_manager(c)
+
+
 def capabilities(c):
     """What the portal may offer this person in its menu (the API still checks every request)."""
     return {'manager': is_manager(c), 'calendar': can_edit_calendar(c), 'publish': can_publish(c),
             'dashboards': is_manager(c), 'management': can_manage_accounts(c),
             'callins': can_use_callins(c), 'presentations': can_use_presentations(c), 'glimpse': shows_glimpse(c),
-            'archetypes': archetype_scope(c) is not None, 'wiki_edit': can_edit_wiki(c)}
+            'archetypes': archetype_scope(c) is not None, 'wiki_edit': can_edit_wiki(c),
+            'all_languages': can_choose_all_languages(c)}

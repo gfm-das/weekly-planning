@@ -3216,5 +3216,7 @@
  "dam.newMembersAndFriendsWith": "nya medlemmar och vänner med dopdatum",
  "dam.alreadyStoredJoinedBlanksFilled": "redan sparade (sammanfogade, luckor ifyllda)",
  "dam.theyAreSavedAsReal": "De sparas som riktiga personer, läggs in i de veckoplaner där de nämndes, och de som fortfarande är aktuella (nya medlemmar upp till ett år efter dopet; vänner och vänner med hög potential från förra veckans plan) läggs in i den här veckans planer.",
- "dam.places": "Platser"
+ "dam.places": "Platser",
+ "shell.exitFullScreen": "Avsluta helskärm",
+ "shell.fullScreenHelp": "Visa den här sidan på hela skärmen"
 }

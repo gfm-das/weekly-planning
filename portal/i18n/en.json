@@ -3216,5 +3216,7 @@
  "dam.newMembersAndFriendsWith": "new members and friends with a baptismal date",
  "dam.alreadyStoredJoinedBlanksFilled": "already stored (joined, blanks filled)",
  "dam.theyAreSavedAsReal": "They are saved as real people, put on the weekly plans they were named on, and the ones who are still relevant (new members up to a year after baptism; friends and high-potential friends from last week's plan) are loaded into this week's plans.",
- "dam.places": "Places"
+ "dam.places": "Places",
+ "shell.exitFullScreen": "Exit full screen",
+ "shell.fullScreenHelp": "Show this page on the whole screen"
 }

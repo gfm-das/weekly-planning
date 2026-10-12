@@ -168,10 +168,11 @@ async function signedIn(role) {
   assert.equal(ap.log.opened.length, opened + 1, "the glimpse's link leads to DataEase");
   assert.equal(ap.log.opened.at(-1).url, START_EN);
 
-  // Another page hides Full screen again.
+  // Every page in the frame offers the same Full screen (portal-enhancements.js section 4), not only Dashboards.
   vm.runInContext("openPage('planning')", ap);
-  await settle(); await settle();
-  assert.equal(fullScreen.hidden, true, 'Full screen is only for Dashboards');
+  await settle(); await settle(); await settle();
+  assert.equal(fullScreen.hidden, false, 'Full screen is offered for other pages too');
+  assert.ok(ap.log.created.some(el => el.textContent === 'Exit full screen'), 'with an Exit full screen button');
 
   // Sign-out: Presentations end and the Dashboards cookie is cleared through DataEase's front; no Grafana call.
   const out = ap.log.fetches.length;

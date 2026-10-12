@@ -258,7 +258,7 @@
 
     // ---- 4. The header -----------------------------------------------------------------------------------------------
     // Left: the page title with a short description under it. Right: the buttons, in this order on a computer:
-    // language list, Library, Customize, Full screen, Reload, Enable reminders / Turn off reminders.
+    // language list, Library, Full screen, Customize, Reload, Enable reminders / Turn off reminders.
     const header = document.querySelector('.topbar');
 
     const heading = document.createElement('div');
@@ -288,19 +288,61 @@
     const library = headerButton('Library', () => openPage('presentations'));
     library.hidden = true;
 
-    // Full screen: only while Dashboards are open. Where a page cannot go full screen (iPhone), Dashboards open in a new
-    // tab instead; the sign-in is the same. Esc returns.
-    const fullScreen = headerButton('Full screen', showDashboardsFullScreen);
+    // Full screen: offered for every page the frame shows (Planning, Call-ins, Overview, Calendar, Announcements,
+    // Whiteboard, Archetypal Health, Presentations and their decks, Dashboards, DA Management, the manual …). It puts
+    // the frame's box (.frame-wrap) on the whole screen with the Fullscreen API; where a page cannot do that (iPhone
+    // Safari, a refused request) the box fills the window instead ("expanded"). Esc or "Exit full screen" returns.
+    const fullScreen = headerButton('Full screen', toggleFrameFullScreen);
     fullScreen.hidden = true;
-    fullScreen.title = 'Show Dashboards on the whole screen';
+    fullScreen.title = 'Show this page on the whole screen';
+    const frameBox = frame.parentElement || frame;
+    const exitFullScreen = document.createElement('button');
+    exitFullScreen.type = 'button';
+    exitFullScreen.className = 'frame-exit-fullscreen';
+    exitFullScreen.textContent = 'Exit full screen';
+    exitFullScreen.hidden = true;
+    exitFullScreen.addEventListener('click', leaveFrameFullScreen);
+    frameBox.append?.(exitFullScreen);
 
-    function showDashboardsFullScreen() {
-        if (document.fullscreenEnabled && frame.requestFullscreen) {
-            frame.requestFullscreen().catch(() => window.open(URLS.insights, '_blank', 'noopener'));
+    const fullScreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+    const frameIsFullScreen = () => fullScreenElement() === frameBox || !!frameBox.classList?.contains('frame-expanded');
+
+    function expandFrame(on) {
+        frameBox.classList?.toggle('frame-expanded', on);
+        document.documentElement.classList?.toggle('frame-expanded-open', on);
+        exitFullScreen.hidden = !on;
+    }
+
+    function toggleFrameFullScreen() {
+        if (frameIsFullScreen()) return leaveFrameFullScreen();
+        const request = frameBox.requestFullscreen || frameBox.webkitRequestFullscreen;
+        if ((document.fullscreenEnabled || document.webkitFullscreenEnabled) && request) {
+            try {
+                const asked = request.call(frameBox);
+                if (asked && asked.catch) asked.catch(() => expandFrame(true));
+            } catch { expandFrame(true); }
         } else {
-            window.open(URLS.insights, '_blank', 'noopener');
+            expandFrame(true);
         }
     }
+
+    function leaveFrameFullScreen() {
+        if (fullScreenElement()) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+        expandFrame(false);
+    }
+
+    // The browser's own full screen shows the exit button too (Esc ends it by itself).
+    for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
+        document.addEventListener(type, () => { exitFullScreen.hidden = !frameIsFullScreen(); });
+    }
+    // Esc ends the expanded view, also while the page in the frame has the keyboard (when it is the portal's own page).
+    function escLeaves(event) {
+        if (event.key === 'Escape' && frameBox.classList?.contains('frame-expanded')) leaveFrameFullScreen();
+    }
+    document.addEventListener('keydown', escLeaves);
+    frame.addEventListener('load', () => {
+        try { frame.contentWindow.document.addEventListener('keydown', escLeaves); } catch { /* another origin */ }
+    });
 
     const customize = headerButton('Customize', showCustomizer);
 
@@ -995,7 +1037,6 @@
             else presentationsSignIn.timer = setTimeout(() => keepPresentationsAlive().catch(() => {}), 30000);
         }
         if (name === 'insights') {
-            fullScreen.hidden = false;
             dashboardsSignIn.timer = setTimeout(() => keepDataEaseAlive().catch(() => {}), 600000);
         }
     }
@@ -1031,6 +1072,7 @@
         closeMenu();
         showHeadingFor(name);
         fullScreen.hidden = true;
+        if (frameIsFullScreen()) leaveFrameFullScreen();
         stopPresentationsKeepAlive();
         stopDataEaseKeepAlive();
         pendingOpen = {name};
@@ -1042,6 +1084,7 @@
                 pendingOpen = null;
                 if (OFFICE_ONLY.has(name)) openOfficeOnlyNotice(name);
                 else shellOpenPage(name);
+                fullScreen.hidden = false;
                 keepSignInAlive(name, expiresAt);
                 title.textContent = TITLES[name] || 'Mission System';
             })

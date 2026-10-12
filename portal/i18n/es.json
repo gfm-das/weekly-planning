@@ -3216,5 +3216,7 @@
  "dam.newMembersAndFriendsWith": "nuevos miembros y amigos con fecha bautismal",
  "dam.alreadyStoredJoinedBlanksFilled": "ya guardadas (unidas, vacíos completados)",
  "dam.theyAreSavedAsReal": "Se guardan como personas reales, se ponen en los planes semanales en los que se nombraron, y quienes siguen siendo relevantes (nuevos miembros hasta un año después del bautismo; amigos y amigos de alto potencial del plan de la semana pasada) se cargan en los planes de esta semana.",
- "dam.places": "Lugares"
+ "dam.places": "Lugares",
+ "shell.exitFullScreen": "Salir de pantalla completa",
+ "shell.fullScreenHelp": "Mostrar esta página en toda la pantalla"
 }

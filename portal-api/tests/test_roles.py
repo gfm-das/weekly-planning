@@ -64,7 +64,8 @@ class Capabilities(unittest.TestCase):
         c = self.person('MISSIONARY', 'DL', 'DATA_ADMIN')
         self.assertEqual(roles.capabilities(c), {'manager': True, 'calendar': True, 'publish': True, 'dashboards': True,
                                                  'management': True, 'callins': True, 'presentations': True,
-                                                 'glimpse': True, 'archetypes': True, 'wiki_edit': True})
+                                                 'glimpse': True, 'archetypes': True, 'wiki_edit': True,
+                                                 'all_languages': True})
         self.assertTrue(roles.shows_glimpse(c))
         self.assertEqual(roles.planning_scope(c), 'mission')
         self.assertEqual(roles.target_scope(c), 'mission')
@@ -73,7 +74,8 @@ class Capabilities(unittest.TestCase):
         c = self.person('MISSIONARY', None, 'OFFICE')
         self.assertEqual(roles.capabilities(c), {'manager': False, 'calendar': True, 'publish': True, 'dashboards': False,
                                                  'management': False, 'callins': False, 'presentations': False,
-                                                 'glimpse': False, 'archetypes': False, 'wiki_edit': False})
+                                                 'glimpse': False, 'archetypes': False, 'wiki_edit': False,
+                                                 'all_languages': False})
         self.assertEqual(roles.target_scope(c, 'calendar'), 'mission')
         self.assertEqual(roles.target_scope(c, 'announcements'), 'mission')
         self.assertEqual(roles.target_scope(c, 'presentations'), 'area')
@@ -166,6 +168,34 @@ class Glimpse(unittest.TestCase):
 
     def test_grafana_role_mapping_is_gone(self):
         self.assertFalse(hasattr(roles, 'dashboard_role'))
+
+
+
+class AllLanguages(unittest.TestCase):
+    def person(self, app_role='MISSIONARY', leader=None, *additional):
+        return {'app_role': app_role, 'leadership_role': leader, 'additional_roles': list(additional)}
+
+    def test_managers_may_choose_every_language(self):
+        for c in (self.person('AP', 'AP'), self.person('PRESIDENT'), self.person('DATA_ADMIN'),
+                  self.person('MISSIONARY', 'DL', 'DATA_ADMIN'), self.person('MISSIONARY', None, 'DATA_ADMIN')):
+            self.assertTrue(roles.can_choose_all_languages(c), c)
+            self.assertTrue(roles.capabilities(c)['all_languages'])
+
+    def test_others_keep_their_assigned_languages(self):
+        for c in (self.person(), self.person('MISSIONARY', 'DL'), self.person('MISSIONARY', 'ZL'),
+                  self.person('MISSIONARY', 'STL'), self.person('OFFICE'), self.person('MISSIONARY', None, 'OFFICE'),
+                  self.person('AP', None)):  # an AP app role without a current AP assignment is a missionary
+            self.assertFalse(roles.can_choose_all_languages(c), c)
+
+    def test_language_list_matches_the_portal_catalogs(self):
+        import json
+        for base in (Path(__file__).resolve().parents[2] / 'portal', Path('/portal')):
+            catalogs = base / 'i18n' / 'catalogs.json'
+            if catalogs.exists():
+                codes = list(json.loads(catalogs.read_text(encoding='utf-8'))['languages'])
+                self.assertEqual(sorted(codes), sorted(roles.INTERFACE_LANGUAGES))
+                return
+        self.skipTest('portal/i18n not mounted')
 
 
 if __name__ == '__main__':

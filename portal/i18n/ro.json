@@ -3229,5 +3229,7 @@
  "dam.newMembersAndFriendsWith": "membri noi și prieteni cu dată de botez",
  "dam.alreadyStoredJoinedBlanksFilled": "deja salvate (unite, goluri completate)",
  "dam.theyAreSavedAsReal": "Sunt salvate ca persoane reale, puse în planurile săptămânale în care au fost menționate, iar cele care sunt încă relevante (membri noi până la un an după botez; prieteni și prieteni cu potențial ridicat din planul săptămânii trecute) sunt încărcate în planurile acestei săptămâni.",
- "dam.places": "Locuri"
+ "dam.places": "Locuri",
+ "shell.exitFullScreen": "Ieșire din ecran complet",
+ "shell.fullScreenHelp": "Afișează această pagină pe tot ecranul"
 }

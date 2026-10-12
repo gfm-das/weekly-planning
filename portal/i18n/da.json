@@ -3216,5 +3216,7 @@
  "dam.newMembersAndFriendsWith": "nye medlemmer og venner med dåbsdato",
  "dam.alreadyStoredJoinedBlanksFilled": "allerede gemt (sammenlagt, huller udfyldt)",
  "dam.theyAreSavedAsReal": "De gemmes som rigtige personer, lægges ind i de ugeplaner, de var nævnt i, og dem der stadig er aktuelle (nye medlemmer op til et år efter dåben; venner og venner med højt potentiale fra sidste uges plan) lægges ind i denne uges planer.",
- "dam.places": "Steder"
+ "dam.places": "Steder",
+ "shell.exitFullScreen": "Afslut fuld skærm",
+ "shell.fullScreenHelp": "Vis denne side på hele skærmen"
 }

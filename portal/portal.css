@@ -569,6 +569,68 @@ html[data-theme="dark"] .portal-language {
   border-color: #365361;
 }
 
+/* ---- Full screen for the page in the frame (portal-enhancements.js, section 4): the browser's own full screen of
+   .frame-wrap, or "expanded" (the box fills the window) where a page cannot go full screen, such as iPhone Safari. ---- */
+.frame-wrap:fullscreen,
+.frame-wrap.frame-expanded {
+  padding: 0;
+  background: #f3f6f8;
+}
+.frame-wrap:-webkit-full-screen {
+  padding: 0;
+}
+.frame-wrap.frame-expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+html.frame-expanded-open,
+html.frame-expanded-open body {
+  overflow: hidden;
+}
+.frame-wrap:fullscreen #appFrame,
+.frame-wrap.frame-expanded #appFrame {
+  border: 0;
+  border-radius: 0;
+}
+.frame-exit-fullscreen {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  right: calc(10px + env(safe-area-inset-right));
+  z-index: 3;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid #c9d6dc;
+  border-radius: 9px;
+  background: #ffffffe6;
+  color: #173947;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #17394722;
+}
+.frame-exit-fullscreen[hidden] {
+  display: none;
+}
+html[data-theme="dark"] .frame-wrap:fullscreen,
+html[data-theme="dark"] .frame-wrap.frame-expanded {
+  background: #0d2029;
+}
+html[data-theme="dark"] .frame-exit-fullscreen {
+  background: #173644e6;
+  color: #eaf4f5;
+  border-color: #365361;
+}
+@media (max-width: 780px) {
+  .frame-exit-fullscreen {
+    min-height: 44px;
+    font-size: 15px;
+  }
+}
+
 /* ---- Phones: 44px touch targets (portal-enhancements.js puts the language list, Customize and the reminder
    switches in the places named here; see placeHeaderControls). Kept last: these win over the rules above. ---- */
 @media (max-width: 780px) {

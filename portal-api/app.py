@@ -953,12 +953,15 @@ def save_mission_focus(conn, c, data):
 
 def language_choices(conn, c):
     """(primary, allowed, selected): the languages the APs assigned to this missionary (the mission's default language
-    without an assignment), and the one chosen in the portal if it is still allowed, else the first allowed one."""
+    without an assignment; managers get every interface language too, roles.can_choose_all_languages), and the one chosen in the portal if it is still allowed, else the first allowed one."""
     assigned = rows(conn, '''SELECT primary_language,additional_languages FROM public.missionary_language_assignments
         WHERE missionary_id=%s''', (c.get('missionary_id'),))
     pref = rows(conn, 'SELECT language FROM portal.user_preferences WHERE user_id=%s', (c['user_id'],))
     a = assigned[0] if assigned else {'primary_language': mission_default_language(conn, c), 'additional_languages': []}
     allowed = list(dict.fromkeys([a['primary_language']] + a['additional_languages']))
+    if roles.can_choose_all_languages(c):
+        # Managers may choose every interface language: their assigned ones first, then all the others.
+        allowed = list(dict.fromkeys(allowed + list(roles.INTERFACE_LANGUAGES)))
     selected = pref[0]['language'] if pref and pref[0]['language'] in allowed else allowed[0]
     return a['primary_language'], allowed, selected
 
