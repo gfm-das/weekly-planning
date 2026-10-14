@@ -142,10 +142,17 @@ def hub_page():
               else t("uploads.hub.none"))
     cards.append(f"""<div class="card"><h3>{t("uploads.vollzogen.title")}</h3><p class="muted">{t("uploads.vollzogen.about")}</p>
       <p class="muted">{status}</p><p><a href="/uploads/vollzogen">{t("uploads.hub.open")}</a></p></div>""")
+    # Round 14: one Uploads page. Sections for every file the mission imports (roster, historical CSV, people, then
+    # the data uploads and Vollzogen). Each section opens the existing page that already does the work.
+    other = [("dam.rosterImport", "Roster Import", "/"), ("dam.historicalCsv", "Historical CSV", "/historical"),
+             ("dam.peopleUpload", "People upload", "/people-upload")]
+    other_cards = "".join(
+        f"""<div class="card"><h3 data-i18n="{key}">{title}</h3>
+          <p><a href="{href}">{t("uploads.hub.open")}</a></p></div>""" for key, title, href in other)
     return f"""<div class="card"><div class="step">{t("uploads.hub.step")}</div><h2>{t("uploads.hub.title")}</h2>
       <p class="muted">{t("uploads.hub.intro")}</p><p class="muted">{t("uploads.hub.privacy")}</p>
       <p><a href="/uploads/names">{t("uploads.hub.names")}</a></p></div>
-      <div class="grid">{''.join(cards)}</div>"""
+      <div class="grid">{other_cards}{''.join(cards)}</div>"""
 
 
 def upload_page(slug):
@@ -170,7 +177,7 @@ def upload_page(slug):
       <h2>{title_of(slug)}</h2><p class="muted">{t(f"uploads.{text}.about")}</p>
       <p><a href="/uploads/{slug}/template">{t("uploads.page.template")}</a></p>{table_link}
       <form action="/uploads/{slug}/preview" method="post" enctype="multipart/form-data">
-        <label class="form-field">{t("uploads.page.file")}<input type="file" name="file" accept=".csv,.xlsx" required></label>
+        <div class="form-field"><label class="file-pick"><span>{t("uploads.page.file")}</span><input type="file" name="file" accept=".csv,.xlsx" required></label></div>
         <button>{t("uploads.page.check")}</button></form></div>
       <div class="card"><h3>{t("uploads.page.how")}</h3><ul><li>{t(f"uploads.{text}.columns")}</li>
         <li>{t(f"uploads.{text}.merge")}</li><li>{t("uploads.page.weeks")}</li>{report_week}<li>{t("uploads.page.never")}</li></ul></div>

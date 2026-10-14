@@ -14,7 +14,7 @@ const I18N = path.join(ROOT, 'portal', 'i18n');
 const PAGES = [
   'portal/index.template.html', 'portal/portal-enhancements.js', 'portal/portal-client.js', 'portal/home.html',
   'portal/calendar.html', 'portal/announcements.html', 'portal/planning.html', 'portal/callins.html',
-  'portal/office-only.html', 'portal/vollzogen.html', 'portal/drive.html', 'demo/index.html', 'demo/demo-mock.js',
+  'portal/office-only.html', 'portal/vollzogen.html', 'demo/index.html', 'demo/demo-mock.js',
   'portal-api/app.py', 'portal-api/planning.py', 'portal-api/callins.py', 'portal-api/roles.py', 'portal-api/reminders.py',
   // DA Management (roster-importer/, split into small files in round 9: its README lists them).
   'roster-importer/app.py', 'roster-importer/page.py', 'roster-importer/sign_in.py', 'roster-importer/supabase_auth.py',

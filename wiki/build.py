@@ -62,45 +62,31 @@ def is_private_page(meta: dict) -> bool:
     return False
 
 # Sidebar: (heading, [(slug, label, icon), ...])
+# The first lines of every page head (round 14): charset first, theme before paint, the portal favicon.
+WIKI_HEAD = '<meta charset="utf-8">\n  <meta name="color-scheme" content="light dark">\n  <script>/* Theme before paint (round 14): the portal\'s choice first, then the wiki\'s own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>\n  <link rel="icon" type="image/svg+xml" href="/favicon.svg">'
+
+# Sidebar (round 14: trimmed). Start, Using the portal, then one "For data analysts" group; the server, installer
+# and developer pages are reached from the analyst onboarding page and the navboxes, not listed here one by one.
 SIDEBAR = [
-    ("Navigation", [
+    ("Start", [
         ("index", "Main page", "🏠"),
-        ("random", "Random page", "🎲"),
+        ("analyst-onboarding", "Data analyst onboarding", "🧭"),
         ("glossary", "Glossary", "📖"),
     ]),
     ("Using the portal", [
         ("signing-in", "Signing in", "🔑"),
-        ("tutorial", "Tutorial", "🧭"),
-        ("overview", "Overview", "📋"),
         ("weekly-planning", "Weekly Planning", "📅"),
-        ("glimpse", "Glimpse", "👀"),
+        ("overview", "Overview", "📋"),
         ("dashboards", "Dashboards", "📊"),
-        ("presentation-library", "Presentation Library", "🎬"),
+        ("presentation-library", "Presentations", "🎬"),
         ("roles-and-permissions", "Roles and permissions", "👔"),
     ]),
-    ("Data and admin", [
-        ("uploads-importer", "Uploads / Importer", "⬆️"),
-        ("management", "Management (Places)", "🗺️"),
-        ("roster", "Roster", "👥"),
+    ("For data analysts", [
+        ("uploads-importer", "Uploads", "⬆️"),
+        ("management", "Places and questions", "🗺️"),
         ("accounts", "Accounts", "🪪"),
-        ("dbeaver-access", "DBeaver access", "🗄️"),
-        ("backups-and-restore", "Backups and restore", "💾"),
-        ("health-check", "Health check", "❤️"),
-        ("server-overview", "Server overview", "🖥️"),
         ("troubleshooting", "Troubleshooting", "🔧"),
-        ("editing-the-wiki", "Editing the wiki", "✏️"),
-    ]),
-    ("Installing", [
-        ("installer-overview", "Installer overview", "📦"),
-        ("requirements", "Requirements", "✅"),
-    ]),
-    ("Developer docs", [
-        ("dev-overview", "Developer docs", "🧰"),
-        ("dev-architecture", "Architecture", "🏗️"),
-        ("dev-folders", "Folders and services", "🗂️"),
-        ("dev-database", "Database and migrations", "🛢️"),
-        ("dev-testing", "Testing", "🧪"),
-        ("dev-deploy-ubuntu", "Deploy on Ubuntu", "🚀"),
+        ("dev-overview", "Server and developer docs", "🧰"),
     ]),
 ]
 
@@ -538,7 +524,7 @@ def page_template(
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  {WIKI_HEAD}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(title)} — Weekly Planning Wiki</title>
   <meta name="description" content="{html.escape(str(meta.get('summary') or lead or title))}">
@@ -551,7 +537,7 @@ def page_template(
     {render_sidebar(slug)}
     <div class="wiki-main">
       <div class="wiki-topbar">
-        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
         <div class="topbar-actions">
           <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
           <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
@@ -559,7 +545,7 @@ def page_template(
       </div>
       <article class="wiki-article">
         {ARTICLE_START}
-        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="{html.escape(slug)}">
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="{html.escape(slug)}">
           <a class="tab is-active" href="{out_href}" data-tab="read">Read</a>
           <a class="tab tab-edit is-hidden" href="edit.html?page={html.escape(slug)}" data-tab="edit">Edit</a>
           <a class="tab tab-history is-hidden" href="history.html?page={html.escape(slug)}" data-tab="history">History</a>
@@ -605,7 +591,7 @@ def build_private_stub(slug: str, meta: dict, navbox_html: str) -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  {WIKI_HEAD}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(title)} \u2014 Weekly Planning Wiki</title>
   <meta name="description" content="{html.escape(summary)}">
@@ -619,14 +605,14 @@ def build_private_stub(slug: str, meta: dict, navbox_html: str) -> str:
     {render_sidebar(slug)}
     <div class="wiki-main">
       <div class="wiki-topbar">
-        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
         <div class="topbar-actions">
           <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">&#9776; Menu</button>
           <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
         </div>
       </div>
       <article class="wiki-article">
-        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="{html.escape(slug)}">
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="{html.escape(slug)}">
           <a class="tab is-active" href="{out_href}" data-tab="read">Read</a>
           <a class="tab tab-edit is-hidden" href="edit.html?page={html.escape(slug)}" data-tab="edit">Edit</a>
           <a class="tab tab-history is-hidden" href="history.html?page={html.escape(slug)}" data-tab="history">History</a>
@@ -667,7 +653,7 @@ def build_random_page(slugs: list[str]) -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  {WIKI_HEAD}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Random page — Weekly Planning Wiki</title>
   <link rel="stylesheet" href="assets/wiki.css">
@@ -704,7 +690,7 @@ def build_404_page() -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  {WIKI_HEAD}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Page not found — Weekly Planning Wiki</title>
   <link rel="stylesheet" href="assets/wiki.css">
@@ -716,7 +702,7 @@ def build_404_page() -> str:
     {render_sidebar("404")}
     <div class="wiki-main">
       <div class="wiki-topbar">
-        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
         <div class="topbar-actions">
           <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
           <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
@@ -755,7 +741,7 @@ def _shell_chrome(title: str, slug: str, article_inner: str) -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  {WIKI_HEAD}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(title)} — Weekly Planning Wiki</title>
   <link rel="stylesheet" href="assets/wiki.css">
@@ -767,7 +753,7 @@ def _shell_chrome(title: str, slug: str, article_inner: str) -> str:
     {render_sidebar(slug)}
     <div class="wiki-main">
       <div class="wiki-topbar">
-        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
         <div class="topbar-actions">
           <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
           <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
@@ -785,7 +771,7 @@ def _shell_chrome(title: str, slug: str, article_inner: str) -> str:
 
 def build_edit_page() -> str:
     inner = """
-        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="" id="editPageTabs">
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="" id="editPageTabs">
           <a class="tab" href="index.html" data-tab="read" id="editTabRead">Read</a>
           <a class="tab is-active" href="#" data-tab="edit">Edit</a>
           <a class="tab tab-history is-hidden" href="history.html" data-tab="history" id="editTabHistory">History</a>
@@ -832,7 +818,7 @@ def build_edit_page() -> str:
 
 def build_history_page() -> str:
     inner = """
-        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="" id="historyPageTabs">
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="" id="historyPageTabs">
           <a class="tab" href="index.html" data-tab="read" id="historyTabRead">Read</a>
           <a class="tab tab-edit is-hidden" href="edit.html" data-tab="edit" id="historyTabEdit">Edit</a>
           <a class="tab is-active" href="#" data-tab="history">History</a>

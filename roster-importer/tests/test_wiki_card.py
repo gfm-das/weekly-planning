@@ -74,8 +74,8 @@ class PageTests(unittest.TestCase):
         self.assertNotIn("Open the wiki", html)
 
     def test_it_is_a_tab_entry_of_da_management_and_the_links_page_is_unchanged(self):
-        self.assertIn(("/wiki-link", "Wiki"), page.MENU)
-        self.assertEqual(page.current_page("/wiki-link"), ("history", "/wiki-link"))
+        self.assertNotIn(("/wiki-link", "Wiki"), page.MENU)  # round 14: Wiki is in the portal side menu
+        self.assertEqual(page.current_page("/wiki-link"), ("history", "/imports"))
         with patch.object(links_page.sign_in, "allowed", return_value=True):
             html = app.app.test_client().get("/links").get_data(as_text=True)
         self.assertNotIn("Open the wiki", html)  # the Links to web services page still has its three cards

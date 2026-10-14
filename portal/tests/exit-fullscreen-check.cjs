@@ -102,7 +102,7 @@ ok(/exitFullScreen\.hidden = !on/.test(source) && !/exitFullScreen\.hidden = !fr
 
 // ---- portal.css -------------------------------------------------------------------------------------------------------
 const rule = selector => (css.match(new RegExp(selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{([^}]*)\\}')) || [])[1] || '';
-ok(/inset-inline-end/.test(rule('.frame-exit-fullscreen')) && /top:/.test(rule('.frame-exit-fullscreen')), 'css: the button is in the top corner, on the end side (left for Arabic and Persian)');
+ok(/inset-inline-end/.test(rule('.frame-exit-fullscreen')) && /bottom:/.test(rule('.frame-exit-fullscreen')) && !/\btop:/.test(rule('.frame-exit-fullscreen')), 'css: the button is in the bottom corner (round 14: never over the top-right links), on the end side');
 ok(/opacity 0\.4s/.test(rule('.frame-exit-fullscreen')), 'css: the fade is animated');
 ok(/opacity: 0/.test(rule('.frame-exit-fullscreen.faded')) && /pointer-events: none/.test(rule('.frame-exit-fullscreen.faded')), 'css: a faded button is invisible and does not catch clicks');
 ok(/pointer-events: none/.test(rule('.frame-exit-fullscreen:not(.faded) ~ .frame-exit-zone')), 'css: while the button shows, the corner area lets clicks through');

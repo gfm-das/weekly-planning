@@ -229,8 +229,9 @@ def busy(status):
 def overview_card(status):
     """This computer's version, where updates come from, the last check, and "Check for updates"."""
     current = status.get("current") or {}
-    version = (data(current.get("short"), "b") + " " + data(when(current.get("date")), extra=' class="muted"')
-               + "<br>" + data(current.get("subject"), extra=' class="muted"')) if current else data("-", "b")
+    version = (data(when(current.get("date")), "b") + "<br>" + data(current.get("subject"), extra=' class="muted"')
+               + (f"<details style='margin-top:6px'><summary>Details</summary><code>{data(current.get('short'))}</code></details>"
+                  if current.get("short") else "")) if current else data("-", "b")
     checked = data(when(status.get("checked_at")), "b") if status.get("checked_at") else say("updates.neverChecked", "b")
     return f"""<div class="card">{say('updates.title', 'h2')}{say('updates.intro', 'p', ' class="muted"')}{notice_html(status)}
       <div class="grid"><div class="metric">{say('updates.thisComputer')}<br>{version}</div>
@@ -275,18 +276,22 @@ def check_result_html(status):
 
 
 def changes_card(status, changes):
-    """The card "What is new": the changes of the new version."""
+    """The card "What is new": the changes of the new version. Commit hashes and migration paths sit behind Details."""
     rows = "".join(
-        f"<tr><td>{data(when(c.get('date')))}</td><td>{data(c.get('subject'))}</td><td>{data(c.get('short'), 'code')}</td></tr>"
+        f"<tr><td>{data(when(c.get('date')))}</td><td>{data(c.get('subject'))}</td></tr>"
         for c in changes if isinstance(c, dict))
-    extra = ""
+    details = "".join(
+        f"<li>{data(c.get('subject'))} <code>{data(c.get('short'))}</code></li>"
+        for c in changes if isinstance(c, dict) and c.get('short'))
     if status.get("migrations"):
-        extra += f"<p>{say('updates.migrations')} {data(', '.join(Path(m).name for m in status['migrations']))}</p>"
+        details += f"<li>{say('updates.migrations')} {data(', '.join(Path(m).name for m in status['migrations']))}</li>"
     if status.get("other_parts"):
-        extra += f"<p class='warn'>{say('updates.otherParts')} {data(', '.join(status['other_parts']))}</p>"
+        details += f"<li class='warn'>{say('updates.otherParts')} {data(', '.join(status['other_parts']))}</li>"
+    details_html = (f"<details style='margin-top:12px'><summary>Details</summary><ul>{details}</ul></details>"
+                    if details else "")
     return f"""<div class="card">{say('updates.newChanges', 'h3')}<div class="scroll"><table><thead><tr>
-      <th>{say('updates.changeDate')}</th><th>{say('updates.changeText')}</th><th>{say('updates.version')}</th>
-      </tr></thead><tbody>{rows}</tbody></table></div>{extra}</div>"""
+      <th>{say('updates.changeDate')}</th><th>{say('updates.changeText')}</th>
+      </tr></thead><tbody>{rows}</tbody></table></div>{details_html}</div>"""
 
 
 def install_card(status):

@@ -19,6 +19,10 @@
 <html lang="en" data-theme="mission">
   <head>
     <meta charset="utf-8" />
+<script>/* Theme before paint — round 14 (no white flash). Same key as portal-enhancements.js. */
+(function(){try{var t=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme||"mission";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t==="dark"?"dark":"light";document.documentElement.style.background=t==="dark"?"#101a21":"";}catch(e){}})();</script>
+<meta name="color-scheme" content="light dark">
+
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>Call-ins</title>
     <link rel="stylesheet" href="workspace.css" />
@@ -1087,10 +1091,10 @@
         }
       }
       function showLoadError(error) {
-        if (!state.data && error.status === 403) {
-          // Not for this person (or outside their stewardship): say so plainly, not as an error.
+        if (!state.data && (error.status === 403 || error.status === 404)) {
+          // Not for this person, no weeks yet, or outside their stewardship: a calm empty state, not a red error.
           setStatus("");
-          $("panel-overview").innerHTML = `<div class="empty">${esc(error.message)}</div>`;
+          $("panel-overview").innerHTML = `<div class="empty"><h2>Call-ins</h2><p>${esc(error.message)}</p></div>`;
           return;
         }
         setStatus(error.message, true);

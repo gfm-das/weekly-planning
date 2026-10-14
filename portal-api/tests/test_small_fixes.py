@@ -358,7 +358,8 @@ def test_phone_header_controls_are_placed_in_one_place():
         return print('   (skipped: portal/portal-enhancements.js not found)')
     place = js[js.index('function placeHeaderControls()'):]
     place = place[:place.index('\n    }')]
-    assert 'signOut.before(languages, customize)' in place and 'library.after(customize)' in place
+    # Round 14: one settings menu (gear) in the header; on a phone it sits in the sidebar above Sign Out.
+    assert 'signOut.before(settingsMenu)' in place and 'actions.append(settingsMenu)' in place
     assert "phoneLayout.addEventListener('change', placeHeaderControls);" in js
     assert 'placeReminderSwitches' not in js
     style = phone_css()

@@ -13,9 +13,20 @@
     return null;
   }
 
+  function portalTheme() {
+    try {
+      var t = (JSON.parse(localStorage.getItem("gfm_portal_layout_v1") || "null") || {}).theme;
+      if (t) return t === "dark" ? "dark" : "light";
+    } catch (e) {}
+    return null;
+  }
+
   function preferredTheme() {
     var q = queryTheme();
     if (q) return q;
+    // Round 14: inside the portal the wiki follows the portal's theme.
+    var p = portalTheme();
+    if (p && window.top !== window) return p;
     try {
       var saved = localStorage.getItem(THEME_KEY);
       if (saved === "light" || saved === "dark") return saved;
@@ -32,6 +43,10 @@
   }
 
   applyTheme(preferredTheme());
+  // The portal tells a framed page its theme.
+  window.addEventListener("message", function (e) {
+    if (e.data && e.data.type === "portal-theme") applyTheme(e.data.theme === "dark" ? "dark" : "light");
+  });
 
   function qs(name) {
     try {
@@ -62,6 +77,8 @@
 
   function revealEditorTabs(canEdit) {
     document.querySelectorAll("[data-page-tabs]").forEach(function (nav) {
+      // Round 14: a lone "Read" tab is not shown; the tab row appears only for editors.
+      if (canEdit) show(nav); else hide(nav);
       nav.querySelectorAll(".tab-edit, .tab-history, .tab-create").forEach(function (tab) {
         if (canEdit) show(tab);
         else hide(tab);

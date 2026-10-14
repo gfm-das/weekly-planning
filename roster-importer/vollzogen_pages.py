@@ -94,7 +94,7 @@ def start_page():
       <h2>{t("uploads.vollzogen.title")}</h2><p class="muted">{t("uploads.vollzogen.about")}</p>
       <p><a href="{BASE}/template">{t("uploads.page.template")}</a></p><p><a href="{BASE}/table">{t("uploads.vollzogen.viewTable")}</a></p>
       <form action="{BASE}/preview" method="post" enctype="multipart/form-data">
-        <label class="form-field">{t("uploads.page.file")}<input type="file" name="file" accept=".csv,.xlsx" required></label>
+        <div class="form-field"><label class="file-pick"><span>{t("uploads.page.file")}</span><input type="file" name="file" accept=".csv,.xlsx" required></label></div>
         <button>{t("uploads.page.check")}</button></form></div>
       <div class="card"><h3>{t("uploads.page.how")}</h3><ul><li>{t("uploads.vollzogen.columns")}</li>
         <li>{t("uploads.vollzogen.merge")}</li><li>{t("uploads.vollzogen.privacy")}</li><li>{t("uploads.vollzogen.fcAbout")}</li>

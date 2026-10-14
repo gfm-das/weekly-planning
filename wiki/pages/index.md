@@ -22,7 +22,11 @@ Nothing here invents features. Where a fact still needs a person to confirm it o
 
 ## Section portals
 
-### Using the portal
+### For data analysts
+
+New here? Start with **[Data analyst onboarding](analyst-onboarding.html)** — the clean set of notes that replaced DA Docs.
+
+## Using the portal
 
 Start with [Signing in](signing-in.html), then the [Tutorial](tutorial.html) (the same steps as the guided tour in the portal), then [Overview](overview.html), [Weekly Planning](weekly-planning.html), [Glimpse](glimpse.html), [Dashboards](dashboards.html), [Presentation Library](presentation-library.html), and [Roles and permissions](roles-and-permissions.html).
 

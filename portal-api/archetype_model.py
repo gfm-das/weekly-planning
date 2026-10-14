@@ -62,8 +62,6 @@ SOURCES = {
     'member_visits_part_member': ('Member visits with part-member families', 'answers'),
     'member_referral_asks': ('Referral requests at member meals and visits', 'answers'),
     'lessons_asked_referral': ('Lessons where you asked for a referral', 'answers'),
-    'facebook_finding_days': ('Days of Facebook finding', 'answers'),
-    'facebook_friends_found': ('People found through Facebook', 'answers'),
     'youth_activities': ('Youth activities', 'answers'),
     'service_hours': ('Service hours', 'answers'),
     'less_active_sacrament': ('Less-active members at sacrament meeting', 'answers'),
@@ -74,11 +72,11 @@ SOURCES = {
     'baptism_records': ('Baptisms (baptism records)', 'uploads'),
 }
 
-# Archived numbers (migration 038, Oct 2026: Facebook, social media and FindeChristus are archived). They stay in
+# Archived numbers (FindeChristus referrals stay available for old settings; Facebook KPIs removed round 14). They stay in
 # SOURCES, so saved settings and their history that weight them stay valid and keep their labels, and old weeks keep
 # their numbers. But the settings page no longer offers them, and a save cannot weight one in an archetype that did
 # not weight it before (archived_added).
-ARCHIVED_SOURCES = frozenset({'facebook_finding_days', 'facebook_friends_found', 'findechristus_referrals'})
+ARCHIVED_SOURCES = frozenset({'findechristus_referrals'})  # Facebook KPIs removed round 14
 # Archived diagnosis tips: no longer in the defaults; migration 038 takes them out of saved settings too.
 ARCHIVED_STEPS = ('Follow up on FindeChristus referrals within a day.',)
 

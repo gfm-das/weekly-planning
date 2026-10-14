@@ -378,8 +378,8 @@ class PageTests(unittest.TestCase):
         self.assertIn("Wie gefunden", response.get_data(as_text=True))
 
     def test_the_menu_the_kind_and_the_hub_know_the_upload(self):
-        self.assertIn(("/uploads/vollzogen", "Vollzogen"), page.MENU)
-        self.assertEqual(page.current_page("/uploads/vollzogen/review"), ("data", "/uploads/vollzogen"))
+        self.assertEqual(page.current_page("/uploads/vollzogen"), ("uploads", "/uploads"))
+        self.assertEqual(page.current_page("/uploads/vollzogen/review"), ("uploads", "/uploads"))
         self.assertEqual(data_uploads.kind_label("VOLLZOGEN"), "Vollzogen")
         self.assertEqual(batches.TABLES_OF_KIND["VOLLZOGEN"], ["vollzogen_records"])
         self.assertNotIn("VOLLZOGEN", data_uploads.ROW_KINDS)  # its rows are recorded as before/after, like Geo data

@@ -143,16 +143,16 @@ def test_every_confirmation_text_is_in_the_catalog():
 
 
 def test_the_reminder_notices_are_in_the_catalog():
+    """Round 14: reminders are always on. No Enable / Turn off buttons and no blocked or off notice bar remain in the
+    shell; any reminder text it still shows comes from the catalog."""
     if skipped():
         return
     script = page("portal-enhancements.js")
     english = english_values()
-    for key in ("reminders.on", "reminders.off", "reminders.blocked", "reminders.unsupported", "reminders.offFailed",
-                "reminders.turnOff"):
-        text = catalog()["messages"]["en"][key]
-        assert f"'{text}'" in script, key
+    for gone in ("Turn off reminders", "Enable reminders", "reminders.blocked", "reminders.turnOff"):
+        assert gone not in script.split("//")[0] and f"'{gone}'" not in script, gone
     notices = re.findall(r"'((?:Reminders|Notifications|This browser)[^']*)'", script)
-    assert notices and all(text in english for text in notices), [text for text in notices if text not in english]
+    assert all(text in english for text in notices), [text for text in notices if text not in english]
 
 
 def test_german_reminders_do_not_use_the_announcements_word():

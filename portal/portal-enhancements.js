@@ -54,9 +54,10 @@
     URLS.announcements = '/announcements.html?v=2';
     TITLES.announcements = 'Announcements';
 
-    // Mission drive (portal/drive.html): the shared Google Drive. Every signed-in role has it (Information).
-    URLS.drive = '/drive.html?v=1';
-    TITLES.drive = 'Mission drive';
+    // Wiki (round 14): the portal's own wiki (/wiki/, built from wiki/pages), navy and gold, opened in the frame. It
+    // replaces DA Docs. Every signed-in role has it (Information).
+    URLS.wiki = '/wiki/index.html?embed=1';
+    TITLES.wiki = 'Wiki';
 
     // Vollzogen (portal/vollzogen.html): the read-only list of the people who were baptized and confirmed. Insights;
     // Office and the managers only (portal-api roles.can_view_vollzogen). Office stays a non-manager.
@@ -120,7 +121,6 @@
         insights: 'Key indicators, zones and districts, and the covenant path, with goals and trend lines.',
         calendar: 'Meetings and events for your role and zone.',
         announcements: 'Updates from the leaders in your stewardship.',
-        drive: 'The mission\'s shared Google Drive: the files everyone in the mission can use.',
         vollzogen: 'The people who were baptized and confirmed. This list is read-only.',
         presentations: 'Your presentation library and slide workspace.',
         whiteboard: 'Draw, plan and counsel together, with live mission charts.',
@@ -148,22 +148,43 @@
         return item;
     }
 
+    // Round 14: Mission drive is NOT a portal page. It is a sidebar link that opens the shared Google Drive in a new
+    // tab. The folder ID comes from site-config.js (GFM_DRIVE_ID). Empty or invalid: the menu item is not shown.
+    function missionDriveUrl() {
+        const id = String((window.GFM_SITE && window.GFM_SITE.driveId) || '').trim();
+        return /^[A-Za-z0-9_-]{10,64}$/.test(id) ? 'https://drive.google.com/drive/folders/' + encodeURIComponent(id) : '';
+    }
+    function menuLink(id, label, href, icon) {
+        const item = document.createElement('a');
+        item.className = 'nav-item nav-link';
+        item.id = id;
+        item.href = href;
+        item.target = '_blank';
+        item.setAttribute('rel', ['noopener', 'noreferrer'].join(' '));
+        item.innerHTML = `<span class="nav-icon">${icon}</span>${label}`;
+        return item;
+    }
+
     function buildMenu() {
-        // Weekly: Weekly Planning, Call-ins, Overview.
-        document.getElementById('navCallIns')?.after(menuButton('navOverview', 'Overview', 'overview', '⌂'));
-        // Information: Calendar, Announcements, Whiteboard (managers), Mission drive (everyone).
-        document.getElementById('groupInformation')?.after(
+        // Round 14 (clean UI): daily use first, then insights, then information, admin last.
+        // WEEKLY: Overview, Weekly Planning, Call-ins, Calendar, Announcements.
+        document.getElementById('groupWeekly')?.after(menuButton('navOverview', 'Overview', 'overview', '⌂'));
+        document.getElementById('navCallIns')?.after(
             menuButton('navCalendar', 'Calendar', 'calendar', '▦'),
-            menuButton('navAnnouncements', 'Announcements', 'announcements', '◉'),
-            menuButton('navWhiteboard', 'Whiteboard', 'whiteboard', '✎', true),
-            menuButton('navDrive', 'Mission drive', 'drive', '▤')
+            menuButton('navAnnouncements', 'Announcements', 'announcements', '◉')
         );
-        // Insights: Dashboards, Archetypal Health, Vollzogen (Office and managers), Presentations.
+        // INSIGHTS: Dashboards, Archetypal Health, Vollzogen (Office and managers), Whiteboard (managers), Presentations.
         document.getElementById('navInsights')?.after(
             menuButton('navArchetypes', 'Archetypal Health', 'archetypes', '◔', true),
-            menuButton('navVollzogen', 'Vollzogen', 'vollzogen', '✓', true)
+            menuButton('navVollzogen', 'Vollzogen', 'vollzogen', '✓', true),
+            menuButton('navWhiteboard', 'Whiteboard', 'whiteboard', '✎', true)
         );
-        // Manager tools, last section above Sign Out.
+        // INFORMATION: the Wiki (in the frame) and, when set, Mission drive (opens Google Drive in a new tab).
+        const info = [menuButton('navWiki', 'Wiki', 'wiki', '❏')];
+        const driveUrl = missionDriveUrl();
+        if (driveUrl) info.push(menuLink('navDrive', 'Mission drive', driveUrl, '▤'));
+        document.getElementById('groupInformation')?.after(...info);
+        // MANAGER TOOLS, last section above Sign Out.
         const management = menuButton('navManagement', 'DA Management', 'management', '◇', true);
         management.classList.add('management');
         document.getElementById('managerGroupTitle')?.after(management);
@@ -223,9 +244,10 @@
     }
 
     function pagesFor(parts) {
-        const pages = ['overview', 'planning', 'calendar', 'announcements', 'drive'];
+        const pages = ['overview', 'planning', 'calendar', 'announcements'];
         if (parts.callins) pages.push('callins');
-        if (parts.manager) pages.push('insights', 'management', 'whiteboard');
+        // Wiki: Data Analysts, President and APs only (the same people as portal-api roles.can_edit_wiki).
+        if (parts.manager) pages.push('insights', 'management', 'whiteboard', 'wiki');
         if (parts.presentations) pages.push('presentations');
         if (parts.archetypes) pages.push('archetypes');
         if (parts.vollzogen) pages.push('vollzogen');
@@ -242,6 +264,9 @@
         setVisible('insightsGroupTitle', parts.manager || parts.presentations || parts.vollzogen);
         setVisible('managerGroupTitle', parts.manager);
         setVisible('navManagement', parts.manager);
+        setVisible('navWiki', parts.manager);
+        // The Information heading only when something is under it (Wiki for managers, Mission drive when set).
+        setVisible('groupInformation', parts.manager || !!document.getElementById('navDrive'));
     }
 
     // "Elder Example · DL · Data Analyst" at the bottom of the menu. Each role is its own element so i18n.js can
@@ -289,7 +314,7 @@
 
     // ---- 4. The header -----------------------------------------------------------------------------------------------
     // Left: the page title with a short description under it. Right: the buttons, in this order on a computer:
-    // language list, Library, Full screen, Customize, Reload, Enable reminders / Turn off reminders.
+    // one settings menu (Theme, Tour, Reload, Language); on a phone it moves into the sidebar above Sign Out.
     const header = document.querySelector('.topbar');
 
     const heading = document.createElement('div');
@@ -427,12 +452,35 @@
         } catch { /* another origin */ }
     });
 
-    const customize = headerButton('Customize', showCustomizer);
+    // Round 14 (clean UI): the header keeps only what a page needs (Library while Presentations is open, Full screen)
+    // and ONE Settings menu (gear) with the language, the theme, the tour and Reload. On phones the Settings menu sits in
+    // the side menu above Sign Out. There is no reminders switch: reminders are always on (section 8).
+    const settingsMenu = document.createElement('details');
+    settingsMenu.className = 'portal-settings';
+    settingsMenu.id = 'portalSettings';
+    const settingsSummary = document.createElement('summary');
+    settingsSummary.className = 'portal-action';
+    settingsSummary.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.7a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1L11 21h4l.4-2.7a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg><span data-i18n="shell.settings">Settings</span>';
+    const settingsPanel = document.createElement('div');
+    settingsPanel.className = 'portal-settings-panel';
+    settingsMenu.append(settingsSummary, settingsPanel);
+    actions.append(settingsMenu);
+
+    function settingsButton(label, action) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'portal-settings-item';
+        button.textContent = label;
+        button.addEventListener('click', () => { settingsMenu.open = false; if (phoneLayout.matches) closeMenu(); action(); });
+        return button;
+    }
+    // Customize is the theme choice (the Overview cards have their own Customize on the Overview).
+    const customize = settingsButton('Theme', showCustomizer); // shell.theme
     customize.id = 'portalCustomize';
 
     // Tour: the guided tour (tour.js) of the menu for this person's roles. It also starts by itself once, on the first
-    // sign-in on a device (applyRoleNavigation). On phones it sits in the menu like Customize.
-    const tourButton = headerButton('Tour', () => {
+    // sign-in on a device (applyRoleNavigation).
+    const tourButton = settingsButton('Tour', () => {
         if (window.GfmTour) window.GfmTour.start(currentRoles, currentPerson);
     });
     tourButton.id = 'portalTourButton';
@@ -442,21 +490,24 @@
 
     // Reload tries again a page that has not opened yet (the error messages say "use Reload"); otherwise it reloads the
     // page on screen.
-    headerButton('Reload', () => openPage(pendingOpen ? pendingOpen.name : location.hash.slice(1) || 'planning'));
+    const reloadButton = settingsButton('Reload', () => openPage(pendingOpen ? pendingOpen.name : location.hash.slice(1) || 'planning'));
 
+    const languageLabel = document.createElement('label');
+    languageLabel.className = 'portal-settings-language';
+    const languageText = document.createElement('span');
+    languageText.textContent = 'Language'; // shell.language
     const languages = document.createElement('select');
     languages.className = 'portal-language';
     languages.setAttribute('aria-label', 'Assigned mission language');
     languages.hidden = true;
-    actions.prepend(languages);
+    languageLabel.append(languageText, languages);
+    settingsPanel.append(languageLabel, customize, tourButton, reloadButton);
 
-    // Reminders on this device (section 8): one of the two buttons is shown.
-    const notifications = headerButton('Enable reminders', enableReminders);
-    notifications.hidden = true;
-    const remindersOff = headerButton('Turn off reminders', disableReminders);
-    remindersOff.hidden = true;
+    // Close the Settings menu on a click outside it or Esc.
+    document.addEventListener('click', event => { if (settingsMenu.open && !settingsMenu.contains(event.target)) settingsMenu.open = false; });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') settingsMenu.open = false; });
 
-    // A message line under the header (reminders, a language that could not be saved).
+    // A message line under the header (a language that could not be saved). Reminders never show a bar here.
     const notice = document.createElement('div');
     notice.className = 'portal-notice';
     notice.hidden = true;
@@ -465,36 +516,20 @@
     function showNotice(text) {
         notice.textContent = text;
         notice.hidden = false;
+        setTimeout(() => { notice.hidden = true; }, 8000);
     }
 
-    // Phones: every control is at least 44px tall, and the header has room for only the menu button, Library and
-    // Reload at that size. So the language list and Customize go into the menu (☰) above Sign Out, Turn off reminders
-    // just above Sign Out too, and Enable reminders under the reminder notice, all full size. Wider screens keep
-    // everything in the header, as compact as before. Their phone sizes are at the end of portal.css.
+    // Phones: the Settings menu goes into the side menu above Sign Out (44 px rows); wider screens keep it in the header.
     const phoneLayout = window.matchMedia('(max-width: 780px)');
 
     function placeHeaderControls() {
-        const phone = phoneLayout.matches;
         const signOut = document.getElementById('logoutButton');
-        const inMenu = phone && !!signOut;
-        customize.className = inMenu ? 'nav-item menu-control' : 'portal-action';
-        tourButton.className = inMenu ? 'nav-item menu-control' : 'portal-action';
-        if (inMenu) signOut.before(languages, customize);
-        else { actions.prepend(languages); library.after(customize); }
-        customize.after(tourButton);  // Tour sits right after Customize: in the header, or in the menu above Sign Out
-        notifications.className = phone ? 'portal-action reminders-switch' : 'portal-action';
-        remindersOff.className = inMenu ? 'nav-item reminders-switch' : 'portal-action';
-        if (phone) notice.after(notifications); else actions.append(notifications);
-        if (inMenu) signOut.before(remindersOff); else actions.append(remindersOff);
+        if (phoneLayout.matches && signOut) signOut.before(settingsMenu); else actions.append(settingsMenu);
     }
 
     placeHeaderControls();
     phoneLayout.addEventListener('change', placeHeaderControls);
 
-    // Customize from the phone menu: the menu closes, so the dialog is not hidden behind it.
-    customize.addEventListener('click', () => {
-        if (phoneLayout.matches) closeMenu();
-    });
 
 
     // ---- 5. Theme (the Customize dialog) -------------------------------------------------------------------------------
@@ -646,17 +681,25 @@
 
     // ---- 8. Push reminders -----------------------------------------------------------------------------------------------
     // Reminders are per device: the Sunday planning reminder (18:00, while a plan is not submitted) and meeting reminders
-    // (portal-api reminders.py). "Enable reminders" subscribes this browser; "Turn off reminders" stops them here only.
-    const REMINDERS_ON = 'Reminders are on. You’ll get a reminder on Sunday at 18:00 if your plan is not submitted yet, and before mission meetings. If a companion is working on the plan right now, the Sunday reminder waits.';
-    const REMINDERS_OFF = 'Reminders are off on this device. Sunday planning reminders help companionships finish together, so the mission asks everyone to keep them on.';
-    const REMINDERS_BLOCKED = 'Notifications are blocked for this site. Allow them in your browser settings, then come back.';
+    // (portal-api reminders.py). Always on: asked once on the first tap, then subscribed quietly; no buttons, no notice bar.
+    // Round 14: reminders are always on. There is no off switch and no "Enable reminders" button or blocked bar.
+    // When the browser already allows notifications, this device is subscribed quietly after sign-in. When it has not
+    // been asked yet, the first tap or click in the portal asks once (browsers only ask after a tap). When
+    // notifications are blocked, the in-portal reminders (Overview "Next required action", the planning banner) still
+    // show; nothing nags.
+    const REMINDERS_ASKED = 'gfm_reminders_asked_v1';
 
     async function showReminderButtons() {
-        const onThisDevice = await remindersOnThisDevice();
-        notifications.hidden = !('Notification' in window) || onThisDevice;
-        remindersOff.hidden = !onThisDevice;
-        if (Notification.permission === 'denied') showNotice(REMINDERS_BLOCKED);
-        else if (!onThisDevice) showNotice(REMINDERS_OFF);
+        if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
+        if (Notification.permission === 'granted') return subscribeQuietly();
+        if (Notification.permission === 'default' && !localStorage.getItem(REMINDERS_ASKED)) {
+            const askOnce = () => {
+                document.removeEventListener('pointerdown', askOnce, true);
+                localStorage.setItem(REMINDERS_ASKED, '1');
+                Notification.requestPermission().then(answer => { if (answer === 'granted') subscribeQuietly(); }).catch(() => {});
+            };
+            document.addEventListener('pointerdown', askOnce, true);
+        }
     }
 
     // The server's public key (base64url text) as the bytes the browser's push service wants.
@@ -666,71 +709,17 @@
         return Uint8Array.from(atob(padded), c => c.charCodeAt(0));
     }
 
-    async function enableReminders() {
+    // Subscribes this browser for the signed-in person (again after someone else used it). Errors stay in the console.
+    async function subscribeQuietly() {
         try {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                throw Error('This browser can’t show reminders. On an iPhone, add the portal to your Home Screen first.');
-            }
-            if (await Notification.requestPermission() !== 'granted') throw Error(REMINDERS_BLOCKED);
             await navigator.serviceWorker.register('/service-worker.js');
             const registration = await navigator.serviceWorker.ready;
             const config = await api('push/config');
-            const key = base64UrlBytes(config.public_key);
             const subscription = await registration.pushManager.getSubscription() ||
-                await registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: key});
+                await registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: base64UrlBytes(config.public_key)});
             await api('push/subscriptions', {method: 'POST', body: subscription.toJSON()});
-            showNotice(REMINDERS_ON);
-            notifications.hidden = true;
-            remindersOff.hidden = false;
         } catch (e) {
-            showNotice(e.message);
-        }
-    }
-
-    // This browser's push subscription, or null (no support, never enabled, or turned off).
-    async function thisDeviceSubscription() {
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
-        const registration = await navigator.serviceWorker.getRegistration();
-        return registration ? await registration.pushManager.getSubscription() : null;
-    }
-
-    // True when this browser gets the signed-in person's reminders. The server also removes a registration that still
-    // belongs to someone who used this browser before (a shared phone or computer), so their reminders stop here.
-    async function remindersOnThisDevice() {
-        try {
-            if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-            const subscription = await thisDeviceSubscription();
-            if (!subscription) return false;
-            const state = await api('push/device', {method: 'POST', body: {endpoint: subscription.endpoint}});
-            return !!state.subscribed;
-        } catch (e) {
-            console.warn('Reminder state unavailable:', e.message);
-            return false;
-        }
-    }
-
-    // The off switch. Only this device stops getting reminders; other devices keep theirs.
-    async function disableReminders() {
-        remindersOff.disabled = true;
-        try {
-            const subscription = await thisDeviceSubscription();
-            if (subscription) {
-                let failed = null;
-                await api('push/subscriptions', {method: 'DELETE', body: {endpoint: subscription.endpoint}})
-                    .catch(e => { failed = e; });
-                // Unsubscribing in the browser stops the reminders even if the portal could not be reached: the push
-                // service then reports this device as gone and portal-reminders forgets it.
-                if (!(await subscription.unsubscribe()) && failed) throw failed;
-            }
-            remindersOff.hidden = true;
-            notifications.hidden = false;
-            showNotice(REMINDERS_OFF);
-        } catch (e) {
-            showNotice('Reminders could not be turned off. Check your connection and try again.');
-        } finally {
-            remindersOff.disabled = false;
-            // On phones the switch is in the menu: close it so the message under the header can be read.
-            if (phoneLayout.matches) closeMenu();
+            console.warn(e);
         }
     }
 
@@ -1060,8 +1049,7 @@
         frame.src = 'about:blank';
         notice.hidden = true;
         languages.hidden = true;
-        notifications.hidden = true;
-        remindersOff.hidden = true;
+        settingsMenu.open = false;
         // DA Management ends its own session (on the public address at its own name, round 10).
         fetch(MANAGEMENT_ORIGIN + '/logout', {credentials: 'include', mode: 'no-cors'}).catch(() => {});
     });
@@ -1094,7 +1082,14 @@
         loading.textContent = 'Loading ' + (name === 'insights' ? 'dashboard' : TITLES[name] || 'workspace') + '…';
         delete loading.dataset.state;
         loading.hidden = false;
+        // Round 14: the frame is hidden (its box shows the theme's background) until the new page has loaded, so a
+        // page never flashes white in dark mode. A slow page shows again after 4 s at the latest.
+        frameBox.classList?.add('frame-loading');
+        clearTimeout(frameRevealTimer);
+        frameRevealTimer = setTimeout(() => frameBox.classList?.remove('frame-loading'), 4000);
     }
+    let frameRevealTimer = 0;
+    frame.addEventListener('load', () => { clearTimeout(frameRevealTimer); frameBox.classList?.remove('frame-loading'); });
 
     // The header's description, the Library button and the frame's name for this page.
     function showHeadingFor(page) {

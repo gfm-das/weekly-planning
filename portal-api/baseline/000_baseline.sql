@@ -75,7 +75,7 @@ ALTER SCHEMA public OWNER TO pg_database_owner;
 -- Name: archetype_plan_rows(); Type: FUNCTION; Schema: dashboards; Owner: postgres
 --
 
-CREATE FUNCTION dashboards.archetype_plan_rows() RETURNS TABLE(reporting_week_id bigint, area_id bigint, first_time_first_week_sacrament numeric, member_meals_active numeric, member_meals_less_active numeric, member_meals_part_member numeric, member_visits_active numeric, member_visits_less_active numeric, member_visits_part_member numeric, member_referral_asks numeric, lessons_asked_referral numeric, facebook_finding_days numeric, facebook_friends_found numeric, youth_activities numeric, service_hours numeric, less_active_sacrament numeric, new_members_on_plan bigint, new_member_lessons numeric, new_members_at_church bigint)
+CREATE FUNCTION dashboards.archetype_plan_rows() RETURNS TABLE(reporting_week_id bigint, area_id bigint, first_time_first_week_sacrament numeric, member_meals_active numeric, member_meals_less_active numeric, member_meals_part_member numeric, member_visits_active numeric, member_visits_less_active numeric, member_visits_part_member numeric, member_referral_asks numeric, lessons_asked_referral numeric, youth_activities numeric, service_hours numeric, less_active_sacrament numeric, new_members_on_plan bigint, new_member_lessons numeric, new_members_at_church bigint)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'pg_catalog', 'pg_temp'
     AS $$
@@ -93,8 +93,6 @@ CREATE FUNCTION dashboards.archetype_plan_rows() RETURNS TABLE(reporting_week_id
        'outofallofyourmembermealsandvisitshowmanytimesdidyouaskforafriendreferralactual'),
       ('lessons_asked_referral', NULL,
        'lessonsintheweekwhereyouaskeddoyouknowsomeonewhowouldbeinterestedinactual'),
-      ('facebook_finding_days', 'facebook_finding_days', 'daysoffacebookfinding'),
-      ('facebook_friends_found', 'facebook_friends_found', 'friendsfoundthroughfacebook'),
       ('youth_activities', 'youth_activities_actual', 'youthactivitiesactual'),
       ('service_hours', 'service_hours_actual', 'servicehoursactual'),
       ('less_active_sacrament', 'less_active_sacrament_actual',
@@ -167,8 +165,6 @@ CREATE FUNCTION dashboards.archetype_plan_rows() RETURNS TABLE(reporting_week_id
          max(t.value) FILTER (WHERE t.kpi = 'member_visits_part_member'),
          max(t.value) FILTER (WHERE t.kpi = 'member_referral_asks'),
          max(t.value) FILTER (WHERE t.kpi = 'lessons_asked_referral'),
-         max(t.value) FILTER (WHERE t.kpi = 'facebook_finding_days'),
-         max(t.value) FILTER (WHERE t.kpi = 'facebook_friends_found'),
          max(t.value) FILTER (WHERE t.kpi = 'youth_activities'),
          max(t.value) FILTER (WHERE t.kpi = 'service_hours'),
          max(t.value) FILTER (WHERE t.kpi = 'less_active_sacrament'),
@@ -2611,7 +2607,7 @@ ALTER FUNCTION public.get_dl_call_in_nm_activity(target_district_id bigint, targ
 -- Name: get_dl_call_in_summary(bigint, bigint); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_dl_call_in_summary(target_district_id bigint, target_reporting_week_id bigint) RETURNS TABLE(district_id bigint, district_name text, reporting_week_id bigint, reporting_sunday date, area_id bigint, area_name text, missionaries jsonb, dl_update text, report_count bigint, all_reports_submitted boolean, facebook_finding_days numeric, facebook_friends_found numeric, long_term_service boolean, friends_found_previous_goal numeric, friends_found_actual numeric, friends_found_goal numeric, friends_found_plan text, friends_found_plans jsonb, members_at_lessons_previous_goal numeric, members_at_lessons_actual numeric, members_at_lessons_goal numeric, members_at_lessons_plan text, members_at_lessons_plans jsonb, sacrament_attendance_previous_goal numeric, sacrament_attendance_actual numeric, sacrament_attendance_goal numeric, sacrament_attendance_plan text, sacrament_attendance_plans jsonb, baptismal_dates_previous_goal numeric, baptismal_dates_actual numeric, baptismal_dates_goal numeric, baptismal_dates_plan text, baptismal_dates_plans jsonb, baptisms_confirmations_previous_goal numeric, baptisms_confirmations_actual numeric, baptisms_confirmations_goal numeric, baptisms_confirmations_plan text, baptisms_confirmations_plans jsonb, nm_sacrament_previous_goal numeric, nm_sacrament_actual numeric, nm_sacrament_goal numeric, nm_sacrament_plan text, nm_sacrament_plans jsonb, follow_up_lessons_actual bigint, follow_up_lessons_goal bigint)
+CREATE FUNCTION public.get_dl_call_in_summary(target_district_id bigint, target_reporting_week_id bigint) RETURNS TABLE(district_id bigint, district_name text, reporting_week_id bigint, reporting_sunday date, area_id bigint, area_name text, missionaries jsonb, dl_update text, report_count bigint, all_reports_submitted boolean, long_term_service boolean, friends_found_previous_goal numeric, friends_found_actual numeric, friends_found_goal numeric, friends_found_plan text, friends_found_plans jsonb, members_at_lessons_previous_goal numeric, members_at_lessons_actual numeric, members_at_lessons_goal numeric, members_at_lessons_plan text, members_at_lessons_plans jsonb, sacrament_attendance_previous_goal numeric, sacrament_attendance_actual numeric, sacrament_attendance_goal numeric, sacrament_attendance_plan text, sacrament_attendance_plans jsonb, baptismal_dates_previous_goal numeric, baptismal_dates_actual numeric, baptismal_dates_goal numeric, baptismal_dates_plan text, baptismal_dates_plans jsonb, baptisms_confirmations_previous_goal numeric, baptisms_confirmations_actual numeric, baptisms_confirmations_goal numeric, baptisms_confirmations_plan text, baptisms_confirmations_plans jsonb, nm_sacrament_previous_goal numeric, nm_sacrament_actual numeric, nm_sacrament_goal numeric, nm_sacrament_plan text, nm_sacrament_plans jsonb, follow_up_lessons_actual bigint, follow_up_lessons_goal bigint)
     LANGUAGE plpgsql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_temp'
     AS $$
@@ -2800,8 +2796,6 @@ BEGIN
             cr.area_id,
 
             -- Flexible/non-core values remain in weekly_planning_answers
-            fa.facebook_finding_days,
-            fa.facebook_friends_found,
 
             -- Stable KPIs come from weekly_area_reports and are summed
             -- across unit reports to produce one district-call-in row per area.
@@ -2842,32 +2836,8 @@ BEGIN
                 AS nm_sacrament_goal
 
         FROM current_reports cr
-
-        LEFT JOIN (
-            SELECT
-                ca.area_id,
-
-                SUM(ca.answer_number)
-                    FILTER (
-                        WHERE ca.question_key = 'facebook_finding_days'
-                    )
-                    AS facebook_finding_days,
-
-                SUM(ca.answer_number)
-                    FILTER (
-                        WHERE ca.question_key = 'facebook_friends_found'
-                    )
-                    AS facebook_friends_found
-
-            FROM current_answers ca
-            GROUP BY ca.area_id
-        ) fa
-          ON fa.area_id = cr.area_id
-
-        GROUP BY
-            cr.area_id,
-            fa.facebook_finding_days,
-            fa.facebook_friends_found
+GROUP BY
+            cr.area_id
     ),
 
 
@@ -3250,10 +3220,7 @@ BEGIN
         )::boolean AS all_reports_submitted,
 
 
-        cn.facebook_finding_days,
-        cn.facebook_friends_found,
-
-        COALESCE(
+COALESCE(
             ba.long_term_service,
             false
         ) AS long_term_service,
@@ -7561,15 +7528,13 @@ CREATE VIEW dashboards.archetype_area_week AS
             archetype_plan_rows.member_visits_part_member,
             archetype_plan_rows.member_referral_asks,
             archetype_plan_rows.lessons_asked_referral,
-            archetype_plan_rows.facebook_finding_days,
-            archetype_plan_rows.facebook_friends_found,
             archetype_plan_rows.youth_activities,
             archetype_plan_rows.service_hours,
             archetype_plan_rows.less_active_sacrament,
             archetype_plan_rows.new_members_on_plan,
             archetype_plan_rows.new_member_lessons,
             archetype_plan_rows.new_members_at_church
-           FROM dashboards.archetype_plan_rows() archetype_plan_rows(reporting_week_id, area_id, first_time_first_week_sacrament, member_meals_active, member_meals_less_active, member_meals_part_member, member_visits_active, member_visits_less_active, member_visits_part_member, member_referral_asks, lessons_asked_referral, facebook_finding_days, facebook_friends_found, youth_activities, service_hours, less_active_sacrament, new_members_on_plan, new_member_lessons, new_members_at_church)
+           FROM dashboards.archetype_plan_rows() archetype_plan_rows(reporting_week_id, area_id, first_time_first_week_sacrament, member_meals_active, member_meals_less_active, member_meals_part_member, member_visits_active, member_visits_less_active, member_visits_part_member, member_referral_asks, lessons_asked_referral, youth_activities, service_hours, less_active_sacrament, new_members_on_plan, new_member_lessons, new_members_at_church)
         ), fc AS (
          SELECT f.sunday,
             f.area_id,
@@ -7629,8 +7594,6 @@ CREATE VIEW dashboards.archetype_area_week AS
     e.member_visits_part_member,
     e.member_referral_asks,
     e.lessons_asked_referral,
-    e.facebook_finding_days,
-    e.facebook_friends_found,
     e.youth_activities,
     e.service_hours,
     e.less_active_sacrament,
@@ -9458,7 +9421,7 @@ CREATE VIEW public.call_in_planning_details WITH (security_invoker='true') AS
      LEFT JOIN LATERAL ( SELECT jsonb_agg(jsonb_build_object('key', wpa.question_key, 'label', regexp_replace(regexp_replace(COALESCE(q.question_label, initcap(replace(wpa.question_key, '_'::text, ' '::text))), '^Optional: '::text, ''::text), '\s*— Action Plan$'::text, ''::text), 'text', btrim(wpa.answer_text), 'core', (wpa.question_key = ANY (ARRAY['nm_sacrament_attendance_plan'::text, 'baptisms_confirmations_plan'::text, 'baptismal_dates_plan'::text, 'sacrament_attendance_plan'::text, 'members_at_lessons_plan'::text, 'friends_found_plan'::text]))) ORDER BY q.section_order, q.question_order, wpa.question_key) AS items
            FROM (public.weekly_planning_answers wpa
              LEFT JOIN public.active_planning_questions q ON ((q.question_key = wpa.question_key)))
-          WHERE ((wpa.weekly_area_report_id = r.id) AND ("right"(wpa.question_key, 5) = '_plan'::text) AND (wpa.question_key <> ALL (ARRAY['weekly_action_plan'::text, 'social_media_plan'::text])) AND (NULLIF(btrim(wpa.answer_text), ''::text) IS NOT NULL))) plans ON (true))
+          WHERE ((wpa.weekly_area_report_id = r.id) AND ("right"(wpa.question_key, 5) = '_plan'::text) AND (wpa.question_key <> ALL (ARRAY['weekly_action_plan'::text])) AND (NULLIF(btrim(wpa.answer_text), ''::text) IS NOT NULL))) plans ON (true))
   WHERE public.can_access_area(r.area_id);
 
 

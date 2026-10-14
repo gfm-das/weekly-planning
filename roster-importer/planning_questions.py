@@ -75,7 +75,7 @@ def protected_reason(key):
     """Why a locked question is locked: who reads it (shown in the yellow "Locked." box on its page)."""
     if key in KEY_INDICATOR_KEYS:
         return "A key indicator: Dashboards, Call-ins and Presentations read it."
-    if key.endswith("_plan") and key not in {"weekly_action_plan", "social_media_plan"}:
+    if key.endswith("_plan") and key != "weekly_action_plan":
         return "The action plan of a key indicator: leaders read it in Call-ins."
     if key in {"weekly_action_plan", "information_up_chain"}:
         return "Call-ins and the Overview show it."

@@ -318,8 +318,13 @@ test("the manager's sign-in never opens anything on the deck address", { skip },
   const chart = await fetch(`${manager.deckUrl}/api/charts/data`, { method: 'POST', headers: { Cookie: session, 'Content-Type': 'application/json', Referer: `${manager.deckUrl}/p/alpha/` }, body: JSON.stringify({ deck: 'alpha', spec: { measures: ['friends_found.actual'] } }) });
   assert.equal(chart.status, 401);
   // No other manager route exists there.
-  for (const pathname of ['/api/presentations', '/api/presentations/alpha/source', '/api/session', '/studio/alpha', '/'])
+  for (const pathname of ['/api/presentations', '/api/presentations/alpha/source', '/api/session', '/studio/alpha'])
     assert.notEqual((await deckGet(pathname, session, { Accept: 'application/json' })).status, 200, pathname);
+
+  // Round 14: the bare deck address leads to the manager library (302), not a manager page served here.
+  const root = await fetch(`${manager.deckUrl}/`, { redirect: 'manual', headers: { Cookie: session } });
+  assert.equal(root.status, 302);
+  assert.equal(root.headers.get('location'), manager.url + '/');
 });
 
 test("a deck page's requests to the manager are refused, and CORS never lets the deck address in", { skip }, async () => {

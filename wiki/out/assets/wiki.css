@@ -906,3 +906,11 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
   color: var(--wiki-muted);
   font-size: 0.9rem;
 }
+
+/* Round 14: back to the portal; inside the portal frame the wiki has no own theme switch or back link. */
+.back-to-portal{display:inline-flex;align-items:center;min-height:36px;padding:6px 12px;margin-inline-end:12px;border-radius:8px;background:var(--wiki-navy);color:#fff!important;font-weight:700;font-size:.85rem;text-decoration:none}
+.back-to-portal:hover{background:var(--wiki-navy-mid)}
+.wiki-embedded .back-to-portal,.wiki-embedded .theme-toggle{display:none}
+.wiki-page-tabs.is-hidden{display:none}
+html[data-theme="dark"]{color-scheme:dark;background:#101a21}
+@media (max-width:700px){.back-to-portal,.theme-toggle,.sidebar-toggle{min-height:44px}}

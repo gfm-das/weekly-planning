@@ -53,8 +53,8 @@ TEXT = {
     "retire.place.answers": "Saved answers in those plans: {count}.",
     "retire.confirm.title": "Confirm",
     "retire.confirm.type": "Type the name {name} to confirm",
-    "retire.confirm.backup": "A backup of the database is made first and named in Import history. If the backup fails, nothing is deleted.",
-    "retire.confirm.button": "Back up and delete",
+    "retire.confirm.backup": "This permanently deletes the retired item. The nightly database backup is the way back if you need it.",
+    "retire.confirm.button": "Delete for good",
     "retire.back": "Back to Delete retired",
     # A question
     "retire.question.title": "Delete question {name}",

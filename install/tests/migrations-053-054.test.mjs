@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'portal-api', 'migrations');
 const read = name => fs.readFileSync(path.join(DIR, name.startsWith('054_') ? 'optional' : '.', name), 'utf8').replace(/\r\n/g, '\n');
 const strip = sql => sql.split('\n').filter(l => !l.trim().startsWith('--')).join('\n');
-const FILES = ['053_remove_presentations_v2_data', '054_delete_social_media_catalogue'];
+const FILES = ['053_remove_presentations_v2_data'];
 // 054 lives in migrations/optional/: the updater only reads NNN_name.sql directly in migrations/, so an installed system never runs it by itself.
 // It stops when saved answers use the social-media questions, which would otherwise fail a whole update.
 
@@ -42,22 +42,14 @@ test('053: copies the v2- rows into the backup table before it deletes them, dro
   assert.doesNotMatch(down, /DROP TABLE/i);
 });
 
-test('054: stops before any change when answers refer to the questions; logs before it deletes; guards stay on', () => {
-  const sql = strip(read('054_delete_social_media_catalogue.sql'));
-  const check = sql.indexOf('weekly_planning_answers WHERE question_key = ANY');
-  const log = sql.indexOf("'Migration 054'");
-  const del = sql.indexOf('DELETE FROM public.planning_question_visibility_rules');
-  assert.ok(check > 0 && log > check && del > log, 'order: check, log, delete');
-  assert.match(sql, /RAISE EXCEPTION 'Migration 054 STOPPED, nothing was changed: % saved answer/);
-  assert.match(sql, /planning_catalog\.allow_delete/);
-  // only the section guard is switched off, and it is switched on again before the check
-  assert.equal((sql.match(/DISABLE TRIGGER/g) || []).length, 1);
-  assert.match(sql, /ALTER TABLE public\.planning_question_sections DISABLE TRIGGER planning_catalog_guard;\nDELETE FROM public\.planning_question_sections WHERE section_key = 'social_media';\nALTER TABLE public\.planning_question_sections ENABLE TRIGGER planning_catalog_guard;/);
-  assert.match(sql, /tgenabled = 'O'/);
-  assert.doesNotMatch(sql, /DELETE FROM public\.weekly_planning_answers|TRUNCATE|DROP TABLE|session_replication_role/i);
-  const down = strip(read('054_delete_social_media_catalogue_rollback.sql'));
-  assert.match(down, /actor = 'Migration 054'/);
-  assert.match(down, /jsonb_populate_record/);
-  assert.doesNotMatch(down, /DELETE FROM/i);
+test('056: deletes social-media answers and catalogue for real, keeps no copies, guards stay on', () => {
+  const sql = strip(read('056_delete_social_media.sql'));
+  assert.equal((sql.match(/^BEGIN;/gm) || []).length, 1);
+  assert.match(sql, /session_user NOT IN \('supabase_admin', 'postgres'\)/);
+  assert.match(sql, /DELETE FROM public\.weekly_planning_answers/);
+  assert.match(sql, /DELETE FROM public\.planning_question_sections WHERE section_key = 'social_media'/);
+  assert.match(sql, /DROP TABLE IF EXISTS portal\.presentation_access_v2_removed/);
+  assert.doesNotMatch(sql, /planning_catalog_changes/, 'no change-log copy');
+  assert.match(sql, /ENABLE TRIGGER planning_catalog_guard/);
+  assert.ok(!fs.existsSync(path.join(DIR, 'optional')) || !fs.readdirSync(path.join(DIR, 'optional')).some(f => f.startsWith('054_')), 'optional 054 is gone');
 });
-

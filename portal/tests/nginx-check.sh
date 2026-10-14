@@ -49,7 +49,9 @@ done
 plain=$(wc -c < "$REPO/portal/i18n/en.json")
 packed=$(curl -s -H 'Accept-Encoding: gzip' "$BASE/i18n/en.json" | wc -c)
 [ "$packed" -lt $((plain * 30 / 100)) ]; check "en.json travels at under 30% of its size ($packed of $plain bytes)" $?
-[ "$(status /favicon.png)" = '404 ' ] && [ "$(curl -s "$BASE/favicon.png" | wc -c)" -lt 1024 ]; check 'a missing tab icon is a short "not found", not the portal page' $?
+[ "$(status /favicon.png)" = '301 ' ]; check 'the old tab icon address leads to /favicon.svg (no 404)' $?
+[ "$(status /favicon.svg)" = '200 ' ]; check 'the tab icon is there' $?
+curl -s "$BASE/robots.txt" | grep -q 'Disallow: /'; check 'robots.txt keeps search engines out' $?
 
 CHUNK=$(ls "$REPO/portal/whiteboard/vendor/chunks" | head -1)
 [ "$(header "/whiteboard/vendor/chunks/$CHUNK" Cache-Control)" = 'public, max-age=31536000, immutable' ]; check "the Whiteboard bundle's fingerprinted parts may be kept for a year ($CHUNK)" $?
@@ -60,7 +62,8 @@ CHUNK=$(ls "$REPO/portal/whiteboard/vendor/chunks" | head -1)
 [ "$(header /i18n/en.json Access-Control-Allow-Origin)" = '*' ]; check 'DA Management and Presentations may read the catalogs' $?
 
 header /whiteboard/whiteboard.js Content-Security-Policy | grep -q "frame-src 'self' http://\*:3030"; check 'the Whiteboard may frame Presentations (:3030) only' $?
-curl -s -o /dev/null -D - -H 'Host: www.example.org' "$BASE/whiteboard/whiteboard.js" | tr -d '' | grep -i '^content-security-policy:' | grep -q 'https://presentations\.example\.org;'; check 'on a public name the Whiteboard may also frame presentations.<that domain>' $?
+curl -s -o /dev/null -D - -H 'Host: www.example.org' "$BASE/whiteboard/whiteboard.js" | tr -d '
+' | grep -i '^content-security-policy:' | grep -q 'https://presentations\.example\.org;'; check 'on a public name the Whiteboard may also frame presentations.<that domain>' $?
 [ "$(status /whiteboard)" = "302 $BASE/whiteboard/" ]; check '/whiteboard leads to /whiteboard/' $?
 [ "$(status /grafana/d/abc)" = "302 $BASE/#insights" ]; check 'an old Grafana address leads to Dashboards' $?
 

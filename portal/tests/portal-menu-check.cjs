@@ -119,9 +119,10 @@ const PEOPLE = {
 // What each person may open (the menu shows the same entries; Overview, Weekly Planning, Calendar and Announcements
 // are everyone's, and so is the Mission drive). Vollzogen (the list of baptized and confirmed people) is for the managers and
 // for Office, which is NOT a manager: Office gets that one page and nothing else of Insights.
-const BASE = ['overview', 'planning', 'calendar', 'announcements', 'drive'];
+const BASE = ['overview', 'planning', 'calendar', 'announcements'];
 // Whiteboard: round 6; Archetypal Health: APs, the President and Data Analysts.
-const MANAGER = [...BASE, 'callins', 'insights', 'management', 'presentations', 'whiteboard', 'archetypes', 'vollzogen'];
+// Wiki (round 14 owner decision): Data Analysts, President and APs only, like portal-api roles.can_edit_wiki.
+const MANAGER = [...BASE, 'callins', 'insights', 'management', 'presentations', 'whiteboard', 'wiki', 'archetypes', 'vollzogen'];
 const EXPECTED = {
   MISSIONARY: BASE, OFFICE: [...BASE, 'vollzogen'], 'Missionary + Office': [...BASE, 'vollzogen'],
   DL: [...BASE, 'callins', 'presentations'], ZL: [...BASE, 'callins', 'presentations'],
@@ -164,11 +165,12 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
     const manager = EXPECTED[who].includes('insights');
     eq(w.log.visible.navInsights, manager, `${who}: Dashboards ${manager ? 'shown' : 'hidden'}`);
     eq(w.log.visible.navManagement, manager, `${who}: DA Management ${manager ? 'shown' : 'hidden'}`);
+    eq(w.log.visible.navWiki, manager, `${who}: Wiki ${manager ? 'shown' : 'hidden'} (managers only)`);
     eq(w.log.visible.navCallIns, EXPECTED[who].includes('callins'), `${who}: Call-ins`);
     eq(w.log.visible.navPresentations, EXPECTED[who].includes('presentations'), `${who}: Presentations`);
     eq(w.log.visible.navArchetypes, EXPECTED[who].includes('archetypes'), `${who}: Archetypal Health`);
     eq(w.log.visible.navVollzogen, EXPECTED[who].includes('vollzogen'), `${who}: Vollzogen ${EXPECTED[who].includes('vollzogen') ? 'shown' : 'hidden'}`);
-    ok(EXPECTED[who].includes('drive') && !('navDrive' in w.log.visible), `${who}: Mission drive is open to every role and never hidden`);
+    ok(!EXPECTED[who].includes('drive'), `${who}: Mission drive is not an in-frame page (it is a sidebar link when set)`);
     if (who === 'OFFICE' || who === 'Missionary + Office') {
       ok(!manager && !EXPECTED[who].some(p => ['insights', 'management', 'whiteboard', 'archetypes', 'callins', 'presentations'].includes(p)), `${who}: Office gets no manager page`);
       eq(w.log.visible.insightsGroupTitle, true, `${who}: the INSIGHTS heading shows (for Vollzogen)`);
@@ -181,8 +183,8 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
 
   // ---- The names -----------------------------------------------------------------------------------------------------
   const n = world();
-  eq(vm.runInContext('[TITLES.planning, TITLES.callins, TITLES.overview, TITLES.insights, TITLES.drive, TITLES.vollzogen]', n),
-    ['Weekly Planning', 'Call-ins', 'Overview', 'Dashboards', 'Mission drive', 'Vollzogen'], 'page titles: Weekly Planning, Call-ins (no "Alpha")');
+  eq(vm.runInContext('[TITLES.planning, TITLES.callins, TITLES.overview, TITLES.insights, TITLES.vollzogen, TITLES.wiki]', n),
+    ['Weekly Planning', 'Call-ins', 'Overview', 'Dashboards', 'Vollzogen', 'Wiki'], 'page titles: Weekly Planning, Call-ins (no "Alpha")');
   ok(/data-page="planning"[^>]*>Weekly Planning</.test(template) && /data-page="callins"[^>]*>Call-ins</.test(template),
     'menu: "Weekly Planning" and "Call-ins"');
   ok(!n.log.texts.some(t => /Alpha|Beta/.test(t)) && !/Alpha|Beta/.test(code(template)), 'menu: no "Alpha" or "Beta" label');
@@ -280,16 +282,18 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
   ok(/\[data-theme="dark"\] #glimpse/.test(glimpseCss) && /\[data-theme="light"\] #glimpse/.test(glimpseCss), 'glimpse.css: light and dark');
   ok(/@media \(max-width: 760px\)/.test(glimpseCss) && /min-height: 44px/.test(glimpseCss), 'glimpse.css: phone layout with 44 px controls');
   // ---- The menu sections (round 13): Weekly / Information / Insights, managers at the bottom ---------------------------
-  const order = ['id="groupWeekly"', 'id="navPlanning"', 'id="navCallIns"', 'id="groupInformation"', 'id="insightsGroupTitle"', 'id="navInsights"', 'id="navPresentations"', 'id="managerGroupTitle"', 'class="sidebar-bottom"'];
+  // Round 14: Weekly (daily use), Insights, Information (Wiki, Mission drive), Manager tools last.
+  const order = ['id="groupWeekly"', 'id="navPlanning"', 'id="navCallIns"', 'id="insightsGroupTitle"', 'id="navInsights"', 'id="navPresentations"', 'id="groupInformation"', 'id="managerGroupTitle"', 'class="sidebar-bottom"'];
   const positions = order.map(x => template.indexOf(x));
-  ok(positions.every((x, i) => x > 0 && (i === 0 || x > positions[i - 1])), 'menu: Weekly, Information, Insights and the manager heading come in this order, above Sign Out');
+  ok(positions.every((x, i) => x > 0 && (i === 0 || x > positions[i - 1])), 'menu: Weekly, Insights, Information and the manager heading come in this order, above Sign Out');
   for (const [id, text] of [['groupWeekly', 'WEEKLY'], ['groupInformation', 'INFORMATION'], ['insightsGroupTitle', 'INSIGHTS'], ['managerGroupTitle', 'MANAGER TOOLS']]) {
     ok(new RegExp(`id="${id}"[^>]*>${text}<`).test(template), `menu: heading ${text}`);
   }
-  ok(/getElementById\('navCallIns'\)\?\.after\(menuButton\('navOverview'/.test(source), 'menu: Overview is the third entry of Weekly');
-  ok(/getElementById\('groupInformation'\)\?\.after\(\s*menuButton\('navCalendar'[\s\S]*?menuButton\('navAnnouncements'[\s\S]*?menuButton\('navWhiteboard'[\s\S]*?menuButton\('navDrive', 'Mission drive', 'drive'/.test(source), 'menu: Information = Calendar, Announcements, Whiteboard, Mission drive');
-  ok(/getElementById\('navInsights'\)\?\.after\(\s*menuButton\('navArchetypes'[\s\S]*?menuButton\('navVollzogen', 'Vollzogen', 'vollzogen'/.test(source), 'menu: Insights = Dashboards, Archetypal Health, Vollzogen, Presentations');
-  ok(!/menuButton\('nav\w*Wiki/i.test(source) && !/navWiki/i.test(template), 'menu: there is no Wiki entry (the Wiki has a button in DA Management)');
+  ok(/getElementById\('groupWeekly'\)\?\.after\(menuButton\('navOverview'/.test(source), 'menu: Overview is the first entry of Weekly');
+  ok(/getElementById\('navCallIns'\)\?\.after\(\s*menuButton\('navCalendar'[\s\S]*?menuButton\('navAnnouncements'/.test(source), 'menu: Weekly = Overview, Weekly Planning, Call-ins, Calendar, Announcements');
+  ok(/getElementById\('navInsights'\)\?\.after\(\s*menuButton\('navArchetypes'[\s\S]*?menuButton\('navVollzogen', 'Vollzogen', 'vollzogen'[\s\S]*?menuButton\('navWhiteboard'/.test(source), 'menu: Insights = Dashboards, Archetypal Health, Vollzogen, Whiteboard, Presentations');
+  ok(/menuButton\('navWiki', 'Wiki', 'wiki'/.test(source) && /menuLink\('navDrive', 'Mission drive'/.test(source) && /missionDriveUrl\(\)/.test(source), 'menu: Information = Wiki + Mission drive link (new tab when set)');
+  ok(/URLS\.wiki = '\/wiki\//.test(source), 'menu: the Wiki opens the portal wiki in the frame');
   ok(/getElementById\('managerGroupTitle'\)\?\.after\(management\)/.test(source), 'menu: DA Management sits under the manager heading');
   for (const who of ['MISSIONARY', 'DL', 'PRESIDENT', 'OFFICE']) {
     const w = world();

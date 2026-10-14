@@ -187,7 +187,7 @@ class Archived(unittest.TestCase):
 
     def test_the_archived_numbers(self):
         self.assertEqual(model.ARCHIVED_SOURCES,
-                         {'facebook_finding_days', 'facebook_friends_found', 'findechristus_referrals'})
+                         {'findechristus_referrals'})
         self.assertTrue(model.ARCHIVED_SOURCES <= set(model.SOURCES))  # kept, so old settings keep their labels
 
     def test_the_defaults_use_no_archived_number_or_tip(self):
@@ -199,8 +199,7 @@ class Archived(unittest.TestCase):
     def test_used(self):
         settings = model.defaults()
         settings['weights']['finding'] = {'friends_found': 40, 'findechristus_referrals': 60}
-        settings['weights']['teaching']['facebook_friends_found'] = 0
-        self.assertEqual(model.archived_used(settings), {'findechristus_referrals', 'facebook_friends_found'})
+        self.assertEqual(model.archived_used(settings), {'findechristus_referrals'})
         self.assertEqual(model.archived_used({}), set())
 
     def test_adding_one_is_refused_where_it_was_not_weighted_before(self):

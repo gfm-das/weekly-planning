@@ -344,6 +344,20 @@ save_rollback_point() {
     run_step "Rollback tag $rb:upd-$1" docker tag "$image:latest" "$rb:upd-$1" || return 1
   done
   run_step 'Copy of the portal pages' docker cp "$PORTAL_CONTAINER:/usr/share/nginx/html" "$POINT_FOLDER/portal-html" || return 1
+  prune_rollback_points
+}
+# Round 14: keep only the newest ${GFM_KEEP_UPDATE_POINTS:-2} ways back (database dumps and their folders), so the
+# updater does not fill the disk with one dump per update. The nightly backups are separate and not touched here.
+prune_rollback_points() {
+  local keep=${GFM_KEEP_UPDATE_POINTS:-2} old
+  # shellcheck disable=SC2012
+  ls -1t "$REPO"/backups/beta-pre-update-*.dump 2>/dev/null | tail -n +$((keep + 1)) | while IFS= read -r old; do
+    rm -f -- "$old" && log "  Removed an old update backup: ${old##*/}"
+  done
+  # shellcheck disable=SC2012
+  ls -1dt "$BACKUPS"/*/ 2>/dev/null | tail -n +$((keep + 1)) | while IFS= read -r old; do
+    rm -rf -- "${old%/}" && log "  Removed an old way back: ${old%/}"
+  done
 }
 
 update_code() {

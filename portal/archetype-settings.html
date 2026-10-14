@@ -16,6 +16,10 @@
 <html lang="en" data-theme="mission">
   <head>
     <meta charset="utf-8" />
+<script>/* Theme before paint — round 14 (no white flash). Same key as portal-enhancements.js. */
+(function(){try{var t=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme||"mission";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t==="dark"?"dark":"light";document.documentElement.style.background=t==="dark"?"#101a21":"";}catch(e){}})();</script>
+<meta name="color-scheme" content="light dark">
+
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>Archetypal Health settings</title>
     <link rel="stylesheet" href="workspace.css" />
@@ -178,7 +182,7 @@
       }
 
       // "Add a number": every number not used yet by this archetype, grouped by where it comes from. Archived numbers
-      // (Facebook, FindeChristus: migration 038) are never offered; a weight they already have stays until removed.
+      // (FindeChristus referrals: archived) are never offered; a weight they already have stays until removed.
       function addNumber(archetype) {
         const select = el('select');
         select.setAttribute('aria-label', A.t('archetypes.addNumber'));

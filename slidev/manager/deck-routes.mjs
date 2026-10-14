@@ -36,6 +36,11 @@ export async function handleDeckRequest(req, res) {
   try {
     const url = new URL(req.url, 'http://localhost');
     if (req.method === 'GET' && url.pathname === '/health') return sendJson(res, 200, { ok: true, service: 'deck-address', passes: passes.size });
+    // Round 14: the bare deck address (decks.<domain>/ or :8089/) is not a page of its own: it leads to the library.
+    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '') && managerAddress) {
+      res.writeHead(302, { Location: managerAddress + '/' });
+      return res.end();
+    }
     const refusal = deckRefusal({ method: req.method, headers: req.headers });
     if (refusal) return sendJson(res, 403, { error: refusal, refused: true });
     res.setHeader('Content-Security-Policy', deckFrameAncestors(req.headers.host));

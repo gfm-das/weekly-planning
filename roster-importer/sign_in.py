@@ -219,14 +219,14 @@ def login():
     """The old shared password. Without IMPORTER_PASSWORD it only says to come through the portal. On the public name
     (round 10) neither: a shared password must not be guessable from the internet."""
     if not settings.IMPORTER_PASSWORD or on_public_name():
-        return page.render("<div class='card'><h2>Sign in through Mission System</h2><p>Open management from your signed-in portal account.</p></div>", 403)
+        return page.render("<div class='card'><h2>Sign in through Mission System</h2><p>Open management from your signed-in portal account.</p></div>", 403, bare=True)
     if request.method == "POST":
         if secrets.compare_digest(request.form.get("password", ""), settings.IMPORTER_PASSWORD):
             session.clear()
             session["authenticated"] = True
             return redirect("/")
         flash("Incorrect password.")
-    return page.render("""<div class="card"><h2>Admin login</h2><form method="post"><input type="password" name="password" required><button>Login</button></form></div>""")
+    return page.render("""<div class="card"><h2>Admin login</h2><form method="post"><input type="password" name="password" required><button>Login</button></form></div>""", bare=True)
 
 
 @pages.route("/logout")

@@ -11,6 +11,14 @@
     "private": true
   },
   {
+    "title": "Data analyst onboarding",
+    "href": "analyst-onboarding.html",
+    "summary": "The clean starting point for a new data analyst on Weekly Planning 3.0.",
+    "tags": [],
+    "stub": false,
+    "private": true
+  },
+  {
     "title": "Backups and restore",
     "href": "backups-and-restore.html",
     "summary": "Nightly backups and restore caution.",

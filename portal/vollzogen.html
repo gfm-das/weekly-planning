@@ -18,6 +18,10 @@
 <html lang="en" data-theme="mission">
   <head>
     <meta charset="utf-8" />
+<script>/* Theme before paint — round 14 (no white flash). Same key as portal-enhancements.js. */
+(function(){try{var t=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme||"mission";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t==="dark"?"dark":"light";document.documentElement.style.background=t==="dark"?"#101a21":"";}catch(e){}})();</script>
+<meta name="color-scheme" content="light dark">
+
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>Vollzogen</title>
     <link rel="stylesheet" href="workspace.css" />
@@ -81,7 +85,12 @@
       // No writes here: the page only ever calls GET /api/vollzogen.
       const $ = (id) => document.getElementById(id);
       const esc = window.escapeHTML;
-      const T = (key, values) => (window.MissionI18n ? window.MissionI18n.t(key, values) : key);
+      // Round 14: until the catalogs are in, a key is shown as nothing (never "vollzogen.loading"); the page draws
+      // again on mission-i18n-change.
+      const T = (key, values) => {
+        const text = window.MissionI18n && window.MissionI18n.t ? window.MissionI18n.t(key, values) : key;
+        return text === key ? "" : text;
+      };
       const state = { filled: false, timer: null, ticket: 0 };
 
       function setStatus(text, error) {

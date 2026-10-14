@@ -111,8 +111,7 @@ File names keep letters such as ä, é or ł; files are stored under a random na
 reminder per person and week on **Sunday from 18:00** Europe/Berlin, unless a companion was working on the plan in the
 previous five minutes. Meeting reminders follow the event's reminder time and go to the event's audience only.
 
-- Reminders are **per device**: every browser where someone chose **Enable reminders** gets them.
-- **Turn off reminders** in the header stops them on this device only.
+- Reminders are **always on** and **per device**: the browser asks for notification permission once (on the first tap after sign-in); when allowed, the device is subscribed quietly. There is no on/off button and no notice bar.
 - **Sign out** removes this device's reminders, so the next person on a shared phone or computer does not get them.
   When someone signs in on a device that still has the previous person's reminders, those are removed.
 - A device the push service reports as gone (404/410) is forgotten. A network error does not remove anything.

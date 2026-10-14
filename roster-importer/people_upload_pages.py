@@ -44,7 +44,7 @@ def start():
       their area.</p>
       <p><a href="/people-upload/template">Download the template (CSV)</a></p>
       <form action="/people-upload/preview" method="post" enctype="multipart/form-data">
-        <label class="form-field">CSV or XLSX file<input type="file" name="file" accept=".csv,.xlsx" required></label>
+        <div class="form-field"><label class="file-pick"><span>CSV or XLSX file</span><input type="file" name="file" accept=".csv,.xlsx" required></label></div>
         <button>Check the file</button></form></div>
       <div class="card"><h3>How it works</h3><ul>
         <li>Columns read: First name and Last name (or Name), Baptism date (Date of Baptism, Taufdatum), Zone, Area (or the

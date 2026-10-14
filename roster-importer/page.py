@@ -32,34 +32,31 @@ RIGHT_TO_LEFT = ("fa", "ar")
 # a detail page) lists them as the third part of its entry, so the right tab stays lit there.
 # [(group key, tab text, [(address, page text, [more address starts])])]; the texts are in the portal's catalogs
 # (dam.* and uploads.geo.title already; dam.tab.* are new, see portal/i18n/en.json).
+# Round 14 (clean UI): four tabs. Uploads is ONE page that lists every file import (roster, historical CSV, people,
+# geo, vollzogen, the other data uploads). Planning questions sit with Places. DA Docs and the old Wiki tab are gone
+# (the portal's side-menu Wiki opens /wiki/). Addresses of the old pages still work; they light the right tab.
 MENU_GROUPS = [
-    ("data", "Data", [
-        ("/", "Roster Import", ["/preview", "/apply"]),
-        ("/historical", "Historical CSV", []),
-        ("/uploads", "Data uploads", []),
-        ("/uploads/geo", "Geo data", []),
-        ("/uploads/vollzogen", "Vollzogen", []),
-        ("/planning-questions", "Planning questions", []),
+    ("uploads", "Uploads", [
+        ("/uploads", "Uploads", ["/", "/preview", "/apply", "/historical", "/people-upload", "/people/",
+                                 "/uploads/geo", "/uploads/vollzogen", "/uploads/areas", "/uploads/finding",
+                                 "/uploads/zone-history", "/uploads/referral-archive", "/uploads/rates",
+                                 "/uploads/baptisms", "/uploads/names"]),
     ]),
     ("people", "People", [
-        ("/people-upload", "People upload", ["/people/"]),
         ("/accounts", "Account Manager", []),
+        ("/staff", "Staff accounts", []),
+        ("/abilities", "Role abilities", []),
+        ("/links", "Links to web services", []),
     ]),
     ("places", "Places", [
         ("/places", "Places", []),
         ("/mappings", "Area mappings", []),
+        ("/planning-questions", "Planning questions", []),
         ("/retire", "Delete retired", []),
     ]),
-    ("accounts", "Accounts", [
-        ("/staff", "Staff accounts", []),
-        ("/links", "Links to web services", []),
-        ("/abilities", "Role abilities", []),
-    ]),
     ("history", "History", [
-        ("/imports", "Import history", []),
+        ("/imports", "Import history", ["/docs", "/wiki-link"]),
         ("/updates", "Updates", []),
-        ("/docs", "DA Docs", []),
-        ("/wiki-link", "Wiki", []),
     ]),
 ]
 
@@ -146,6 +143,16 @@ label{font-size:12px;font-weight:650}.form-field{display:grid;gap:6px;margin:15p
 [data-theme="dark"] .nav a.on{background:#087f8c;border-color:#087f8c;color:#fff}[data-theme="dark"] .nav.sub a{background:transparent;border-color:transparent;color:#c9dade}
 [data-theme="dark"] .nav.sub a.on{background:#21343d;border-color:#4b6a76;color:#edf7f8}[data-theme="dark"] .nav.sub{border-color:#2d414b}
 
+/* Round 14: a styled file picker (not the browser's default) and a red danger button for deletes. */
+.file-pick{position:relative;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 14px;border:1px dashed #9db5bc;border-radius:10px;background:#f7fbfb;cursor:pointer;font-weight:650;color:#173644}
+.file-pick input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-pick:hover{border-color:var(--teal);background:#eef6f6}
+.file-pick .name{font-weight:500;color:#687d88;font-size:13px}
+button.danger,.danger{background:#b42318;border-color:#b42318;color:#fff}
+[data-theme="dark"] .file-pick{background:#101a21;border-color:#39515d;color:#edf7f8}[data-theme="dark"] .file-pick .name{color:#a9bdc3}
+[data-theme="dark"] button.danger,[data-theme="dark"] .danger{background:#b42318;border-color:#b42318;color:#fff}
+@media(max-width:700px){.nav.tabs a,.nav.sub a{min-height:44px;padding:10px 12px}.nav.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+
 /* Phones */
 @media(max-width:700px){body{padding:16px 12px}.split{grid-template-columns:1fr}.card{padding:17px}.nav{gap:6px}.nav a{padding:8px}}
 
@@ -187,6 +194,8 @@ FRAME = r"""
 <html lang="{{ page_lang }}" dir="{{ page_dir }}">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<script>/* Theme before paint (round 14). */(function(){try{var t=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme||"mission";document.documentElement.dataset.theme=t;document.documentElement.style.background=t==="dark"?"#101a21":"";}catch(e){}})()</script>
 <script>/* Interface translation (round 6): the portal's i18n.js, in the language the portal chose (cookie gfm_lang or ?lang=). */(function(){var s=document.createElement("script");s.src={{ i18n_src|tojson }}||location.protocol+"//"+location.hostname+":8070/i18n.js";document.head.appendChild(s)})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mission Admin</title>
@@ -219,12 +228,14 @@ def i18n_source():
     return ""
 
 
-def render(body, status=200):
-    """The whole page around `body` (HTML text), with the HTTP status code (200 = all right)."""
+def render(body, status=200, bare=False):
+    """The whole page around `body` (HTML text), with the HTTP status code (200 = all right).
+    bare=True: no tabs (the login page and other signed-out pages)."""
     token = session.setdefault("csrf_token", secrets.token_urlsafe(32))
     body = POST_FORM.sub(lambda found: found.group(1) + f'<input type="hidden" name="csrf_token" value="{token}">', body)
     language = page_language()
-    html = frame(current_app.jinja_env).render(body=body, style=STYLE, nav=menu_html(request.path), page_lang=language,
+    nav = "" if bare else menu_html(request.path)
+    html = frame(current_app.jinja_env).render(body=body, style=STYLE, nav=nav, page_lang=language,
                                                page_dir="rtl" if language in RIGHT_TO_LEFT else "ltr",
                                                i18n_src=i18n_source())
     return html, status

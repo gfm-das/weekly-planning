@@ -3,3 +3,6 @@
 .field-error{display:block;color:#b3261e;font-size:12px;font-weight:600;line-height:1.4;margin-top:6px}[data-theme="dark"] .field-error{color:#ff9b91}[data-theme="dark"] .status.error{color:#ff9b91}
 /* Delete confirmations and attachment removal (calendar, announcements); 44px touch targets on phones. */
 button.danger,.button.danger{background:#b42318;color:#fff}.confirm-dialog{width:min(480px,94vw)}.confirm-dialog h2{margin-bottom:10px}.confirm-dialog p{margin:0 0 10px}.confirm-name{font-weight:650;overflow-wrap:anywhere}.confirm-actions{flex-wrap:wrap}.attachment-item{display:inline-flex;align-items:stretch;gap:2px;max-width:100%}.attachment{max-width:100%;overflow-wrap:anywhere;text-align:left}.attachment-remove{background:#fff0ed;color:#a33329;font-size:11px;padding:7px 10px}[data-theme="dark"] .attachment-remove,[data-theme="dark"] .actions .danger{background:#3a2124;color:#ffb4ab;border-color:#5c2b2b}@media(max-width:700px){.actions button,.attachment,.attachment-remove,.dialog-actions button{min-height:44px}.confirm-actions{flex-direction:column-reverse;align-items:stretch}}
+
+[data-theme="dark"] button.secondary,.button.secondary{background:#21343d;color:#edf7f8}
+[data-theme="dark"] button.secondary:hover{background:#2a4450}

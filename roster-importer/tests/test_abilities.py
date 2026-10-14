@@ -159,9 +159,9 @@ class TheScreen(unittest.TestCase):
 
     def test_it_is_in_the_accounts_tab(self):
         self.assertIn(("/abilities", "Role abilities"), page.MENU)
-        self.assertEqual(page.current_page("/abilities"), ("accounts", "/abilities"))
-        self.assertEqual(page.current_page("/abilities/revert/x"), ("accounts", "/abilities"))
-        self.assertIn(("/abilities", "Role abilities", []), dict((k, p) for k, _t, p in page.MENU_GROUPS)["accounts"])
+        self.assertEqual(page.current_page("/abilities"), ("people", "/abilities"))
+        self.assertEqual(page.current_page("/abilities/revert/x"), ("people", "/abilities"))
+        self.assertIn(("/abilities", "Role abilities", []), dict((k, p) for k, _t, p in page.MENU_GROUPS)["people"])
 
 
 class PreviewAndSave(unittest.TestCase):

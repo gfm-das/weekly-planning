@@ -252,7 +252,7 @@ for (const who of ['ap', 'president', 'dataAdmin', 'dlDataAdmin']) {
   const tourAt = template.indexOf('<script src="/tour.js'), shellAt = template.indexOf('<script src="/portal-enhancements.js');
   ok(tourAt > 0 && tourAt < shellAt, 'tour.js loads before portal-enhancements.js');
   const shell = read('portal/portal-enhancements.js');
-  ok(/headerButton\('Tour'/.test(shell) && /portalTourButton/.test(shell) && /portalCustomize/.test(shell), 'the header has a Tour button');
+  ok(/settingsButton\('Tour'/.test(shell) && /portalTourButton/.test(shell) && /portalCustomize/.test(shell), 'the Settings menu has a Tour entry (round 14)');
   ok(/GfmTour\.offerOnce\(roles, currentPerson\)/.test(shell), 'the shell offers the tour once, after sign-in');
   ok(/GfmTour\.start\(currentRoles, currentPerson\)/.test(shell), 'the Tour button starts it');
   const css = read('portal/tour.css');

@@ -56,7 +56,7 @@ The addresses are **settings**, not code: `WEB_LINK_BREVO`, `WEB_LINK_PORKBUN` a
 
 ## Wiki button
 
-**DA Management → Wiki** (a tab for managers only, next to *DA Docs*) has one card with an **Open the wiki** button. It opens the mission wiki (the page you are reading) in a new tab. The wiki is **not** in the portal's side menu on purpose: managers reach it from here.
+The mission wiki lives in the portal side menu under **Information → Wiki** (everyone signed in). It opens inside the portal frame in the navy and gold theme. DA Docs was removed; the guide is this wiki (start at [Data analyst onboarding](analyst-onboarding.html)).
 
 The address is a **setting**, not code: `WEB_LINK_WIKI` in `roster-importer/.env`. Empty works it out (the name you reached DA Management by, on the portal's port `PORTAL_PORT`, default 8070, then `/wiki/`; on the internet name the public portal address); `off` hides the button. An address with a password or key in it is not shown.
 

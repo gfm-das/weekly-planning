@@ -36,7 +36,7 @@ def index():
       <form action="/preview" method="post" enctype="multipart/form-data">
         <input type="hidden" name="mission_id" value="{sign_in.current_mission_id()}">
         <p><label>Transfer effective date<br><input type="date" name="transfer_date" value="{date.today().isoformat()}" required></label></p>
-        <p><label>Roster CSV/XLSX<br><input type="file" name="file" accept=".csv,.xlsx" required></label></p>
+        <p><label class="file-pick"><span>Roster CSV/XLSX</span><input type="file" name="file" accept=".csv,.xlsx" required></label></p>
         <button>Preview changes</button>
       </form>
     </div>

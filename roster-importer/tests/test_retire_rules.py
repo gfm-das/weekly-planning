@@ -315,7 +315,7 @@ class PageRenderTests(unittest.TestCase):
         check_call.assert_called_once_with("area", 7, 8)
         self.assertIn("Check passed: 5 rows move and 1 settings rows are removed with it", html)
         self.assertIn("Type the name Alt &lt;Stadt&gt; to confirm", html)
-        self.assertIn("Back up and delete", html)
+        self.assertIn("Delete for good", html)
         self.assertIn("/retire/place/area/7/delete", html)
         self.assertIn('name="into" value="8"', html)
 
@@ -359,7 +359,7 @@ class PageRenderTests(unittest.TestCase):
             self.assertIn("Type the name old_question to confirm", html)
             html, status = retire_pages.question_page("old_question", drop=True)
             check_call.assert_called_with("old_question", None, True)
-            self.assertIn("Back up and delete", html)
+            self.assertIn("Delete for good", html)
 
     def test_a_locked_or_active_question_cannot_be_deleted(self):
         for changes, text in (({"protected": True}, "It is locked"), ({"active": True}, "still on the form")):

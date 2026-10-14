@@ -44,9 +44,6 @@ def _question(section_key, title, key, label, kind="NUMBER", required=False):
 
 # Five more sections with the mission's section names and made-up questions (/__many_sections).
 MORE_SECTIONS = [
-    _question("social_media", "Social Media", "posts_shared", "Posts shared"),
-    _question("social_media", "Social Media", "online_lessons", "Lessons taught online"),
-    _question("social_media", "Social Media", "online_plan", "Online plan for next week", "LONG_TEXT"),
     _question("member_work", "Member Work", "member_meals", "Meals with members", required=True),
     _question("member_work", "Member Work", "member_visits", "Visits with members"),
     _question("member_work", "Member Work", "member_plan", "Plan with members", "LONG_TEXT"),

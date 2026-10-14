@@ -289,11 +289,12 @@ def database_refused(error):
     return say("retire.error.database", problem=problem)
 
 
-def delete_place(conn, level, place_id, successor_id, backup=None):
+def delete_place(conn, level, place_id, successor_id, backup=None, record=True):
     """The delete itself, inside the caller's transaction (the caller commits, or rolls back for a check).
 
-    backup: a backups.Backup whose name is written into the batch (None for a check). Returns {"batch": id or None,
-    "moved": {...}, "removed": n, "place": name, "successor": name or None}. Raises Refusal (nothing to commit)."""
+    backup: optional backups.Backup named in the batch (round 14: usually None; the nightly backup is enough).
+    record=False: dry check only (no Import-history batch). Returns {"batch": id or None, "moved": {...}, "removed": n,
+    "place": name, "successor": name or None}. Raises Refusal (nothing to commit)."""
     mission_id = sign_in.current_mission_id()
     with database.cursor(conn) as cur:
         shape = attached(cur, level, place_id)
@@ -321,11 +322,12 @@ def delete_place(conn, level, place_id, successor_id, backup=None):
         after = snapshot_after(cur, before, keys)
     result = {"batch": None, "moved": moved, "removed": removed, "place": place["name"],
               "successor": successor["name"] if successor else None}
-    if backup is None:
+    if not record:
         return result
     summary = {"deleted": f"{level} {place['name']}", "moved_to": successor["name"] if successor else "nothing moved",
-               "settings_removed": removed, **{f"{category}_moved": n for category, n in sorted(moved.items())},
-               **backup.as_summary()}
+               "settings_removed": removed, **{f"{category}_moved": n for category, n in sorted(moved.items())}}
+    if backup is not None:
+        summary.update(backup.as_summary())
     batch = batches.create_batch(conn, "RETIRE", f"Delete {level} {place['name']}".replace("/", "-"), None, summary)
     changed = batches.record_changes(conn, batch, ordered(before), before, after)
     batches.add_to_summary(conn, batch, {"changed_rows": changed})
@@ -337,7 +339,7 @@ def check_place_delete(level, place_id, successor_id):
     """The check: runs the whole delete in a transaction that is rolled back. Returns the result dict, or raises Refusal."""
     conn = database.connect()
     try:
-        return delete_place(conn, level, place_id, successor_id, backup=None)
+        return delete_place(conn, level, place_id, successor_id, backup=None, record=False)
     finally:
         conn.rollback()
         conn.close()
@@ -358,12 +360,12 @@ def run_place_delete(level, place_id, successor_id, typed, maker=None):
             raise say("retire.error.notFound")
         if clean(typed) != place["name"]:
             raise say("retire.error.typeName")
-        delete_place(conn, level, place_id, successor_id, backup=None)  # the check first: no backup for a delete that fails
+        # Round 14: no per-delete dump. Nightly backup is enough; Import history still gets an Undo batch.
+        delete_place(conn, level, place_id, successor_id, backup=None, record=False)
         conn.rollback()
-        backup = make_backup(f"{level}-{place['name']}", maker)
-        result = delete_place(conn, level, place_id, successor_id, backup=backup)
+        result = delete_place(conn, level, place_id, successor_id, backup=None, record=True)
         conn.commit()
-        result["backup"] = backup.name
+        result["backup"] = None
         return result
     except Exception:
         conn.rollback()
@@ -431,9 +433,9 @@ def can_take(cur, question, target):
     return True
 
 
-def delete_question(conn, key, target_key, delete_answers, who, backup=None):
+def delete_question(conn, key, target_key, delete_answers, who, backup=None, record=True):
     """Deletes a retired question inside the caller's transaction. target_key: move the saved answers to that question;
-    delete_answers: delete them instead. Returns {"batch", "moved", "deleted_answers", "parts"}; raises Refusal."""
+    delete_answers: delete them instead. record=False: dry check. Returns {"batch", "moved", "deleted_answers", "parts"}."""
     batches.lock_tables(conn, QUESTION_TABLES)
     with database.cursor(conn) as cur:
         question = question_row(cur, key, lock=True)
@@ -489,15 +491,16 @@ def delete_question(conn, key, target_key, delete_answers, who, backup=None):
                 if current:
                     after[table][row_key] = current[0]
         removed_parts = parts["options"] + parts["grid_rows"] + parts["rules"]
-        if who and backup is not None:
+        if who and record:
             pq.audit(cur, who, "planning_questions", {"question_key": key}, next(iter(before["planning_questions"].values())), None,
                      "Deleted in DA Management > Delete retired (Import history has the rows)")
     result = {"batch": None, "moved": moved, "deleted_answers": deleted_answers, "parts": removed_parts, "question": key}
-    if backup is None:
+    if not record:
         return result
     summary = {"deleted": f"question {key}", "answers_moved_to": target_key or "nothing moved",
-               "answers_moved": moved, "answers_deleted": deleted_answers, "choices_rows_and_rules_removed": removed_parts,
-               **backup.as_summary()}
+               "answers_moved": moved, "answers_deleted": deleted_answers, "choices_rows_and_rules_removed": removed_parts}
+    if backup is not None:
+        summary.update(backup.as_summary())
     batch = batches.create_batch(conn, "RETIRE", f"Delete question {key}", None, summary)
     changed = batches.record_changes(conn, batch, QUESTION_TABLES, before, after)
     batches.add_to_summary(conn, batch, {"changed_rows": changed})
@@ -509,7 +512,7 @@ def check_question_delete(key, target_key, delete_answers):
     """The check for a question: the whole delete in a transaction that is rolled back."""
     conn = database.connect()
     try:
-        return delete_question(conn, key, target_key, delete_answers, None, backup=None)
+        return delete_question(conn, key, target_key, delete_answers, None, backup=None, record=False)
     finally:
         conn.rollback()
         conn.close()
@@ -526,12 +529,12 @@ def run_question_delete(key, target_key, delete_answers, typed, maker=None):
         raise say("retire.error.typeName")
     conn = database.connect()
     try:
-        delete_question(conn, key, target_key, delete_answers, who, backup=None)
+        # Round 14: no per-delete dump (nightly backup only).
+        delete_question(conn, key, target_key, delete_answers, who, backup=None, record=False)
         conn.rollback()
-        backup = make_backup(f"question-{key}", maker)
-        result = delete_question(conn, key, target_key, delete_answers, who, backup=backup)
+        result = delete_question(conn, key, target_key, delete_answers, who, backup=None, record=True)
         conn.commit()
-        result["backup"] = backup.name
+        result["backup"] = None
         return result
     except Exception:
         conn.rollback()
