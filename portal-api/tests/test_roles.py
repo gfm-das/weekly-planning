@@ -63,7 +63,8 @@ class Capabilities(unittest.TestCase):
     def test_dl_who_is_also_data_analyst_has_manager_rights_but_keeps_the_dl_label(self):
         c = self.person('MISSIONARY', 'DL', 'DATA_ADMIN')
         self.assertEqual(roles.capabilities(c), {'manager': True, 'calendar': True, 'publish': True, 'dashboards': True,
-                                                 'management': True, 'callins': True, 'presentations': True,
+                                                 'management': True, 'callins': True, 'vollzogen_view': True,
+                                                 'presentations': True,
                                                  'glimpse': True, 'archetypes': True, 'wiki_edit': True,
                                                  'all_languages': True})
         self.assertTrue(roles.shows_glimpse(c))
@@ -73,7 +74,8 @@ class Capabilities(unittest.TestCase):
     def test_office_gives_calendar_editing_and_mission_announcement_publishing(self):
         c = self.person('MISSIONARY', None, 'OFFICE')
         self.assertEqual(roles.capabilities(c), {'manager': False, 'calendar': True, 'publish': True, 'dashboards': False,
-                                                 'management': False, 'callins': False, 'presentations': False,
+                                                 'management': False, 'callins': False, 'vollzogen_view': True,
+                                                 'presentations': False,
                                                  'glimpse': False, 'archetypes': False, 'wiki_edit': False,
                                                  'all_languages': False})
         self.assertEqual(roles.target_scope(c, 'calendar'), 'mission')
@@ -169,6 +171,20 @@ class Glimpse(unittest.TestCase):
     def test_grafana_role_mapping_is_gone(self):
         self.assertFalse(hasattr(roles, 'dashboard_role'))
 
+
+
+class RetirePlaces(unittest.TestCase):
+    """Delete retired (DA Management): an AP may delete retired places and questions like the President and a Data Analyst
+    (owner's answer 8, 13 Oct 2026). DA Management checks this itself; the list is here so both images agree."""
+
+    def test_the_three_managers_may_and_nobody_else(self):
+        self.assertEqual(set(roles.RETIRE_ROLES), {'AP', 'PRESIDENT', 'DATA_ADMIN'})
+        for c in ({'leadership_role': 'AP'}, {'app_role': 'PRESIDENT'}, {'app_role': 'DATA_ADMIN'},
+                  {'app_role': 'MISSIONARY', 'additional_roles': ['DATA_ADMIN']}):
+            self.assertTrue(roles.can_retire_places(c), c)
+        for c in ({'app_role': 'OFFICE'}, {'leadership_role': 'ZL'}, {'leadership_role': 'DL'}, {'leadership_role': 'STL'},
+                  {'app_role': 'MISSIONARY'}, {}):
+            self.assertFalse(roles.can_retire_places(c), c)
 
 
 class AllLanguages(unittest.TestCase):

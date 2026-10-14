@@ -70,6 +70,7 @@ SIDEBAR = [
     ]),
     ("Using the portal", [
         ("signing-in", "Signing in", "🔑"),
+        ("tutorial", "Tutorial", "🧭"),
         ("overview", "Overview", "📋"),
         ("weekly-planning", "Weekly Planning", "📅"),
         ("glimpse", "Glimpse", "👀"),
@@ -93,6 +94,14 @@ SIDEBAR = [
         ("installer-overview", "Installer overview", "📦"),
         ("requirements", "Requirements", "✅"),
     ]),
+    ("Developer docs", [
+        ("dev-overview", "Developer docs", "🧰"),
+        ("dev-architecture", "Architecture", "🏗️"),
+        ("dev-folders", "Folders and services", "🗂️"),
+        ("dev-database", "Database and migrations", "🛢️"),
+        ("dev-testing", "Testing", "🧪"),
+        ("dev-deploy-ubuntu", "Deploy on Ubuntu", "🚀"),
+    ]),
 ]
 
 NAVBOXES = {
@@ -100,7 +109,7 @@ NAVBOXES = {
         "title": "Using the portal",
         "icon": "🚲",
         "groups": [
-            ("Get started", [("signing-in", "Signing in"), ("overview", "Overview"), ("roles-and-permissions", "Roles and permissions")]),
+            ("Get started", [("signing-in", "Signing in"), ("tutorial", "Tutorial"), ("overview", "Overview"), ("roles-and-permissions", "Roles and permissions")]),
             ("Planning", [("weekly-planning", "Weekly Planning"), ("glimpse", "Glimpse")]),
             ("Insights", [("dashboards", "Dashboards"), ("presentation-library", "Presentation Library")]),
         ],
@@ -120,10 +129,18 @@ NAVBOXES = {
             ("Setup", [("installer-overview", "Installer overview"), ("requirements", "Requirements"), ("glossary", "Glossary")]),
         ],
     },
+    "dev": {
+        "title": "Developer docs",
+        "icon": "🧰",
+        "groups": [
+            ("Understand", [("dev-overview", "Developer docs"), ("dev-architecture", "Architecture"), ("dev-folders", "Folders and services")]),
+            ("Work", [("dev-database", "Database and migrations"), ("dev-testing", "Testing"), ("dev-deploy-ubuntu", "Deploy on Ubuntu")]),
+        ],
+    },
 }
 
 # All three section navboxes appear on every content page (collapsible).
-ALL_NAVBOX_KEYS = ["using", "admin", "install"]
+ALL_NAVBOX_KEYS = ["using", "admin", "install", "dev"]
 
 RANDOM_TIPS = [
     "P-day is for laundry and grocery runs — not for rewriting the roster by hand.",

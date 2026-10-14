@@ -15,6 +15,7 @@ Leader notes (one per person, area and week): read and written by managers.
 
 Endpoints (all under the portal sign-in, like every /api/ route):
   GET  /api/archetypes?week=YYYY-MM-DD&weeks=1|4|8|12   the page: zones, districts, areas, trends, notes
+       &compare=prev4|prev12|year                        optional: also the earlier period and the change (round 13)
   PUT  /api/archetypes/notes {area_id, week, body}       save (or with an empty body remove) your own note
   GET  /api/archetypes/settings                           managers: settings, defaults, numbers to choose, history
   PUT  /api/archetypes/settings {settings, version}      managers: save (checked; version stops two saves at once)
@@ -47,6 +48,7 @@ MANAGERS_ONLY = 'Only the assistants, the President and Data Analysts can change
 CHANGED = 'Someone changed the settings since you opened the page. Reload the page and try again.'
 BAD_WEEK = 'Choose one of the weeks offered.'
 BAD_AVERAGE = 'Choose 1, 4, 8 or 12 weeks.'
+BAD_COMPARE = 'Choose one of the comparisons offered.'
 NO_NOTE = 'Choose an area and write a note.'
 NOTE_TOO_LONG = 'A note can have up to 4000 characters.'  # NOTE_LIMIT
 RELOAD = 'Reload the page and try again.'
@@ -155,6 +157,33 @@ def unit_view(result):
             'label': result['label']}
 
 
+def compare_view(now, earlier):
+    """What a row shows when Compare is on: the same unit in the earlier period (None when it had no scores then) and
+    the change since (None when there is nothing to compare with). 'now' and 'earlier' are scored units."""
+    return {'previous': unit_view(earlier) if earlier else None, 'change': model.change(now, earlier)}
+
+
+def chosen_compare(value):
+    """The Compare preset asked for (?compare=prev4|prev12|year), or None when Compare is off."""
+    if value in (None, ''):
+        return None
+    if not model.is_compare_preset(value):
+        abort(400, BAD_COMPARE)
+    return value
+
+
+def compare_block(preset, week, average, before, area_ids):
+    """The two periods side by side for the page's header line, and whether the earlier one has numbers for any of the
+    viewer's areas (area_ids)."""
+    end, count = model.compare_window(preset, week, average)
+    first_now, last_now = model.week_range(week, average)
+    first_before, last_before = model.week_range(end, count)
+    has_data = any(before['areas'][a]['overall'] is not None for a in area_ids if a in before['areas'])
+    return {'preset': preset, 'has_data': has_data,
+            'current': {'from': first_now.isoformat(), 'to': last_now.isoformat(), 'weeks': average},
+            'previous': {'from': first_before.isoformat(), 'to': last_before.isoformat(), 'weeks': count}}
+
+
 def areas_in_scope(v, numbers):
     """{area_id: newest row} for the areas of the viewer's stewardship. The newest row says where an area belongs
     now (its district and zone), so a leader sees today's stewardship also in older weeks."""
@@ -195,12 +224,16 @@ def area_view(area_id, where, result, settings, available):
     return view
 
 
-def group_view(kind, unit_id, name, area_ids, scored, week, threshold):
-    """A zone, district or mission row: the average of its areas this week, with a mini trend."""
+def group_view(kind, unit_id, name, area_ids, scored, week, threshold, before=None):
+    """A zone, district or mission row: the average of its areas this week, with a mini trend. With Compare on, 'before'
+    (the earlier period, scored) adds the same average then and the change."""
     rolled = model.roll_up(scored[week]['areas'], area_ids, threshold)
     view = unit_view(rolled)
     view.update(id=unit_id, name=name, kind=kind, areas_scored=rolled['areas_scored'],
                 trend=trend_for(area_ids, scored, threshold))
+    if before is not None:
+        earlier = model.roll_up(before['areas'], area_ids, threshold)
+        view['compare'] = compare_view(rolled, earlier if earlier['areas_scored'] else None)
     return view
 
 
@@ -227,8 +260,9 @@ def notes_for(conn, area_ids, week, user_id):
     return notes
 
 
-def build_page(conn, c, week_value, average_value):
-    """Everything the Archetypal Health page shows for one week: the rows of the viewer's stewardship only."""
+def build_page(conn, c, week_value, average_value, compare_value=None):
+    """Everything the Archetypal Health page shows for one week: the rows of the viewer's stewardship only. With
+    compare_value (prev4, prev12 or year) every row also carries the earlier period and the change (off by default)."""
     v = viewer(c)
     settings, version, _, _ = load_settings(conn, v['mission_id'])
     numbers, attributes = load_numbers(conn, v['mission_id'])
@@ -236,61 +270,72 @@ def build_page(conn, c, week_value, average_value):
     weeks = model.complete_weeks(counts, today())
     week = chosen_week(week_value, counts, weeks)
     average = chosen_average(average_value, settings)
+    preset = chosen_compare(compare_value)
     mine = areas_in_scope(v, numbers)
     base = page_basics(v, settings, version, weeks, average, week_counts_for(v, numbers, mine, counts))
     if week is None:
-        return dict(base, week=None, zones=[], districts=[], areas=[], skipped=[], mission=None)
+        return dict(base, week=None, zones=[], districts=[], areas=[], skipped=[], mission=None, compare=None)
 
     # The week shown and the weeks of the mini trends, each scored for the whole mission.
     scored = {w: model.score_week(numbers, attributes, settings, w, average) for w in trend_weeks(week, weeks)}
     shown = scored[week]
-    return dict(base, week=week.isoformat(), skipped=shown['skipped'],
-                areas=area_rows(conn, c, mine, shown, settings, week),
-                **group_rows(v, c, mine, scored, week, settings['balance_threshold']),
+    before, compare = None, None
+    if preset:
+        end, count = model.compare_window(preset, week, average)
+        before = model.score_week(numbers, attributes, settings, end, count)
+        compare = compare_block(preset, week, average, before, mine)
+    return dict(base, week=week.isoformat(), skipped=shown['skipped'], compare=compare,
+                areas=area_rows(conn, c, mine, shown, settings, week, before),
+                **group_rows(v, c, mine, scored, week, settings['balance_threshold'], before),
                 home={'scope': v['scope'], 'zone_id': v['zone_id'], 'district_id': v['district_id']})
 
 
 def page_basics(v, settings, version, weeks, average, week_counts):
     """What the page shows for any week: who is looking, the bands, the week list and the labels of the numbers."""
     return {'viewer': {'scope': v['scope'], 'settings': v['settings']}, 'bands': settings['bands'],
+            'compare_presets': list(model.COMPARE_PRESETS),
             'weeks_choices': list(model.WEEK_CHOICES), 'weeks_to_average': average,
             'weeks': [{'week': w.isoformat(), 'areas': week_counts.get(w, 0)} for w in weeks[:WEEKS_OFFERED]],
             'newest_week': weeks[0].isoformat() if weeks else None, 'settings_version': version,
             'kpi_labels': {key: label for key, (label, _) in model.SOURCES.items()}}
 
 
-def area_rows(conn, c, mine, shown, settings, week):
-    """One row per area of the stewardship that has a score this week, each with its leader notes."""
+def area_rows(conn, c, mine, shown, settings, week, before=None):
+    """One row per area of the stewardship that has a score this week, each with its leader notes. With Compare on,
+    'before' (the earlier period, scored) adds each area's earlier scores and the change."""
     available = set(model.used_kpis(settings)) - set(shown['skipped'])
     notes = notes_for(conn, [a for a in mine if a in shown['areas']], week, c['user_id'])
     areas = []
     for area_id, where in mine.items():
         if area_id in shown['areas']:
             view = area_view(area_id, where, shown['areas'][area_id], settings, available)
+            if before is not None:
+                view['compare'] = compare_view(shown['areas'][area_id], before['areas'].get(area_id))
             areas.append(dict(view, notes=notes.get(area_id, [])))
     return areas
 
 
-def group_rows(v, c, mine, scored, week, threshold):
+def group_rows(v, c, mine, scored, week, threshold, before=None):
     """{'districts', 'zones', 'mission'}: the summary rows above the areas (only those with a scored area)."""
-    districts = [dict(group_view('district', d, mine[ids[0]]['district'], ids, scored, week, threshold),
+    districts = [dict(group_view('district', d, mine[ids[0]]['district'], ids, scored, week, threshold, before),
                       zone_id=mine[ids[0]]['zone_id']) for d, ids in grouped(mine, 'district_id').items()]
     zones = []
     if v['scope'] != 'district':  # a DL sees only part of the zone, so a row named after the zone would mislead
-        zones = [group_view('zone', z, mine[ids[0]]['zone'], ids, scored, week, threshold)
+        zones = [group_view('zone', z, mine[ids[0]]['zone'], ids, scored, week, threshold, before)
                  for z, ids in grouped(mine, 'zone_id').items()]
     mission = None
     if v['scope'] == 'mission':
-        mission = group_view('mission', v['mission_id'], c.get('mission') or '', list(mine), scored, week, threshold)
+        mission = group_view('mission', v['mission_id'], c.get('mission') or '', list(mine), scored, week, threshold, before)
     return {'districts': [d for d in districts if d['areas_scored']], 'zones': [z for z in zones if z['areas_scored']],
             'mission': mission}
 
 
 @archetypes_bp.get('/api/archetypes')
 def archetypes_page():
-    """The page for one week (?week=) averaged over ?weeks= weeks."""
+    """The page for one week (?week=) averaged over ?weeks= weeks; ?compare=prev4|prev12|year adds an earlier period."""
     with _app().db() as conn:
-        return jsonify(build_page(conn, g.context, request.args.get('week'), request.args.get('weeks')))
+        return jsonify(build_page(conn, g.context, request.args.get('week'), request.args.get('weeks'),
+                                  request.args.get('compare')))
 
 
 # ---------------------------------------------------------------------------------------------------- notes

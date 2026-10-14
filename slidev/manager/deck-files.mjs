@@ -21,7 +21,7 @@ import { httpError } from './web.mjs';
 
 /**
  * The folder name for a NEW Slidev deck: slugify, but never starting with "v2-" (that start is how GFM Presentations V2
- * names its decks in the sharing table, v2-routes.mjs accessKey). Decks that already have such a name keep it.
+ * names its decks in the sharing table; GFM Presentations V2 was removed in round 13 but its "v2-%" sharing rows may still exist). Decks that already have such a name keep it.
  */
 export function newDeckSlug(title) {
   const slug = slugify(title);

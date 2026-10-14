@@ -2,7 +2,7 @@
 // install/run-install.sh then gives that sign-in its profile (role Data Analyst, home mission 1) in the database.
 // The password is read from the answers file and sent only to Supabase Auth on this computer; it is never printed.
 //
-//   node first-account.mjs <answers.json> <supabase/.env>      AUTH_BASE=http://gfm-beta-supabase-kong-1:8000/auth/v1
+//   node first-account.mjs <answers.json> <supabase/.env>      AUTH_BASE=<the Supabase gateway's /auth/v1 address, from run-install.sh>
 // The sign-in is created already confirmed, so no email is needed. It waits up to two minutes for Auth to answer.
 import fs from 'node:fs';
 import path from 'node:path';

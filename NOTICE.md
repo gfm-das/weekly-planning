@@ -8,7 +8,6 @@ Weekly Planning is released under the MIT licence (`LICENSE`). It uses and inclu
 | Apache ECharts | `portal/echarts.min.js` (its licence header is in the file) | Apache-2.0 |
 | SortableJS 1.15.6 | `portal/Sortable.min.js` | MIT |
 | Excalidraw, React and their dependencies (the Whiteboard) | `portal/whiteboard/vendor/` (the full list with licence texts: `portal/whiteboard/vendor/THIRD_PARTY_LICENSES.txt`) | MIT and others, as listed there |
-| Presentations V2 editor and player: GrapesJS, Reveal.js, ECharts, Vue and others | `slidev/presentations-v2/dist/` (built from `slidev/presentations-v2/`) | BSD-3-Clause, MIT, Apache-2.0 |
 | Studio addon for Slidev | `slidev/manager/addons/gfm-studio/` (its own `LICENSE`) | as stated there |
 
 ## Installed from the internet when the system is set up (not part of this repository)

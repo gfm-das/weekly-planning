@@ -130,6 +130,50 @@ def vollzogen_file(zone):
     ])
 
 
+VOLLZOGEN_HEADINGS = ["Wie gefunden", "Name", "Wann gesetzt", "Taufdatum", "Mitarbeiter", "Gemeinde", "Pfahl", "Zone",
+                      "Konfirmiert", "Country", "Gender", "Preferred Language"]
+# Made-up people for the Vollzogen list. Every one of them is invented; none is a real person.
+VOLLZOGEN_PEOPLE = ["Testa Beispiel", "Probe Person", "Mira Musterfrau", "Alma Erfunden", "Nora Nirgends", "Ivo Imaginär",
+                    "Lena Leerzeile", "Paul Platzhalter", "Dora Doppelt", "Fritz Fern"]
+
+
+def vollzogen_rows(zone="Frankfurt"):
+    """The rows of the office's Vollzogen sheet with the real file's shape (title row first, headings on row 2, a
+    "Mission Office Info" block at the end) and its hand-typed mess: English dates with ordinals, German dates, ISO dates,
+    spreadsheet dates, an X in Konfirmiert, blank lines, a placeholder, a row without a baptism date, a date that is not
+    one, a year typed wrong, and one person twice."""
+    from datetime import datetime
+    common = ["Frankfurt 1st", "Frankfurt", zone]
+    return [
+        ["Taufen"] + [None] * 8 + ["Mission Office Info", None, None][:3],
+        VOLLZOGEN_HEADINGS,
+        ["Contacting in Public", VOLLZOGEN_PEOPLE[0], "Dec. 1st. 2025", "Dec. 15th. 2025", "Elder Sample, Sister Example", *common, "X", "Testland", "F", "German"],
+        ["Member", VOLLZOGEN_PEOPLE[1], "15.11.2025", "Jan. 4th, 2026", "Elder Sample", *common, datetime(2026, 1, 11), "Testland", "M", "English"],
+        ["Media", VOLLZOGEN_PEOPLE[2], datetime(2026, 1, 20), datetime(2026, 2, 1), "Sister Demo", *common, "x", "Otherland", "F", "Spanish"],
+        ["Street", VOLLZOGEN_PEOPLE[3], "2026-02-02", "2026-03-07", "Elder Sample", *common, None, "Testland", "F", "German"],
+        ["Street", VOLLZOGEN_PEOPLE[4], "", "7. März 2026", "Elder Example", *common, "nein", "Testland", "M", "German"],
+        ["Street", VOLLZOGEN_PEOPLE[5], "", 46100, "", *common, "", "", "", ""],
+        [None] * 12,
+        ["Member", "TBD", "", "", "", "", "", zone, "", "", "", ""],
+        ["Member", VOLLZOGEN_PEOPLE[6], "", "", "Elder Sample", *common, "", "", "", ""],      # no baptism date
+        ["Member", VOLLZOGEN_PEOPLE[7], "", "sometime in spring", "", *common, "", "", "", ""],  # not a date
+        ["Member", VOLLZOGEN_PEOPLE[9], "", "2062-01-01", "", *common, "", "", "", ""],      # the year typed wrong
+        ["Member", VOLLZOGEN_PEOPLE[8], "", "Dec. 15th. 2025", "", *common, "", "", "", ""],
+        ["Member", VOLLZOGEN_PEOPLE[8], "", "Dec. 15th. 2025", "", *common, "", "", "", ""],  # the same person twice
+        [None, None, None, "Dec. 15th. 2025", None, None, None, None, None, None, None, None],  # a date but nobody's name
+    ]
+
+
+def vollzogen_sheet(zone="Frankfurt"):
+    """The sheet as an XLSX file ("Vollzogen 2026")."""
+    return xlsx_bytes(vollzogen_rows(zone))
+
+
+def vollzogen_csv(zone="Frankfurt"):
+    """The same sheet as a CSV file (dates as the sheet shows them)."""
+    return csv_bytes(*vollzogen_rows(zone)[1:2], [[("" if v is None else v) for v in row] for row in vollzogen_rows(zone)[2:]])
+
+
 def new_member_file(area):
     """The New Member Database Raw form export."""
     return xlsx_bytes([
@@ -146,3 +190,55 @@ def area_file(rows, extra_heading="Chapel nearby"):
     return csv_bytes(["Zone", "District", "Area", "Population", "Size (km2)", "Urban type", "Assignment type",
                       "Density (people per km2)", extra_heading],
                      [[z, d, a, p, s, u, t, "", e] for z, d, a, p, s, u, t, e in rows])
+
+# The owner's "Areas Geo Data" file: three tables side by side (Zone / District / Area), a blank column between them. The
+# headings are the real file's (including its spelling "CLuster" and the class codes), the places and numbers are made up.
+GEO_BLOCK = ["{name}", "Population", "Area", "Population Density", "Urban Centre(130)", "Dense Urban CLuster (223)",
+             "Semi dense Urban cluster(222)", "Suburban/peri-urban grid cell (221)", "Very low density rural grid cell(311)",
+             "Low density rural grid cell(312)", "Area Type"]
+GEO_ZONES = [
+    ["Alpha Zone", 4414139, 9036.03, 488.5, 1486250, 1285607, 201129, 833013, 26588, 221659, "City"],
+    ["Beta Zone", "6.859.500", "24.298,15", "282,31", 1875543, 1493908, 394163, 1366582, 73520, 690059, "City"],
+    ["Mission", 22744412, 99999.99, 227.5, 1, 2, 3, 4, 5, 6, "City"],
+]
+GEO_DISTRICTS = [
+    ["District One", 1200000, 300.5, 3993.34, 700000, 300000, 80000, 90000, 10000, 20000, "City"],
+    ["District Two", "850.000", 410.25, 2072.0, 100000, 200000, 150000, 250000, 50000, 100000, "Town"],
+    ["Offstrict", 1200000, 300.5, 3993.34, 700000, 300000, 80000, 90000, 10000, 20000, "City"],  # a stand-in, same figures as One
+    ["Ghost District", 1111, 2.5, 444.4, 1, 1, 1, 1, 1, 1, "Town"],  # not a district of a portal
+]
+GEO_AREAS = [
+    ["Testville", 250000, 120.5, 2074.7, 100000, 80000, 20000, 30000, 10000, 10000, "City"],
+    ["Beispielstadt", 60000, 80, 750, 10000, 10000, 10000, 10000, 10000, 10000, "Town"],
+    ["Media Elders", 250000, 120.5, 2074.7, 100000, 80000, 20000, 30000, 10000, 10000, "City"],  # a stand-in copy of Testville
+    ["Office Sisters", 250000, 120.5, 2074.7, 100000, 80000, 20000, 30000, 10000, 10000, "City"],
+    ["Copy Town", 60000, 80, 750, 10000, 10000, 10000, 10000, 10000, 10000, "Town"],  # the same figures as Beispielstadt
+    ["APs", 1, 1, 1, 1, 1, 1, 1, 1, 1, "City"],
+    ["Emptyville", "", "", "", "", "", "", "", "", "", "Town"],
+    ["Nord Dorf", "15.000", "12,5", 1200, 1000, 2000, 3000, 4000, 2500, 2500, "Town"],
+]
+
+
+def geo_tables_file(zones=None, districts=None, areas=None, as_xlsx=False):
+    """The three tables side by side as the owner's file has them: one heading row, then rows as long as the longest table."""
+    zones = GEO_ZONES if zones is None else zones
+    districts = GEO_DISTRICTS if districts is None else districts
+    areas = GEO_AREAS if areas is None else areas
+    blank = [""] * 11
+    headings = []
+    for position, level in enumerate(("Zone", "District", "Area")):
+        headings += ([""] if position else []) + [GEO_BLOCK[0].format(name=level)] + GEO_BLOCK[1:]
+    rows = []
+    for index in range(max(len(zones), len(districts), len(areas))):
+        rows.append((zones[index] if index < len(zones) else blank) + [""] + (districts[index] if index < len(districts) else blank)
+                    + [""] + (areas[index] if index < len(areas) else blank))
+    return xlsx_bytes([headings, *rows]) if as_xlsx else csv_bytes(headings, rows)
+
+
+GEO_HEADINGS = ["Zone", "District", "Area", "Population", "Size (km2)", "Density (people per km2)", "Households", "Source",
+                "Data date", "Chapel nearby"]
+
+
+def geo_file(rows, headings=GEO_HEADINGS):
+    """rows: [(zone, district, area, population, km2, density, households, source, data date, extra), ...]"""
+    return csv_bytes(headings, [list(r) for r in rows])

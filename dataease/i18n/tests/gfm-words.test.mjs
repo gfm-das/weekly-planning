@@ -32,7 +32,7 @@ function htmlPieces(html) {
 function ourWords() {
   const words = new Set();
   const add = t => { if (typeof t === 'string' && t.trim() && hasLetters(t)) words.add(t.trim()); };
-  for (const name of ['key-indicators', 'zones-districts', 'covenant-path']) {
+  for (const name of ['key-indicators', 'zones-districts', 'covenant-path', 'areas', 'trend', 'per-capita']) {
     const d = JSON.parse(read(`dashboards/${name}.json`));
     add(d.name);
     for (const c of d.components) {
@@ -45,7 +45,7 @@ function ourWords() {
     }
   }
   // Field names DataEase shows where a chart has no display name of its own (tooltips, axis titles).
-  for (const set of JSON.parse(read('dashboards/datasets.json')).datasets) for (const key of ['week', 'zone', 'district']) add(set.labels?.[key]);
+  for (const set of JSON.parse(read('dashboards/datasets.json')).datasets) for (const key of ['week', 'zone', 'district', 'area']) add(set.labels?.[key]);
   add('Mission'); // the folder, and DataEase's account name ("管理员" is shown as "Mission")
   const boot = read('web/gfm/boot.js');
   for (const s of ["'Dashboards'", "'All dashboards and Edit'"]) assert.ok(boot.includes(s), `boot.js still says ${s}`);
@@ -116,7 +116,8 @@ test('our translations keep numbers and the % sign where the English has them, a
 
 test('names fit DataEase: dashboard names, chart titles and filter labels have at most 100 characters', () => {
   // DataEase refuses to save a chart or component whose name is longer ("Name cannot exceed 100 characters").
-  const titles = ['dash.', 'zd.npbt', 'zd.sa', 'zd.table', 'cp.newMembersAtChurch', 'cp.nextSteps', 'cp.highPotential', 'word.'];
+  const titles = ['dash.', 'zd.npbt', 'zd.sa', 'zd.table', 'cp.newMembersAtChurch', 'cp.nextSteps', 'cp.highPotential', 'word.',
+    'ar.helpNpbt', 'ar.helpBc', 'ar.table', 'tr.pctAll', 'pc.npbt', 'pc.bc', 'pc.bd', 'pc.sa', 'pc.ml', 'pc.nms', 'pc.table', 'pc.geoTitle'];
   for (const lang of LANGS) {
     for (const [key, text] of Object.entries(files[lang].gfm)) {
       if (titles.some(t => key.startsWith(t)) && !key.includes('note')) assert.ok(text.length <= 100, `${lang} gfm ${key} has ${text.length} characters`);

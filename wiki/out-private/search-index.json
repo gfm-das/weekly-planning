@@ -32,10 +32,75 @@
   {
     "title": "DBeaver access",
     "href": "dbeaver-access.html",
-    "summary": "DBeaver connection settings for analysts.",
+    "summary": "DBeaver and Jupyter connection settings for analysts.",
     "tags": [
       "admin",
       "database"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Architecture",
+    "href": "dev-architecture.html",
+    "summary": "Parts, ports, request flow and the security boundary.",
+    "tags": [
+      "dev",
+      "architecture"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Database and migrations",
+    "href": "dev-database.html",
+    "summary": "Baseline, migrations, rollbacks, rights check, analyst logins.",
+    "tags": [
+      "dev",
+      "database"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Deploy and roll back on Ubuntu",
+    "href": "dev-deploy-ubuntu.html",
+    "summary": "Releases, the updater, by-hand deploys, health check, rollback and backups.",
+    "tags": [
+      "dev",
+      "deploy"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Folders and services",
+    "href": "dev-folders.html",
+    "summary": "Repository folder map and service table.",
+    "tags": [
+      "dev"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Developer docs",
+    "href": "dev-overview.html",
+    "summary": "Map of the developer pages: architecture, folders, database, tests, deploy on Ubuntu.",
+    "tags": [
+      "dev",
+      "admin"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Testing",
+    "href": "dev-testing.html",
+    "summary": "Test commands per part, and what needs a database.",
+    "tags": [
+      "dev",
+      "tests"
     ],
     "stub": false,
     "private": true
@@ -207,6 +272,18 @@
     ],
     "stub": false,
     "private": true
+  },
+  {
+    "title": "Tutorial",
+    "href": "tutorial.html",
+    "summary": "A short tutorial for new users, by role, matching the guided tour in the portal.",
+    "tags": [
+      "users",
+      "tutorial",
+      "tour"
+    ],
+    "stub": false,
+    "private": false
   },
   {
     "title": "Uploads / Importer",

@@ -120,7 +120,7 @@ test('every setting the Supabase compose file needs is in the generated supabase
 });
 
 test('every name in the other parts\' .env.example files is written (or deliberately optional)', () => {
-  const OPTIONAL = new Set(['VAPID_SUBJECT']);
+  const OPTIONAL = new Set(['VAPID_SUBJECT', 'BACKUP_COMMAND', 'WEB_LINK_BREVO', 'WEB_LINK_PORKBUN', 'WEB_LINK_CLOUDFLARE', 'WEB_LINK_WIKI', 'PORTAL_PORT']);
   const built = buildEnvFiles(answers, { host: '127.0.0.1' }).files;
   for (const part of ['portal-api', 'roster-importer', 'slidev', 'dataease']) {
     const example = path.join(REPO, part, '.env.example');

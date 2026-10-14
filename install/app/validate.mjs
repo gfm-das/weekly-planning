@@ -88,7 +88,7 @@ export function validate(input, options) {
   const mail = input.email || {};
   if (['host', 'user', 'password', 'sender'].some(key => clean(mail[key]))) {
     const host = clean(mail.host), port = Number(clean(mail.port) || 587), sender = clean(mail.sender);
-    if (!/^[A-Za-z0-9.-]{3,253}$/.test(host)) fail('emailHost', 'Enter the mail server name, for example smtp-relay.brevo.com.');
+    if (!/^[A-Za-z0-9.-]{3,253}$/.test(host)) fail('emailHost', 'Enter the mail server name, for example smtp.example.org.');
     if (!Number.isInteger(port) || port < 1 || port > 65535) fail('emailPort', 'The port is a number from 1 to 65535 (usually 587).');
     if (!EMAIL.test(sender)) fail('emailSender', 'Enter the address the emails come from.');
     a.email = { host, port, user: clean(mail.user), password: String(mail.password ?? ''), sender, senderName: clean(mail.senderName) || a.missionName };
@@ -99,6 +99,10 @@ export function validate(input, options) {
 
   a.timeZone = clean(input.timeZone) || 'UTC';
   if (!options.timeZones.includes(a.timeZone)) fail('timeZone', 'Choose a time zone from the list.');
+
+  // Optional: the ID of the mission's shared Google Drive (also accepted as a pasted folder address .../folders/<ID>). Not a secret.
+  a.driveId = clean(input.driveId).replace(/^https?:\/\/[^/]+\/drive\/(?:u\/\d+\/)?folders\//, '').replace(/[?#/].*$/, '');
+  if (a.driveId && !/^[A-Za-z0-9_-]{10,64}$/.test(a.driveId)) fail('driveId', 'The Google Drive ID is the last part of the drive address: letters, digits, - and _ (10 to 64 characters). Leave it empty to add it later.');
 
   const tunnel = tunnelToken(input.cloudflareToken);
   a.cloudflareToken = tunnel.token || '';

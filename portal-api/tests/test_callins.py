@@ -99,6 +99,8 @@ class FakeCursor:
         for level, text in callins.CHAIN_SQL.items():
             if flat == ' '.join(text.split()):
                 return self.answer(*self.chain(level, args[0]))
+        if 'FROM public.zones WHERE mission_id' in flat:
+            return self.answer(['id', 'name'], [{'id': z, 'name': f'Zone {z}'} for z, m in ZONES.items() if m == args[0]])
         if 'get_mission_call_in_summary_with_planning' in flat:
             rows = [dict(metrics(2), zone_id=z, zone_name=f'Zone {z}', mission_id=1, district_count=2,
                          completed_district_count=1, all_dl_call_ins_complete=False, all_weekly_reports_submitted=True,
@@ -537,6 +539,21 @@ def test_rule_helpers():
     assert callins.may_write_dl(v('dl_da'), {'mission_id': 1, 'zone_id': 6, 'district_id': 61})  # Data Analyst: whole mission
     assert not callins.may_write_zl(v('zl_office'), {'mission_id': 1, 'zone_id': 6})  # Office gives no Call-ins rights
     assert v('zl_office')['manager'] is False
+
+
+def test_office_cannot_change_anything_in_call_ins():
+    writes = [('PUT', '/api/callins/districts/51/dl-notes', {'week': '2026-09-20', 'dl_notes': 'x'}),
+              ('PUT', '/api/callins/districts/51/zl-notes', {'week': '2026-09-20', 'zl_notes': 'x'}),
+              ('PUT', '/api/callins/zones/5', {'week': '2026-09-20', 'zone_notes': 'x'}),
+              ('PUT', '/api/callins/areas/511/update', {'week': '2026-09-20', 'update_text': 'x'}),
+              ('POST', '/api/callins/districts/51/complete', {'week': '2026-09-20'}),
+              ('POST', '/api/callins/districts/51/reopen', {'week': '2026-09-20'}),
+              ]
+    for user in ('office',):
+        for method, path, body in writes:
+            status, answer, sql, _ = call(user, path, method=method, body=body)
+            assert status in (403, 404, 405), (user, method, path, status)
+            assert not any('save_' in s or 'complete_dl' in s or 'reopen_dl' in s for s in sql), (method, path, sql)
 
 
 if __name__ == '__main__':

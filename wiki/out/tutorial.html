@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tutorial — Weekly Planning Wiki</title>
+  <meta name="description" content="A short tutorial for new users, by role, matching the guided tour in the portal.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="tutorial">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li class="current"><a href="tutorial.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Tutorial</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+<h2>Developer docs</h2><ul>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Developer docs</span></a></li>
+<li><a href="dev-architecture.html"><span class="nav-icon" aria-hidden="true">🏗️</span><span>Architecture</span></a></li>
+<li><a href="dev-folders.html"><span class="nav-icon" aria-hidden="true">🗂️</span><span>Folders and services</span></a></li>
+<li><a href="dev-database.html"><span class="nav-icon" aria-hidden="true">🛢️</span><span>Database and migrations</span></a></li>
+<li><a href="dev-testing.html"><span class="nav-icon" aria-hidden="true">🧪</span><span>Testing</span></a></li>
+<li><a href="dev-deploy-ubuntu.html"><span class="nav-icon" aria-hidden="true">🚀</span><span>Deploy on Ubuntu</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="tutorial">
+          <a class="tab is-active" href="tutorial.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=tutorial" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=tutorial" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Tutorial</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Tutorial</strong> is the step-by-step walk through the portal, the same one the guided tour in the portal shows.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#the-steps">The steps</a></li>
+<li><a href="#by-role">By role</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>The portal offers a <strong>guided tour</strong> once, the first time you sign in on a device. It dims the page, lights up one part of the menu at a time and says in a few words what it is for.</p>
+<ul><li><strong>Next</strong> and <strong>Back</strong> move through the steps. <strong>Skip tour</strong> closes it. The arrow keys work, and <strong>Esc</strong> closes it.</li><li>The portal remembers on that device that you have seen it, so it does not come back by itself.</li><li>To see it again, press <strong>Tour</strong> in the header (on a phone: open the menu with ☰ and press <strong>Tour</strong> above Sign Out).</li><li>On a phone the menu slides open for the menu steps and closes again at the end. In Arabic and Persian everything is mirrored, from right to left.</li><li>The tour only points at what you may open. Steps for parts of the portal you do not have are left out.</li></ul>
+<h2 id="the-steps">The steps</h2>
+<p>Everyone gets these. The tour follows the menu, top to bottom.</p>
+<table><thead><tr><th>Step</th><th>What it shows</th></tr></thead><tbody><tr><td>Welcome</td><td>A short hello. The text fits your role</td></tr><tr><td><strong>Weekly</strong></td><td>The section with everything for your working week</td></tr><tr><td><strong>Weekly Planning</strong></td><td>Plan your week. The six key indicators come first, then goals and action plans. Submit when ready; a leader can unlock the plan later</td></tr><tr><td><strong>Overview</strong></td><td>Your week at a glance: key indicators first, then this week&#x27;s tasks, events and announcements</td></tr><tr><td><strong>Information</strong></td><td>The section with shared information for the mission</td></tr><tr><td><strong>Calendar</strong></td><td>Meetings and events for your role and zone</td></tr><tr><td><strong>Announcements</strong></td><td>Updates from the leaders in your stewardship</td></tr><tr><td>Language</td><td>Where to choose your language (14 are available)</td></tr><tr><td><strong>Customize</strong></td><td>The look of the portal: Mission navy and teal, light or dark</td></tr><tr><td><strong>Tour</strong></td><td>The button that starts the tour again</td></tr></tbody></table>
+<h2 id="by-role">By role</h2>
+<p>Which extra steps you get follows <a href="roles-and-permissions.html">Roles and permissions</a>.</p>
+<table><thead><tr><th>You are</th><th>Extra steps</th></tr></thead><tbody><tr><td>Missionary</td><td>None. The steps above are your tour</td></tr><tr><td>DL or ZL</td><td><strong>Call-ins</strong> (report and follow up for the district or zone) and <strong>Insights &gt; Presentations</strong></td></tr><tr><td>STL</td><td><strong>Insights &gt; Presentations</strong> (no Call-ins)</td></tr><tr><td>Office (main or additional role)</td><td><strong>Office tools</strong>: add and change calendar events and announcements</td></tr><tr><td>Manager (AP, President, Data Analyst)</td><td><strong>Call-ins</strong>, <strong>Whiteboard</strong>, <strong>Insights</strong> with <strong>Dashboards</strong>, <strong>Archetypal Health</strong> and <strong>Presentations</strong>, and <strong>Manager tools</strong> (DA Management)</td></tr></tbody></table>
+<h2 id="how-it-works">How it works</h2>
+<ul><li>The tour is a small script in the portal (<code>portal/tour.js</code> and <code>portal/tour.css</code>). It has no outside library and sends nothing anywhere.</li><li>It reads the menu to decide what to show, so it can never point at something you cannot open. It does not give or take away any right: that stays with the database and <code>portal-api</code>.</li><li>&quot;Seen it&quot; is kept in the browser&#x27;s local storage under your account number on that device. A private window or cleared site data simply shows the tour again.</li><li>Every text is in all 14 interface languages. Translations are first drafts and need review by a native speaker, like the rest of the portal.</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>Everyone with an account sees the tour. The steps follow the role.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>The tour did not start</td><td>It starts by itself only once per device. Press <strong>Tour</strong> in the header</td></tr><tr><td>It starts every time</td><td>The browser does not keep site data (private window). Use a normal window</td></tr><tr><td>A step is missing</td><td>The part is not in your menu. Check your role with a Data Analyst</td></tr><tr><td>The card hides the part on a small screen</td><td>Press <strong>Next</strong>; the card moves to the other side of the screen for each step</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 13</td><td>Guided tour and this tutorial</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="signing-in.html">Signing in</a></li><li><a href="overview.html">Overview</a></li><li><a href="weekly-planning.html">Weekly Planning</a></li><li><a href="roles-and-permissions.html">Roles and permissions</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Tutorial</div>
+<div class="infobox-icon" aria-hidden="true">🧭</div>
+<table>
+<tr><th>Who</th><td>Everyone</td></tr>
+<tr><th>Time</th><td>About one minute</td></tr>
+<tr><th>Where</th><td>Tour button in the portal header</td></tr>
+<tr><th>Languages</th><td>14 interface languages</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <strong>Tutorial</strong> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

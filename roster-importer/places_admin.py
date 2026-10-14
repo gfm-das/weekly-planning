@@ -20,6 +20,7 @@ import database
 import page
 import sign_in
 from page import h
+from retire_text import t as retire_t
 
 pages = Blueprint("places_admin", __name__)
 
@@ -203,7 +204,8 @@ def places_page(tree):
             "<p class='muted'>Closing a zone or district does not close what is inside it: you choose where each district (or area) goes first. "
             "The numbers follow: old plans show under the zone their area belongs to today. Every change is in "
             "<a href='/imports'>Import history</a>, where it can be undone. A roster upload wins over a change made here: "
-            "it reopens a place it names and decides which areas are open by who serves there.</p></div>" + "".join(cards))
+            "it reopens a place it names and decides which areas are open by who serves there.</p>"
+            f"<p><a href='/retire'>{retire_t('retire.link.places')}</a></p></div>" + "".join(cards))
 
 
 @pages.route("/places")

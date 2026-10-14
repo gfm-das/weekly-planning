@@ -62,6 +62,7 @@ How a visit goes, step by step:
 | `portal-client.js` | Shared by the pages: `portalAPI()` (questions to portal-api), `escapeHTML()`, attachments, uploads, `portalConfirm()` (the "are you sure?" dialog). |
 | `home.html`, `home.css` | **Overview**: welcome, key indicators, goals, plans, events, announcements, mission focus, stewardship planning; movable cards. |
 | `glimpse.js`, `glimpse.css` | The **mission glimpse** at the top of the managers' Overview (charts with the vendored `echarts.min.js`). |
+| `tour.js`, `tour.css` | The **guided tour** (header button "Tour", offered once on a first sign-in): spotlight and card over the menu, steps per role, remembered in `localStorage`. Test: `node portal/tests/tour-check.cjs`. |
 | `planning.html` | **Weekly Planning** (see that file's own overview). |
 | `callins.html` | **Call-ins**: Mission > Zone > District > Area. |
 | `calendar.html` | **Calendar**: events for your role and zone; editors create, edit, delete and record attendance. (The announcements are on the Overview and their own page.) |

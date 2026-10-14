@@ -60,6 +60,27 @@
     return i18n?.date ? i18n.date(day, options) : day.toLocaleDateString(undefined, options);
   }
 
+  // A change of the index since the earlier period (Compare): { delta, direction } from the server (or none). Returns
+  // the arrow, the signed number ("+6.0", "−2.3", "0.0"), a class for the colour and a spoken text, or null.
+  function changeView(change) {
+    if (!change || change.delta === null || change.delta === undefined) return null;
+    const i18n = window.MissionI18n;
+    const number = (value, signed) => (i18n?.number
+      ? i18n.number(value, { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: signed ? 'exceptZero' : 'never' })
+      : (signed && value > 0 ? '+' : '') + value.toFixed(1));
+    const size = number(Math.abs(change.delta), false);
+    const arrow = { up: '▲', down: '▼', flat: '=' }[change.direction] || '=';
+    const key = { up: 'archetypes.changeUp', down: 'archetypes.changeDown' }[change.direction] || 'archetypes.changeFlat';
+    return { arrow, cls: change.direction, text: change.direction === 'flat' ? number(change.delta, false) : number(change.delta, true),
+      spoken: t(key, { delta: size }) };
+  }
+
+  // "20 Sep 2026" or, for a period of more than one week, "30 Aug 2026 – 20 Sep 2026" (the Sundays it starts and ends with).
+  function weekRange(period) {
+    if (!period || period.from === period.to) return weekDate(period ? period.to : '');
+    return t('archetypes.dateRange', { from: weekDate(period.from), to: weekDate(period.to) });
+  }
+
   function escape(value) {
     return window.escapeHTML ? window.escapeHTML(value) : String(value ?? '');
   }
@@ -69,5 +90,5 @@
     return window.MissionI18n?.ready || Promise.resolve();
   }
 
-  window.Archetypes = { ARCHETYPES, t, tr, archetypeName, bandFor, textOn, bandRange, weekDate, escape, whenReady };
+  window.Archetypes = { ARCHETYPES, t, tr, archetypeName, bandFor, textOn, bandRange, weekDate, changeView, weekRange, escape, whenReady };
 })();

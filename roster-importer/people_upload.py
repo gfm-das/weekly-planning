@@ -104,7 +104,8 @@ def appearances_of(records):
         out.append({"kind": match.NEW_MEMBER, "name": " ".join(x for x in (record["first"], record["last"]) if x),
                     "first": record["first"], "last": record["last"], "area_id": record["area_id"],
                     "unit_id": record.get("unit_id"), "sunday": None, "order": number, "target": None,
-                    "baptism_date": as_day(record["baptism_date"]), "profile": profile, "weekly": None})
+                    "baptism_date": as_day(record["baptism_date"]), "profile": profile, "weekly": None,
+                    "fc": record.get("fc_number")})
     return out
 
 
@@ -115,9 +116,12 @@ def plan(cur, records):
     matcher = data_names.Matcher(cur, mission)
     names, unplaced = place_records(cur, matcher, records)
     decisions = match.load_decisions(cur, mission)
-    found = match.resolve(match.group_people(appearances_of(records)), match.stored_people(cur, mission), decisions)
+    stored = match.stored_people(cur, mission)
+    found = match.resolve(match.group_people(appearances_of(records)), stored, decisions)
+    stored_fcs = {(s["kind"], s["fc"]) for s in stored if s.get("fc")}
     counts = {"people": len(found["groups"]), "to_join": sum(1 for g in found["groups"] if g["stored_id"]),
-              "unplaced": unplaced}
+              "unplaced": unplaced, "with_fc": sum(1 for g in found["groups"] if g.get("fc")),
+              "joined_by_fc": sum(1 for g in found["groups"] if g["stored_id"] and g.get("fc") and (g["kind"], g["fc"]) in stored_fcs)}
     return {"matcher": matcher, "names": names, "unplaced": unplaced, "found": found, "counts": counts}
 
 

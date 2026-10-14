@@ -885,6 +885,28 @@ body {
 [data-card] .card-grip + * {
   margin-right: auto;
 }
+/* The welcome banner is a movable card too (round 13: it comes after the key indicators). It has no heading row,
+   so its handle sits in the banner's top corner (the start side, also for right-to-left languages). */
+.welcome-card {
+  position: relative;
+}
+.welcome-card > .card-grip {
+  position: absolute;
+  z-index: 2;
+  top: 6px;
+  inset-inline-start: 6px;
+  margin: 0;
+  color: #8fd3ce;
+}
+.welcome-card > .card-grip:hover {
+  background: #ffffff1c;
+  border-color: #ffffff30;
+  color: #fff;
+}
+.welcome-card > .card-grip + .hero {
+  margin-right: 0;
+  padding-top: 42px;
+}
 /* A card picked up with the keyboard. */
 .card-lifted {
   outline: 3px solid #83cbc6;
@@ -993,5 +1015,13 @@ body {
   }
   .card-grid > [data-card="indicators"] > .section-head {
     flex-wrap: wrap;
+  }
+  .welcome-card > .card-grip {
+    top: 4px;
+    inset-inline-start: 4px;
+    margin: 0;
+  }
+  .welcome-card > .card-grip + .hero {
+    padding-top: 46px;
   }
 }

@@ -64,7 +64,7 @@ export async function runCli(io, options, { languages, defaultTimeZone = 'UTC', 
   io.say('\n4. Optional settings');
   if (/^y/i.test(await io.ask('Set up email for sign-in links and invitations now? y/N', 'n'))) {
     await group(io, input, options, [
-      plain(['emailHost'], async i => { i.email.host = await io.ask('Mail server (for example smtp-relay.brevo.com)'); }),
+      plain(['emailHost'], async i => { i.email.host = await io.ask('Mail server (for example smtp.example.org)'); }),
       plain(['emailPort'], async i => { i.email.port = await io.ask('Port', '587'); }),
       plain([], async i => { i.email.user = await io.ask('User name'); i.email.password = await io.secret('Password or key (hidden)'); }),
       plain(['emailSender'], async i => { i.email.sender = await io.ask('Emails come from (address)'); }),
@@ -75,6 +75,9 @@ export async function runCli(io, options, { languages, defaultTimeZone = 'UTC', 
     plain(['publicDomain'], async i => { i.publicDomain = await io.ask('Public web name, for example example.org (Enter: office network only)'); }),
     plain(['timeZone'], async i => { i.timeZone = await io.ask('Time zone, for example Europe/Berlin', defaultTimeZone); }),
   ]);
+
+  // Not asked (nothing to type for most missions): the ID of the shared Google Drive may be given as the setting GFM_DRIVE_ID when the installer starts, or added to portal/.env later.
+  if (process.env.GFM_DRIVE_ID) input.driveId = process.env.GFM_DRIVE_ID;
 
   io.say('\n5. Cloudflare tunnel (optional)');
   await group(io, input, options, [

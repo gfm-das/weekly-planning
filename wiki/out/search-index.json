@@ -107,6 +107,18 @@
     "private": false
   },
   {
+    "title": "Tutorial",
+    "href": "tutorial.html",
+    "summary": "A short tutorial for new users, by role, matching the guided tour in the portal.",
+    "tags": [
+      "users",
+      "tutorial",
+      "tour"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
     "title": "Weekly Planning",
     "href": "weekly-planning.html",
     "summary": "How to use Weekly Planning including new members, baptismal dates, high potentials, and key indicators.",

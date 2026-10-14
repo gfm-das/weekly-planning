@@ -1,61 +1,81 @@
 ---
 title: DBeaver access
 slug: dbeaver-access
-lead: explains how Data Analysts connect to the mission PostgreSQL database with their own login (no passwords in this wiki).
-summary: DBeaver connection settings for analysts.
+lead: explains how Data Analysts connect to the mission PostgreSQL database with their own login, through an SSH tunnel (no passwords in this wiki).
+summary: DBeaver and Jupyter connection settings for analysts.
 status: full
 navboxes: [admin]
 infobox_title: DBeaver
 icon: "🗄️"
-infobox_rows: ["Port|54322", "Database|postgres", "Group role|gfm_db_analysts", "SSL|disable on LAN"]
+infobox_rows: ["Host|127.0.0.1 (SSH tunnel)", "Port|54322", "Database|postgres", "Group role|gfm_db_analysts", "SSL|disable (SSH encrypts)"]
 tags: [admin, database]
 ---
 
 ## Usage
 
-1. Install [DBeaver](https://dbeaver.io/) (or another PostgreSQL client).
-2. New connection → PostgreSQL.
+The database is **not open to the network**: on the Ubuntu server it listens on `127.0.0.1:54322` of the server only. You reach it through an SSH tunnel from your own computer.
+
+1. Open the tunnel and leave the window open:
+
+   ```
+   ssh -L 54322:127.0.0.1:54322 <your-server-user>@<the-server>
+   ```
+
+2. Install [DBeaver](https://dbeaver.io/) (or another PostgreSQL client). New connection → PostgreSQL.
 3. Fill in:
 
 | Field | Value |
 | --- | --- |
-| Host | Office server LAN address (or Tailscale address later) |
-| Port | `54322` |
+| Host | `127.0.0.1` (the end of the tunnel on your computer) |
+| Port | `54322` (or the local port you chose for the tunnel) |
 | Database | `postgres` |
-| Username | Your personal login (first example name historically: `analyst_admin`) |
-| Password | Given privately (stored only in the server secrets folder — **never in Git**) |
-| SSL | `disable` on the office path (Tailscale encrypts in transit when used) |
+| Username | Your personal login |
+| Password | Given privately (kept only in the server's secrets folder and your password manager — **never in Git, chat or email**) |
+| SSL | `disable` (the SSH tunnel is the encryption) |
 
 4. Useful schemas: `public` (planning data), `portal`, `dashboards` (views behind Dashboards).
 
 ## How it works
 
-- Beta database container publishes PostgreSQL on **54322**.
-- Each login is in group `gfm_db_analysts` (migration 043): full rights on those schemas, **BYPASSRLS**, not a superuser.
+- Each login is in the group `gfm_db_analysts` (migration 043): **full read, write and create** rights in `public`, `portal` and `dashboards`, **BYPASSRLS** (sees every row), not a superuser, no access to Supabase's own schemas (`auth`, `storage`).
 - Changes are **live data**. Try risky SQL inside `BEGIN; … ROLLBACK;` first.
-- Nightly backup is the recovery path.
+- The nightly backup is the recovery path.
 
-### Adding a login (admins on the server)
+### Adding a login (a Data Analyst on the server, after the owner's go)
 
-Create roles with `psql` as `supabase_admin` inside the database container. Store the password in `/path/to\secrets\` only. Do not paste passwords into chat, tickets, or this wiki.
+On the server, from the repository folder:
+
+```
+bash tools/add-analyst-login.sh <name> --dry-run   # look first
+bash tools/add-analyst-login.sh <name>             # make the login
+bash tools/add-analyst-login.sh <name> --reset     # a new password later
+```
+
+The script makes a long random password and writes it to a private file **outside the repository** (`~/gfm-secrets/analyst-<name>.txt`); it never prints the password. Hand the file's content over privately. Details: `docs/DBEAVER.md`.
+
+### Jupyter
+
+`tools/notebooks/starter.ipynb` connects through the same tunnel, asks for your password when it runs, starts in a read-only session and has example queries. Setup (a virtual environment with `jupyterlab pandas sqlalchemy psycopg2-binary`) is in `docs/DBEAVER.md`.
 
 ## Permissions
 
-Only provisioned analyst logins. Never forward 54322 on the router or put it on the Cloudflare tunnel.
+Only provisioned analyst logins. Never forward 54322 on the router or put it on the Cloudflare tunnel. On the server `ss -ltn | grep 54322` must show `127.0.0.1:54322`.
 
 ## Troubleshooting
 
 | Problem | What to try |
 | --- | --- |
-| Connection refused | Firewall rule for office / Tailscale ranges; confirm container healthy |
+| Connection refused | The tunnel is not open (run the `ssh -L …` command), or the local port is busy: use another one |
+| Password authentication failed | Wrong or old password; ask for a reset (`--reset`) |
 | Permission denied on auth/storage | Expected — those Supabase schemas stay protected |
-| Need a new password | `ALTER ROLE … PASSWORD` on the server; update secrets folder |
+| Server shows `0.0.0.0:54322` | Set `GFM_DB_BIND=127.0.0.1` in `supabase/.env` and recreate the database container |
 
 ## History
 
 | Date | Note |
 | --- | --- |
 | Migration 043 | `gfm_db_analysts` group role |
+| Oct 2026 | Rewritten for the Ubuntu server: SSH tunnel, per-analyst login script, starter notebook |
 
 ## See also
 

@@ -23,6 +23,7 @@ import people_pages
 import people_upload
 import sign_in
 from data_files import FileProblem
+from data_text import t
 from page import h
 
 pages = Blueprint("people_upload_pages", __name__)
@@ -52,6 +53,7 @@ def start():
         <li>The area comes from the area name. A closed area is asked about: the standard is to move its people to a current area.
         A row with no area is placed by its ward or branch when only one open area serves it, otherwise it is left out.</li>
         <li>A name that may be someone already stored is asked about before anything is saved, and your answer is remembered.</li>
+        <li>{t("uploads.people.fcAbout")}</li>
         <li>Names are stored with the person, like a New Member typed in by a missionary. Everything is one entry in
         <a href="/imports">Import history</a>, where it can be undone.</li></ul></div>""")
 
@@ -109,7 +111,8 @@ def review_page(pending):
     metrics = "".join(f"<div class='metric'><b>{value}</b><br>{label}</div>" for label, value in (
         ("rows read", parsed["rows_read"]), ("people to save", counts["people"]),
         ("already stored (joined, blanks filled)", counts["to_join"]), ("rows left out: no area", counts["unplaced"]),
-        ("rows with problems", parsed["problem_count"]), ("area names to match", len(planned["names"]))))
+        ("rows with problems", parsed["problem_count"]), ("area names to match", len(planned["names"])),
+        (t("uploads.people.withFc"), counts["with_fc"]), (t("uploads.people.joinedByFc"), counts["joined_by_fc"])))
     problems = "".join(f"<tr><td>{n}</td><td>{h(text)}</td></tr>" for n, text in parsed["problems"])
     problem_card = (f"<div class='card'><h3>Rows that are left out</h3><div class='scroll'><table><thead><tr><th>Row</th><th>Problem</th></tr></thead>"
                     f"<tbody>{problems}</tbody></table></div></div>" if problems else "")

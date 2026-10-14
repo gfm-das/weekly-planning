@@ -11,17 +11,22 @@ Office gives no access here. A saved role "AP" alone never gives access either: 
 
 ## What you can do here (the menu)
 
+Since round 13 the menu has five tabs, each with its pages underneath (MENU_GROUPS in page.py): **Data** (Roster Import, Historical CSV, Data uploads, Geo data, Vollzogen, Planning questions), **People** (People upload, Account Manager), **Places** (Places, Area mappings, Delete retired), **Accounts** (Staff accounts, Links to web services) and **History** (Import history, Updates, DA Docs, Wiki). A tab opens its first page; every address works as before.
+
 | Menu | What it does |
 | --- | --- |
 | Roster Import | Upload the complete transfer roster (CSV or XLSX), check what would change, apply it. |
 | Account Manager | Every missionary serving now and the state of their sign-in; send invitations and password emails. Each missionary has a settings page: role, Account active, area (with a date), languages. |
-| Planning questions | Change the questions of Weekly Planning (sections, questions, answer choices, show/hide rules). |
+| Planning questions | Change the questions of Weekly Planning (sections, questions, answer choices, show/hide rules). A manager (AP, President, Data Analyst) can unlock a locked question on its page, with a reason and the typed key; every unlock and lock is in the change history. |
 | Historical CSV | Import the old Weekly Planning form export (from before the portal) into the reports, and the new members, friends with a baptismal date and high-potential friends named in them. |
 | Area mappings | Say which current area each old area name of the Historical CSV stands for. "Close old area" is written to Import history and can be undone. |
 | Places | Close and reopen zones, districts and areas. Closing a zone or district moves what is inside it first (you choose where each goes); every change is in Import history with Undo. A roster upload wins over a change made here. |
+| Delete retired | Opened from Places and Planning questions (`/retire`). Delete a **closed** zone, district or area, or a **retired** Weekly Planning question, for good: an impact preview (what is attached), an optional merge onto the item that replaced it, an automatic database backup (named in the batch), a typed confirmation, and one Import history entry with Undo. Managers signed in through the portal only. |
 | Staff accounts | Sign-ins for the President, office staff and Data Analysts who are not missionaries. |
-| Data uploads | Numbers the portal does not collect: area data, the finding export, zone history, referral archive, rates, baptism history. |
-| People upload | New members (names and details) from a spreadsheet such as the office's Vollzogen sheets or the New Member Database Raw form. |
+| Data uploads | Numbers the portal does not collect: area data, Geo data (population, size, density, the six urbanisation populations and area type for zones, districts and areas, with source and date; the owner's three-table CSV is read as it is, placeholder and copied rows are held back and listed), the finding export, zone history, referral archive, rates, baptism history. |
+| Vollzogen | The office's list of people who were baptized and confirmed (the Vollzogen sheet: how found, dates, missionaries, unit, stake, zone, confirmed, country, gender, language). Dates are read loosely (Dec. 15th. 2025, 15.12.2025, ISO, spreadsheet dates), an X in Konfirmiert means confirmed, blank and placeholder lines are skipped. Each person is linked to the new member already in the portal (FC number first, then name with zone or baptism date, anything unsure is asked); the portal's people are not changed. One Import history batch (kind VOLLZOGEN, migration 051) with Undo. |
+| Wiki | A card with the button that opens the mission wiki in a new tab (`/wiki-link`, managers only; the wiki is not in the portal's side menu). The address is `WEB_LINK_WIKI` / `PORTAL_PORT` in `.env`. |
+| People upload | New members (names and details) from a spreadsheet such as the office's Vollzogen sheets or the New Member Database Raw form. An optional **FC number** column (the FindeChristus number, migration 047) is the first, exact way to recognise a person: the same number is the same person, a stored number is never overwritten, and the same number for different names is flagged. |
 | Import history | Everything that was imported or changed, with who did it, and **Undo**. |
 | DA Docs | A short guide. |
 | Updates | This computer's version, "Check for updates", "Update now". |
@@ -63,8 +68,14 @@ Every file starts with a short explanation. The big picture:
 | Historical CSV | `historical_pages.py` | `historical_import.py` (reading and staging), `historical_units.py` (wards and branches), `historical_preview.py` (the check), `historical_apply.py` (Apply) |
 | Area mappings | `mappings_page.py` | (in the same file) |
 | Places | `places_admin.py` | (in the same file: the rules are `change_place()`) |
+| Delete retired | `retire_pages.py` | `retire.py` (the rules and the delete), `backups.py` (the backup hook), `retire_text.py` (every text) |
+| Delete retired | Opened from Places and Planning questions (`/retire`). Delete a **closed** zone, district or area, or a **retired** Weekly Planning question, for good: an impact preview (what is attached), an optional merge onto the item that replaced it, an automatic database backup (named in the batch), a typed confirmation, and one Import history entry with Undo. Managers signed in through the portal only. |
 | Staff accounts | `staff_accounts.py` | (in the same file) |
 | Data uploads | `data_upload_pages.py` | `data_uploads.py`, `data_files.py`, `data_types.py`, `data_names.py`, `data_text.py` (every text) |
+| Vollzogen | `vollzogen_pages.py` | `vollzogen_upload.py` (matching and saving), `data_types.parse_vollzogen` and `data_files.read_loose_date` (reading the sheet), `data_text.py` |
+| Wiki | `links_page.py` (`/wiki-link`) | `wiki_link.py` (the address), `links_text.py` |
+| Role abilities | `abilities_page.py` (`/abilities`) | `abilities.py` (read, plan, save, revert), `abilities_text.py` (the texts), the shared block in `roles.py` (identical in portal-api), migration 055 |
+| Planning questions (unlock) | `planning_questions_pages.py` | `planning_questions.py` (`unlock_question`, `lock_question`), `unlock_text.py` (every text) |
 | People upload | `people_upload_pages.py` | `people_upload.py` (placing rows, Apply), `data_types.parse_people` (reading the sheet) |
 | People in uploads (both) | `people_pages.py` (the "same person?" questions) | `people_match.py` (who is the same person), `people_csv.py` (the people in a Historical CSV row), `people_write.py` (saving them and loading the current week) |
 | Import history | `import_history.py` | `undo.py` |
@@ -94,6 +105,7 @@ runs the same plan again, checks who may do it (`roles.py`), saves, and writes a
 | `IMPORTER_PASSWORD` | The old shared password. Empty: no password sign-in, only through the portal. |
 | `SUPABASE_AUTH_INTERNAL_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase Auth, for sign-ins and emails. |
 | `PASSWORD_REDIRECT_URL` | Where the link in an invitation or password email leads (the portal). |
+| `BACKUP_DIR`, `BACKUP_COMMAND` | Delete retired: where the database backup is written (default `/backups`, mounted from `../backups`) and the command that writes it (default `pg_dump --format=custom --no-owner --file {file}`; empty keeps the default). The image has `pg_dump`/`pg_restore`. |
 | `PERSON_KEY_SECRET` | Turns Church person ids of the finding export into codes. Set once, never change it. |
 | `UPLOAD_DIR`, `UPDATES_DIR`, `PORTAL_I18N_SRC` | Folders and the translation script's address (the defaults are right). |
 
@@ -124,11 +136,11 @@ database name says it is a throw-away test copy.
    ```
    docker run --rm --network none -v <repo>:/repo -w /repo/roster-importer
      -e DATABASE_URL=postgresql://nobody@127.0.0.1:1/none roster-importer-roster-importer
-     python -m unittest tests.test_rules tests.test_historical_rules tests.test_data_files tests.test_updates_page tests.test_page_words
+     python -m unittest tests.test_rules tests.test_historical_rules tests.test_data_files tests.test_updates_page tests.test_page_words tests.test_roles_in_step tests.test_fc_numbers tests.test_retire_rules tests.test_links tests.test_geo_pages tests.test_menu tests.test_vollzogen tests.test_geo_csv tests.test_ap_rights tests.test_unlock tests.test_wiki_card tests.test_abilities
    ```
 2. **DA Management with a database** (`test_management`, `test_accounts`, `test_data_uploads`): a throw-away copy
    whose name starts with `roster_management_test_`, reached under the name `gfm-beta-supabase-db-1`
-   (`--add-host gfm-beta-supabase-db-1:<test server IP>`), with `MANAGEMENT_TEST_DATABASE=<that name>`,
+   (`--add-host gfm-beta-supabase-db-1:<test server IP>`), with `MANAGEMENT_TEST_DATABASE=<that name>`, (round 13 added `test_geo_data_db`, `test_fc_numbers_db` and `test_retire_db`: written, to be run on a throw-away copy with migrations 046 to 048; round 13 importer2 added `test_vollzogen_db` (migration 051), more tests in `test_geo_data_db` (migration 052) and `test_unlock_db`: written, to be run the same way),
    `PERSON_KEY_SECRET`, `IMPORTER_PASSWORD` and a dummy `SUPABASE_SERVICE_ROLE_KEY` set, and the whole repository
    mounted (some tests read `portal/`). The tests replace the email sender with one that fails, so no email can go out.
 3. **Planning questions** (`test_planning_questions`): a throw-away database whose name contains `test`, with

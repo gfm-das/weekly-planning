@@ -11,9 +11,12 @@ const PEOPLE_TABLES = [
   'public.new_members', 'public.weekly_new_members', 'public.baptismal_date_people', 'public.weekly_baptismal_date_friends',
   'public.weekly_high_potential_friends', 'public.missionaries', 'public.user_profiles', 'public.call_in_area_updates',
   'public.import_weekly_new_members', 'public.weekly_planning_answers', 'auth.users', 'portal.attendance',
+  'public.area_geo_data',
 ];
 const VIEWS = ['dashboards.kpi_mission_week', 'dashboards.kpi_zone_week', 'dashboards.kpi_district_week',
-  'dashboards.kpi_area_total_week', 'dashboards.people_mission_week', 'dashboards.people_district_week'];
+  'dashboards.kpi_area_total_week', 'dashboards.people_mission_week', 'dashboards.people_district_week',
+  // Geo data (migration 046): the Areas, Trend and Per 10,000 residents dashboards of round 13.
+  'dashboards.area_geo_data', 'dashboards.area_week_per_capita'];
 
 let failures = 0;
 const check = (name, ok, detail = '') => {

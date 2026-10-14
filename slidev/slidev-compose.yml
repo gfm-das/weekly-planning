@@ -33,8 +33,6 @@ services:
       # package.json come from the repo, read-only, on top of the data volume.
       - './manager:/slidev/manager:ro'
       - './package.json:/slidev/package.json:ro'
-      # GFM Presentations V2: the built editor and player (presentations-v2/README.md); its decks are in the volume, in decks-v2/.
-      - './presentations-v2/dist:/slidev/presentations-v2:ro'
     expose:
       - '3040'
       - '3041'

@@ -22,6 +22,9 @@ import psycopg2.extras
 from flask import request
 from psycopg2 import sql
 
+import roles
+from unlock_text import plain as unlock_plain
+
 BASE = "/planning-questions"
 TYPES = {"NUMBER": "Number", "TEXT": "Short text", "LONG_TEXT": "Long text", "BOOLEAN": "Yes / No",
          "DATE": "Date", "SELECT": "Drop-down list", "RADIO": "Choose one (buttons)",
@@ -84,6 +87,59 @@ def protected_reason(key):
         # Only the old call-in pages read it. It stays locked so saved answers keep their meaning.
         return "Saved plans keep their answers under this key, so it stays the same."
     return "Reports read this question by its key."
+
+
+# The questions reports read by their key: these were locked by migration 024 and may be locked again after an unlock. (The same
+# 31 keys as tests/test_page_words.py lists; a question a manager marked locked in another way is not offered a "lock again".)
+LOAD_BEARING_KEYS = KEY_INDICATOR_KEYS | {
+    "nm_sacrament_attendance_plan", "baptisms_confirmations_plan", "baptismal_dates_plan", "sacrament_attendance_plan",
+    "members_at_lessons_plan", "friends_found_plan", "weekly_action_plan", "information_up_chain", "ward_coordination_held",
+    "ward_coordination_attendance", "long_term_service", "member_meals_active_actual", "member_meals_less_active_actual",
+    "member_meals_part_member_actual", "member_meals_goal", "member_visits_active_actual", "member_visits_less_active_actual",
+    "member_visits_part_member_actual", "member_visits_goal"}
+UNLOCK_REASON_MIN, UNLOCK_REASON_MAX = 5, 300
+
+
+def may_unlock():
+    """May the signed-in manager unlock or lock a question? An AP, the President or a Data Analyst signed in through the portal
+    (the old shared password has no person behind it, and an unlock must name who made it)."""
+    return roles.my_role() in roles.MANAGER_ROLES
+
+
+def unlock_question(cur, who, q, reason, typed_key):
+    """Unlocks a locked question on purpose: protected becomes false, with the reason in the change history
+    (planning_catalog_changes, note "Unlocked: ..."). The database allows it only in a transaction that says so on purpose
+    (SET LOCAL planning_catalog.unprotect, migration 024), which is turned off again right after. Returns the message.
+    Raises ValueError (plain words) when the person may not, the question is not locked, or the reason / key is missing."""
+    if not may_unlock() or not who:
+        raise ValueError(unlock_plain("unlock.managersOnly"))
+    if not q["protected"]:
+        raise ValueError(unlock_plain("unlock.notLocked"))
+    reason = " ".join(str(reason or "").split())
+    if len(reason) < UNLOCK_REASON_MIN:
+        raise ValueError(unlock_plain("unlock.reasonNeeded"))
+    if " ".join(str(typed_key or "").split()) != q["question_key"]:
+        raise ValueError(unlock_plain("unlock.typeKey"))
+    cur.execute("select set_config('planning_catalog.unprotect', 'on', true)")
+    try:
+        update_row(cur, who, "planning_questions", q["id"], {"protected": False}, {"question_key": q["question_key"]},
+                   f"Unlocked: {reason[:UNLOCK_REASON_MAX]}")
+    finally:
+        cur.execute("select set_config('planning_catalog.unprotect', 'off', true)")
+    return unlock_plain("unlock.done")
+
+
+def lock_question(cur, who, q):
+    """Locks a question that reports read again (protected becomes true; the database checks that it is active, in an active
+    section and has no value saved while hidden, and refuses in plain words if not). Returns the message."""
+    if not may_unlock() or not who:
+        raise ValueError(unlock_plain("unlock.managersOnly"))
+    if q["protected"]:
+        raise ValueError(unlock_plain("unlock.alreadyLocked"))
+    if q["question_key"] not in LOAD_BEARING_KEYS:
+        raise ValueError(unlock_plain("unlock.notLockable"))
+    update_row(cur, who, "planning_questions", q["id"], {"protected": True}, {"question_key": q["question_key"]}, "Locked again")
+    return unlock_plain("unlock.lockedAgain")
 
 
 def make_key(text, taken, pattern=KEY_PATTERN, prefix="q"):

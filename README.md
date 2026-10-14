@@ -5,6 +5,9 @@ Health, Presentations, Dashboards and DA Management (accounts, roster and data u
 
 **Not a developer? Start on the website: https://gfm-das.github.io/weekly-planning**  (big download buttons, what you need, plain steps).
 
+## Try it first
+A click-through demo with fake data (nothing to install, nothing is saved): https://gfm-das.github.io/weekly-planning/demo/
+
 ## Install it in one command
 You need Docker (Docker Desktop on Windows and Mac, Docker Engine on Linux) and, on Windows, Git for Windows.
 
@@ -19,6 +22,10 @@ A few minutes later the portal is running and you can sign in. Load the roster a
 ## Updates
 New versions are published here as releases (`v1.0.0`, `v1.1.0` ...). An installed copy follows them: DA Management > Updates shows
 what is new and installs it only when a person asks, after testing it, saving a way back and checking the system's health.
+
+## Videos
+The script and storyboard of the showcase video for other missions (every feature, one scene each; recorded from fake data only) are in
+`docs/video/showcase-script.md`, and the short introduction for a mission's own people in `docs/video/mission-hype-script.md`.
 
 ## What is in this repository
 `install/` the installer, `portal/` the pages, `portal-api/` the server and database baseline and migrations, `roster-importer/` DA Management,

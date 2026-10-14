@@ -26,21 +26,83 @@ CHURCH_CODES = {"eng": "en", "deu": "de", "spa": "es", "fra": "fr", "por": "pt",
                 "tur": "tr", "pes": "fa", "ron": "ro", "swe": "sv", "dan": "da", "ara": "ar"}
 RIGHT_TO_LEFT = ("fa", "ar")
 
-# The menu at the top of every page, in this order. (The last link, Updates, is written in FRAME: it carries its own
-# translation key.)
-MENU = [
-    ("/", "Roster Import"),
-    ("/accounts", "Account Manager"),
-    ("/planning-questions", "Planning questions"),
-    ("/historical", "Historical CSV"),
-    ("/mappings", "Area mappings"),
-    ("/places", "Places"),
-    ("/staff", "Staff accounts"),
-    ("/uploads", "Data uploads"),
-    ("/people-upload", "People upload"),
-    ("/imports", "Import history"),
-    ("/docs", "DA Docs"),
+# The menu at the top of every page (round 13): five tabs, each with the pages of its group underneath. Every page of
+# DA Management is in exactly one group, so every function stays reachable and every address works as before. A tab
+# opens the first page of its group. A page that belongs to a group but has its own sub-addresses (a form that sends,
+# a detail page) lists them as the third part of its entry, so the right tab stays lit there.
+# [(group key, tab text, [(address, page text, [more address starts])])]; the texts are in the portal's catalogs
+# (dam.* and uploads.geo.title already; dam.tab.* are new, see portal/i18n/en.json).
+MENU_GROUPS = [
+    ("data", "Data", [
+        ("/", "Roster Import", ["/preview", "/apply"]),
+        ("/historical", "Historical CSV", []),
+        ("/uploads", "Data uploads", []),
+        ("/uploads/geo", "Geo data", []),
+        ("/uploads/vollzogen", "Vollzogen", []),
+        ("/planning-questions", "Planning questions", []),
+    ]),
+    ("people", "People", [
+        ("/people-upload", "People upload", ["/people/"]),
+        ("/accounts", "Account Manager", []),
+    ]),
+    ("places", "Places", [
+        ("/places", "Places", []),
+        ("/mappings", "Area mappings", []),
+        ("/retire", "Delete retired", []),
+    ]),
+    ("accounts", "Accounts", [
+        ("/staff", "Staff accounts", []),
+        ("/links", "Links to web services", []),
+        ("/abilities", "Role abilities", []),
+    ]),
+    ("history", "History", [
+        ("/imports", "Import history", []),
+        ("/updates", "Updates", []),
+        ("/docs", "DA Docs", []),
+        ("/wiki-link", "Wiki", []),
+    ]),
 ]
+
+# The same pages as one flat list (address, text), in menu order.
+MENU = [(address, text) for _key, _tab, pages in MENU_GROUPS for address, text, _more in pages]
+
+
+def _starts(path, start):
+    """True when path is the start or lies below it ("/uploads/geo/table" is below "/uploads/geo"). "/" is only itself."""
+    if start == "/":
+        return path == "/"
+    return path == start or path.startswith(start.rstrip("/") + "/") or (start.endswith("/") and path.startswith(start))
+
+
+def current_page(path):
+    """(group key, address) of the menu page that path belongs to, or (None, None). The longest matching start wins
+    ("/uploads/geo/table" is Geo data, "/uploads/areas/table" is Data uploads)."""
+    best_length, best = 0, (None, None)
+    for key, _tab, pages in MENU_GROUPS:
+        for address, _text, more in pages:
+            for start in [address, *more]:
+                if _starts(path, start) and len(start) > best_length:
+                    best_length, best = len(start), (key, address)
+    return best
+
+
+def _link(address, text, lit):
+    """One menu link; the lit one (the page or tab the person is on) says so for screen readers too."""
+    mark = ' class="on" aria-current="page"' if lit else ""
+    return f'<a href="{escape(address)}"{mark}>{escape(text)}</a>'
+
+
+def menu_html(path):
+    """The two rows of links at the top: the tabs (groups) and, under them, the pages of the group the person is in."""
+    group, address = current_page(path)
+    tabs = "".join(_link(pages[0][0], tab, key == group) for key, tab, pages in MENU_GROUPS)
+    html = f'<nav class="nav tabs" aria-label="Sections">{tabs}</nav>'
+    for key, _tab, pages in MENU_GROUPS:
+        if key == group:
+            links = "".join(_link(page, text, page == address) for page, text, _more in pages)
+            html += f'<nav class="nav sub" aria-label="Pages in this section">{links}</nav>'
+    return html
+
 
 STYLE = """
 /* The look of every page */
@@ -77,6 +139,13 @@ label{font-size:12px;font-weight:650}.form-field{display:grid;gap:6px;margin:15p
 #accountForm .split>*,#accountForm .form-field{min-width:0}#accountForm select{width:100%}
 [data-theme="dark"] .role-choice span{color:#a9bdc3}[data-theme="dark"] .role-group{border-color:#2d414b}
 
+/* The menu: tabs (groups) with the pages of the open group under them (round 13) */
+.nav.tabs{margin-bottom:6px}.nav.tabs a{font-size:13px;font-weight:700}.nav.sub{margin-top:0;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.nav.sub a{background:transparent;border-color:transparent;font-weight:600;color:#3d5966}
+.nav a.on{background:var(--teal);border-color:var(--teal);color:#fff}.nav.sub a.on{background:#e3f1f2;border-color:#bfdfe2;color:var(--navy)}
+[data-theme="dark"] .nav a.on{background:#087f8c;border-color:#087f8c;color:#fff}[data-theme="dark"] .nav.sub a{background:transparent;border-color:transparent;color:#c9dade}
+[data-theme="dark"] .nav.sub a.on{background:#21343d;border-color:#4b6a76;color:#edf7f8}[data-theme="dark"] .nav.sub{border-color:#2d414b}
+
 /* Phones */
 @media(max-width:700px){body{padding:16px 12px}.split{grid-template-columns:1fr}.card{padding:17px}.nav{gap:6px}.nav a{padding:8px}}
 
@@ -104,6 +173,10 @@ label{font-size:12px;font-weight:650}.form-field{display:grid;gap:6px;margin:15p
 .staff .check span{font-weight:400;font-size:13px;display:block}.staff td:nth-child(2){overflow-wrap:anywhere}
 #accountForm button{min-height:44px}
 
+/* Role abilities: a switch in every cell, big enough for a finger */
+.abil th,.abil td{vertical-align:middle}.abil td.cell{text-align:center;min-width:76px}.abil input[type=checkbox]{width:26px;height:26px;margin:0}.abil .muted{font-weight:400}
+.abil-card .actions button{min-height:44px}
+
 /* Area mappings: each row's list is as wide as the whole list, also before the page's script fills it in */
 #mappingTable select{width:27em}
 """
@@ -121,9 +194,7 @@ FRAME = r"""
 </head>
 <body>
 <h1>Mission Admin</h1>
-<div class="nav">
-  {% for link, name in menu %}<a href="{{ link }}">{{ name }}</a>{% endfor %}<a href="/updates" data-i18n="updates.title">Updates</a>
-</div>
+<div class="menu">{{ nav|safe }}</div>
 {% with messages = get_flashed_messages() %}
 {% if messages %}{% for m in messages %}<div class="flash">{{m}}</div>{% endfor %}{% endif %}
 {% endwith %}
@@ -153,7 +224,7 @@ def render(body, status=200):
     token = session.setdefault("csrf_token", secrets.token_urlsafe(32))
     body = POST_FORM.sub(lambda found: found.group(1) + f'<input type="hidden" name="csrf_token" value="{token}">', body)
     language = page_language()
-    html = frame(current_app.jinja_env).render(body=body, style=STYLE, menu=MENU, page_lang=language,
+    html = frame(current_app.jinja_env).render(body=body, style=STYLE, nav=menu_html(request.path), page_lang=language,
                                                page_dir="rtl" if language in RIGHT_TO_LEFT else "ltr",
                                                i18n_src=i18n_source())
     return html, status

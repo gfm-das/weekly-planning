@@ -46,6 +46,14 @@ class ReadingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             data_files.read_date("soon")
         self.assertEqual(data_files.read_count("12"), 12)
+        self.assertEqual(data_files.read_big_count("21.000"), 21000)  # German thousands separator
+        self.assertEqual(data_files.read_big_count("1,234,567"), 1234567)
+        self.assertEqual(data_files.read_big_count("21 000"), 21000)
+        self.assertEqual(data_files.read_big_count(21000.0), 21000)
+        self.assertEqual(data_files.read_big_count("12"), 12)
+        self.assertIsNone(data_files.read_big_count(""))
+        with self.assertRaises(ValueError):
+            data_files.read_big_count("1,5")
         self.assertEqual(data_files.read_count(3.0), 3)
         self.assertIsNone(data_files.read_count(""))
         with self.assertRaises(ValueError):
@@ -171,6 +179,74 @@ class HistoryTests(unittest.TestCase):
         self.assertEqual(parsed.problem_count, 1)
 
 
+class GeoDataTests(unittest.TestCase):
+    ROWS = [("Frankfurt", "Frankfurt 1", "Bockenheim", "34.000", "2,5", "", "18000", "Stadt Frankfurt, Bürgeramt", "2024-12-31", "yes"),
+            ("Frankfurt", "Frankfurt 1", "Bornheim", "21000", "", "", "", "", "", ""),
+            ("Frankfurt", "Frankfurt 1", "Nordend", "", "", "", "", "", "", ""),
+            ("Frankfurt", "Frankfurt 1", "Sachsenhausen", "lots", "3", "", "", "", "", ""),
+            ("Frankfurt", "Frankfurt 1", "Gallus", "9000", "0", "", "", "", "", ""),
+            ("Frankfurt", "Frankfurt 1", "Westend", "9000", "1", "", "", "x", "next week", ""),
+            ("Frankfurt", "Frankfurt 1", "Bockenheim", "35000", "2,5", "14000", "", "Stadt Frankfurt", "31.12.2025", ""),
+            ("Frankfurt", "Frankfurt 1", "Ostend", "12000", "4", "3000", "", "Amt", "12/31/2024", "no")]
+
+    def parsed(self, rows=None, headings=s.GEO_HEADINGS):
+        return data_types.parse_geo_data(data_files.read_table("geo.csv", s.geo_file(rows or self.ROWS, headings)))
+
+    def test_figures_source_and_date_are_read(self):
+        parsed = self.parsed()
+        by_area = {r["area"]: r for r in parsed.records}
+        self.assertEqual(sorted(by_area), ["Bockenheim", "Bornheim", "Ostend"])
+        ost = by_area["Ostend"]
+        self.assertEqual((ost["population"], ost["size_km2"], ost["density_per_km2"], ost["source"], ost["data_date"]),
+                         (12000, 4.0, 3000.0, "Amt", "2024-12-31"))
+        self.assertEqual(ost["extra"], {"Chapel nearby": "no"})
+        bor = by_area["Bornheim"]
+        self.assertEqual((bor["population"], bor["size_km2"], bor["source"], bor["data_date"]), (21000, None, None, None))
+
+    def test_the_last_row_of_an_area_wins_and_bad_rows_are_explained(self):
+        parsed = self.parsed()
+        bockenheim = next(r for r in parsed.records if r["area"] == "Bockenheim")
+        self.assertEqual((bockenheim["population"], bockenheim["data_date"], bockenheim["source"]),
+                         (35000, "2025-12-31", "Stadt Frankfurt"))
+        self.assertEqual(parsed.left_out, 1)  # Nordend has no figure at all
+        text = " | ".join(p[1] for p in parsed.problems)
+        self.assertIn("Sachsenhausen", text)   # 'lots' is not a number
+        self.assertIn("Gallus", text)          # size 0 km2
+        self.assertIn("Westend", text)         # 'next week' is not a date
+        self.assertIn("Bockenheim is in the file twice", text)
+        self.assertEqual(parsed.problem_count, 4)
+
+    def test_german_headings(self):
+        headings = ["Zone", "District", "Area", "Einwohner", "Fläche (km2)", "Haushalte", "Quelle", "Stand"]
+        parsed = self.parsed([("Frankfurt", "Frankfurt 1", "Bornheim", "21.000", "3,5", "9500", "Statistik", "31.12.2024")], headings)
+        record = parsed.records[0]
+        self.assertEqual((record["population"], record["size_km2"], record["households"], record["data_date"]),
+                         (21000, 3.5, 9500, "2024-12-31"))
+
+    def test_a_file_without_any_figure_column_is_refused(self):
+        with self.assertRaises(data_files.FileProblem) as caught:
+            data_types.parse_geo_data(data_files.read_table("x.csv", b"Zone,District,Area,Notes\nFrankfurt,F1,Bornheim,hi\n"))
+        self.assertIn("Population", str(caught.exception))
+
+    def test_the_template_reads_back_as_it_was_saved(self):
+        saved = [{"zone": "Frankfurt", "district": "Frankfurt 1", "area": "Bockenheim", "population": 34000, "size_km2": 2.5,
+                  "density_per_km2": 13600.0, "households": 18000, "source": "Amt", "data_date": date(2024, 12, 31),
+                  "extra": {"Chapel nearby": "yes"}}]
+        headings, rows = data_types.geo_template(saved)
+        self.assertEqual(headings[-1], "Chapel nearby")
+        parsed = data_types.parse_geo_data(data_files.read_table("t.csv", data_files.as_csv(headings, rows)))
+        record = parsed.records[0]
+        self.assertEqual((record["population"], record["size_km2"], record["density_per_km2"], record["households"],
+                          record["source"], record["data_date"], record["extra"]),
+                         (34000, 2.5, 13600.0, 18000, "Amt", "2024-12-31", {"Chapel nearby": "yes"}))
+        self.assertEqual(parsed.problem_count, 0)
+
+    def test_no_names_in_geo_records(self):
+        text = json.dumps(self.parsed().as_dict())
+        for secret in s.MADE_UP_NAMES + s.MADE_UP_IDS:
+            self.assertNotIn(secret, text)
+
+
 class TextTests(unittest.TestCase):
     def test_texts_are_in_the_portal_catalog(self):
         """The upload texts are in the portal's catalogs (round 6 interface translation): each uploads.* text is in
@@ -192,12 +268,13 @@ class TextTests(unittest.TestCase):
 
     def test_every_key_used_exists(self):
         source = "".join((Path(__file__).resolve().parents[1] / f).read_text(encoding="utf-8")
-                         for f in ("data_uploads.py", "data_upload_pages.py", "data_types.py", "data_files.py", "data_names.py"))
+                         for f in ("data_uploads.py", "data_upload_pages.py", "data_types.py", "data_files.py", "data_names.py",
+                              "vollzogen_pages.py", "vollzogen_upload.py"))
         used = set(re.findall(r"""["'](uploads\.[A-Za-z]+\.[A-Za-z]+)["']""", source))
         self.assertTrue(used)
         self.assertEqual(sorted(used - set(TEXT)), [])
         for part in ("title", "about", "columns", "merge"):
-            for name in ("areas", "finding", "zoneHistory", "referralArchive", "rates", "baptisms"):
+            for name in ("areas", "geo", "finding", "zoneHistory", "referralArchive", "rates", "baptisms"):
                 self.assertIn(f"uploads.{name}.{part}", TEXT)
         for key in ("uploads.names.zone", "uploads.names.area", "uploads.status.applied", "uploads.status.undone"):
             self.assertIn(key, TEXT)

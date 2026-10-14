@@ -2,7 +2,7 @@
 
 What it is: a small web server (Flask) that the portal shows inside a frame. The managers of the mission (the
 President, the Data Analysts, and the APs) use it to import transfer rosters, manage accounts and roles, change the
-Weekly Planning questions, upload data, look at Import history (and undo things), and update the mission system.
+Weekly Planning questions, upload data, delete retired places and questions, look at Import history (and undo things), and update the mission system.
 
 How it starts: gunicorn runs `app:app` (see Dockerfile), which is the `app` made below.
 
@@ -22,6 +22,7 @@ import gzip
 from flask import Flask, request
 from flask.sessions import SecureCookieSessionInterface
 
+import abilities_page
 import account_manager
 import account_page
 import data_upload_pages
@@ -31,7 +32,9 @@ import historical_pages
 import import_history
 import mappings_page
 import people_pages
+import links_page
 import places_admin
+import retire_pages
 import people_upload_pages
 import planning_questions_pages
 import settings
@@ -39,6 +42,7 @@ import sign_in
 import staff_accounts
 import transfer_pages
 import updates_page
+import vollzogen_pages
 
 app = Flask(__name__)
 app.secret_key = settings.SECRET_KEY
@@ -70,12 +74,16 @@ PAGE_GROUPS = [
     historical_pages,    # Historical CSV: /historical/...
     mappings_page,       # Area mappings: /mappings
     places_admin,        # Places (close and reopen zones, districts, areas): /places/...
+    retire_pages,        # Delete retired (closed places, retired questions): /retire/...
     people_pages,        # "Same person?" answers of upload checks: /people/decide
     people_upload_pages,  # People upload: /people-upload/...
     staff_accounts,      # Staff accounts: /staff/...
     data_upload_pages,   # Data uploads: /uploads/...
+    vollzogen_pages,     # Data uploads > Vollzogen (the baptized and confirmed list): /uploads/vollzogen/...
     import_history,      # Import history: /imports/...
     docs_page,           # DA Docs: /docs
+    links_page,          # Links to web services (Brevo, Porkbun, Cloudflare): /links
+    abilities_page,      # Role abilities (what each role may do, with a change log and revert): /abilities/...
     updates_page,        # Updates: /updates/...
 ]
 for group in PAGE_GROUPS:

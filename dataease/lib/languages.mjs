@@ -9,7 +9,8 @@
 //      |   |   |   |   |     always six zeros
 //      |   |   |   |   part: 0000 = the dashboard or folder itself, 0001-9999 = a chart or filter on it
 //      |   |   |   generation: 00, or 01-89 when DataEase kept a deleted one (its id can never be used again)
-//      |   |   dashboard: 00 = the folder, 01 Key indicators, 02 Zones & districts, 03 Covenant path
+//      |   |   dashboard: 00 = the folder, 01 Key indicators, 02 Zones & districts, 03 Covenant path,
+//      |   |              04 Areas, 05 Trend, 06 Per 10,000 residents (round 13)
 //      |   language: 00 = English (the ones people edit), 01 German ... 13 Arabic (LANGUAGES below)
 //      the block of ids seed-dashboards.mjs uses (lib/build.mjs explains why it is safe)
 //

@@ -10,9 +10,10 @@ Pages:
   /uploads/<kind>/apply         4. Apply, after the "I checked" tick
   /uploads/<kind>/cancel        drops the waiting rows
   /uploads/areas/table          the area data as a table to edit
+  /uploads/geo/table            the Geo data of every area as a table to read
   /uploads/names                the remembered names, each can be forgotten
 
-<kind> is one of data_uploads.UPLOADS: areas, finding, zone-history, referral-archive, rates, baptisms.
+<kind> is one of data_uploads.UPLOADS: areas, geo, finding, zone-history, referral-archive, rates, baptisms.
 Every text is from data_text.py (the portal translates it).
 """
 import re
@@ -28,7 +29,7 @@ import sign_in
 from data_files import FileProblem, clean
 from data_text import plain, t
 from data_uploads import (ARCHIVED_UPLOADS, UPLOADS, apply_upload, area_rows, check_upload, day_text, drop_pending,
-                          load_pending, person_secret, read_upload, save_area_records, save_pending, spec_of,
+                          geo_district_rows, geo_rows, geo_zone_rows, load_pending, person_secret, read_upload, save_area_records, save_pending, spec_of,
                           template_file, title_of)
 from page import h, mission_time
 
@@ -55,6 +56,10 @@ SAMPLE_COLUMNS = {  # the columns of "First rows to store" on the check page: (t
     "areas": [("uploads.col.zone", "zone"), ("uploads.col.area", "area"), ("uploads.col.population", "population"),
               ("uploads.col.size", "size_km2"), ("uploads.col.urban", "urban_type"),
               ("uploads.col.assignment", "assignment_type")],
+    "geo": [("uploads.col.zone", "zone"), ("uploads.col.area", "area"), ("uploads.col.population", "population"),
+            ("uploads.col.size", "size_km2"), ("uploads.col.density", "density_per_km2"),
+            ("uploads.col.households", "households"), ("uploads.col.source", "source"),
+            ("uploads.col.dataDate", "data_date")],
     "finding": [("uploads.col.found", "found_on"), ("uploads.col.zone", "zone"), ("uploads.col.area", "area"),
                 ("uploads.col.category", "finding_category"), ("uploads.col.source", "finding_source"),
                 ("uploads.col.firstLesson", "first_lesson_on")],
@@ -76,7 +81,12 @@ def sample_table(slug, records):
     """The first 8 rows the upload would store, in the columns of SAMPLE_COLUMNS."""
     columns = SAMPLE_COLUMNS[slug]
     head = "".join(f"<th>{t(key)}</th>" for key, _ in columns)
-    body = "".join("<tr>" + "".join(f"<td>{h(show_value(r.get(field)))}</td>" for _, field in columns) + "</tr>"
+    def shown(record, field):
+        if slug == "geo" and field == "area" and not record.get("area"):  # a zone or district row of the three-table file
+            return record.get("district") or record.get("zone")
+        return record.get(field)
+
+    body = "".join("<tr>" + "".join(f"<td>{h(show_value(shown(r, field)))}</td>" for _, field in columns) + "</tr>"
                    for r in records[:8])
     return f"<div class='scroll'><table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>"
 
@@ -116,7 +126,7 @@ def hub_page():
         with database.cursor(conn) as cur:
             cur.execute("""select distinct on (kind) kind,filename,created_at from public.roster_import_batches
               where mission_id=%s and status='APPLIED' and kind=any(%s) order by kind,created_at desc""",
-                        (sign_in.current_mission_id(), [s["kind"] for s in UPLOADS.values()]))
+                        (sign_in.current_mission_id(), [s["kind"] for s in UPLOADS.values()] + ["VOLLZOGEN"]))
             last = {r["kind"]: r for r in cur.fetchall()}
     cards = []
     for slug, spec in UPLOADS.items():
@@ -127,6 +137,11 @@ def hub_page():
                   else t("uploads.hub.none"))
         cards.append(f"""<div class="card"><h3>{title_of(slug)}</h3><p class="muted">{t(f"uploads.{spec['text']}.about")}</p>
           <p class="muted">{status}</p><p><a href="/uploads/{slug}">{t("uploads.hub.open")}</a></p></div>""")
+    latest = last.get("VOLLZOGEN")
+    status = (t("uploads.hub.last", date=mission_time(latest["created_at"]), file=latest["filename"]) if latest
+              else t("uploads.hub.none"))
+    cards.append(f"""<div class="card"><h3>{t("uploads.vollzogen.title")}</h3><p class="muted">{t("uploads.vollzogen.about")}</p>
+      <p class="muted">{status}</p><p><a href="/uploads/vollzogen">{t("uploads.hub.open")}</a></p></div>""")
     return f"""<div class="card"><div class="step">{t("uploads.hub.step")}</div><h2>{t("uploads.hub.title")}</h2>
       <p class="muted">{t("uploads.hub.intro")}</p><p class="muted">{t("uploads.hub.privacy")}</p>
       <p><a href="/uploads/names">{t("uploads.hub.names")}</a></p></div>
@@ -146,10 +161,11 @@ def upload_page(slug):
                if rows else f"<p class='muted'>{t('uploads.hub.none')}</p>")
     secret_note = (f"<div class='error'>{t('uploads.finding.noSecret')}</div>"
                    if slug == "finding" and not person_secret() else "")
-    table_link = (f"<p><a href='/uploads/areas/table'>{t('uploads.areas.editTable')}</a></p>" if slug == "areas" else "")
+    table_link = (f"<p><a href='/uploads/areas/table'>{t('uploads.areas.editTable')}</a></p>" if slug == "areas" else
+                  f"<p><a href='/uploads/geo/table'>{t('uploads.geo.viewTable')}</a></p>" if slug == "geo" else "")
     text = spec["text"]
     report_week = (f"<li>{t('uploads.page.reportWeek')}</li><li>{t('uploads.page.oneReport')}</li>"
-                   if slug in ("referral-archive", "rates") else "")
+                   if slug in ("referral-archive", "rates") else f"<li>{t('uploads.geo.tablesAbout')}</li>" if slug == "geo" else "")
     return f"""{pending_card(slug)}{secret_note}<div class="card"><div class="step">{t("uploads.page.step1")}</div>
       <h2>{title_of(slug)}</h2><p class="muted">{t(f"uploads.{text}.about")}</p>
       <p><a href="/uploads/{slug}/template">{t("uploads.page.template")}</a></p>{table_link}
@@ -172,7 +188,8 @@ def review_page(slug, pending):
     metrics = "".join(f"<div class='metric'><b>{value}</b><br>{t(key)}</div>" for key, value in (
         ("uploads.review.rowsRead", parsed["rows_read"]), ("uploads.review.rowsToStore", len(parsed["records"])),
         ("uploads.review.leftOut", parsed["left_out"]), ("uploads.review.problems", parsed["problem_count"]),
-        ("uploads.review.namesToMatch", len(questions))))
+        ("uploads.review.namesToMatch", len(questions)))
+        + ((("uploads.geo.flaggedCount", len(parsed.get("flagged") or [])),) if parsed.get("flagged") else ()))
     lines = "".join(f"<li>{line}</li>" for line in check["lines"] + [t(f"uploads.{spec['text']}.merge")])
     problems = "".join(f"<tr><td>{n}</td><td>{h(text)}</td></tr>" for n, text in parsed["problems"])
     problem_card = (f"""<div class="card"><h3>{t("uploads.review.problemTitle")}</h3><p class="muted">{t("uploads.review.problemHelp")}</p>
@@ -180,6 +197,13 @@ def review_page(slug, pending):
       <tbody>{problems}</tbody></table></div>{f"<p class='muted'>{t('uploads.review.moreProblems', count=parsed['problem_count'] - len(parsed['problems']))}</p>" if parsed['problem_count'] > len(parsed['problems']) else ""}</div>"""
                     if problems else "")
     names_card = names_form(slug, spec, check) if questions else ""
+    flagged = parsed.get("flagged") or []
+    flagged_rows = "".join(f"<tr><td>{n}</td><td>{h(name)}</td><td>{t('uploads.col.' + level)}</td><td>{h(why)}</td></tr>"
+                           for n, name, level, why in flagged)
+    flagged_card = (f"""<div class="card"><h3>{t("uploads.geo.flaggedTitle")}</h3><p class="muted">{t("uploads.geo.flaggedHelp")}</p>
+      <div class="scroll"><table><thead><tr><th>{t("uploads.col.row")}</th><th>{t("uploads.col.nameInFile")}</th>
+      <th>{t("uploads.col.level")}</th><th>{t("uploads.col.problem")}</th></tr></thead><tbody>{flagged_rows}</tbody></table></div></div>"""
+                    if flagged else "")
     ready = not questions and parsed["records"]
     # An older finding export needs a second tick (the server checks it again in save_finding).
     older_tick = (f"""<p class="warn"><label><input type="checkbox" name="older_ok" value="yes" required>
@@ -192,7 +216,7 @@ def review_page(slug, pending):
               f" <a href='/uploads/{slug}'>{t('uploads.page.back')}</a></form>")
     return f"""<div class="card"><div class="step">{t("uploads.review.step")}</div><h2>{title_of(slug)}: {h(pending['filename'])}</h2>
       <div class="grid">{metrics}</div><ul>{lines}</ul>{sample_table(slug, parsed["records"]) if parsed["records"] else ""}</div>
-      {names_card}{problem_card}{apply_card}<div class="card">{cancel}</div>"""
+      {names_card}{flagged_card}{problem_card}{apply_card}<div class="card">{cancel}</div>"""
 
 
 def names_form(slug, spec, check):
@@ -246,6 +270,42 @@ def area_table_page(error=None, values=None):
       <th>{t("uploads.col.density")}</th><th>{t("uploads.col.urban")}</th><th>{t("uploads.col.assignment")}</th>
       <th>{t("uploads.col.extra")}</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
       <p><button>{t("uploads.areas.save")}</button> <a href="/uploads/areas">{t("uploads.page.back")}</a></p></form></div>"""
+
+
+GEO_URBAN_COLUMNS = [("pop_urban_centre", "uploads.col.urban130"), ("pop_dense_urban_cluster", "uploads.col.urban223"),
+                     ("pop_semi_dense_urban_cluster", "uploads.col.urban222"), ("pop_suburban", "uploads.col.urban221"),
+                     ("pop_rural_very_low", "uploads.col.urban311"), ("pop_rural_low", "uploads.col.urban312")]
+
+
+def geo_table_html(title_key, name_columns, rows, extra_columns=()):
+    """One table of the Geo data page. name_columns: [(heading key, record field)]; the figures follow, then extra_columns."""
+    figure_columns = [("uploads.col.population", "population"), ("uploads.col.size", "size_km2"),
+                      ("uploads.col.density", "density_per_km2"), *[(key, field) for field, key in GEO_URBAN_COLUMNS],
+                      ("uploads.col.areaType", "area_type"), *extra_columns]
+    head = "".join(f"<th>{t(key)}</th>" for key, _ in [*name_columns, *figure_columns])
+    body = []
+    for r in rows:
+        old = "" if r["active"] else f" <span class='badge'>{t('uploads.names.oldBadge')}</span>"
+        cells = [f"<td>{h(r[field])}{old if i == len(name_columns) - 1 else ''}</td>" for i, (_, field) in enumerate(name_columns)]
+        for _, field in figure_columns:
+            value = r.get(field)
+            cells.append(f"<td>{h(day_text(value) if field == 'data_date' else data_types.number_text(value) if field in ('size_km2', 'density_per_km2') else data_types.none_as_blank(value))}</td>")
+        body.append("<tr>" + "".join(cells) + "</tr>")
+    return (f"<h3>{t(title_key)}</h3><div class='scroll'><table><thead><tr>{head}</tr></thead>"
+            f"<tbody>{''.join(body)}</tbody></table></div>")
+
+
+def geo_table_page():
+    """The Geo data of every zone, district and area as tables to read: the figures with their source and the date they are from."""
+    with database.connect() as conn:
+        with database.cursor(conn) as cur:
+            zones, districts, areas = geo_zone_rows(cur), geo_district_rows(cur), geo_rows(cur)
+    zone, district, area = ("uploads.col.zone", "zone"), ("uploads.col.district", "district"), ("uploads.col.area", "area")
+    return f"""<div class="card"><h2>{t("uploads.geo.tableTitle")}</h2><p class="muted">{t("uploads.geo.tableHelp")}</p>
+      {geo_table_html("uploads.geo.zonesTitle", [zone], zones)}{geo_table_html("uploads.geo.districtsTitle", [zone, district], districts)}
+      {geo_table_html("uploads.geo.areasTitle", [zone, district, area], areas, [("uploads.col.households", "households"),
+                                                                           ("uploads.col.source", "source"), ("uploads.col.dataDate", "data_date")])}
+      <p><a href="/uploads/geo">{t("uploads.page.back")}</a></p></div>"""
 
 
 def area_table_records(form):
@@ -472,6 +532,14 @@ def area_table():
         conn.close()
     flash(plain("uploads.areas.tableSaved") if batch else plain("uploads.areas.tableSame"))
     return redirect("/uploads/areas/table")
+
+
+@pages.route("/uploads/geo/table")
+def geo_table():
+    """The Geo data table (read only: figures change by upload, so each change has a source and is in Import history)."""
+    if not sign_in.allowed():
+        return sign_in.go_to_login()
+    return page.render(geo_table_page())
 
 
 @pages.route("/uploads/names")

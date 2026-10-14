@@ -28,7 +28,7 @@ def fold_zone(name):
 class Matcher:
     """The portal's zones and areas of one mission and the remembered matches, read once per preview or apply."""
 
-    def __init__(self, cur, mission_id):
+    def __init__(self, cur, mission_id, with_districts=False):
         self.mission_id = mission_id
         cur.execute("select id,name,active from public.zones where mission_id=%s order by active desc,name", (mission_id,))
         self.zones = cur.fetchall()
@@ -37,6 +37,13 @@ class Matcher:
           where z.mission_id=%s order by a.active desc,z.name,d.name,a.name""", (mission_id,))
         self.areas = cur.fetchall()
         self.area_by_id = {a["id"]: a for a in self.areas}
+        self.districts = []
+        if with_districts:  # only Geo data matches districts (its District table), so the other uploads skip this question
+            cur.execute("""select d.id,d.name,d.active,z.id zone_id,z.name zone from public.districts d
+              join public.zones z on z.id=d.zone_id where z.mission_id=%s order by d.active desc,z.name,d.name""", (mission_id,))
+            self.districts = cur.fetchall()
+            for district in self.districts:
+                district["key"] = fold(district["name"])
         # Folded once here: a finding export asks about the same few area names tens of thousands of times.
         for zone in self.zones:
             zone["key"] = fold_zone(zone["name"])
@@ -83,6 +90,14 @@ class Matcher:
         if len(active) == 1:
             return level, active[0]["id"]
         return "ask", None
+
+    def district_id_quietly(self, name):
+        """The portal district for a district name of a file, or None (a district is never asked about: its figures are saved
+        only when the name is a district of the portal). Two districts of one name: the open one, else none."""
+        found = [d for d in self.districts if d["key"] == fold(name)]
+        if len(found) > 1:
+            found = [d for d in found if d["active"]]
+        return found[0]["id"] if len(found) == 1 else None
 
     def zone_id_quietly(self, name):
         """The portal zone for a zone name, or None. Used for rows of historical areas: never asked."""

@@ -26,6 +26,7 @@ The parts of this file, in order:
 import base64
 import hmac
 import json
+import logging
 import os
 import re
 import unicodedata
@@ -56,6 +57,7 @@ from callins import callins_bp
 from charts import charts_bp
 from dataease_auth import dataease_bp
 from helpers import json_ready
+from vollzogen import vollzogen_bp
 from whiteboards import whiteboards_bp
 from wiki_edit import wiki_bp
 
@@ -96,6 +98,20 @@ def rows(conn, sql, args=()):
     with conn.cursor() as cur:
         cur.execute(sql, args)
         return [dict(r) for r in cur.fetchall()] if cur.description else []
+
+
+def read_role_abilities():
+    """The rows of public.role_abilities (migration 055) for roles.py, which keeps them for 30 seconds. Any error is passed
+    on after a log line: roles.py then uses its built-in matrix, which is today's behaviour and never wider."""
+    try:
+        with db() as conn:
+            return rows(conn, 'SELECT role,ability,allowed FROM public.role_abilities')
+    except Exception:
+        logging.getLogger('role_abilities').warning('role_abilities_unreadable_builtin_matrix_in_use')
+        raise
+
+
+roles.set_ability_reader(read_role_abilities)
 
 
 @contextmanager
@@ -354,6 +370,21 @@ def safe_url(value):
     return value
 
 
+DECK_LINK = re.compile(r'^(?:/?p/)?([a-z0-9]+(?:-[a-z0-9]+)*)/?$')
+
+
+def clean_deck_link(value):
+    """The presentation deck an event links to, as the relative path /p/<deck>/ of this portal's own Presentations, or
+    None for no deck. Accepts the deck name ("mmm") or its path ("/p/mmm/"); anything else, such as a web address,
+    another path or a name with odd characters, is refused (400)."""
+    text = str(value or '').strip()
+    if not text:
+        return None
+    found = DECK_LINK.fullmatch(text) if len(text) <= 90 else None
+    if not found:
+        abort(400, "Use the name of one of this portal's presentations (for example mmm), not another web address.")
+    return f'/p/{found.group(1)}/'
+
 @app.get('/api/options')
 def options():
     """Targets for the calendar (?purpose=calendar), announcements (default) or presentations, and what this person
@@ -471,16 +502,16 @@ def event_save(item_id=None):
         targets = validate_targets(conn, c, data, purpose='calendar')
         values = (title, str(data.get('description', ''))[:20000], start, end, tz, Json(recurrence), targets['roles'],
                   targets['zone_ids'], str(data.get('location', ''))[:500], safe_url(data.get('meeting_url', '')),
-                  int(data.get('reminder_minutes', 30)))
+                  int(data.get('reminder_minutes', 30)), clean_deck_link(data.get('deck_link')))
         if item_id:
             item(conn, 'events', item_id, c)
             record = rows(conn, '''UPDATE portal.events SET title=%s,description=%s,starts_at=%s,ends_at=%s,timezone=%s,
-                recurrence=%s,roles=%s,zone_ids=%s,location=%s,meeting_url=%s,reminder_minutes=%s,updated_at=now()
+                recurrence=%s,roles=%s,zone_ids=%s,location=%s,meeting_url=%s,reminder_minutes=%s,deck_link=%s,updated_at=now()
                 WHERE id=%s RETURNING *''', values + (item_id,))[0]
         else:
             record = rows(conn, '''INSERT INTO portal.events(title,description,starts_at,ends_at,timezone,recurrence,
-                roles,zone_ids,location,meeting_url,reminder_minutes,mission_id,author_id)
-                VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *''', values + (c['mission_id'], c['user_id']))[0]
+                roles,zone_ids,location,meeting_url,reminder_minutes,deck_link,mission_id,author_id)
+                VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *''', values + (c['mission_id'], c['user_id']))[0]
     return jsonify(event=record)
 
 
@@ -1058,8 +1089,12 @@ def planning_action(report_id, action):
     if action not in {'submit', 'unlock'}:
         abort(404)
     with user_db() as conn:
-        step = planning.submit_planning_report if action == 'submit' else planning.unlock_planning_report
-        result = step(conn, g.context, report_id)
+        if action == 'unlock':  # logged (migration 049); an optional "note" says why
+            body = request.get_json(silent=True)
+            result = planning.unlock_planning_report(conn, g.context, report_id,
+                                                     body.get('note') if isinstance(body, dict) else None)
+        else:
+            result = planning.submit_planning_report(conn, g.context, report_id)
     return jsonify(result)
 
 
@@ -1429,3 +1464,4 @@ app.register_blueprint(charts_bp)        # Database charts for slides: /internal
 app.register_blueprint(whiteboards_bp)   # Whiteboard tab: /api/whiteboards (whiteboards.py, migration 031)
 app.register_blueprint(archetypes_bp)    # Archetypal Health: /api/archetypes and its settings (archetypes.py)
 app.register_blueprint(wiki_bp)          # Wiki editing: /api/wiki (wiki_edit.py)
+app.register_blueprint(vollzogen_bp)     # Vollzogen list for Office and managers, read-only: /api/vollzogen (vollzogen.py)

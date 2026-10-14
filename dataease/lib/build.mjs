@@ -282,7 +282,7 @@ export function buildComponent(spec, base, dragId, view) {
   return component;
 }
 
-const WEEK_DATASETS = ['kpi-weeks', 'zone-heat', 'people-weeks'];
+export const WEEK_DATASETS = ['kpi-weeks', 'zone-heat', 'people-weeks', 'trend-weeks'];
 
 /** The filters row (DataEase "query component"): a select for zone and district and a week range. */
 export function buildQuery(spec, views, datasets, dragId) {

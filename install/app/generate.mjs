@@ -67,7 +67,7 @@ export const shellQuote = value => `'${String(value).replace(/'/g, `'\\''`)}'`;
  * answers: the saved answers (validate.mjs). host: this computer's address. Returns { files: { 'folder/.env': text, ... },
  * shell: { NAME: value } } with new secrets each call.
  */
-export function buildEnvFiles(answers, { host = '127.0.0.1', random = { secret, makeJwt, makeVapid, dataeaseAdminPassword } } = {}) {
+export function buildEnvFiles(answers, { host = '127.0.0.1', supaProject = 'gfm-beta', random = { secret, makeJwt, makeVapid, dataeaseAdminPassword } } = {}) {
   const domain = answers.publicDomain || '';
   const siteUrl = domain ? `https://${domain}` : `http://${host}:8070`;
   const missionId = 1;
@@ -80,8 +80,10 @@ export function buildEnvFiles(answers, { host = '127.0.0.1', random = { secret, 
   const portalKey = random.secret(48);
   const dataeaseProxy = random.secret(48);
   const vapid = random.makeVapid();
-  const dbUrl = `postgresql://postgres:${postgres}@gfm-beta-supabase-db-1:5432/postgres`;
-  const kong = 'http://gfm-beta-supabase-kong-1:8000';
+  // The database stack's container names come from its compose project name (GFM_SUPA_PROJECT in run-install.sh), not from fixed text.
+  if (!/^[a-z0-9][a-z0-9_-]*$/.test(supaProject)) throw new Error('GFM_SUPA_PROJECT may hold only small letters, digits, - and _.');
+  const dbUrl = `postgresql://postgres:${postgres}@${supaProject}-supabase-db-1:5432/postgres`;
+  const kong = `http://${supaProject}-supabase-kong-1:8000`;
   const common = [['GFM_HOST_IP', host], ['GFM_PUBLIC_DOMAIN', domain]];
 
   const files = {};
@@ -134,7 +136,7 @@ export function buildEnvFiles(answers, { host = '127.0.0.1', random = { secret, 
   ]);
   files['portal/.env'] = renderEnv([
     '# Written by the installer. No secrets: the names of the portal container and volume, and the public address.',
-    ['GFM_PORTAL_CONTAINER', 'portal'], ['GFM_PORTAL_VOLUME', 'portal-data'], ['GFM_TIME_ZONE', answers.timeZone], ...common,
+    ['GFM_PORTAL_CONTAINER', 'portal'], ['GFM_PORTAL_VOLUME', 'portal-data'], ['GFM_TIME_ZONE', answers.timeZone], ['GFM_DRIVE_ID', answers.driveId || ''], ...common,
   ]);
   files['dataease/.env'] = renderEnv([
     '# Written by the installer. Secret: never commit, copy into chats or print.',
@@ -171,7 +173,7 @@ function writeNew(repo, name, text) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [answersFile, repo] = process.argv.slice(2);
   const answers = JSON.parse(fs.readFileSync(answersFile, 'utf8'));
-  const { files, shell } = buildEnvFiles(answers, { host: process.env.GFM_HOST_IP || '127.0.0.1' });
+  const { files, shell } = buildEnvFiles(answers, { host: process.env.GFM_HOST_IP || '127.0.0.1', supaProject: process.env.GFM_SUPA_PROJECT || 'gfm-beta' });
   // Check every target first, so a refusal leaves nothing half written.
   for (const name of Object.keys(files)) {
     if (fs.existsSync(path.join(repo, name))) { console.error(`${name} exists already. The installer never replaces settings: it is meant for a new computer.`); process.exit(2); }

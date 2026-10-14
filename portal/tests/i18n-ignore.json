@@ -19,6 +19,13 @@
   "{} to {}",
   "{} zone"
  ],
+ "portal/tour.js": [
+  "(max-width: 780px)",
+  "ArrowLeft",
+  "ArrowRight",
+  "Escape",
+  "use strict"
+ ],
  "portal-api/app.py": [
   "AND a.id={}",
   "Authorization",
@@ -443,6 +450,8 @@
   "Frankfurt-Darmstadt S"
  ],
  "roster-importer/page.py": [
+  "class=\"on\" aria-current=\"page\"",
+  "{{ nav|safe }}",
   "{% endfor %}",
   "{% endfor %}{% endif %} {% endwith %} {{ body|safe }}",
   "{% for link, name in menu %}",
@@ -462,7 +471,9 @@
   "{}/questions/new",
   "{}/questions/{}",
   "{}/sections/<int:section_id>",
-  "{}/sections/new"
+  "{}/sections/new",
+  "{}/questions/<int:question_id>/unlock",
+  "{}/questions/<int:question_id>/lock"
  ],
  "roster-importer/sign_in.py": [
   "Authorization",
@@ -654,9 +665,6 @@
   "[{}:edit] start failed",
   "[{}:rename] access rule not moved ({}): {}",
   "[{}:upload] {} files and slides.md from a ZIP ({} left out)",
-  "^/api/presentations-v2/{}$",
-  "^/api/presentations-v2/{}/assets/([a-z0-9._-]+)$",
-  "^/api/presentations-v2/{}/viewers$",
   "^/api/presentations/{}$",
   "^/api/presentations/{}/access$",
   "^/api/presentations/{}/download$",
@@ -862,6 +870,7 @@
   "Age Range",
   "Ana",
   "Area (km2)",
+  "As of",
   "Attendance at Church Actual",
   "Attendance at Church Goal",
   "BM Bestellung",
@@ -873,6 +882,7 @@
   "Baptismal Date Actual",
   "Baptismal Date Goal",
   "Baptismal date extended",
+  "Bevölkerungsdichte",
   "Big city",
   "Bockenheim",
   "Book of Mormon Delivered",
@@ -894,11 +904,16 @@
   "Density (people per km2)",
   "District Name",
   "Einwohner",
+  "Einwohner je km2",
   "Elders",
   "Elders and sisters",
   "Event Date Selected",
   "Example",
+  "FC ID",
+  "FC number",
+  "FC-Nummer",
   "FindeChristus Referrals",
+  "FindeChristus number",
   "Finding Category",
   "Finding Category (copy)",
   "Finding Source",
@@ -927,6 +942,7 @@
   "Friends Found Goal",
   "Friends Made",
   "Gemeinde",
+  "Haushalte",
   "Headquarters Paid Ad",
   "Heidelberg",
   "Konfirmiert",
@@ -960,6 +976,7 @@
   "Person ID",
   "Person Id",
   "Preferred Language",
+  "Quelle",
   "Referrals Contacted",
   "Referrals Received",
   "Rural",
@@ -969,6 +986,7 @@
   "Sisters",
   "Size km2",
   "Stadt oder Land",
+  "Stand",
   "Taufdatum",
   "Teaching Area Name",
   "Teaching Rate",
@@ -985,9 +1003,37 @@
   "Worms",
   "Zone Name",
   "mission gesamt",
-  "mission total"
+  "mission total",
+  "How found",
+  "Full name",
+  "Baptismal date set",
+  "Date of baptism",
+  "Mitarbeiter",
+  "Workers",
+  "Pfahl",
+  "Land",
+  "Geschlecht",
+  "Sprache",
+  "Ana Example",
+  "Elder Sample, Sister Demo",
+  "Testland",
+  "Name, Taufdatum (Baptism date)",
+  "Population Density",
+  "Urban Centre (130)",
+  "Dense Urban Cluster (223)",
+  "Semi-dense Urban Cluster (222)",
+  "Suburban or peri-urban grid cell (221)",
+  "Very low density rural grid cell (311)",
+  "Low density rural grid cell (312)",
+  "Area Type",
+  "Gebietstyp",
+  "area km2",
+  "size km2",
+  "flache km2",
+  "population density"
  ],
  "roster-importer/data_files.py": [
+  "^FC[-#:.]*",
   "^\\d{}-\\d{}-\\d{}T"
  ],
  "portal-api/reminders.py": [
@@ -1042,7 +1088,25 @@
  "slidev/manager/portal-bridge.js": [
   "X-GFM-Request"
  ],
- "slidev/manager/library.html": [
-  "Presentations V2 (new)"
+ "demo/demo-mock.js": [
+  "callins_{}_{}",
+  "DOMContentLoaded"
+ ],
+ "roster-importer/vollzogen_pages.py": [
+  "{}/template",
+  "Content-Disposition",
+  "attachment; filename=template-vollzogen.csv",
+  "{}/preview",
+  "{}/review",
+  "{}/apply",
+  "{}/cancel",
+  "{}/table"
+ ],
+ "roster-importer/vollzogen_upload.py": [
+  "p:nm:vz:{}:{}"
+ ],
+ "roster-importer/planning_questions.py": [
+  "Unlocked: {}",
+  "Locked again"
  ]
 }

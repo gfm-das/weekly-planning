@@ -120,6 +120,94 @@ def read_date(value):
     raise ValueError(plain("uploads.problem.notDate", value=clean(value)))
 
 
+MONTH_WORDS = {  # English and German month names and the usual short forms (compared in small letters, without dots)
+    "jan": 1, "january": 1, "januar": 1, "feb": 2, "february": 2, "februar": 2, "mar": 3, "march": 3, "mrz": 3, "maer": 3,
+    "maerz": 3, "märz": 3, "mär": 3, "apr": 4, "april": 4, "may": 5, "mai": 5, "jun": 6, "june": 6, "juni": 6, "jul": 7,
+    "july": 7, "juli": 7, "aug": 8, "august": 8, "sep": 9, "sept": 9, "september": 9, "oct": 10, "okt": 10, "october": 10,
+    "oktober": 10, "nov": 11, "november": 11, "dec": 12, "dez": 12, "december": 12, "dezember": 12}
+NO_DATE_WORDS = {"-", "–", "—", "?", "??", "n/a", "na", "tba", "tbd", "none", "keine", "unbekannt", "unknown", "x", "xx"}
+FIRST_DAY_NUMBER = 20000   # a spreadsheet date number: 20000 is 1954 and 60000 is 2064 (a number outside is not a date)
+LAST_DAY_NUMBER = 60000
+
+
+def loose_date(year, month, day):
+    """A date from parts, with a two-digit year read as 20xx; ValueError (a plain 'not a date') when it does not exist."""
+    year = year + 2000 if year < 100 else year
+    return date(year, month, day)
+
+
+def read_loose_date(value):
+    """A date from a hand-typed cell (the office's Vollzogen sheets). Everything read_date reads, plus a spreadsheet date
+    number, the English "Dec. 15th. 2025", "Jan. 4th, 2026", "15 December 2025", the German "15. Dezember 2025", "15 Dez 25",
+    "15-12-2025" (day first) and "2025/12/15". A slash date is month first (9/27/2025, as the Church writes it) unless
+    the first number cannot be a month (27/9/2025). Empty or a placeholder ("-", "?", "tba") gives None; anything else
+    raises ValueError."""
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (datetime, date)):
+        return read_date(value)
+    if isinstance(value, (int, float)):
+        if FIRST_DAY_NUMBER <= value <= LAST_DAY_NUMBER:
+            return (datetime(1899, 12, 30) + timedelta(days=int(value))).date()
+        raise ValueError(plain("uploads.problem.notDate", value=clean(value)))
+    text = clean(value)
+    if not text or text.casefold() in NO_DATE_WORDS:
+        return None
+    try:
+        return read_date(text)
+    except ValueError:
+        pass
+    bad = ValueError(plain("uploads.problem.notDate", value=text))
+    try:
+        found = re.fullmatch(r"(\d{4})[-/. ]+(\d{1,2})[-/. ]+(\d{1,2})", text)
+        if found:
+            return loose_date(int(found[1]), int(found[2]), int(found[3]))
+        found = re.fullmatch(r"(\d{1,2})\s*([/.-])\s*(\d{1,2})\s*\2\s*(\d{2}|\d{4})", text)
+        if found:
+            first, sign, second, year = int(found[1]), found[2], int(found[3]), int(found[4])
+            if sign == "/" and first <= 12:
+                return loose_date(year, first, second)  # month first
+            return loose_date(year, second, first)  # day first (German 15.12.2025, 15-12-2025, 27/9/2025)
+        words = re.sub(r"(?<=\d)(st|nd|rd|th)\b", "", text.casefold())
+        words = re.sub(r"[.,/]", " ", words).split()
+        months = [MONTH_WORDS[w] for w in words if w in MONTH_WORDS]
+        numbers = [w for w in words if w.isdigit()]
+        if len(months) == 1 and len(numbers) == 2 and len(words) == 3:
+            if len(numbers[0]) == 4:  # "2025 Dec 15"
+                year, day = numbers[0], numbers[1]
+            elif len(numbers[1]) == 4:  # "Dec 15 2025", "15 Dec 2025"
+                day, year = numbers[0], numbers[1]
+            else:  # "15 Dec 25": day, then a two-digit year
+                day, year = numbers
+            return loose_date(int(year), months[0], int(day))
+    except ValueError:
+        raise bad from None
+    raise bad
+
+
+YES_WORDS = {"x", "xx", "✓", "✔", "ja", "j", "yes", "y", "true", "1", "confirmed", "konfirmiert", "done"}
+NO_WORDS = {"no", "nein", "n", "false", "0", "-", "–", "—", "?", "n/a"}
+
+
+def read_confirmed(value):
+    """The Konfirmiert cell of the Vollzogen sheet: (confirmed, date or None). An X (or Ja, Yes, a tick) is confirmed with
+    no date; a date is confirmed on that day; empty, No or a dash is not confirmed. Anything else raises ValueError."""
+    if value is None or isinstance(value, bool):
+        return bool(value), None
+    if isinstance(value, (int, float)) and value in (0, 1):
+        return bool(value), None
+    if isinstance(value, (datetime, date, int, float)):
+        day = read_loose_date(value)
+        return (True, day) if day else (False, None)
+    text = clean(value)
+    if not text or text.casefold() in NO_WORDS:
+        return False, None
+    if text.casefold() in YES_WORDS:
+        return True, None
+    day = read_loose_date(text)
+    return (True, day) if day else (False, None)
+
+
 def read_count(value):
     """A whole number of zero or more, or None for an empty cell. Raises ValueError otherwise."""
     if value is None:
@@ -140,6 +228,40 @@ def read_count(value):
     if number < 0 or number != int(number):
         raise ValueError(plain("uploads.problem.notWhole", value=clean(value)))
     return int(number)
+
+
+FC_NUMBER = re.compile(r"[A-Z0-9-]{3,30}")
+
+
+def read_fc_number(value):
+    """The FindeChristus (FC) number of a cell, written the one way every upload stores it: capitals, no spaces, and
+    without a leading "FC" ("FC-123 456" and "123456" are both 123456). Leading zeros stay. None for an empty cell;
+    ValueError for something that cannot be an FC number (it is 3 to 30 letters, digits or dashes)."""
+    if value is None:
+        return None
+    if isinstance(value, float) and value == int(value):
+        value = int(value)  # a number cell of a spreadsheet: 1234567.0 is 1234567
+    text = clean(value).upper().replace(" ", "")
+    text = re.sub(r"^FC[-#:.]*", "", text)
+    if not text:
+        return None if not clean(value) else _bad_fc(value)
+    if not FC_NUMBER.fullmatch(text):
+        _bad_fc(value)
+    return text
+
+
+def _bad_fc(value):
+    raise ValueError(plain("uploads.problem.notFcNumber", value=clean(value)))
+
+
+def read_big_count(value):
+    """Like read_count, for numbers that can be large (a population): a text with thousands separators is read as the
+    whole number it shows, so "21.000" (German) and "21,000" (English) are 21000, not 21. A spreadsheet number is as it is."""
+    if isinstance(value, str):
+        text = clean(value).replace(" ", "")
+        if re.fullmatch(r"\d{1,3}(\.\d{3})+", text) or re.fullmatch(r"\d{1,3}(,\d{3})+", text):
+            value = re.sub(r"[.,]", "", text)
+    return read_count(value)
 
 
 def read_decimal(value):

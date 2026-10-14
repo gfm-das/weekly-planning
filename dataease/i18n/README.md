@@ -7,9 +7,9 @@ in English (`../web/default.conf`, `../web/gfm/boot.js`). Two things put Dashboa
 1. **The page script** (this folder): `gfm-i18n.js` replaces the English words on every DataEase page in the browser:
    DataEase's own words, the dashboards bar, the sign-in pages, and the dashboards' titles, chart titles, filter
    labels, notes and text boxes.
-2. **Copies of the three dashboards per language** (`../translate-dashboards.ps1`): the words DataEase draws on a
+2. **Copies of the six dashboards per language** (`../translate-dashboards.ps1`): the words DataEase draws on a
    canvas (chart axes, legends, table headers, tooltips) cannot be reached in the page, so each language has its
-   own copy of Key indicators, Zones & districts and Covenant path with those words in it. The portal opens the
+   own copy of Key indicators, Zones & districts, Covenant path, Areas, Trend and Per 10,000 residents with those words in it. The portal opens the
    copy in the viewer's language.
 
 | File | What it is |
@@ -37,13 +37,13 @@ in English (`../web/default.conf`, `../web/gfm/boot.js`). Two things put Dashboa
 
 `../lib/languages.mjs` gives every dashboard, folder and chart the scripts make a fixed id `115 LL DD GG PPPP 000000`:
 LL = language (00 English, 01 de, 02 es, 03 fr, 04 pt, 05 uk, 06 ru, 07 it, 08 tr, 09 fa, 10 ro, 11 sv, 12 da, 13 ar),
-DD = dashboard (01 Key indicators, 02 Zones & districts, 03 Covenant path; 00 = the folder), GG = generation (DataEase
+DD = dashboard (01 Key indicators, 02 Zones & districts, 03 Covenant path, 04 Areas, 05 Trend, 06 Per 10,000 residents; 00 = the folder), GG = generation (DataEase
 keeps deleted rows, so a deleted id is never used again; the next free generation is taken), PPPP = the chart.
 So the German copy of Key indicators is `1150101000000000000`, in the folder "Deutsch" `1150100000000000000` inside
 "Mission" (`1150000000000000000`). Nobody needs to keep a list: the gate finds the copy from the English id.
 
 - **Made by** `powershell -NoProfile -ExecutionPolicy Bypass -File dataease/translate-dashboards.ps1` (about 15
-  seconds for 39 copies; `-Check` only looks, `-Only de,ar` limits the languages). It reads the English dashboards
+  seconds for 78 copies; `-Check` only looks, `-Only de,ar` limits the languages). It reads the English dashboards
   from DataEase (so it copies what editors changed there), translates with the same files as the page script
   (`../lib/copies.mjs`), saves each copy under its fixed id in its language folder and publishes it. The copies read
   the same datasets, so the numbers are always the same as in English.
@@ -115,7 +115,7 @@ docker run --rm --network none -v "/path/to/weekly-planning:/repo:ro" -w /repo/d
 
 - `i18n-files.test.mjs`: the 14 files are valid JSON with `messages`, `gfm` and `pmg`; every key of `en.json` in
   every file, nothing more, no empty value; placeholders kept; no Chinese; every PMG entry equals `pmg-terms.json`.
-- `gfm-words.test.mjs`: every word of the bar, the sign-in pages and messages, and the three dashboards (from
+- `gfm-words.test.mjs`: every word of the bar, the sign-in pages and messages, and the six dashboards (from
   `../dashboards/*.json`) has a translation in every language; PMG labels inside our titles; numbers and % kept;
   names within DataEase's 100 characters.
 - `translate.test.mjs`: the translate function on a small stand-in DOM (values, plurals, colon, middle dot,

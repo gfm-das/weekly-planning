@@ -23,9 +23,21 @@ Imports past weekly forms. Can also read people named on each form (new members,
 
 Spreadsheet upload for **new members** (office templates / “Vollzogen” / New Member Database Raw layouts). Area is resolved from area name or from ward/branch when only one open area serves it. Unclear rows are left out and counted — not guessed.
 
+### Geo data
+
+**Data uploads → Geo data** brings in **population, size (km²), density and households per area**, each row with its **source** and the **date the figures are from**. Download the template (it lists every area with what is saved), fill it in and upload it; an empty cell keeps what is saved, and a new population or size without a density makes the density be worked out again. Figures are stored by the stable area id, shown in a table per area (*See the Geo data of every area*), and available to dashboards (`dashboards.area_geo_data`, and `dashboards.area_week_per_capita` with the key indicators per 10,000 residents). One upload is one batch in Import history with Undo. German numbers such as 21.000 are read as 21000.
+
+### FC number
+
+The People upload reads an optional **FC number** column (the FindeChristus number). It is the **first and exact** way to recognise a person: the same number is always the same person, whatever the name or area, and two different numbers are never joined by name alone. A number is saved only where there was none and a saved number is never overwritten. The check page flags the same number for different names, and one number saved for two people (they are not joined). Undo takes the number back with the rest of the batch.
+
 ### Same person?
 
 When names might match existing people, the check page **asks** before Apply. Answers are remembered. Typed answers on a person are never overwritten; only empty fields are filled.
+
+### Delete retired places and questions
+
+From **Places** and **Planning questions** (link *Delete … for good*, page *Delete retired*), a manager signed in through the portal can delete a **closed** zone, district or area, or a **retired** Weekly Planning question that is no longer needed (for example after a rename): (1) an **impact preview** counts everything attached (plans, people, Call-ins, saved answers, uploaded history); (2) an optional **merge** moves it onto the item that replaced it, and the check says when both have data for the same week or plan; (3) a **database backup** (pg_dump) is made and read back first and its file name is written into the batch, and if it fails nothing is deleted; (4) you **type the name** (or the question key); (5) the delete is **one batch** (kind RETIRE) in Import history with Undo. Locked questions (read by Dashboards, Call-ins, Presentations or Archetypal Health), open places and areas with missionaries serving are refused, also by the database. A question's saved answers may instead be deleted with it on purpose; plans, people and history of a place are only ever moved.
 
 ### After Apply
 

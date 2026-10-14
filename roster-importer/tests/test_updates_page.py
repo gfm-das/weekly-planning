@@ -148,7 +148,7 @@ class UpdatesPageTests(unittest.TestCase):
         self.assertIn("036_example.sql", html)
         self.assertIn("nightly-backup", html)
         self.assertIn('data-i18n="updates.updateNow"', html)
-        self.assertIn('<a href="/updates" data-i18n="updates.title">Updates</a>', html)  # the menu link
+        self.assertIn('<a href="/updates" class="on" aria-current="page">Updates</a>', html)  # the menu link (History tab, round 13)
 
     def test_the_page_says_when_the_updater_has_not_run_or_is_not_running(self):
         self.sign_in()

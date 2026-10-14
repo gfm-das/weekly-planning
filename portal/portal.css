@@ -185,9 +185,13 @@ body {
   font-size: 10px;
   line-height: 1.5;
 }
-/* WORK, INSIGHTS */
+/* WEEKLY, INFORMATION, INSIGHTS, MANAGER: the section headings of the menu. Logical margins/padding keep them
+   aligned for Arabic and Persian (RTL). */
 .nav-group-title {
-  margin: 20px 12px 8px;
+  margin: 20px 12px 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ffffff10;
+  text-transform: uppercase;
   color: #7f9caa;
   font-size: 10px;
   font-weight: 800;
@@ -231,12 +235,9 @@ html[dir="rtl"] .nav-item.active {
   width: 22px;
   color: #81aaa9;
 }
-/* DA Management, set apart above Sign Out. */
+/* DA Management sits under its own MANAGER heading (the managers' section, above Sign Out). */
 .nav-item.management {
-  margin-top: 7px;
-  padding-top: 17px;
-  border-top: 1px solid #ffffff13;
-  border-radius: 0;
+  margin-top: 2px;
 }
 /* Sign Out and the name of the person signed in, at the bottom. */
 .sidebar-bottom {
@@ -549,6 +550,9 @@ html[data-theme="light"] .user-summary,
 html[data-theme="light"] .nav-group-title {
   color: #718690;
 }
+html[data-theme="light"] .nav-group-title {
+  border-bottom-color: #dfe8ec;
+}
 html[data-theme="dark"] body,
 html[data-theme="dark"] .main,
 html[data-theme="dark"] .frame-wrap {
@@ -596,24 +600,55 @@ html.frame-expanded-open body {
   border: 0;
   border-radius: 0;
 }
+/* "Exit full screen": a small button in the top corner (the end side: right, or left for Arabic and Persian). It fades
+   out about 2 s after it appeared (the .faded class, portal-enhancements.js) and comes back on mouse move, tap or key.
+   .frame-exit-zone is an invisible corner area above the frame: a page from another address cannot report mouse moves,
+   so moving into the corner (or a first tap there) brings the button back. While the button shows, the zone lets
+   clicks through to it. */
 .frame-exit-fullscreen {
   position: absolute;
-  top: calc(10px + env(safe-area-inset-top));
-  right: calc(10px + env(safe-area-inset-right));
-  z-index: 3;
-  min-height: 36px;
-  padding: 6px 14px;
+  top: calc(8px + env(safe-area-inset-top));
+  inset-inline-end: calc(22px + env(safe-area-inset-right));
+  z-index: 4;
+  min-height: 32px;
+  padding: 4px 12px;
   border: 1px solid #c9d6dc;
   border-radius: 9px;
   background: #ffffffe6;
   color: #173947;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   box-shadow: 0 2px 8px #17394722;
+  opacity: 1;
+  transition: opacity 0.4s ease;
 }
-.frame-exit-fullscreen[hidden] {
+.frame-exit-fullscreen.faded {
+  opacity: 0;
+  pointer-events: none;
+}
+.frame-exit-fullscreen:focus-visible {
+  opacity: 1;
+}
+.frame-exit-fullscreen[hidden],
+.frame-exit-zone[hidden] {
   display: none;
+}
+.frame-exit-zone {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  z-index: 3;
+  width: 190px;
+  height: calc(56px + env(safe-area-inset-top));
+}
+.frame-exit-fullscreen:not(.faded) ~ .frame-exit-zone {
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .frame-exit-fullscreen {
+    transition: none;
+  }
 }
 html[data-theme="dark"] .frame-wrap:fullscreen,
 html[data-theme="dark"] .frame-wrap.frame-expanded {
@@ -627,7 +662,13 @@ html[data-theme="dark"] .frame-exit-fullscreen {
 @media (max-width: 780px) {
   .frame-exit-fullscreen {
     min-height: 44px;
+    padding: 6px 14px;
     font-size: 15px;
+    inset-inline-end: calc(10px + env(safe-area-inset-right));
+  }
+  .frame-exit-zone {
+    width: 170px;
+    height: calc(64px + env(safe-area-inset-top));
   }
 }
 

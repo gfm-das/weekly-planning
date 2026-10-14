@@ -37,3 +37,4 @@ Today, a new system is installed by following the written steps in `docs/SETUP-S
 - [Requirements](requirements.html)
 - [Glossary](glossary.html)
 - [Server overview](server-overview.html)
+- Showcase video for other missions: script and storyboard in `docs/video/showcase-script.md` in the repository

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deploy and roll back on Ubuntu — Weekly Planning Wiki</title>
+  <meta name="description" content="Releases, the updater, by-hand deploys, health check, rollback and backups.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="dev-deploy-ubuntu" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="tutorial.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Tutorial</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+<h2>Developer docs</h2><ul>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Developer docs</span></a></li>
+<li><a href="dev-architecture.html"><span class="nav-icon" aria-hidden="true">🏗️</span><span>Architecture</span></a></li>
+<li><a href="dev-folders.html"><span class="nav-icon" aria-hidden="true">🗂️</span><span>Folders and services</span></a></li>
+<li><a href="dev-database.html"><span class="nav-icon" aria-hidden="true">🛢️</span><span>Database and migrations</span></a></li>
+<li><a href="dev-testing.html"><span class="nav-icon" aria-hidden="true">🧪</span><span>Testing</span></a></li>
+<li class="current"><a href="dev-deploy-ubuntu.html"><span class="nav-icon" aria-hidden="true">🚀</span><span>Deploy on Ubuntu</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="dev-deploy-ubuntu">
+          <a class="tab is-active" href="dev-deploy-ubuntu.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=dev-deploy-ubuntu" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=dev-deploy-ubuntu" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Deploy and roll back on Ubuntu</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Deploy and roll back on Ubuntu</strong> explains how a change gets from a branch to the Ubuntu server, and how to go back.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#roll-back">Roll back</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p><strong>The normal way: a release.</strong></p>
+<pre><code class="language-bash">bash release/build-release.sh v1.0.5   # builds backups/release/v1.0.5 (runs the tests twice, about 10 minutes)
+bash release/scan.sh &lt;the release folder&gt;   # must be clean (the build runs it for you)
+bash release/publish.sh v1.0.5         # prints the plan, changes nothing
+bash release/publish.sh v1.0.5 --go    # publishes (only after the owner&#x27;s go)</code></pre>
+<p>The server follows the releases: DA Management &gt; Updates shows the newest release and installs it on a person&#x27;s request, or from the shell:</p>
+<pre><code class="language-bash">bash updater/gfm-updater.sh check      # what is new?
+bash updater/gfm-updater.sh update     # install it (asks you to type UPDATE)
+bash updater/gfm-updater.sh status     # what the updater found and did</code></pre>
+<p>The updater tests the new version, checks health, saves a way back (the commit, a database backup, rollback copies of the images, a copy of the portal pages in <code>backups/updater/&lt;time&gt;/</code>), installs the migrations (each followed by 019) and the changed parts, checks health again (6 tries, 30 seconds apart) and goes back by itself if that fails. It does not install <code>dataease/</code>, <code>nightly-backup/</code> or <code>supabase/</code>; the Updates page lists such changes for a person. <code>bash updater/register-watcher.sh</code> keeps it watching (crontab on Linux).</p>
+<p><strong>By hand, only the part that changed, in this order</strong> (from the repository folder):</p>
+<pre><code class="language-bash"># 0. before a migration: a database backup (see &quot;Database and migrations&quot;)
+# 1. each new migration, as supabase_admin, then 019 again
+docker exec -i gfm-beta-supabase-db-1 psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 &lt; portal-api/migrations/NNN_name.sql
+docker exec -i gfm-beta-supabase-db-1 psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 &lt; portal-api/migrations/019_restrict_public_functions.sql
+# 2. the programs (keep a rollback tag first: docker tag &lt;image&gt; &lt;name&gt;-rollback:&lt;date&gt;)
+docker compose -p gfm-portal -f portal-api/compose.yml up -d --build
+docker compose -p roster-importer -f roster-importer/docker-compose.yml up -d --build --no-deps roster-importer
+docker compose -p slidev -f slidev/slidev-compose.yml -f slidev/local-override.yml up -d --no-deps slidev
+bash portal/deploy.sh                  # the portal pages and translations
+docker exec gfm-dataease-web nginx -t &amp;&amp; docker restart gfm-dataease-web     # only after a DataEase front change
+# 3. always last
+bash health.sh                         # every row must say OK</code></pre>
+<h2 id="how-it-works">How it works</h2>
+<ul><li><code>bash health.sh</code> prints one row per check and exits 1 when a row says FAIL: the web addresses with the answer they must give, the nightly backup (newest dump under 26 hours old), the Cloudflare tunnel (a warning, never a failure), and that no container restarts over and over. <code>--wait 180</code> keeps checking after a start. <code>bash start-gfm.sh</code> starts everything after Docker stopped badly.</li><li><code>portal/deploy.sh</code> builds <code>index.html</code> from the template, writes <code>site-config.js</code> (public web name, time zone, default language), copies the pages into the portal container, removes retired files, checks <code>nginx.conf</code> and reloads nginx.</li><li><strong>Settings, not fixed text:</strong> container names, ports, the public web name and the time zone come from the <code>.env</code> files and <code>GFM_*</code> variables (see <code>health.sh</code> and <code>install/run-install.sh</code>).</li><li><strong>Backups:</strong> the container <code>gfm-backup</code> writes a <code>pg_dump -Fc</code> of the database nightly at 02:30 into <code>backups/nightly</code> and keeps 14 days; DataEase has its own backup. Before each deploy with a migration, take <code>backups/beta-pre-&lt;what&gt;-&lt;date&gt;.dump</code>. All backups are on the one server unless you copy them away.</li></ul>
+<h2 id="roll-back">Roll back</h2>
+<ul><li><strong>Code:</strong> <code>git checkout &lt;version before&gt; -- &lt;folder&gt;</code>, then that part&#x27;s deploy command.</li><li><strong>An image:</strong> <code>docker tag &lt;name&gt;-rollback:&lt;date&gt; &lt;image&gt;</code>, then <code>docker compose ... up -d --no-build --no-deps --force-recreate &lt;service&gt;</code>.</li><li><strong>A migration:</strong> its <code>NNN_name_rollback.sql</code>, applied the same way, then 019.</li><li><strong>An update from the Updates page:</strong> automatic; by hand see <code>updater/README.md</code>, &quot;Roll back an update by hand&quot;.</li><li><strong>The database:</strong> restore into a new, empty database and swap it in; never <code>pg_restore --clean</code> over the running one. Never run <code>docker compose down -v</code> on anything with data.</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>Nothing is changed on the live server without the owner&#x27;s go. Secrets stay in <code>.env</code> files and the secrets folder, never in Git, output or chat. The database port is on <code>127.0.0.1</code> only: reach it with an SSH tunnel (<a href="dbeaver-access.html">DBeaver access</a>).</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>A <code>health.sh</code> row says FAIL</td><td><code>docker ps</code>, <code>docker logs &lt;container&gt;</code>; the row names the part</td></tr><tr><td>After a reboot nothing runs</td><td><code>bash start-gfm.sh</code>, then <code>bash health.sh --wait 180</code></td></tr><tr><td>The Updates page says &quot;needs a person&quot;</td><td><code>updater/README.md</code>, &quot;Roll back an update by hand&quot;; the log is in <code>updater/logs/</code></td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Oct 2026</td><td>Collected from <code>docs/handoff/08</code>, <code>updater/README.md</code> and <code>release/README.md</code>, shell commands for Ubuntu (round 13)</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="dev-testing.html">Testing</a></li><li><a href="backups-and-restore.html">Backups and restore</a></li><li><a href="health-check.html">Health check</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Deploy</div>
+<div class="infobox-icon" aria-hidden="true">🚀</div>
+<table>
+<tr><th>Server folder</th><td>~/weekly-planning</td></tr>
+<tr><th>Normal way</th><td>Release + Updates page</td></tr>
+<tr><th>Check</th><td>bash health.sh</td></tr>
+<tr><th>Way back</th><td>Backup + rollback files</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <strong>Deploy on Ubuntu</strong>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

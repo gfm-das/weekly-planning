@@ -56,6 +56,8 @@ On Windows without Docker, `node --test tests/` runs the plain tests; the ones t
 | `chart-spec.test.mjs` | Chart queries: the same canonical form and hash as portal-api (`fixtures/chart-spec-vectors.json`). |
 | `transformers.test.mjs` | The ```` ```chart ```` block in a slide. |
 | `mission-dashboard.test.mjs` | The Mission Dashboard showcase deck's charts. |
+| `mmm-core.test.mjs` | The arithmetic of the MMM, ZOKO and Stake pieces (goal cards, shares, periods, gauges, tables). |
+| `mmm-templates.test.mjs` | The five presentation templates: words in 14 languages, slides, live queries (valid, pinned, known measures), typed places, the pieces, the showcase decks, the library dialog, the routes (the real manager: POSIX only). |
 | `rename-friends-found.test.mjs` | The one-off script that renamed "Friends found" in existing decks. |
 
 ### Helpers (not tests themselves)

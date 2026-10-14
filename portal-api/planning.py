@@ -1744,14 +1744,40 @@ def submit_planning_report(conn, context, report_id):
     return {"report_id": result["report_id"], "status": "SUBMITTED", "shared": True}
 
 
-def unlock_planning_report(conn, context, report_id):
-    """Reopen a submitted plan (DLs, ZLs and managers); the database checks the stewardship again."""
+UNLOCK_NOTE_LIMIT = 500
+LOCKED_UNLOCK_MESSAGE = "Only mission leadership can unlock a locked plan."
+UNLOCK_NOTE_MESSAGE = "The note must be 500 characters or fewer."
+
+
+def unlock_planning_report(conn, context, report_id, note=None):
+    """Reopen a submitted or locked plan, within the person's stewardship, and write the unlock to the log.
+
+    Who: a DL for a plan of their district, a ZL for their zone, managers for the whole mission (roles.may_unlock_plan).
+    A LOCKED plan (a manager locked a submitted plan) can be reopened by managers only. The check here is the first
+    gate; the database checks the stewardship again (can_unlock_planning_area, and is_mission_manager_for_area for a
+    locked plan) inside public.reopen_weekly_report_logged (migration 049), which also writes one row to
+    public.planning_unlock_log: who, which plan, the status before, an optional note and when."""
     if not roles.can_unlock_plans(context):
         raise PermissionError("A leader must unlock a submitted plan.")
-    report = fetch_one(conn, "SELECT id, status FROM public.weekly_area_reports WHERE id = %s", (report_id,))
-    if not report:
+    if note is not None and not isinstance(note, str):
+        raise ValueError(UNLOCK_NOTE_MESSAGE)
+    note = (note or "").strip() or None
+    if note and len(note) > UNLOCK_NOTE_LIMIT:
+        raise ValueError(UNLOCK_NOTE_MESSAGE)
+    report = fetch_one(conn, """
+        SELECT war.id, war.status, war.area_id, a.district_id, d.zone_id, z.mission_id
+        FROM public.weekly_area_reports war
+        JOIN public.areas a ON a.id = war.area_id
+        JOIN public.districts d ON d.id = a.district_id
+        JOIN public.zones z ON z.id = d.zone_id
+        WHERE war.id = %s
+    """, (report_id,))
+    if not report or not roles.may_unlock_plan(context, report):
         raise PermissionError("This plan is outside your stewardship.")
-    if report["status"] != "SUBMITTED":
+    if report["status"] == "LOCKED" and not roles.is_manager(context):
+        raise PermissionError(LOCKED_UNLOCK_MESSAGE)
+    if report["status"] not in ("SUBMITTED", "LOCKED"):
         raise ValueError("Only a submitted plan can be reopened.")
-    result = fetch_one(conn, "SELECT * FROM public.unsubmit_weekly_report(%s)", (report_id,))
-    return json_ready({"report_id": result["weekly_report_id"], "status": result["status"], "shared": True})
+    result = fetch_one(conn, "SELECT * FROM public.reopen_weekly_report_logged(%s, %s)", (report_id, note))
+    return json_ready({"report_id": result["weekly_report_id"], "status": result["status"],
+                       "previous_status": result.get("previous_status"), "shared": True})

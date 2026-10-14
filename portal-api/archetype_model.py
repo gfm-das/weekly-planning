@@ -443,6 +443,58 @@ def window(week, weeks_to_average):
     return {week - timedelta(days=7 * i) for i in range(weeks_to_average)}
 
 
+# ---------------------------------------------------------------------------------------------------- compare
+# The "Compare" switch of the page (round 13): the period shown (the week and the weeks averaged with it, see window)
+# next to an earlier period, with the change of every index.
+#   prev4   the 4 weeks just before the period shown
+#   prev12  the 12 weeks just before the period shown
+#   year    the same weeks one year earlier (52 weeks back, so the Sundays stay Sundays), as many weeks as shown
+# The earlier period is scored by score_week as the page would have shown it then: up to its own last week, with the
+# mission's usual week and the peer groups of that time. So an index is always "compared with similar areas, then".
+COMPARE_PRESETS = ('prev4', 'prev12', 'year')
+COMPARE_WEEKS = {'prev4': 4, 'prev12': 12}
+YEAR_BACK_WEEKS = 52
+FLAT_BELOW = 0.5   # a change smaller than half an index point shows as "unchanged"
+
+
+def is_compare_preset(value):
+    return value in COMPARE_PRESETS
+
+
+def compare_window(preset, week, weeks_to_average):
+    """(last Sunday, number of weeks) of the earlier period for the period that ends with 'week' and averages
+    'weeks_to_average' weeks. Raises ValueError for a preset that is not offered."""
+    if not is_compare_preset(preset):
+        raise ValueError(preset)
+    if preset == 'year':
+        return week - timedelta(days=7 * YEAR_BACK_WEEKS), weeks_to_average
+    first_shown = week - timedelta(days=7 * (weeks_to_average - 1))
+    return first_shown - timedelta(days=7), COMPARE_WEEKS[preset]
+
+
+def week_range(last, count):
+    """(first Sunday, last Sunday) of a period of 'count' weeks ending with the Sunday 'last'."""
+    return last - timedelta(days=7 * (count - 1)), last
+
+
+def delta(now, before, flat_below=FLAT_BELOW):
+    """{'delta': change rounded to 0.1, 'direction': 'up' | 'down' | 'flat'}; None when either number is missing."""
+    if now is None or before is None:
+        return None
+    difference = now - before
+    direction = 'flat' if abs(difference) < flat_below else ('up' if difference > 0 else 'down')
+    return {'delta': round(difference, 1) + 0.0, 'direction': direction}
+
+
+def change(now, before):
+    """The change of a scored unit ({'indices', 'overall'}) since an earlier result of the same unit (or None): the
+    overall index and each archetype. None when the unit had no result in the earlier period."""
+    if before is None:
+        return None
+    return {'overall': delta(now['overall'], before['overall']),
+            'indices': {a: delta(now['indices'][a], before['indices'][a]) for a in ARCHETYPES}}
+
+
 # ---------------------------------------------------------------------------------------------------- statistics
 
 def mean(values):

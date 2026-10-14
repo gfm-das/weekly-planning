@@ -23,6 +23,7 @@
 </ul>
 <h2>Using the portal</h2><ul>
 <li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="tutorial.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Tutorial</span></a></li>
 <li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
 <li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
 <li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
@@ -45,6 +46,14 @@
 <h2>Installing</h2><ul>
 <li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
 <li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+<h2>Developer docs</h2><ul>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Developer docs</span></a></li>
+<li><a href="dev-architecture.html"><span class="nav-icon" aria-hidden="true">🏗️</span><span>Architecture</span></a></li>
+<li><a href="dev-folders.html"><span class="nav-icon" aria-hidden="true">🗂️</span><span>Folders and services</span></a></li>
+<li><a href="dev-database.html"><span class="nav-icon" aria-hidden="true">🛢️</span><span>Database and migrations</span></a></li>
+<li><a href="dev-testing.html"><span class="nav-icon" aria-hidden="true">🧪</span><span>Testing</span></a></li>
+<li><a href="dev-deploy-ubuntu.html"><span class="nav-icon" aria-hidden="true">🚀</span><span>Deploy on Ubuntu</span></a></li>
 </ul>
 </nav></aside>
     <div class="wiki-main">
@@ -70,6 +79,10 @@
 <li style="margin-left:1rem"><a href="#reopening">Reopening</a></li>
 <li style="margin-left:1rem"><a href="#other-rules">Other rules</a></li>
 <li style="margin-left:1rem"><a href="#roster-wins">Roster wins</a></li>
+<li style="margin-left:1rem"><a href="#deleting-a-closed-place-for-good">Deleting a closed place for good</a></li>
+<li><a href="#links-to-web-services">Links to web services</a></li>
+<li><a href="#wiki-button">Wiki button</a></li>
+<li><a href="#unlocking-a-locked-planning-question">Unlocking a locked planning question</a></li>
 <li><a href="#permissions">Permissions</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#history">History</a></li>
@@ -84,8 +97,19 @@
 <ul><li>The last open zone cannot be closed.</li><li>Nothing moves into a closed place.</li><li>An area where missionaries serve needs the serving tick.</li><li>Duplicate names under one parent are refused (all or nothing).</li><li>Each change is one <strong>PLACES</strong> batch in Import history (Undo while safe).</li></ul>
 <h3 id="roster-wins">Roster wins</h3>
 <p>A place closed by hand stays closed <strong>only until</strong> a <a href="roster.html">roster</a> names it or missionaries serve there again. Roster upload reopens as needed.</p>
+<h3 id="deleting-a-closed-place-for-good">Deleting a closed place for good</h3>
+<p>A place that is <strong>closed</strong> (and, for an area, has nobody serving in it) can be deleted for good from <strong>DA Management → Places → Delete a closed place for good</strong> (the page <em>Delete retired</em>). The page shows what is attached to it (plans, people, Call-ins, uploaded numbers), lets you <strong>move</strong> all of it onto the place that replaced it, makes a <strong>database backup</strong> first (its file name is written into the batch), asks you to <strong>type the name</strong>, and then deletes it as one <strong>RETIRE</strong> batch in Import history that <strong>Undo</strong> can put back. Plans, people and history are never deleted by this page: they must be moved. A retired Weekly Planning question is deleted from the same page (see <a href="uploads-importer.html">Uploads / Importer</a>).</p>
+<h2 id="links-to-web-services">Links to web services</h2>
+<p><strong>DA Management → Links to web services</strong> (a tab for managers only) has one card per outside service the mission system relies on, each with a short line on what it is for and an <em>Open</em> button that opens the service in a new tab:</p>
+<table><thead><tr><th>Service</th><th>What it is for</th></tr></thead><tbody><tr><td>Brevo</td><td>Sends the system&#x27;s emails (invitations and password emails).</td></tr><tr><td>Porkbun</td><td>Holds the mission&#x27;s web domain name: renewals and the DNS records.</td></tr><tr><td>Cloudflare</td><td>Connects the web address to the system safely (the tunnel) and manages DNS and protection.</td></tr></tbody></table>
+<p>The addresses are <strong>settings</strong>, not code: <code>WEB_LINK_BREVO</code>, <code>WEB_LINK_PORKBUN</code> and <code>WEB_LINK_CLOUDFLARE</code> in <code>roster-importer/.env</code> (empty keeps the service&#x27;s public sign-in page, <code>off</code> hides the card). <strong>No password, key or token is stored here</strong> and an address that contains one is not shown. You sign in at the service with your own account.</p>
+<h2 id="wiki-button">Wiki button</h2>
+<p><strong>DA Management → Wiki</strong> (a tab for managers only, next to <em>DA Docs</em>) has one card with an <strong>Open the wiki</strong> button. It opens the mission wiki (the page you are reading) in a new tab. The wiki is <strong>not</strong> in the portal&#x27;s side menu on purpose: managers reach it from here.</p>
+<p>The address is a <strong>setting</strong>, not code: <code>WEB_LINK_WIKI</code> in <code>roster-importer/.env</code>. Empty works it out (the name you reached DA Management by, on the portal&#x27;s port <code>PORTAL_PORT</code>, default 8070, then <code>/wiki/</code>; on the internet name the public portal address); <code>off</code> hides the button. An address with a password or key in it is not shown.</p>
+<h2 id="unlocking-a-locked-planning-question">Unlocking a locked planning question</h2>
+<p>Some Weekly Planning questions are <strong>locked</strong> (Dashboards, Call-ins, Presentations or Archetypal Health read them by their key). A manager (AP, President, Data Analyst) can unlock one on purpose in <strong>DA Management → Planning questions →</strong> the question → <strong>Unlock this question</strong>: write why and type the question&#x27;s key. The unlock is in the <strong>Change history</strong> with who did it and why. An unlocked question can be changed or retired like any other; a question that reports read can be <strong>locked again</strong> with one button.</p>
 <h2 id="permissions">Permissions</h2>
-<p>Same as DA Management: AP, President, Data Analyst.</p>
+<p>Same as DA Management: AP, President, Data Analyst. Only a manager signed in through the portal may delete a place or question (the old shared password may not).</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Cannot close last zone</td><td>By design</td></tr><tr><td>Closed area came back</td><td>Check recent roster upload</td></tr><tr><td>Undo refused</td><td>Later edits; restore from backup if critical</td></tr></tbody></table>
 <h2 id="history">History</h2>
@@ -105,7 +129,7 @@
 <div class="navbox-group">
 <div class="navbox-label">Get started</div>
 <div class="navbox-list">
-<a href="signing-in.html">Signing in</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
 </div></div>
 <div class="navbox-group">
 <div class="navbox-label">Planning</div>
@@ -137,6 +161,19 @@
 <div class="navbox-label">Setup</div>
 <div class="navbox-list">
 <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
 </div></div>
 </details>
 </div>

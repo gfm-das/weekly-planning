@@ -78,7 +78,8 @@
   // page (mobile.html), which has no bar.
   var BAR = 34; // px
   // Our dashboards have ids 115 LL DD GG PPPP 000000 (dataease/lib/languages.mjs): DD puts them in their usual
-  // order (01 Key indicators, 02 Zones & districts, 03 Covenant path) in every language.
+  // order (01 Key indicators, 02 Zones & districts, 04 Areas, 05 Trend, 06 Per 10,000 residents, then 03 Covenant path)
+  // in every language.
   var OUR_ID = /^115\d\d(\d\d)\d\d0000000000$/;
   function previewId() {
     if (/mobile\.html$/.test(location.pathname)) return null;
@@ -126,7 +127,8 @@
       });
     })(tree, { children: tree });
     var leaves = (parent ? parent.children || [] : []).filter(function (n) { return n.leaf && /^\d{1,20}$/.test(String(n.id)); });
-    var rank = function (n) { var m = OUR_ID.exec(String(n.id)); return m ? Number(m[1]) : 100; };
+    // Covenant path (03) is not one of the six key indicators: it goes last, after Areas, Trend and Per 10,000 residents.
+    var rank = function (n) { var m = OUR_ID.exec(String(n.id)); var d = m ? Number(m[1]) : 100; return d === 3 ? 90 : d; };
     return leaves.sort(function (a, b) { return rank(a) - rank(b) || String(a.name).localeCompare(String(b.name)); }).slice(0, 12);
   }
   function draw(id, list) {

@@ -25,12 +25,15 @@ import page
 import settings
 import sign_in
 from page import mission_time
+from retire_text import t as retire_t
+from unlock_text import plain as unlock_plain, t as unlock_t
 from planning_questions import (BASE, CHOICE_TYPES, KEY_PATTERN, KEY_SECTION, KEY_SECTION_STAYS, LOCK_RULES,
                                 LOCKED_NOTE, LOCKED_OPTIONAL, LOCKED_REQUIRED, OPERATORS, PARENT_TYPES, PEOPLE_CARDS,
                                 TABLE_NAMES, TIMING, TYPES, VALUE_PATTERN, WHOLE_LIMITS, EXPLAIN, audit, changed_fields,
                                 choice_code, finite_number, friendly, hidden_value, load_catalog, make_key, number_field,
                                 on_form, plain, protected_reason, quoted, reorder, row_state, rule_text, saved_answers,
                                 text_field, update_row, yes_no)
+from planning_questions import LOAD_BEARING_KEYS, UNLOCK_REASON_MAX, lock_question, may_unlock, unlock_question
 
 pages = Blueprint("planning_questions", __name__)
 
@@ -103,8 +106,9 @@ def planning_questions_home():
           <button {disabled}>Add section</button></form></details></div>"""
     return pq_page(f"""<div class="card"><div class="step">Weekly Planning</div><h2>Planning questions</h2><p class="muted">{EXPLAIN}</p>
           <p class="muted">{TIMING} {PEOPLE_CARDS}</p>
-          <p class="row"><a class="button" href="{BASE}/preview">Preview the form</a> <a class="button secondary" href="{BASE}/history">Change history</a></p>
-          <p class="note">{LOCKED_NOTE}</p></div>
+          <p class="row"><a class="button" href="{BASE}/preview">Preview the form</a> <a class="button secondary" href="{BASE}/history">Change history</a>
+          <a class="button secondary" href="/retire">{retire_t("retire.link.questions")}</a></p>
+          <p class="note">{LOCKED_NOTE}</p><p class="note">{unlock_t("unlock.homeNote")}</p></div>
           {''.join(cards)}{add_section}""")
 
 
@@ -329,8 +333,66 @@ def planning_question_edit(question_id):
     rows_card = item_list(q, "row", grid_rows, "row_key", "row_label", named, disabled) if kind == "GRID" else ""
     return pq_page(f"""<p><a href="{BASE}#section-{esc(section.get('section_key'))}">← All planning questions</a></p>
           <div class="card"><div class="step">{esc(section.get('section_title'))}{'' if q['active'] else ' · retired'}</div><h2>{esc(q['question_label'])}</h2>
-          <p class="note">Key <code>{esc(q['question_key'])}</code> (never changes) · {esc(TYPES.get(kind, kind))} · {saved_answers(q['answered'])}</p>{lock}{details_form(q, sections, disabled)}<p class="row">{retire_form(q, disabled)}</p></div>
+          <p class="note">Key <code>{esc(q['question_key'])}</code> (never changes) · {esc(TYPES.get(kind, kind))} · {saved_answers(q['answered'])}</p>{lock}{unlock_card(q, disabled)}{details_form(q, sections, disabled)}<p class="row">{retire_form(q, disabled)}</p></div>
           {choices}{rows_card}{rules_card(q, sections, questions, rules, labels, disabled)}""")
+
+
+def unlock_card(q, disabled):
+    """Under the "Locked." box: a managers-only form to unlock a locked question (with a reason and its typed key), or, for a
+    question reports read that was unlocked, a note and a button to lock it again."""
+    here = f"{BASE}/questions/{q['id']}"
+    if not q["protected"] and not (q["question_key"] in LOAD_BEARING_KEYS and q["active"]):
+        return ""
+    if not may_unlock():
+        return f"<p class='note'>{unlock_t('unlock.managersOnly')}</p>" if q["protected"] else ""
+    if q["protected"]:
+        return f"""<details class="lock"><summary>{unlock_t('unlock.title')}</summary>
+          <form method="post" action="{here}/unlock"><input type="hidden" name="state" value="{esc(row_state(q))}">
+          <p>{unlock_t('unlock.warning')}</p>
+          <label class="form-field">{unlock_t('unlock.reasonLabel')}<input name="reason" maxlength="{UNLOCK_REASON_MAX}" required {disabled}></label>
+          <label class="form-field">{unlock_t('unlock.typeLabel', code=q['question_key'])}<input name="confirm_key" autocomplete="off" required {disabled}></label>
+          <button class="secondary" {disabled}>{unlock_t('unlock.button')}</button></form></details>"""
+    return f"""<div class="lock"><b>{unlock_t('unlock.unlockedNote')}</b>
+          <form method="post" action="{here}/lock" class="inline"><input type="hidden" name="state" value="{esc(row_state(q))}">
+          <button class="secondary" {disabled}>{unlock_t('unlock.lockAgainButton')}</button></form></div>"""
+
+
+@pages.route(f"{BASE}/questions/<int:question_id>/unlock", methods=["POST"])
+def planning_question_unlock(question_id):
+    """Unlocks a locked question (managers only), with a reason that goes into the change history."""
+    return lock_or_unlock(question_id, "unlock")
+
+
+@pages.route(f"{BASE}/questions/<int:question_id>/lock", methods=["POST"])
+def planning_question_lock(question_id):
+    """Locks an unlocked question that reports read again (managers only)."""
+    return lock_or_unlock(question_id, "lock")
+
+
+def lock_or_unlock(question_id, action):
+    if not sign_in.allowed():
+        return sign_in.go_to_login()
+    if (refused := refuse_without_editor()):
+        return refused
+    here = f"{BASE}/questions/{question_id}"
+    try:
+        if not may_unlock():
+            raise ValueError(unlock_plain("unlock.managersOnly"))
+        with database.connect() as conn:
+            with database.cursor(conn) as cur:
+                cur.execute("select * from public.planning_questions where id=%s for update", (question_id,))
+                q = cur.fetchone()
+                if not q:
+                    raise ValueError("This question no longer exists. Reload the page.")
+                if request.form.get("state") != row_state(q):
+                    raise ValueError("Someone changed this question since you opened the page. Reload the page and try again.")
+                who = sign_in.portal_person()
+                message = (unlock_question(cur, who, q, request.form.get("reason"), request.form.get("confirm_key"))
+                           if action == "unlock" else lock_question(cur, who, q))
+        flash(message)
+        return redirect(here)
+    except (ValueError, psycopg2.Error) as error:
+        return nothing_changed(error, here)
 
 
 def details_form(q, sections, disabled):

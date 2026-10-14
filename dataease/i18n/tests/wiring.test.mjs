@@ -35,7 +35,7 @@ test('the app pages get boot.js first and the language script at the end of <hea
   const app = location('location ~ ^/(index\\.html|mobile\\.html)?$');
   const filters = [...app.matchAll(/sub_filter '([^']+)' '([^']+)';/g)].map(m => [m[1], m[2]]);
   assert.deepEqual(filters, [
-    ['<head>', '<head><script src="/gfm/boot.js"></script>'],
+    ['<head>', '<head><script src="/gfm/boot.js?v=2"></script><script src="/gfm/preload.js?v=1"></script>'],
     ['</head>', '<script src="/gfm-i18n/gfm-i18n.js"></script></head>'],
   ]);
   assert.match(app, /sub_filter_once on;/);

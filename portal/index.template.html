@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!--
   The portal shell: the one page people open (port 8070). deploy.ps1 turns this file into index.html by writing the
   public Supabase key into it.
 
   What is on it: the sign-in card, the menu on the left, the header, and one big frame (#appFrame) where every page of
-  the portal opens (Overview, Weekly Planning, Call-ins, Calendar, …).
+  the portal opens (Overview, Weekly Planning, Call-ins, Calendar, â€¦).
 
   How it works, step by step:
     1. startPortal() looks for a sign-in: an invitation or password-reset link, a token saved in this browser, or
@@ -25,7 +25,8 @@
 <title>Mission System</title>
 <link rel="icon" type="image/png" href="/favicon.png?v=3">
 <link rel="manifest" href="/manifest.webmanifest">
-<link rel="stylesheet" href="/portal.css?v=12">
+<link rel="stylesheet" href="/portal.css?v=13">
+<link rel="stylesheet" href="/tour.css?v=1">
 <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
 </head>
 
@@ -74,15 +75,21 @@
       <div class="brand-subtitle">Germany Frankfurt Mission</div>
     </div>
 
-    <!-- portal-enhancements.js adds Overview, Calendar, Announcements, Archetypal Health, Whiteboard and DA Management.
-         The entries not everyone has stay hidden until the person's roles are known (applyRoleNavigation). -->
-    <div class="nav-group-title">WORK</div>
+    <!-- Three headed sections, Weekly / Information / Insights, and the managers' section at the bottom.
+         portal-enhancements.js adds Overview (Weekly), Calendar, Announcements, Whiteboard and Mission drive (Information),
+         Archetypal Health and Vollzogen (Insights) and DA Management (Managers). The entries and headings not everyone has stay hidden until
+         the person's roles are known (applyRoleNavigation). -->
+    <div class="nav-group-title" id="groupWeekly">WEEKLY</div>
     <button class="nav-item" id="navPlanning" data-page="planning">Weekly Planning</button>
     <button class="nav-item" id="navCallIns" data-page="callins" style="display: none">Call-ins</button>
+
+    <div class="nav-group-title" id="groupInformation">INFORMATION</div>
 
     <div class="nav-group-title" id="insightsGroupTitle" style="display: none">INSIGHTS</div>
     <button class="nav-item" id="navInsights" data-page="insights" style="display: none">Dashboards</button>
     <button class="nav-item" id="navPresentations" data-page="presentations" style="display: none">Presentations</button>
+
+    <div class="nav-group-title" id="managerGroupTitle" style="display: none">MANAGER TOOLS</div>
 
     <div class="sidebar-bottom">
       <div id="userSummary" class="user-summary"></div>
@@ -92,7 +99,7 @@
 
   <main class="main">
     <header class="topbar">
-      <button class="mobile-menu" id="menuButton" aria-label="Open navigation">☰</button>
+      <button class="mobile-menu" id="menuButton" aria-label="Open navigation">â˜°</button>
       <div class="page-title" id="pageTitle">Mission System</div>
     </header>
 
@@ -129,7 +136,7 @@ if (window.GFM_SITE && window.GFM_SITE.missionName) {
 document.querySelector(".brand-subtitle").textContent = MISSION_NAME;
 document.getElementById("loginSubtitle").textContent = MISSION_NAME;
 
-// The shell's own pages. portal-enhancements.js adds the others (Overview, Calendar, Announcements, Dashboards …).
+// The shell's own pages. portal-enhancements.js adds the others (Overview, Calendar, Announcements, Dashboards â€¦).
 const URLS = {
   planning: "/planning.html",
   callins: "/callins.html",
@@ -208,7 +215,7 @@ function authHeaders(accessToken, json = false) {
 
 
 // ---- Invitation and password-reset links ------------------------------------------------------------------------------
-// Supabase sends people back here with access_token, refresh_token and type (invite, recovery, …) in the address.
+// Supabase sends people back here with access_token, refresh_token and type (invite, recovery, â€¦) in the address.
 function parseAuthCallback() {
   const hash = new URLSearchParams(location.hash.startsWith("#") ? location.hash.slice(1) : location.hash);
   const query = new URLSearchParams(location.search);
@@ -328,7 +335,7 @@ function setVisible(id, visible) {
 // portal-enhancements.js replaces this with the full role rules of portal-api/roles.py (a main role plus the
 // additional roles Data Analyst and Office). Until it loads, only the page every missionary has is offered.
 function applyRoleNavigation(context) {
-  for (const id of ["navCallIns", "navInsights", "navPresentations", "insightsGroupTitle"]) setVisible(id, false);
+  for (const id of ["navCallIns", "navInsights", "navPresentations", "insightsGroupTitle", "managerGroupTitle"]) setVisible(id, false);
   allowedPages = new Set(["planning"]);
   const userSummary = document.getElementById("userSummary");
   if (userSummary) userSummary.textContent = context?.display_name || "";
@@ -353,7 +360,7 @@ async function showPortal() {
     currentUserContext = context;
     applyRoleNavigation(context);
     loginScreen.classList.add("hidden");
-    // The page in the address (#calendar …) when the person may open it, otherwise the Overview.
+    // The page in the address (#calendar â€¦) when the person may open it, otherwise the Overview.
     const requestedPage = location.hash.replace("#", "");
     const pageToOpen = requestedPage && requestedPage !== "login" && allowedPages.has(requestedPage) ? requestedPage : "overview";
     openPage(pageToOpen);
@@ -479,6 +486,7 @@ async function startPortal() {
 startPortal();
 </script>
 
-<script src="/portal-enhancements.js?v=29"></script>
+<script src="/tour.js?v=1"></script>
+<script src="/portal-enhancements.js?v=32"></script>
 </body>
 </html>

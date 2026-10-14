@@ -2,7 +2,7 @@
 
 write_people() takes the people people_match.resolve() worked out and, in the caller's transaction:
   - makes the new member or friend (or, for a person that is already stored, only fills the blanks: nothing a
-    missionary typed is ever overwritten);
+    missionary typed is ever overwritten; that includes the FC number, which is stored only where there was none);
   - gives them their area (a new member is placed in the area of their newest appearance);
   - puts them on the weekly plan of every week they appear in, as if typed in by hand (weekly_new_members,
     weekly_baptismal_date_friends); high-potential friends become a name on the plan;
@@ -89,7 +89,7 @@ def write_new_member(cur, group, report_ids, counts, today, groups, done):
         profile["baptism_date"] = group["baptism_date"]
     if group["stored_id"]:
         person_id = group["stored_id"]
-        fill_blanks(cur, "new_members", person_id, profile)
+        fill_blanks(cur, "new_members", person_id, {**profile, "fc_number": group.get("fc")})
         counts["new_members_joined"] += 1
     else:
         baptized = profile.get("baptism_date")
@@ -97,7 +97,7 @@ def write_new_member(cur, group, report_ids, counts, today, groups, done):
         values = {"area_id": group["area_id"], "unit_id": group["unit_id"], "stake_id": stake_of(cur, group["unit_id"]),
                   "first_name": group["first"], "last_name": group["last"],
                   "display_name": " ".join(x for x in (group["first"], group["last"]) if x),
-                  **{f: profile.get(f) for f in PROFILE_FIELDS}}
+                  "fc_number": group.get("fc"), **{f: profile.get(f) for f in PROFILE_FIELDS}}
         values.update(follow_up_status="current", active=True)
         if ended:
             values.update(follow_up_status="ended", follow_up_end_reason="one_year", active=False, inactive_reason="one_year")
@@ -155,12 +155,13 @@ def write_friend(cur, group, report_ids, counts):
     finding = newest_values(group["appearances"], "profile").get("finding_source")
     if group["stored_id"]:
         person_id = group["stored_id"]
-        fill_blanks(cur, "baptismal_date_people", person_id, {"finding_source": finding})
+        fill_blanks(cur, "baptismal_date_people", person_id, {"finding_source": finding, "fc_number": group.get("fc")})
         counts["friends_joined"] += 1
     else:
         person_id = insert_row(cur, "baptismal_date_people", {
             "first_name": group["first"] or group["last"] or "", "last_name": group["last"] if group["first"] else None,
-            "display_name": " ".join(x for x in (group["first"], group["last"]) if x), "finding_source": finding})
+            "display_name": " ".join(x for x in (group["first"], group["last"]) if x), "finding_source": finding,
+            "fc_number": group.get("fc")})
         cur.execute("""insert into public.baptismal_date_person_area_assignments(baptismal_date_person_id,area_id,unit_id,start_date)
           values(%s,%s,%s,%s)""", (person_id, group["area_id"], group["unit_id"], min(first_day(group, date.today()), date.today())))
         counts["friends_added"] += 1

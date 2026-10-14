@@ -14,7 +14,7 @@ const I18N = path.join(ROOT, 'portal', 'i18n');
 const PAGES = [
   'portal/index.template.html', 'portal/portal-enhancements.js', 'portal/portal-client.js', 'portal/home.html',
   'portal/calendar.html', 'portal/announcements.html', 'portal/planning.html', 'portal/callins.html',
-  'portal/office-only.html',
+  'portal/office-only.html', 'portal/vollzogen.html', 'portal/drive.html', 'demo/index.html', 'demo/demo-mock.js',
   'portal-api/app.py', 'portal-api/planning.py', 'portal-api/callins.py', 'portal-api/roles.py', 'portal-api/reminders.py',
   // DA Management (roster-importer/, split into small files in round 9: its README lists them).
   'roster-importer/app.py', 'roster-importer/page.py', 'roster-importer/sign_in.py', 'roster-importer/supabase_auth.py',
@@ -44,6 +44,18 @@ const PAGES = [
   'portal/archetypes.html', 'portal/archetype-settings.html', 'portal/archetypes-common.js',
   'portal-api/archetypes.py', 'portal-api/archetype_model.py', 'portal-api/dataease_auth.py',
   'roster-importer/updates_page.py',
+  // Round 13: Delete retired (its pages and every text; the rules in retire.py show no text of their own).
+  'roster-importer/retire_text.py', 'roster-importer/retire_pages.py',
+  // Round 13: Links to web services (DA Management tab for managers).
+  'roster-importer/links_text.py', 'roster-importer/links_page.py',
+  // Round 13: Role abilities (DA Management > Accounts).
+  'roster-importer/abilities_text.py', 'roster-importer/abilities_page.py',
+  // Round 13 (importer2): the Vollzogen upload (its texts are in data_text.py).
+  'roster-importer/vollzogen_pages.py', 'roster-importer/vollzogen_upload.py',
+  // Round 13 (importer2): unlocking a locked Weekly Planning question (all its texts are in unlock_text.py).
+  'roster-importer/unlock_text.py',
+  // Round 13: the guided tour of the portal shell (its English fallback is the tour.* part of en.json).
+  'portal/tour.js',
   'dataease/web/gfm/starting.html', 'dataease/web/gfm/refused.html', 'dataease/web/gfm/signin.html', 'dataease/web/gfm/signin.js',
 ];
 

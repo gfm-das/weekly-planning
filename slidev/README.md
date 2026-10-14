@@ -506,3 +506,40 @@ docker exec gfm-beta-supabase-db-1 psql -U postgres -d postgres -At -c "BEGIN RE
 docker cp slidev/showcase/mission-dashboard slidev-j5iyrpjbsssqlilqhw9axugx:/slidev/decks/mission-dashboard
 ```
 Publish it as a manager: open **Presentations** and click **Mission Dashboard** (the first view builds it, about 15 seconds), or **⋮ → Edit → Publish now**. Updating it from the repository later works like the showcase deck (`docker cp slidev/showcase/mission-dashboard/. …:/slidev/decks/mission-dashboard/`, then **Publish now**) and overwrites changes made in Studio.
+
+# Presentation templates (round 13)
+
+**+ New Presentation** in the library asks for a **template** and the **language of the slides** (the portal's language is
+the default). The templates are written by `manager/templates/` (`index.mjs` the slides, `texts.mjs` every word in the
+14 languages) and made of the `Mmm*` pieces of the GFM add-on (`manager/gfm-addon/components/Mmm*.vue`, arithmetic in
+`lib/mmm-core.mjs`, the data reader `lib/mmm.ts`). The pieces share one look (the reference PDFs of the mission): a page
+with soft corner shapes, underlined heading, white framed cards, the footer "Supporting Missionaries in Faith, Hope, &
+Charity:". They are placed in units of 1/1152 of the slide width (`x`, `y`, `w`, `h`), so the same file looks the same
+on screen, in the presenter view and in the PDF.
+
+| Template | Slides | Live from the weekly plans | Typed by hand (marked **Manual**) |
+|---|---|---|---|
+| `mmm-main` MMM MAIN | 7: cover, Key Indicators of Conversion, Baptismal Goal, Coming This Week, Member Present, New Member Activity, Temple and Baptisms | the six key indicators, the 90-day lines, First Time First Week, year-to-date baptisms, zones, new members | names of friends and temple visits, the goals the portal does not store, % Active |
+| `mmm-media` MMM Media | 4: cover, Video of the Week, Videos, Pictures | none | the videos and pictures (`MmmSlot`) |
+| `mmm-breakout` MMM Breakout rooms | 6: cover, overview, four room slides | none | topic, leader, notes, action items, report back |
+| `zoko` ZOKO zone conference | 8 (as the zone presentation) | the same numbers for the zone that owns the deck; the zone's own areas in the table | referral rates, the mission quarter, names, the referral picture |
+| `stake` Stake coordination | 9: cover, Baptisms, Follow-up lessons, Lessons with a member, summary, dinner/youth/mini missions, Church visitors, totals by area, new members | actual and goal lines for the key numbers, totals by area | dinner appointments, youth activities, mini missions, notes on new members |
+
+- **Live numbers** are `:query='{...}'` charts written in the slide as plain JSON, exactly like `<MissionChart :query>`
+  ("Charts from mission numbers"): a leader sees them because the query is written in the deck, and a zone's deck
+  shows only that zone's numbers (the portal decides by the deck's owner). The pieces ask for the last *finished* weeks
+  (`includeCurrent: false`).
+- **Typed places** carry `placeholder` and show a small **Manual** tag on screen (not in the PDF). Type the names or
+  numbers, then delete the word `placeholder` from the piece. Nothing real is in a template: the cells say "Type here".
+- **Languages:** the slides are written once, when the deck is made. The 14 languages are `en de es fr pt uk ru it tr fa ro
+  sv da ar`; Persian and Arabic get `dir: rtl` and Western digits. The names inside a live chart come from portal-api
+  in English, so the templates draw their own legends and labels. Every language except English needs review by a
+  native speaker (`texts.mjs`).
+- **Speaker notes** (presenter view) say what is live and what is typed. **Download PDF** (`/p/<deck>/export`) prints
+  everything (a video prints as an empty frame: add a picture slide for the PDF).
+- **Change a template:** edit `manager/templates/index.mjs` (or a piece), then `node slidev/tools/make-mmm-showcase.mjs`
+  writes the five showcase decks `slidev/showcase/{mmm-main,mmm-media,mmm-breakout,zoko,stake}/slides.md` again (the test
+  checks that they match). To install a showcase deck by hand: `docker cp slidev/showcase/mmm-main <container>:/slidev/decks/mmm-main`.
+- Tests: `tests/mmm-core.test.mjs` (the arithmetic), `tests/mmm-templates.test.mjs` (words, slides, queries, pieces,
+  showcase, library dialog, routes). Details and the page-by-page comparison with the reference PDFs:
+  `docs/handoff/round13/presentations.md`.

@@ -19,7 +19,16 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
       PASSWORD_REDIRECT_URL: "${PASSWORD_REDIRECT_URL:-http://localhost/}"
       UPDATES_DIR: /updates
+      BACKUP_DIR: /backups
+      BACKUP_COMMAND: "${BACKUP_COMMAND:-}"
+      WEB_LINK_BREVO: "${WEB_LINK_BREVO:-}"
+      WEB_LINK_PORKBUN: "${WEB_LINK_PORKBUN:-}"
+      WEB_LINK_CLOUDFLARE: "${WEB_LINK_CLOUDFLARE:-}"
+      WEB_LINK_WIKI: "${WEB_LINK_WIKI:-}"
+      PORTAL_PORT: "${PORTAL_PORT:-8070}"
     volumes:
+      # Delete retired (round 13): the backup made before a delete is written here, on this computer, next to the other backups.
+      - ../backups:/backups
       # DA Management > Updates (round 7): the page only leaves requests for the updater on this computer
       # (updater/gfm-updater.ps1) and reads its status read-only. It never runs git or a shell.
       - ../updater/requests:/updates/requests

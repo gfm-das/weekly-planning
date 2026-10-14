@@ -7,6 +7,7 @@
 #   4. the database: baseline, then newer migrations              8. the health check, then the address to open
 # The names below can be changed through the environment, so a test can run next to a live system without touching it:
 #   GFM_SUPA_PROJECT (gfm-beta)  GFM_DB_CONTAINER  GFM_NETWORK (gfm-network)  GFM_AUTH_BASE  GFM_SUPA_SERVICES  GFM_VOLUMES
+#   GFM_TUNNEL_UPSTREAM_HOST (host.docker.internal: how the tunnel's container reaches this computer)
 #   GFM_PROJECT_PREFIX (added to every other compose project name)  GFM_OVERRIDE_DIR (a folder, relative to the repository: <part>.yml
 #   is one more compose file of that part)  GFM_SKIP_DATAEASE=yes  and the names and ports health.sh reads (see health.sh).
 set -eu
@@ -19,7 +20,7 @@ IMAGE=node:24-alpine
 SUPA_PROJECT=${GFM_SUPA_PROJECT:-gfm-beta}
 DB_CONTAINER=${GFM_DB_CONTAINER:-${SUPA_PROJECT}-supabase-db-1}
 NETWORK=${GFM_NETWORK:-gfm-network}
-AUTH_BASE=${GFM_AUTH_BASE:-http://gfm-beta-supabase-kong-1:8000/auth/v1}
+AUTH_BASE=${GFM_AUTH_BASE:-http://${SUPA_PROJECT}-supabase-kong-1:8000/auth/v1}
 PREFIX=${GFM_PROJECT_PREFIX:-}
 OVERRIDE_DIR=${GFM_OVERRIDE_DIR:-}
 SUPA_SERVICES=${GFM_SUPA_SERVICES:-}           # only these services of the stack (tests); empty: all of them
@@ -83,7 +84,7 @@ step_generate() {
   step "1/10 Writing the settings files"
   [ -f "$WORK/answers.json" ] || stop "install/.work/answers.json is missing."
   GFM_HOST_IP=$(detect_host_ip)
-  node_run -e "GFM_HOST_IP=$GFM_HOST_IP" -- generate.mjs /work/answers.json /r || stop "the settings files could not be written (see above)."
+  node_run -e "GFM_HOST_IP=$GFM_HOST_IP" -e "GFM_SUPA_PROJECT=$SUPA_PROJECT" -- generate.mjs /work/answers.json /r || stop "the settings files could not be written (see above)."
   # shellcheck disable=SC1091
   . "$WORK/install.env"
   say "This computer's address in the network: $GFM_HOST_IP"
@@ -222,7 +223,7 @@ step_dataease() {
 # The routes to enter in Cloudflare, one per public name. From inside the tunnel's container the programs of this computer are reached as
 # host.docker.internal:<port>. Also written to cloudflared/ROUTES.txt (no secret in it).
 tunnel_routes() {
-  local d=$GFM_PUBLIC_DOMAIN h=http://host.docker.internal
+  local d=$GFM_PUBLIC_DOMAIN h=http://${GFM_TUNNEL_UPSTREAM_HOST:-host.docker.internal}
   printf '%-30s %-38s %s\n' "Public name" "Service (type HTTP)" "What it is"
   printf '%-30s %-38s %s\n' "$d" "$h:${GFM_PORT_PORTAL:-8070}" "the portal"
   printf '%-30s %-38s %s\n' "www.$d" "$h:${GFM_PORT_PORTAL:-8070}" "the portal"

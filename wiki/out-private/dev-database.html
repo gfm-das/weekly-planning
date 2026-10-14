@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Database and migrations — Weekly Planning Wiki</title>
+  <meta name="description" content="Baseline, migrations, rollbacks, rights check, analyst logins.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="dev-database" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="tutorial.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Tutorial</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+<h2>Developer docs</h2><ul>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Developer docs</span></a></li>
+<li><a href="dev-architecture.html"><span class="nav-icon" aria-hidden="true">🏗️</span><span>Architecture</span></a></li>
+<li><a href="dev-folders.html"><span class="nav-icon" aria-hidden="true">🗂️</span><span>Folders and services</span></a></li>
+<li class="current"><a href="dev-database.html"><span class="nav-icon" aria-hidden="true">🛢️</span><span>Database and migrations</span></a></li>
+<li><a href="dev-testing.html"><span class="nav-icon" aria-hidden="true">🧪</span><span>Testing</span></a></li>
+<li><a href="dev-deploy-ubuntu.html"><span class="nav-icon" aria-hidden="true">🚀</span><span>Deploy on Ubuntu</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="dev-database">
+          <a class="tab is-active" href="dev-database.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=dev-database" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=dev-database" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Database and migrations</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Database and migrations</strong> explains how the database schema is built, how a numbered migration is written and applied, and how rights are enforced.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p><strong>A new migration</strong></p>
+<ol><li>Look in <code>portal-api/migrations/</code> for the highest number and use the next one: <code>NNN_name.sql</code> and <code>NNN_name_rollback.sql</code>.</li><li>Write it as <strong>one transaction</strong>, applied as <code>supabase_admin</code> with <code>ON_ERROR_STOP=1</code>. Every new SECURITY DEFINER function must <code>REVOKE EXECUTE ... FROM PUBLIC</code> and grant by name.</li><li>Test it on a <strong>throw-away copy</strong>: a disposable <code>supabase/postgres</code> container with the latest backup restored into it. Never test on the live database.</li><li>After it, run <code>019_restrict_public_functions.sql</code> (the rights check; it must end with COMMIT).</li><li>If a fresh install should include it, tell the installer (<code>install/run-install.sh</code> applies every migration newer than 040) and, when needed, rebuild <code>portal-api/baseline/</code>.</li></ol>
+<p><strong>Before any change to the live database:</strong> back up, with a way back.</p>
+<pre><code class="language-bash">docker exec gfm-beta-supabase-db-1 pg_dump -U supabase_admin -d postgres -Fc -f /tmp/b.dump
+docker cp gfm-beta-supabase-db-1:/tmp/b.dump backups/beta-pre-&lt;what&gt;-&lt;stamp&gt;.dump
+pg_restore --list backups/beta-pre-&lt;what&gt;-&lt;stamp&gt;.dump | head      # check that the dump is readable</code></pre>
+<p>A restore always goes into a new, empty database that is then swapped in, never <code>pg_restore --clean</code> over the running one (see <a href="backups-and-restore.html">Backups and restore</a>).</p>
+<h2 id="how-it-works">How it works</h2>
+<ul><li>**<code>portal-api/baseline/000_baseline.sql</code>** is the whole schema as of migration 040. It is stored byte for byte (<code>.gitattributes</code> keeps its line endings). A fresh install applies it, then every newer migration, each followed by 019.</li><li>**<code>portal-api/migrations/history/</code>** holds 010 to 040 and their rollbacks: the story of how the database got here. They cannot be replayed on an empty database (the first tables came from an older system).</li><li><strong>The updater</strong> applies only files named <code>NNN_name.sql</code> in <code>portal-api/migrations/</code> (never <code>history/</code>), in order, each followed by 019.</li><li><strong>Planning catalogue guards:</strong> questions and sections are never deleted, only retired (<code>active = false</code>); a protected question stays on the form because reports read it. A fresh install therefore still contains the retired Facebook and social-media rows of the old catalogue, switched off; <code>release/scan.sh</code> fails if one of them is ever active.</li><li><strong>Rights, second line:</strong> row-level security and checked functions (<code>can_access_area</code>, <code>can_edit_planning_report</code>, ...). The Call-ins summaries run with owner rights and enforce access with written checks: a change to RLS policies on the planning tables must be repeated there.</li><li><strong>Do not rename casually:</strong> <code>current_user_context</code>, <code>current_user_scope</code>, <code>reporting_weeks</code>, <code>weekly_area_reports</code>, the weekly child tables, <code>current_reporting_sunday()</code>, <code>can_access_area()</code>, <code>portal.presentation_access</code>, the importer&#x27;s audit tables. The key indicator &quot;friends found&quot; keeps its hidden names (<code>friends_found_*</code>) although it is shown as New People Being Taught.</li><li>**Group role <code>gfm_db_analysts</code>** (migration 043): full rights on <code>public</code>, <code>portal</code> and <code>dashboards</code> for the Data Analysts&#x27; personal logins, made with <code>tools/add-analyst-login.sh</code>. See <a href="dbeaver-access.html">DBeaver access</a>.</li><li><strong>Read-only login for Dashboards:</strong> <code>gfm_dashboard_reader</code> sees only the <code>dashboards</code> views (organisation units and numbers, no people).</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>Applying a migration needs <code>supabase_admin</code> inside the database container. Analyst logins are for data work, not for schema changes that the application depends on: those go through a numbered migration.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>019 does not end with COMMIT</td><td>A function is callable by PUBLIC; fix the migration, not 019</td></tr><tr><td>Baseline differs from the live schema</td><td><code>portal-api/baseline/check-baseline.ps1</code> compares them (PowerShell only so far)</td></tr><tr><td>A migration is not picked up by the updater</td><td>Its file must be directly in <code>portal-api/migrations/</code> and named <code>NNN_name.sql</code>; a header line <code>updater: install by hand</code> keeps it from being applied automatically</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Oct 2026</td><td>Collected from <code>docs/handoff/03</code>, <code>04</code> and <code>CLAUDE.md</code> for Ubuntu (round 13)</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="backups-and-restore.html">Backups and restore</a></li><li><a href="dbeaver-access.html">DBeaver access</a></li><li><a href="roles-and-permissions.html">Roles and permissions</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Database</div>
+<div class="infobox-icon" aria-hidden="true">🛢️</div>
+<table>
+<tr><th>Engine</th><td>PostgreSQL (Supabase)</td></tr>
+<tr><th>Container</th><td>gfm-beta-supabase-db-1</td></tr>
+<tr><th>Fresh install</th><td>portal-api/baseline</td></tr>
+<tr><th>Migrations</th><td>portal-api/migrations</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<strong>Database and migrations</strong> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

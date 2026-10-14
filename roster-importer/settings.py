@@ -55,4 +55,25 @@ UPDATES_DIR = Path(os.environ.get("UPDATES_DIR", "/updates"))
 # The biggest file anyone may upload: the Church's finding export of one year is about 13 MB.
 MAX_UPLOAD_BYTES = 40 * 1024 * 1024
 
+# Links to web services (links_page.py, managers only): the address each card opens. Public sign-in pages of the services; no
+# password, key or token belongs in these settings and an address with one is not shown (web_links.py). Empty keeps the default,
+# "off" hides the card.
+WEB_SERVICE_URLS = {
+    "brevo": os.environ.get("WEB_LINK_BREVO") or "https://app.brevo.com/",
+    "porkbun": os.environ.get("WEB_LINK_PORKBUN") or "https://porkbun.com/account/login",
+    "cloudflare": os.environ.get("WEB_LINK_CLOUDFLARE") or "https://dash.cloudflare.com/",
+}
+
+# The Wiki button (wiki_link.py): empty derives the address from the one DA Management was reached by (the portal's port, PORTAL_PORT, then
+# /wiki/), "off" hides the button, an http(s) address sets it. The portal serves the wiki itself (portal/nginx.conf).
+WEB_LINK_WIKI = os.environ.get("WEB_LINK_WIKI", "").strip()
+PORTAL_PORT = os.environ.get("PORTAL_PORT", "").strip() or "8070"
+
+# Delete retired (retire.py): the backup made before anything is deleted (backups.py). BACKUP_DIR is a folder that stays when
+# the program is replaced (docker-compose.yml mounts ../backups there). BACKUP_COMMAND writes a PostgreSQL custom-format dump to
+# {file} (the connection comes from DATABASE_URL through the PG* variables); BACKUP_VERIFY_COMMAND reads it back (empty: skip).
+BACKUP_DIR = Path(os.environ.get("BACKUP_DIR", "/backups"))
+BACKUP_COMMAND = os.environ.get("BACKUP_COMMAND") or "pg_dump --format=custom --no-owner --file {file}"
+BACKUP_VERIFY_COMMAND = os.environ.get("BACKUP_VERIFY_COMMAND", "pg_restore --list {file}")
+
 # PERSON_KEY_SECRET (for the finding export) is read by data_uploads.person_secret() each time it is needed.

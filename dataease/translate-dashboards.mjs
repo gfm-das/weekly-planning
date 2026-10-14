@@ -11,7 +11,7 @@
 //                                                    dashboards are not touched)
 //
 // What it does, for each dashboard directly in the folder "Mission" that seed-dashboards.mjs made (Key indicators,
-// Zones & districts, Covenant path):
+// Zones & districts, Covenant path, Areas, Trend, Per 10,000 residents: 6 x 13 = 78 copies):
 //  1. reads the English dashboard as it is in DataEase now (so changes people made in DataEase are copied too);
 //  2. makes a copy per language with lib/copies.mjs: translated name, chart titles, notes, filter labels, text boxes
 //     and field display names (the words DataEase draws on its charts), using the files in dataease/i18n/;

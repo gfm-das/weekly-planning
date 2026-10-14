@@ -54,6 +54,15 @@
     URLS.announcements = '/announcements.html?v=2';
     TITLES.announcements = 'Announcements';
 
+    // Mission drive (portal/drive.html): the shared Google Drive. Every signed-in role has it (Information).
+    URLS.drive = '/drive.html?v=1';
+    TITLES.drive = 'Mission drive';
+
+    // Vollzogen (portal/vollzogen.html): the read-only list of the people who were baptized and confirmed. Insights;
+    // Office and the managers only (portal-api roles.can_view_vollzogen). Office stays a non-manager.
+    URLS.vollzogen = '/vollzogen.html?v=1';
+    TITLES.vollzogen = 'Vollzogen';
+
     // Archetypal Health (docs/handoff/round7/archetypes.md): six archetypes per zone, district and area, each compared
     // with similar areas. portal-api archetypes.py decides what each person sees.
     URLS.archetypes = '/archetypes.html';
@@ -111,6 +120,8 @@
         insights: 'Key indicators, zones and districts, and the covenant path, with goals and trend lines.',
         calendar: 'Meetings and events for your role and zone.',
         announcements: 'Updates from the leaders in your stewardship.',
+        drive: 'The mission\'s shared Google Drive: the files everyone in the mission can use.',
+        vollzogen: 'The people who were baptized and confirmed. This list is read-only.',
         presentations: 'Your presentation library and slide workspace.',
         whiteboard: 'Draw, plan and counsel together, with live mission charts.',
         management: 'Accounts, roster data, imports, and documentation.'
@@ -118,10 +129,12 @@
 
 
     // ---- 2. The menu -----------------------------------------------------------------------------------------------
-    // index.html has Weekly Planning, Call-ins, Dashboards and Presentations. This adds Overview (at the top), Calendar
-    // and Announcements (after Weekly Planning), Archetypal Health (after Call-ins), Whiteboard (after Presentations)
-    // and DA Management (at the bottom, above Sign Out). The entries not everyone has stay hidden until
-    // applyRoleNavigation knows who signed in, then it shows only what the person may open.
+    // The menu has three headed sections and the managers' section (round 13). index.html has the headings,
+    // Weekly Planning, Call-ins, Dashboards and Presentations. This adds Overview (Weekly, after Call-ins), Calendar,
+    // Announcements, Whiteboard and Mission drive (Information), Archetypal Health and Vollzogen (Insights, after
+    // Dashboards) and DA Management
+    // (Manager, above Sign Out). The entries not everyone has stay hidden until applyRoleNavigation knows who signed
+    // in, then it shows only what the person may open.
 
     // A new menu entry: an icon, then its words. Clicking it opens its page.
     function menuButton(id, label, page, icon, hidden = false) {
@@ -136,16 +149,24 @@
     }
 
     function buildMenu() {
-        document.querySelector('.nav-group-title')?.before(menuButton('navOverview', 'Overview', 'overview', '⌂'));
-        document.getElementById('navPlanning')?.after(
+        // Weekly: Weekly Planning, Call-ins, Overview.
+        document.getElementById('navCallIns')?.after(menuButton('navOverview', 'Overview', 'overview', '⌂'));
+        // Information: Calendar, Announcements, Whiteboard (managers), Mission drive (everyone).
+        document.getElementById('groupInformation')?.after(
             menuButton('navCalendar', 'Calendar', 'calendar', '▦'),
-            menuButton('navAnnouncements', 'Announcements', 'announcements', '◉')
+            menuButton('navAnnouncements', 'Announcements', 'announcements', '◉'),
+            menuButton('navWhiteboard', 'Whiteboard', 'whiteboard', '✎', true),
+            menuButton('navDrive', 'Mission drive', 'drive', '▤')
         );
-        document.getElementById('navCallIns')?.after(menuButton('navArchetypes', 'Archetypal Health', 'archetypes', '◔', true));
-        document.getElementById('navPresentations')?.after(menuButton('navWhiteboard', 'Whiteboard', 'whiteboard', '✎', true));
+        // Insights: Dashboards, Archetypal Health, Vollzogen (Office and managers), Presentations.
+        document.getElementById('navInsights')?.after(
+            menuButton('navArchetypes', 'Archetypal Health', 'archetypes', '◔', true),
+            menuButton('navVollzogen', 'Vollzogen', 'vollzogen', '✓', true)
+        );
+        // Manager tools, last section above Sign Out.
         const management = menuButton('navManagement', 'DA Management', 'management', '◇', true);
         management.classList.add('management');
-        document.querySelector('.sidebar-bottom')?.prepend(management);
+        document.getElementById('managerGroupTitle')?.after(management);
     }
 
     buildMenu();
@@ -181,8 +202,8 @@
         return [main, ...['DATA_ADMIN', 'OFFICE'].filter(value => extra.has(value) && value !== main)];
     }
 
-    // Which parts of the portal these roles open (besides Overview, Weekly Planning, Calendar and Announcements, which
-    // everyone has).
+    // Which parts of the portal these roles open (besides Overview, Weekly Planning, Calendar, Announcements and Mission
+    // drive, which everyone has).
     function partsFor(roles) {
         const main = roles[0];
         const manager = roles.some(role => MANAGER_ROLES.includes(role));
@@ -194,26 +215,32 @@
             // Presentations: managers; ZLs and STLs make decks for their own zone; DLs open the decks shared with them.
             presentations: manager || ['DL', 'ZL', 'STL'].includes(main),
             // Archetypal Health: APs, the President and Data Analysts (roles.archetype_scope).
-            archetypes: manager
+            archetypes: manager,
+            // Vollzogen (the list of baptized and confirmed people): managers and Office. Office is NOT a manager and gets
+            // nothing else from this (roles.py can_view_vollzogen).
+            vollzogen: manager || roles.includes('OFFICE')
         };
     }
 
     function pagesFor(parts) {
-        const pages = ['overview', 'planning', 'calendar', 'announcements'];
+        const pages = ['overview', 'planning', 'calendar', 'announcements', 'drive'];
         if (parts.callins) pages.push('callins');
         if (parts.manager) pages.push('insights', 'management', 'whiteboard');
         if (parts.presentations) pages.push('presentations');
         if (parts.archetypes) pages.push('archetypes');
+        if (parts.vollzogen) pages.push('vollzogen');
         return new Set(pages);
     }
 
     function showMenuFor(parts) {
         setVisible('navCallIns', parts.callins);
         setVisible('navArchetypes', parts.archetypes);
+        setVisible('navVollzogen', parts.vollzogen);
         setVisible('navInsights', parts.manager);
         setVisible('navPresentations', parts.presentations);
         setVisible('navWhiteboard', parts.manager);
-        setVisible('insightsGroupTitle', parts.manager || parts.presentations);
+        setVisible('insightsGroupTitle', parts.manager || parts.presentations || parts.vollzogen);
+        setVisible('managerGroupTitle', parts.manager);
         setVisible('navManagement', parts.manager);
     }
 
@@ -253,6 +280,10 @@
         showSignedInPerson(context, roles);
         setupPreferences();
         applyTheme();
+        // The guided tour (tour.js): remembered per person on this device; offered once, on the first sign-in.
+        currentRoles = roles;
+        currentPerson = String(context?.user_id || context?.person_id || '');
+        if (window.GfmTour) window.GfmTour.offerOnce(roles, currentPerson);
     };
 
 
@@ -296,13 +327,60 @@
     fullScreen.hidden = true;
     fullScreen.title = 'Show this page on the whole screen';
     const frameBox = frame.parentElement || frame;
+
+    // The "Exit full screen" button sits in a corner of the page (portal.css) and fades out about 2 seconds after it
+    // appeared, so it never covers content for long. It comes back on mouse move, a tap, a key press, or when it is
+    // focused with the keyboard. A page in the frame from another address (Presentations, Dashboards, DA Management)
+    // does not tell the shell about mouse moves, so a small invisible corner area (.frame-exit-zone) over the frame
+    // brings the button back there: move the mouse into the corner or tap it. Esc always exits (below).
+    // AUTOHIDE-START
+    function createAutoHider(onShow, onHide, delay, setTimer = setTimeout, clearTimer = clearTimeout) {
+        let timer = null, held = false, on = false, visible = false;
+        const show = () => { if (!visible) { visible = true; onShow(); } };
+        const arm = () => {
+            clearTimer(timer);
+            timer = null;
+            if (on && !held) timer = setTimer(() => { timer = null; visible = false; onHide(); }, delay);
+        };
+        return {
+            start() { on = true; show(); arm(); },                      // full screen began: shown, then fades
+            stop() { on = false; held = false; visible = false; clearTimer(timer); timer = null; },
+            poke() { if (on) { show(); arm(); } },                      // mouse move, tap or key: shown again
+            hold(value) { held = !!value; if (on) { if (held) show(); arm(); } }  // pointer or focus on the button: stays
+        };
+    }
+    // AUTOHIDE-END
+
     const exitFullScreen = document.createElement('button');
     exitFullScreen.type = 'button';
     exitFullScreen.className = 'frame-exit-fullscreen';
     exitFullScreen.textContent = 'Exit full screen';
     exitFullScreen.hidden = true;
     exitFullScreen.addEventListener('click', leaveFrameFullScreen);
-    frameBox.append?.(exitFullScreen);
+    const exitZone = document.createElement('div');
+    exitZone.className = 'frame-exit-zone';
+    exitZone.setAttribute('aria-hidden', 'true');
+    exitZone.hidden = true;
+    // The zone comes after the button: portal.css lets clicks through the zone while the button is shown.
+    frameBox.append?.(exitFullScreen, exitZone);
+
+    const exitHider = createAutoHider(
+        () => exitFullScreen.classList.remove('faded'),
+        () => exitFullScreen.classList.add('faded'),
+        2000
+    );
+    const pokeExit = () => exitHider.poke();
+    for (const type of ['pointermove', 'pointerdown', 'mousemove', 'touchstart', 'click']) exitZone.addEventListener(type, pokeExit);
+    for (const type of ['pointerenter', 'focus']) exitFullScreen.addEventListener(type, () => exitHider.hold(true));
+    for (const type of ['pointerleave', 'blur']) exitFullScreen.addEventListener(type, () => exitHider.hold(false));
+    for (const type of ['mousemove', 'touchstart', 'pointerdown', 'keydown']) document.addEventListener(type, pokeExit, { passive: true });
+
+    // Shows or hides the exit button (and its corner area) with the full-screen state.
+    function showExit(on) {
+        exitFullScreen.hidden = !on;
+        exitZone.hidden = !on;
+        if (on) exitHider.start(); else exitHider.stop();
+    }
 
     const fullScreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
     const frameIsFullScreen = () => fullScreenElement() === frameBox || !!frameBox.classList?.contains('frame-expanded');
@@ -310,7 +388,7 @@
     function expandFrame(on) {
         frameBox.classList?.toggle('frame-expanded', on);
         document.documentElement.classList?.toggle('frame-expanded-open', on);
-        exitFullScreen.hidden = !on;
+        showExit(on);
     }
 
     function toggleFrameFullScreen() {
@@ -333,7 +411,7 @@
 
     // The browser's own full screen shows the exit button too (Esc ends it by itself).
     for (const type of ['fullscreenchange', 'webkitfullscreenchange']) {
-        document.addEventListener(type, () => { exitFullScreen.hidden = !frameIsFullScreen(); });
+        document.addEventListener(type, () => showExit(frameIsFullScreen()));
     }
     // Esc ends the expanded view, also while the page in the frame has the keyboard (when it is the portal's own page).
     function escLeaves(event) {
@@ -341,10 +419,26 @@
     }
     document.addEventListener('keydown', escLeaves);
     frame.addEventListener('load', () => {
-        try { frame.contentWindow.document.addEventListener('keydown', escLeaves); } catch { /* another origin */ }
+        try {
+            const inner = frame.contentWindow.document;
+            inner.addEventListener('keydown', escLeaves);
+            // The portal's own pages tell the shell about mouse moves and taps, so the exit button comes back anywhere.
+            for (const type of ['mousemove', 'touchstart', 'pointerdown', 'keydown']) inner.addEventListener(type, pokeExit, { passive: true });
+        } catch { /* another origin */ }
     });
 
     const customize = headerButton('Customize', showCustomizer);
+    customize.id = 'portalCustomize';
+
+    // Tour: the guided tour (tour.js) of the menu for this person's roles. It also starts by itself once, on the first
+    // sign-in on a device (applyRoleNavigation). On phones it sits in the menu like Customize.
+    const tourButton = headerButton('Tour', () => {
+        if (window.GfmTour) window.GfmTour.start(currentRoles, currentPerson);
+    });
+    tourButton.id = 'portalTourButton';
+    tourButton.title = 'Take a guided tour of the portal';
+    let currentRoles = [];
+    let currentPerson = '';
 
     // Reload tries again a page that has not opened yet (the error messages say "use Reload"); otherwise it reloads the
     // page on screen.
@@ -384,8 +478,10 @@
         const signOut = document.getElementById('logoutButton');
         const inMenu = phone && !!signOut;
         customize.className = inMenu ? 'nav-item menu-control' : 'portal-action';
+        tourButton.className = inMenu ? 'nav-item menu-control' : 'portal-action';
         if (inMenu) signOut.before(languages, customize);
         else { actions.prepend(languages); library.after(customize); }
+        customize.after(tourButton);  // Tour sits right after Customize: in the header, or in the menu above Sign Out
         notifications.className = phone ? 'portal-action reminders-switch' : 'portal-action';
         remindersOff.className = inMenu ? 'nav-item reminders-switch' : 'portal-action';
         if (phone) notice.after(notifications); else actions.append(notifications);

@@ -26,11 +26,6 @@ export const SLIDEV_DIR = SLIDEV_HOME;
 /** One folder per deck: /slidev/decks/<deck>/slides.md, and its published copy in /slidev/decks/<deck>/dist. */
 export const DECKS_DIR = path.join(SLIDEV_HOME, 'decks');
 
-/** GFM Presentations V2 (v2-routes.mjs): one folder per deck with deck.json and assets/, next to the Slidev decks. */
-export const V2_DECKS_DIR = path.join(SLIDEV_HOME, 'decks-v2');
-
-/** The built V2 application (slidev/presentations-v2/dist, mounted read-only). One app serves every V2 deck. */
-export const V2_APP_DIR = env.PRESENTATION_V2_APP_DIR || path.join(SLIDEV_HOME, 'presentations-v2');
 
 /** The `slidev` program (from package.json's pinned @slidev/cli). */
 export const SLIDEV_BIN = path.join(SLIDEV_HOME, 'node_modules', '.bin', 'slidev');

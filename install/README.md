@@ -65,3 +65,10 @@ Also part of the installer, next to the PowerShell scripts they mirror: `health.
 `bash install/tests/test-install.sh` and `bash install/tests/test-dataease.sh` for the real runs.
 
 `*.sh` files keep Unix line endings on Windows too (`.gitattributes`), or Git Bash cannot run them.
+
+## Standing rules (checked by `tests/rules.test.mjs` and by `release/scan.sh` on every release)
+- **No online-finding questions.** A new install has no Weekly Planning question, section, answer choice, grid row or indicator about finding people through online platforms: the baseline (portal-api/baseline/000_baseline.sql) no longer holds even the retired rows (round 13). On an installed system migration 054 deletes them, but only if no saved answer refers to them (otherwise it stops and the rows stay retired). The installer's own files do not mention those platforms at all (the words are listed in release/scan.sh). A catalogue row of that kind, retired or not, stops the release scan.
+- **No fixed addresses.** `install/` holds no IP address except 127.0.0.1 and no web address except localhost, variables and the documentation
+  sites. The database stack's container names come from `GFM_SUPA_PROJECT` (default `gfm-beta`), the tunnel's way back to this computer from
+  `GFM_TUNNEL_UPSTREAM_HOST` (default `host.docker.internal`), this computer's address is looked up (`GFM_HOST_IP`), the web name, mail server,
+  ports and time zone are answers of the form or `GFM_*` settings written to the `.env` files.

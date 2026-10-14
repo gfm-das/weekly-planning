@@ -98,3 +98,6 @@ wiki-preview/
 # Wiki browser-edit log (server-local; sync deliberately)
 wiki/edit-log.jsonl
 
+
+# The built demo site (node demo/build-demo.mjs); release/publish.sh builds its own copy
+demo/dist/

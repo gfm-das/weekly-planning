@@ -8,6 +8,10 @@ An upload names the same new member or friend again and again (one row per week)
        - same name in another area, or a very similar name in the same area -> ASK the manager;
        - anything else -> different people;
   3. remembers each answer in people_match_decisions, so a pair is asked once.
+The FindeChristus (FC) number comes first (round 13): two people with the same FC number are the same person, whatever
+their name or area, and two people with different FC numbers are never joined by name alone (a manager's remembered
+"same person" answer still counts). A person without an FC number is matched by name as before. The same FC number on
+different names, or stored for two people, is flagged in the notices.
 A new member who was first a friend with a baptismal date (same name, same area) is linked to that friend's record.
 
 The pages that ask are in people_pages.py; the saving is in people_write.py. High-potential friends are only a name on
@@ -17,6 +21,7 @@ import difflib
 from datetime import date
 
 import data_names
+from data_text import plain
 
 NEW_MEMBER, FRIEND = "new_member", "baptismal"
 KIND_CODE = {NEW_MEMBER: "nm", FRIEND: "bd"}
@@ -37,8 +42,11 @@ def split_name(full):
     return " ".join(parts[:-1]), parts[-1]
 
 
-def person_key(kind, area_id, folded, bapt=None):
-    """The key of a person of the upload: 'p:nm:12:anna meier' (plus ':2026-05-31' when the baptism date is known)."""
+def person_key(kind, area_id, folded, bapt=None, fc=None):
+    """The key of a person of the upload: 'p:nm:12:anna meier' (plus ':2026-05-31' when the baptism date is known).
+    A person with an FC number is keyed by it alone ('p:nm:fc:1234567'): every row with that number is one person."""
+    if fc:
+        return f"p:{KIND_CODE[kind]}:fc:{fc}"
     return f"p:{KIND_CODE[kind]}:{area_id}:{folded}" + (f":{bapt}" if bapt else "")
 
 
@@ -55,19 +63,19 @@ def pair_key(a, b):
 
 def group_people(appearances):
     """The people of an upload. appearances: dicts with kind, name (full), first, last, area_id, unit_id, sunday
-    (date or None), baptism_date (date or None) and anything else to keep. Returns a list of people:
-    {key, kind, area_id, folded, first, last, baptism_date, unit_id, appearances, first_seen, last_seen}."""
+    (date or None), baptism_date (date or None), fc (the FC number or None) and anything else to keep. Returns a list of
+    people: {key, kind, area_id, folded, first, last, baptism_date, unit_id, fc, appearances, first_seen, last_seen}."""
     people = {}
     for item in appearances:
         folded = fold(item["name"])
         if not folded:
             continue
-        key = person_key(item["kind"], item["area_id"], folded, item.get("baptism_date"))
+        key = person_key(item["kind"], item["area_id"], folded, item.get("baptism_date"), item.get("fc"))
         person = people.get(key)
         if person is None:
             person = people[key] = {"key": key, "kind": item["kind"], "area_id": item["area_id"], "folded": folded,
                                     "first": item["first"], "last": item["last"], "baptism_date": item.get("baptism_date"),
-                                    "unit_id": None, "appearances": [], "stored_id": None}
+                                    "unit_id": None, "appearances": [], "stored_id": None, "fc": item.get("fc")}
         person["appearances"].append(item)
     for person in people.values():
         person["appearances"].sort(key=lambda a: (a.get("sunday") or date.min, a.get("order") or 0))
@@ -85,14 +93,14 @@ def stored_people(cur, mission_id):
     """New members and friends already in the database (this mission): same shape as group_people's people, with
     stored_id set. Their area is the area they are assigned to now."""
     out = []
-    cur.execute("""select nm.id,nm.first_name,nm.last_name,nm.display_name,nm.baptism_date,a.area_id,a.unit_id
+    cur.execute("""select nm.id,nm.first_name,nm.last_name,nm.display_name,nm.baptism_date,nm.fc_number,a.area_id,a.unit_id
       from public.new_members nm
       join public.new_member_area_assignments a on a.new_member_id=nm.id and a.end_date is null
       join public.areas ar on ar.id=a.area_id join public.districts d on d.id=ar.district_id
       join public.zones z on z.id=d.zone_id where z.mission_id=%s""", (mission_id,))
     for r in cur.fetchall():
         out.append(stored_person(NEW_MEMBER, r, r["baptism_date"]))
-    cur.execute("""select f.id,f.first_name,f.last_name,f.display_name,a.area_id,a.unit_id
+    cur.execute("""select f.id,f.first_name,f.last_name,f.display_name,f.fc_number,a.area_id,a.unit_id
       from public.baptismal_date_people f
       join public.baptismal_date_person_area_assignments a on a.baptismal_date_person_id=f.id and a.end_date is null
       join public.areas ar on ar.id=a.area_id join public.districts d on d.id=ar.district_id
@@ -105,7 +113,8 @@ def stored_people(cur, mission_id):
 def stored_person(kind, row, baptism_date):
     return {"key": stored_key(kind, row["id"]), "kind": kind, "area_id": row["area_id"], "folded": fold(row["display_name"]),
             "first": row["first_name"], "last": row["last_name"], "baptism_date": baptism_date, "unit_id": row["unit_id"],
-            "appearances": [], "stored_id": row["id"], "first_seen": None, "last_seen": None, "label": row["display_name"]}
+            "appearances": [], "stored_id": row["id"], "first_seen": None, "last_seen": None, "label": row["display_name"],
+            "fc": row.get("fc_number")}
 
 
 # ------------------------------------------------------------------------------------------ remembered answers
@@ -156,10 +165,16 @@ def similar_names(a, b):
 
 
 def classify_pair(a, b, decisions):
-    """'same', 'ask' or None (different) for two people of the same kind; at least one is from the upload."""
+    """'same', 'ask' or None (different) for two people of the same kind; at least one is from the upload.
+    Order: the same FC number is always the same person; a manager's remembered answer; two different FC numbers are
+    different people; then the name, area and date rules."""
+    if a.get("fc") and a.get("fc") == b.get("fc"):
+        return "same"
     answer = decisions.get(pair_key(a["key"], b["key"]))
     if answer is not None:
         return "same" if answer else None
+    if a.get("fc") and b.get("fc"):
+        return None  # two different FC numbers: two people, whatever their names
     if dates_clash(a, b) or on_same_plan(a, b):
         return None
     if a["folded"] == b["folded"]:
@@ -188,12 +203,14 @@ def resolve(upload_people, stored, decisions, area_names=None):
         return k
 
     questions, notices, seen = [], [], set()
-    buckets_exact, buckets_area = {}, {}
+    buckets_exact, buckets_area, buckets_fc = {}, {}, {}
     for p in pool:
         buckets_exact.setdefault((p["kind"], p["folded"]), []).append(p)
         buckets_area.setdefault((p["kind"], p["area_id"]), []).append(p)
+        if p.get("fc"):
+            buckets_fc.setdefault((p["kind"], p["fc"]), []).append(p)
     candidate_pairs = {}
-    for bucket in list(buckets_exact.values()) + list(buckets_area.values()):
+    for bucket in list(buckets_fc.values()) + list(buckets_exact.values()) + list(buckets_area.values()):
         for i, a in enumerate(bucket):
             for b in bucket[i + 1:]:
                 if a["stored_id"] and b["stored_id"]:
@@ -228,13 +245,42 @@ def resolve(upload_people, stored, decisions, area_names=None):
                              key=lambda a: (a.get("sunday") or date.min, a.get("order") or 0))
         newest = max(people, key=lambda p: (p["last_seen"] or date.min))
         dates = [p["baptism_date"] for p in people if p["baptism_date"]]
+        fcs = [p["fc"] for p in people if p.get("fc")]
+        stored_fc = next((o["fc"] for o in owners if o.get("fc")), None)
+        if owners and stored_fc and fcs and stored_fc not in fcs:
+            notices.append(plain("uploads.people.fcKept", name=owners[0]["label"], stored=stored_fc, fc=fcs[0]))
         groups.append({"kind": people[0]["kind"], "members": people, "stored_id": owners[0]["stored_id"] if owners else None,
+                       "fc": fcs[0] if fcs else None,
                        "area_id": newest["area_id"], "unit_id": newest["unit_id"], "first": newest["first"],
                        "last": newest["last"], "baptism_date": dates[0] if dates else None,
                        "appearances": appearances, "bapt_from": None, "keys": [p["key"] for p in people]})
     link_friends_to_new_members(groups, stored)
+    notices.extend(fc_notices(upload_people, stored))
     questions.sort(key=lambda q: q["keys"])
     return {"groups": groups, "questions": questions, "notices": notices}
+
+
+def fc_notices(upload_people, stored):
+    """Lines about FC numbers that need a look: one number stored for several people, or one number under different
+    names in the file (they are treated as one person, but a typing mistake is possible)."""
+    lines = []
+    by_fc = {}
+    for person in stored:
+        if person.get("fc"):
+            by_fc.setdefault(person["fc"], []).append(person)
+    for fc, people in sorted(by_fc.items()):
+        if len(people) > 1:
+            lines.append(plain("uploads.people.fcTwiceStored", fc=fc, count=len(people),
+                               names=", ".join(sorted(p["label"] for p in people))))
+    written = {}  # FC number -> {folded name: the name as written}
+    for person in upload_people:
+        if person.get("fc"):
+            for item in person["appearances"]:
+                written.setdefault(person["fc"], {}).setdefault(fold(item["name"]), item["name"])
+    for fc, names in sorted(written.items()):
+        if len(names) > 1:
+            lines.append(plain("uploads.people.fcSeveralNames", fc=fc, names=", ".join(sorted(names.values()))))
+    return lines
 
 
 def link_friends_to_new_members(groups, stored):
@@ -246,12 +292,13 @@ def link_friends_to_new_members(groups, stored):
         if group["kind"] != NEW_MEMBER:
             continue
         names = {(p["area_id"], p["folded"]) for p in group["members"]}
+        fc = group.get("fc")  # the same FC number as a friend with a baptismal date: that friend, in any area
         for friend in friends:
-            if any((p["area_id"], p["folded"]) in names for p in friend["members"]):
+            if (fc and friend.get("fc") == fc) or any((p["area_id"], p["folded"]) in names for p in friend["members"]):
                 group["bapt_from"] = friend
                 break
         else:
             for s in stored_friends:
-                if (s["area_id"], s["folded"]) in names:
+                if (fc and s.get("fc") == fc) or (s["area_id"], s["folded"]) in names:
                     group["bapt_from"] = s["stored_id"]
                     break

@@ -21,6 +21,7 @@ import { assertDeckCreator, assertDeckEditor, assertPresentationManager, askPort
 import { CHART_BODY_LIMIT, FileCache } from './chart-access.mjs';
 import { ADDON_FINGERPRINT, buildCounts, buildDeck, buildReport, ensureDeckBuildWatcher, lastBuildInfo, publishErrorMessage, refreshBuildInBackground } from './builds.mjs';
 import { acceptedEncoding, COMPRESSIBLE } from './delivery.mjs';
+import { templateList } from './templates/index.mjs';
 import { createDeck, deckStatus, deleteDeck, duplicateDeck, renameDeck } from './deck-actions.mjs';
 import { deckDir, deckExists, deckFile, deckTitle, listDecks, notFound, presentationSlugFromPath, safeSlug, sourceVersion, writeDeckSource } from './deck-files.mjs';
 import { addressOf, doorwayFromOtherPage, managerRefusal, passCookie, passDomainFor } from './deck-origin.mjs';
@@ -29,13 +30,12 @@ import { FAVICON_DATA_URL } from './gfm-addon/lib/favicon.mjs';
 import { chartCatalog, chartData, serveBuilderFile } from './numbers.mjs';
 import { confirmPage, LIBRARY_PAGE, messagePage, PORTAL_BRIDGE, studioPage } from './pages.mjs';
 import { protectedReason } from './protected-decks.mjs';
-import { ADDRESSES, DECK_PUBLIC_PORT, MAX_RUNNING_EDITORS, MONACO_DIR, PORTAL_ORIGINS, PORTAL_PORTS, PUBLIC_NAMES, V2_DECKS_DIR } from './settings.mjs';
+import { ADDRESSES, DECK_PUBLIC_PORT, MAX_RUNNING_EDITORS, MONACO_DIR, PORTAL_ORIGINS, PORTAL_PORTS, PUBLIC_NAMES } from './settings.mjs';
 import { authenticatedContext, currentSessionId, handleLogout, handleSession, passes, roleOf, studioPageId } from './sign-in.mjs';
 import { httpError, isReading, mimeType, readBody, sendHtml, sendJson, sendKept, sendNotFound, wantsHtml } from './web.mjs';
 import { MAX_ZIP_BYTES, readSourceZip, UploadError, writeUpload } from './source-upload.mjs';
 import { chartPageCsp, frameAncestors, whiteboardFrame, whiteboardFramePage } from './whiteboard-frames.mjs';
 import { libraryView, ownerChangeRefusal } from './zone-decks.mjs';
-import { accessKey, listV2Decks, readV2Asset, readV2Viewers, saveV2Viewers, readV2Deck, queryV2, saveV2Asset, saveV2Deck, v2AppFile, v2PageHtml } from './v2-routes.mjs';
 
 /** Answers one request on the manager address. */
 export async function handleManagerRequest(req, res) {
@@ -61,11 +61,7 @@ async function routeManagerRequest(req, res, url) {
   if (req.method === 'GET' && pathname === '/_manager/portal-bridge.js') return servePortalBridge(req, res);
   if (isReading(req) && pathname.startsWith('/vendor/monaco/vs/')) return serveMonaco(req, res, pathname);
   if (isReading(req) && pathname.startsWith('/_manager/chart/')) return serveBuilderFile(req, res, pathname.slice('/_manager/chart/'.length)).then(() => true);
-  if (isReading(req) && pathname.startsWith('/_v2/')) return serveV2File(req, res, pathname.slice('/_v2/'.length));
   if (pathname.startsWith('/api/')) return handleApi(req, res, url).then(() => true);
-  if (req.method === 'GET' && /^\/p-v2-assets\/[a-z0-9-]+\/[a-z0-9._-]+$/.test(pathname)) return serveV2Asset(req, res, pathname, await authenticatedContext(req));
-  if (isReading(req) && pathname === '/library-v2') return serveV2Library(req, res, await authenticatedContext(req));
-  if (isReading(req) && /^\/(studio-v2|p-v2)\/[a-z0-9-]+\/?$/.test(pathname)) return serveV2Page(req, res, url, await authenticatedContext(req));
   // The pages below need a sign-in; it is checked first, so a signed-out person learns nothing about a deck.
   if (req.method === 'GET' && pathname.startsWith('/studio/') && await routeStudio(req, res, url, await authenticatedContext(req))) return true;
   if (req.method === 'GET' && whiteboardFrame(pathname)) return serveWhiteboardFrame(req, res, whiteboardFrame(pathname));
@@ -201,54 +197,6 @@ async function serveWhiteboardFrame(req, res, kind) {
   return true;
 }
 
-// ---- GFM Presentations V2 (v2-routes.mjs) ----
-
-// The V2 data worker builds small functions from text (Arquero, math.js), which the pages' policy forbids. Its own
-// file gets its own policy instead: it may do that, but it has no network, no page, no cookies. Nothing else may.
-const V2_WORKER_CSP = "default-src 'none'; script-src 'self' 'unsafe-eval'; connect-src 'none'; frame-ancestors 'none'";
-const isV2Worker = name => /^assets\/data-worker-[\w-]+\.js$/.test(name);
-
-/** GET /_v2/<file>: the built V2 application (code only, no data, like the chart builder's files). */
-async function serveV2File(req, res, name) {
-  const found = await v2AppFile(name);
-  if (!found) { sendNotFound(res); return true; }
-  res.writeHead(200, { 'Content-Type': found.type, 'Content-Length': found.size, 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', ...(isV2Worker(name) ? { 'Content-Security-Policy': V2_WORKER_CSP } : {}) });
-  if (req.method === 'HEAD') { res.end(); return true; }
-  createReadStream(found.file).on('error', () => res.destroy()).pipe(res);
-  return true;
-}
-
-/** GET /library-v2: the V2 presentations this person may open (the page asks /api/presentations-v2 for the list). */
-async function serveV2Library(req, res, context) {
-  await checkPresentationAccess(context, []);
-  const nonce = newNonce();
-  res.setHeader('Content-Security-Policy', chartPageCsp(req.headers.host, PORTAL_ORIGINS, PORTAL_PORTS, { nonce }));
-  sendHtml(res, await v2PageHtml());
-  return true;
-}
-
-/** GET /p-v2-assets/<deck>/<name>: a picture of a V2 deck, for whoever may open the deck. */
-async function serveV2Asset(req, res, pathname, context) {
-  const [, slug, name] = pathname.match(/^\/p-v2-assets\/([a-z0-9-]+)\/([a-z0-9._-]+)$/);
-  return readV2Asset({ req, res, context, slug, name });
-}
-
-/**
- * GET /studio-v2/<deck> (who may change the deck; a manager may open a deck that does not exist yet, to make it) and
- * GET /p-v2/<deck> (who may open it). The same prebuilt page for every deck: no Slidev, no build.
- */
-async function serveV2Page(req, res, url, context) {
-  const [, mode, slug] = url.pathname.match(/^\/(studio-v2|p-v2)\/([a-z0-9-]+)\/?$/);
-  const access = mode === 'studio-v2' ? await assertDeckEditor(context, accessKey(slug)) : await presentationAccess(context, accessKey(slug));
-  const exists = await fs.stat(path.join(V2_DECKS_DIR, slug, 'deck.json')).then(() => true, () => false);
-  if (!exists && !(mode === 'studio-v2' && access.can_manage)) throw notFound();
-  const nonce = newNonce();
-  res.setHeader('Content-Security-Policy', chartPageCsp(req.headers.host, PORTAL_ORIGINS, PORTAL_PORTS, { nonce }));
-  res.setHeader('Cache-Control', 'no-store');
-  sendHtml(res, await v2PageHtml());
-  return true;
-}
-
 // ---- the way into a published deck ----
 
 /**
@@ -303,15 +251,9 @@ async function routeBuilderEditorRequest(req, res, context) {
 // Every /api/ route after sign-in: [method, address pattern, what answers]. The pattern's (…) is the deck's slug.
 const DECK = '([a-z0-9-]+)';
 const API_ROUTES = [
-  ['GET', /^\/api\/presentations-v2$/, listV2Decks],
-  ['POST', /^\/api\/presentations-v2\/query$/, queryV2],
-  ['GET', new RegExp(`^/api/presentations-v2/${DECK}/viewers$`), readV2Viewers],
-  ['PUT', new RegExp(`^/api/presentations-v2/${DECK}/viewers$`), saveV2Viewers],
-  ['GET', new RegExp(`^/api/presentations-v2/${DECK}$`), readV2Deck],
-  ['PUT', new RegExp(`^/api/presentations-v2/${DECK}$`), saveV2Deck],
-  ['PUT', new RegExp(`^/api/presentations-v2/${DECK}/assets/([a-z0-9._-]+)$`), saveV2Asset],
   ['GET', /^\/api\/presentations$/, listLibrary],
   ['POST', /^\/api\/presentations$/, createPresentation],
+  ['GET', /^\/api\/presentation-templates$/, listTemplates],
   ['POST', /^\/api\/charts\/data$/, answerChartData],
   ['GET', /^\/api\/charts\/catalog$/, answerChartCatalog],
   ['POST', new RegExp(`^/api/presentations/${DECK}/duplicate$`), duplicatePresentation],
@@ -365,11 +307,17 @@ async function listLibrary({ res, context }) {
   return sendJson(res, 200, { role: access.role || roleOf(context), can_manage: !!access.can_manage, ...libraryView(decks, access) });
 }
 
-/** POST /api/presentations { title }: a new deck, owned by the mission (a manager) or by the person's zone (ZL, STL). */
+/** GET /api/presentation-templates?lang=de: the templates and the 14 languages the new presentation dialog offers, in the person's language (names only, no data). */
+async function listTemplates({ res, url, context }) {
+  await assertDeckCreator(context);
+  return sendJson(res, 200, templateList(url.searchParams.get('lang') || ''));
+}
+
+/** POST /api/presentations { title, template?, lang? }: a new deck (blank, or from a template in a language), owned by the mission (a manager) or by the person's zone (ZL, STL). */
 async function createPresentation({ req, res, context }) {
   await assertDeckCreator(context);
-  const { title } = await readBody(req);
-  const slug = await createDeck(title);
+  const { title, template, lang } = await readBody(req);
+  const slug = await createDeck(title, { template, lang });
   // portal-api records the owner. Without that record a ZL could not open their new deck, so the folder is removed
   // again when it fails.
   try {

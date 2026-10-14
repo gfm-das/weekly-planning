@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Architecture — Weekly Planning Wiki</title>
+  <meta name="description" content="Parts, ports, request flow and the security boundary.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="dev-architecture" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Navigation</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="random.html"><span class="nav-icon" aria-hidden="true">🎲</span><span>Random page</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="tutorial.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Tutorial</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentation Library</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>Data and admin</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads / Importer</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Management (Places)</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="roster.html"><span class="nav-icon" aria-hidden="true">👥</span><span>Roster</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="dbeaver-access.html"><span class="nav-icon" aria-hidden="true">🗄️</span><span>DBeaver access</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="backups-and-restore.html"><span class="nav-icon" aria-hidden="true">💾</span><span>Backups and restore</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="health-check.html"><span class="nav-icon" aria-hidden="true">❤️</span><span>Health check</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="server-overview.html"><span class="nav-icon" aria-hidden="true">🖥️</span><span>Server overview</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+<li><a href="editing-the-wiki.html"><span class="nav-icon" aria-hidden="true">✏️</span><span>Editing the wiki</span><span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a></li>
+</ul>
+<h2>Installing</h2><ul>
+<li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
+<li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
+</ul>
+<h2>Developer docs</h2><ul>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Developer docs</span></a></li>
+<li class="current"><a href="dev-architecture.html"><span class="nav-icon" aria-hidden="true">🏗️</span><span>Architecture</span></a></li>
+<li><a href="dev-folders.html"><span class="nav-icon" aria-hidden="true">🗂️</span><span>Folders and services</span></a></li>
+<li><a href="dev-database.html"><span class="nav-icon" aria-hidden="true">🛢️</span><span>Database and migrations</span></a></li>
+<li><a href="dev-testing.html"><span class="nav-icon" aria-hidden="true">🧪</span><span>Testing</span></a></li>
+<li><a href="dev-deploy-ubuntu.html"><span class="nav-icon" aria-hidden="true">🚀</span><span>Deploy on Ubuntu</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs" aria-label="Page actions" data-page-tabs data-slug="dev-architecture">
+          <a class="tab is-active" href="dev-architecture.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=dev-architecture" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=dev-architecture" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Architecture</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Architecture</strong> shows which parts Weekly Planning 3.0 is made of, how a request travels through them, and where the rights are decided.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>Use this page to find out which part to change for a given task, and which parts a change reaches.</p>
+<pre><code class="language-text">Browser / phone
+  |
+Portal (nginx) :8070 ---- static pages (portal/)
+  |  \-- /api/* --&gt; portal-api :8091 --&gt; Postgres / Supabase Auth
+  |                  portal-reminders (same code: push reminders)
+  +--&gt; DA Management :8090 ----------&gt; Postgres + Supabase Auth; leaves update requests for the updater
+  +--&gt; Presentations :3030 (library, Studio) --&gt; portal-api rights check --&gt; Slidev processes (3100+)
+  |                  :8089 (the deck address: published decks and the deck editor)
+  +--&gt; Dashboards :8088 --&gt; nginx front --&gt; gate (the portal&#x27;s signed cookie) --&gt; DataEase
+                                                DataEase --&gt; dbproxy --&gt; Postgres (read-only login)</code></pre>
+<p>The ports are defaults; each can be changed by a setting (<code>GFM_PORT_*</code>, see <code>health.sh</code>). All services use the external Docker network <code>gfm-network</code>; DataEase keeps its own internal network. The portal shows every other part inside its own frame, so people see one website.</p>
+<h2 id="how-it-works">How it works</h2>
+<table><thead><tr><th>Part</th><th>Folder</th><th>What it does</th></tr></thead><tbody><tr><td>Portal</td><td><code>portal/</code></td><td>The shell and menu, themes, the 14 languages (<code>portal/i18n/</code>), the frames, the pages, the service worker</td></tr><tr><td>portal-api</td><td><code>portal-api/</code></td><td>Python (Flask): sign-in, rights and stewardship (<code>roles.py</code>), Weekly Planning, Call-ins, calendar, announcements, files, Overview and glimpse, charts for Presentations, Whiteboard, Archetypal Health, the Dashboards cookie; <code>reminders.py</code> for push jobs</td></tr><tr><td>Database</td><td><code>supabase/</code></td><td>PostgreSQL, Auth, REST, edge functions (the Supabase stack); the data, and the second line of rights (row-level security and checked functions)</td></tr><tr><td>DA Management</td><td><code>roster-importer/</code></td><td>Python (Flask): accounts, planning questions, roster and historical imports, data uploads, places, import history with Undo, the Updates page</td></tr><tr><td>Presentations</td><td><code>slidev/</code></td><td>Node: <code>manager/server.mjs</code> (library, sessions, Studio, building and serving decks), <code>manager/gfm-addon</code> (charts)</td></tr><tr><td>Dashboards</td><td><code>dataease/</code></td><td>DataEase with a sign-in gate and an nginx front, dashboard descriptions, setup scripts, <code>i18n/</code></td></tr><tr><td>Backups</td><td><code>nightly-backup/</code></td><td>A container that only reads the database and writes dumps</td></tr><tr><td>Updater</td><td><code>updater/</code></td><td>A program on the server (not a container) that installs releases on request</td></tr><tr><td>Health</td><td><code>health.sh</code></td><td>A script that only looks and prints one row per check</td></tr></tbody></table>
+<p>Rules that shape the code:</p>
+<ul><li><strong>The database is the one source of truth.</strong> Sunday is the reporting-week key; plans are area, ward-or-branch and week scoped.</li><li><strong>Rights are checked on the server, twice.</strong> <code>portal-api/roles.py</code> (and the copy in <code>roster-importer/</code>) decide who may do what; row-level security and checked functions in the database decide again. Hiding a button is not security.</li><li>**<code>portal-api</code> and <code>roster-importer</code> are separate images.** <code>roles.py</code> and <code>staff_accounts.py</code> exist in both and must be kept identical.</li><li><strong>Every import and place change is one batch</strong> in Import history with a before and after of each row, and Undo.</li><li><strong>14 languages:</strong> every interface text has a key in every catalog under <code>portal/i18n/</code>.</li><li><strong>Decks run on their own address.</strong> Slidev decks contain code, so published decks and the deck editor are served on the deck address (8089), not on the manager address (3030) where the sign-in lives.</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>Roles: <code>MISSIONARY</code>, <code>DL</code>, <code>ZL</code>, <code>STL</code>, <code>OFFICE</code>, <code>AP</code>, <code>PRESIDENT</code>, <code>DATA_ADMIN</code> (shown as Data Analyst). Managers are AP, President and Data Analyst. A DL sees a district, a ZL a zone, managers the mission; Office edits the calendar and announcements. The full table is on <a href="roles-and-permissions.html">Roles and permissions</a>.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>A page works for managers but not for a ZL</td><td>The API check in <code>roles.py</code>, then the row-level security of the table; the menu is not the cause</td></tr><tr><td>A change in <code>roles.py</code> has no effect in DA Management</td><td>The copy in <code>roster-importer/</code> was not changed too</td></tr><tr><td>A new SECURITY DEFINER function is callable by anyone</td><td>Missing <code>REVOKE EXECUTE ... FROM PUBLIC</code>; re-run <code>019_restrict_public_functions.sql</code> after every migration</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Oct 2026</td><td>Collected from <code>docs/handoff/02_ARCHITECTURE.md</code> for Ubuntu (round 13)</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="dev-folders.html">Folders and services</a></li><li><a href="dev-database.html">Database and migrations</a></li><li><a href="roles-and-permissions.html">Roles and permissions</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Architecture</div>
+<div class="infobox-icon" aria-hidden="true">🏗️</div>
+<table>
+<tr><th>Runs on</th><td>One Ubuntu server</td></tr>
+<tr><th>Network</th><td>gfm-network (external)</td></tr>
+<tr><th>Database</th><td>PostgreSQL (Supabase stack)</td></tr>
+<tr><th>Rights</th><td>roles.py + row-level security</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <strong>Architecture</strong> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

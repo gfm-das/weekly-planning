@@ -3,8 +3,9 @@
 // private network (dataease/seed-dashboards.ps1 does this), never with the password on a command line.
 //
 //   node dataease/seed-dashboards.mjs            first start and updates: see below
-//   node dataease/seed-dashboards.mjs --check    only read: every chart of the three dashboards must answer
-//   node dataease/seed-dashboards.mjs --reset    also rebuild the three dashboards from the repository files
+//   node dataease/seed-dashboards.mjs --check    only read: every chart of the six dashboards must answer
+//                                                (the per-resident charts may be empty until Geo data is uploaded)
+//   node dataease/seed-dashboards.mjs --reset    also rebuild the six dashboards from the repository files
 //                                                (changes made in DataEase to them are replaced; back up first)
 //   node dataease/seed-dashboards.mjs --export   write the dashboards as they are in DataEase now to
 //                                                dataease/dashboards/export/ (to keep edits made in DataEase)
@@ -15,8 +16,9 @@
 //  2. Removes DataEase's own Chinese sample (the tea-shop dashboard, its datasets and its "Demo" data source).
 //  3. Creates or updates the data source "GFM mission data (read-only)": login gfm_dashboard_reader through the
 //     relay container, at most 4 connections.
-//  4. Creates or updates the six datasets of dataease/dashboards/datasets.json (the SQL in dashboards/sql/).
-//  5. Creates the three dashboards that are missing (fixed ids), publishes them, and leaves existing ones alone
+//  4. Creates or updates the twelve datasets of dataease/dashboards/datasets.json (the SQL in dashboards/sql/). The Geo data
+//     datasets need migration 046 (dashboards.area_geo_data, dashboards.area_week_per_capita) in the database first.
+//  5. Creates the six dashboards that are missing (fixed ids), publishes them, and leaves existing ones alone
 //     (people may have changed them in DataEase) unless --reset is given.
 //  6. Checks every chart like --check.
 // Prints names of dashboards, charts and datasets and counts only; never passwords, tokens or people's data.
@@ -38,7 +40,9 @@ const RESET = args.has('--reset');
 const EXPORT = args.has('--export');
 const SAMPLE_NAME = '【官方示例】'; // "official sample": the folder of DataEase's own demo
 const DASHBOARD_FOLDER_ID = '1150000000000000000'; // "Mission"; the ids of dashboards and charts are in the dashboard files
-const DASHBOARD_FILES = ['key-indicators.json', 'zones-districts.json', 'covenant-path.json'];
+// The order of the dashboard numbers (lib/languages.mjs): 01 Key indicators, 02 Zones & districts, 03 Covenant path, then the
+// round-13 set built on the six key indicators: 04 Areas (missionary level), 05 Trend, 06 Per 10,000 residents (Geo data).
+const DASHBOARD_FILES = ['key-indicators.json', 'zones-districts.json', 'covenant-path.json', 'areas.json', 'trend.json', 'per-capita.json'];
 // Calculated fields that add up rows (DataEase must then not add them up once more).
 const AGGREGATE = /\b(SUM|MAX|MIN|AVG|COUNT)\s*\(/i;
 
@@ -311,7 +315,13 @@ async function chartRows(de, view) {
   return Array.isArray(rows) ? rows.length : 0;
 }
 
-async function checkDashboard(de, spec) {
+// A chart over a dataset marked optionalRows in datasets.json (the Geo data per-capita numbers) may be empty: nobody may
+// have uploaded Geo data yet. Every other chart must answer with rows.
+export function emptyChartAllowed(view, optionalDatasetIds) {
+  return ALLOW_EMPTY || optionalDatasetIds.has(String(view.tableId));
+}
+
+async function checkDashboard(de, spec, optionalDatasetIds = new Set()) {
   const name = spec.name;
   const dv = await findCurrentDashboard(de, spec);
   if (!dv) { fail(`dashboard "${name}" is missing`); return; }
@@ -326,7 +336,7 @@ async function checkDashboard(de, spec) {
     try {
       const count = await chartRows(de, view);
       if (count > 0) withNumbers += 1;
-      else if (!ALLOW_EMPTY) fail(`"${name}" › "${title}" answered without rows`);
+      else if (!emptyChartAllowed(view, optionalDatasetIds)) fail(`"${name}" › "${title}" answered without rows`);
       say(`  ok  ${name} › ${title} (${view.type}): ${count} row(s), ${Date.now() - started} ms`);
     } catch (error) {
       fail(`"${name}" › "${title}": ${error.message}`);
@@ -377,6 +387,16 @@ async function exportDashboards(de, specs) {
   }
 }
 
+// The ids of the datasets whose charts may be empty (optionalRows in datasets.json): from the datasets just made, or, in
+// --check, found by name in DataEase.
+async function optionalDatasetIds(de, config, datasets) {
+  const optional = config.datasets.filter(d => d.optionalRows);
+  if (datasets) return new Set(optional.map(d => String(datasets[d.key].id)));
+  const tree = flattenTree(await de.post('/datasetTree/tree', { busiFlag: 'dataset' }));
+  const names = new Set(optional.map(d => d.name));
+  return new Set(tree.filter(n => n.leaf && names.has(n.name)).map(n => String(n.id)));
+}
+
 // ---- main --------------------------------------------------------------------------------------------------------
 
 function readDashboardFiles() {
@@ -389,12 +409,14 @@ async function main() {
   const specs = readDashboardFiles();
   const de = await signIn();
   if (EXPORT) { await exportDashboards(de, specs); return; }
+  let datasets = null;
   if (!CHECK_ONLY) {
     await removeSamples(de);
-    const datasets = await loadDatasets(de, config, true);
+    datasets = await loadDatasets(de, config, true);
     await ensureDashboards(de, specs, datasets);
   }
-  for (const spec of specs) await checkDashboard(de, spec);
+  const optional = await optionalDatasetIds(de, config, datasets);
+  for (const spec of specs) await checkDashboard(de, spec, optional);
   await checkFrameAncestors();
   if (failures) { console.log(`${failures} problem(s).`); process.exitCode = 1; } else say('All dashboards answer.');
 }

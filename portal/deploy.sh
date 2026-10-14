@@ -60,6 +60,9 @@ MISSION_NAME=$(docker exec "$DB_CONTAINER" psql -U postgres -d postgres -Atc "se
 TIMEZONE=${GFM_TIME_ZONE:-$(env_value "$PORTAL/.env" GFM_TIME_ZONE)}
 TIMEZONE=${TIMEZONE:-Europe/Berlin}
 [[ "$TIMEZONE" =~ ^[A-Za-z0-9_+-]+(/[A-Za-z0-9_+-]+){0,2}$ ]] || die "GFM_TIME_ZONE is not a time zone name: $TIMEZONE"
+# The ID of the mission's shared Google Drive (GFM_DRIVE_ID, optional; empty: drive.html says it is not set up). An ID is letters, digits, - and _.
+DRIVE_ID=${GFM_DRIVE_ID:-$(env_value "$PORTAL/.env" GFM_DRIVE_ID)}
+[[ -z "$DRIVE_ID" || "$DRIVE_ID" =~ ^[A-Za-z0-9_-]{10,64}$ ]] || die "GFM_DRIVE_ID is not a Google Drive ID (letters, digits, - and _ only): $DRIVE_ID"
 
 # 4. Staging, then one copy.
 rm -rf "$STAGING"; mkdir -p "$STAGING"
@@ -71,7 +74,7 @@ for f in "$PORTAL"/*.html "$PORTAL"/*.css "$PORTAL"/*.js "$PORTAL"/*.svg "$PORTA
   cp "$f" "$STAGING/"
 done
 for folder in i18n whiteboard; do [ -d "$PORTAL/$folder" ] && cp -R "$PORTAL/$folder" "$STAGING/"; done
-printf '// Written by portal/deploy.sh from GFM_PUBLIC_DOMAIN, GFM_TIME_ZONE and the mission. Do not edit.\nwindow.GFM_SITE = { publicDomain: "%s", defaultLanguage: "%s", timeZone: "%s", missionName: "%s" };\n' "$DOMAIN" "$LANGUAGE" "$TIMEZONE" "$MISSION_NAME" > "$STAGING/site-config.js"
+printf '// Written by portal/deploy.sh from GFM_PUBLIC_DOMAIN, GFM_TIME_ZONE, GFM_DRIVE_ID and the mission. Do not edit.\nwindow.GFM_SITE = { publicDomain: "%s", defaultLanguage: "%s", timeZone: "%s", missionName: "%s", driveId: "%s" };\n' "$DOMAIN" "$LANGUAGE" "$TIMEZONE" "$MISSION_NAME" "$DRIVE_ID" > "$STAGING/site-config.js"
 docker cp "$STAGING_MIXED/backups/.tmp-portal-deploy/." "$CONTAINER:$HTML" || die "copying the portal pages failed."
 
 # 5. Retired paths, the container's settings, nginx.

@@ -7,6 +7,8 @@ transaction, or nothing at all:
   2. It removes the rows the batch added (newest first), and puts back the rows it changed or removed.
   3. It marks the batch UNDONE, with who undid it.
 
+A RETIRE batch (Delete retired, retire.py) is undone like the others: the deleted place or question is inserted again
+first, then the rows that were moved or removed are put back.
 Data uploads that keep their own rows (the finding export, zone history, ...) are undone by removing those rows
 (data_uploads.undo_rows). An account change may only be undone by someone who may make it (account_changes.py). An
 undo that would end the signed-in manager's own DA Management access needs the "I understand" tick.
@@ -18,6 +20,7 @@ import account_changes
 import batches
 import data_uploads
 import database
+import retire
 import sign_in
 
 
@@ -82,6 +85,8 @@ def tables_of(cur, batch, changes):
     no table rows. Raises ValueError for a batch that changed a table of another kind, and PermissionError for an
     account change the signed-in manager may not undo."""
     tables = batches.TABLES_OF_KIND.get(batch["kind"], batches.HISTORICAL_TABLES)
+    if batch["kind"] == "RETIRE":  # a deleted place or question: the places, whatever pointed at them, and the question tables
+        tables = retire.allowed_tables(cur)
     if batch["kind"] in data_uploads.ROW_KINDS:  # a data upload keeps its own rows: Undo removes them
         data_uploads.undo_rows(cur, batch)
         tables = []

@@ -74,6 +74,19 @@ button.secondary, .button.secondary { background: var(--soft); color: var(--text
 .pill-label { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.2; }
 .spark { display: block; }
 .deeper { white-space: nowrap; }
+
+/* Compare (round 13): off by default. The switch and its choice sit in the filters; the line under them names both
+   periods; each pill gets an arrow with the change and the earlier number. Arrow and sign carry the meaning, the colour
+   only helps (so it also reads without colour). */
+.compare-box { display: flex; flex-direction: column; gap: 6px; }
+.compare-box .switch { display: flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text); font-weight: 650; cursor: pointer; margin: 0; }
+.compare-box .switch input { width: 22px; height: 22px; min-height: 0; margin: 0; flex: none; }
+.compare-line { margin: 0 0 12px; font-size: 14px; line-height: 1.5; }
+.compare-line .legend-note { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; }
+.pill-change { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted); }
+.pill-change.up { color: var(--good); }
+.pill-change.down { color: var(--bad); }
+.pill-was { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .toggle { background: none; color: var(--teal); padding: 0 10px 0 4px; display: inline-flex; align-items: center; gap: 6px; font-weight: 650; margin-top: 8px; }
 .toggle .chev { display: inline-block; transition: transform .15s; }
 .toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }

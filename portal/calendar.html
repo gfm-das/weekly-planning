@@ -10,6 +10,11 @@
   portalConfirm (the "are you sure?" dialog) and the attachment helpers. portal-api decides what each person sees
   and may change (/api/events, /api/options, /api/attachments); the page only follows its
   answers (can_edit). Every time is in the mission's time zone (GFM_TIME_ZONE), whatever the device's own time zone.
+
+  Round 13 (task 20): three views of the same answer: List (the original), Month and Week (a grid; calendar-grid.js
+  does the day arithmetic). The grid asks for the same /api/events, so the audiences and rights are exactly those of the
+  list. An event can also carry a link to one of this portal's presentation decks (deck_link, the relative path
+  /p/<deck>/): Office types the deck name in the editor, everyone sees "Open presentation" in the event.
 -->
 <html lang="en">
   <head>
@@ -18,6 +23,60 @@
     <title>Mission calendar</title>
     <link rel="stylesheet" href="workspace.css" />
     <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
+    <script src="calendar-grid.js"></script>
+    <style>
+      /* The view switch, the period bar and the grid use the colours of workspace.css (light and dark). */
+      .toolbar[hidden], .period-nav[hidden], #grid[hidden], #events[hidden] { display: none !important; }
+      .view-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+      .view-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+      .view-switch button { border-radius: 0; background: var(--panel); color: var(--text); min-height: 40px; }
+      .view-switch button[aria-pressed="true"] { background: var(--teal); color: #fff; }
+      .period-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .period-nav h2 { margin: 0 6px; font-size: 17px; min-width: 11ch; text-align: center; }
+      .period-nav button { min-height: 40px; }
+      html[dir="rtl"] .arrow { display: inline-block; transform: scaleX(-1); }
+      button:focus-visible, .day-btn:focus-visible { outline: 3px solid #97d5d0; outline-offset: 2px; }
+      .cal-grid { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .cal-grid th { font-size: 12px; color: var(--muted); padding: 8px 4px; border-bottom: 1px solid var(--line); text-align: center; font-weight: 650; }
+      .cal-grid td { vertical-align: top; border-inline-end: 1px solid var(--line); border-bottom: 1px solid var(--line); height: 116px; padding: 4px; overflow: hidden; }
+      .cal-grid td:last-child { border-inline-end: 0; }
+      .cal-grid tr:last-child td { border-bottom: 0; }
+      .cal-grid.week td { height: 280px; }
+      .cal-grid td.out { background: var(--soft); }
+      .cal-grid td.out .num { color: var(--muted); }
+      .day-btn { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; background: transparent; color: var(--text); padding: 3px 5px; border-radius: 7px; font-weight: 650; font-size: 13px; min-height: 28px; text-align: start; }
+      .day-btn:hover { background: var(--soft); }
+      .day-btn .num { min-width: 24px; text-align: center; border-radius: 99px; padding: 1px 4px; }
+      td.today .day-btn .num { background: var(--teal); color: #fff; }
+      .day-btn .dow { display: none; }
+      .day-btn .count { display: none; min-width: 20px; text-align: center; font-size: 11px; border-radius: 99px; background: #eaf4f3; color: #16736e; padding: 1px 6px; }
+      .chips { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+      .chip { display: block; background: #eaf4f3; color: #16736e; border-radius: 6px; padding: 2px 6px; font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+      .chip.more { background: transparent; color: var(--muted); }
+      .chip time { opacity: 0.8; margin-inline-end: 4px; unicode-bidi: isolate; direction: ltr; display: inline-block; }
+      [data-theme="dark"] .chip, [data-theme="dark"] .day-btn .count { background: #21343d; color: #9fe0da; }
+      [data-theme="dark"] .chip.more { background: transparent; color: var(--muted); }
+      .event a { display: inline-block; margin-inline-end: 14px; }
+      .day-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+      .day-head h2 { margin: 0; }
+      @media (max-width: 700px) {
+        .view-switch button, .period-nav button { min-height: 44px; }
+        .cal-grid td { height: 58px; padding: 2px; }
+        .cal-grid .chips { display: none; }
+        .cal-grid .day-btn { flex-direction: column; justify-content: center; min-height: 44px; font-size: 14px; gap: 2px; }
+        .cal-grid .day-btn .count { display: inline-block; }
+        .cal-grid.week, .cal-grid.week tbody, .cal-grid.week tr, .cal-grid.week td { display: block; }
+        .cal-grid.week thead { display: none; }
+        .cal-grid.week td { height: auto; border-inline-end: 0; }
+        .cal-grid.week .chips { display: flex; }
+        .cal-grid.week .day-btn { flex-direction: row; justify-content: flex-start; gap: 10px; }
+        .cal-grid.week .day-btn .dow { display: inline; min-width: 3.5ch; }
+        .cal-grid.week .day-btn .count { margin-inline-start: auto; }
+        .cal-grid.week .chip { white-space: normal; }
+        .period-nav h2 { order: -1; width: 100%; margin: 0 0 4px; }
+        .day-head { flex-wrap: wrap; }
+      }
+    </style>
   </head>
   <body>
     <main>
@@ -31,8 +90,23 @@
         <button id="newEvent" hidden style="display: none">New event</button>
       </div>
 
+      <!-- List, Month or Week; the period bar belongs to the two grids. -->
+      <div class="view-bar">
+        <div class="view-switch" role="group" aria-label="Calendar view">
+          <button type="button" id="viewList" data-view="list" aria-pressed="true">List</button>
+          <button type="button" id="viewMonth" data-view="month" aria-pressed="false">Month</button>
+          <button type="button" id="viewWeek" data-view="week" aria-pressed="false">Week</button>
+        </div>
+        <div class="period-nav" id="periodNav" hidden>
+          <button type="button" class="secondary" id="prevPeriod"><span class="arrow" aria-hidden="true">‹</span> <span>Previous</span></button>
+          <button type="button" class="secondary" id="todayPeriod">Today</button>
+          <button type="button" class="secondary" id="nextPeriod"><span>Next</span> <span class="arrow" aria-hidden="true">›</span></button>
+          <h2 id="periodTitle" aria-live="polite"></h2>
+        </div>
+      </div>
+
       <!-- The dates to show (from today, 90 days ahead at first). -->
-      <div class="toolbar">
+      <div class="toolbar" id="listToolbar">
         <label for="from">From</label>
         <input id="from" type="date" />
         <label for="to">To</label>
@@ -41,6 +115,19 @@
       </div>
       <div id="status" class="status" role="status"></div>
       <div id="events"></div>
+      <div id="grid" hidden></div>
+
+      <!-- The events of one day of the grid (Month and Week). Editors can add an event on that day. -->
+      <dialog id="dayDialog" aria-labelledby="dayTitle">
+        <div class="day-head">
+          <h2 id="dayTitle"></h2>
+          <button type="button" id="dayNew" hidden style="display: none">New event</button>
+        </div>
+        <div id="dayEvents"></div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="closeDay">Close</button>
+        </div>
+      </dialog>
 
       <!-- New event / Edit event series (editors only). -->
       <dialog id="editor">
@@ -70,6 +157,11 @@
             <div class="field">
               <label for="meeting">Video meeting link</label>
               <input id="meeting" type="url" placeholder="https://" />
+            </div>
+            <div class="field">
+              <label for="deck">Presentation deck</label>
+              <input id="deck" maxlength="90" autocomplete="off" dir="ltr" />
+              <p class="hint">Optional. The name of one of this portal's presentations, for example mmm or zoko, or its address from the Presentations library (/p/mmm/).</p>
             </div>
             <div class="field">
               <label for="repeat">Repeat</label>
@@ -145,6 +237,24 @@
       let events = []; // the events on screen; their buttons name them by position (data-edit="2")
       let editing = null; // the event open in the editor, or null for a new one
       let attending = null; // the event whose attendance is open
+      const G = window.CalendarGrid; // calendar-grid.js: the days of a month or week, and deck links
+      let view = "list"; // "list" (the original), "month" or "week"
+      let anchor = G.dayKey(new Date(), ZONE); // a day inside the month or week the grid shows
+      let canEditNow = false; // can_edit of the last answer
+      let byDay = new Map(); // the grid's events by day
+      let openDayKey = null; // the day open in the day dialog
+      let focusKey = null; // the day button that can be reached with Tab (and gets the focus after a redraw)
+      try {
+        const saved = localStorage.getItem("calendar_view"); // a per-person convenience only
+        if (["list", "month", "week"].includes(saved)) view = saved;
+      } catch {}
+
+      // A text with values, in the chosen language once the catalogs are loaded (English until then).
+      function T(key, english, values = {}) {
+        const i18n = window.MissionI18n;
+        if (i18n?.state?.loaded) return i18n.t(key, values);
+        return english.replace(/\{(\w+)\}/g, (match, name) => (values[name] === undefined ? match : values[name]));
+      }
 
       // ---- The mission's time --------------------------------------------------------------------------------------------
       const dateFormat = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", timeZone: ZONE });
@@ -225,32 +335,148 @@
         return `<div class="actions"><button class="secondary" data-edit="${index}">Edit</button>${attendance}<button class="secondary danger" data-delete="${index}">Delete</button></div>`;
       }
 
+      // The address decks open on (the Presentations address the portal shell knows); empty when the shell is not there.
+      function deckBase() {
+        try {
+          return window.parent !== window && typeof window.parent.portalPresentationsUrl === "function" ? window.parent.portalPresentationsUrl() : "";
+        } catch {
+          return "";
+        }
+      }
+
       function eventCard(e, index, canEdit) {
         const start = new Date(e.starts_at);
         const meeting = e.meeting_url ? `<a href="${esc(e.meeting_url)}" target="_blank" rel="noopener">Join meeting ↗</a>` : "";
+        const deckHref = G.deckHref(e.deck_link, deckBase());
+        const deck = deckHref ? `<a class="deck-link" href="${esc(deckHref)}" target="_blank" rel="noopener">Open presentation ↗</a>` : "";
         const files = e.attachments.map((a) => attachmentItem(a, canEdit)).join("");
         const actions = canEdit ? eventActions(e, index) : "";
-        return `<article class="panel event">${dateBlock(start)}<div><h2>${esc(e.title)}</h2>${eventMeta(e, start)}<p>${esc(e.description)}</p>${meeting}<div class="attachments">${files}</div></div>${actions}</article>`;
+        return `<article class="panel event">${dateBlock(start)}<div><h2>${esc(e.title)}</h2>${eventMeta(e, start)}<p>${esc(e.description)}</p>${meeting}${deck}<div class="attachments">${files}</div></div>${actions}</article>`;
       }
 
       // Loads the events of the chosen dates and shows them.
       async function load() {
         try {
           showStatus("status", "Loading calendar…");
-          const start = encodeURIComponent(zoneISO($("from").value + "T00:00"));
-          const end = encodeURIComponent(zoneISO($("to").value + "T23:59"));
+          // The list asks for the two dates typed above; a grid for the days it draws (month: with the grey days).
+          const span = view === "list" ? { from: $("from").value, to: $("to").value } : G.range(view, anchor);
+          const start = encodeURIComponent(zoneISO(span.from + "T00:00"));
+          const end = encodeURIComponent(zoneISO(span.to + "T23:59"));
           const data = await portalAPI(`events?start=${start}&end=${end}`);
           events = data.events;
           const canEdit = data.can_edit === true;
+          canEditNow = canEdit;
           $("newEvent").hidden = !canEdit;
           $("newEvent").style.display = canEdit ? "" : "none";
-          $("events").innerHTML = events.length
-            ? events.map((e, index) => eventCard(e, index, canEdit)).join("")
-            : '<div class="empty">No events for your role and zone in this date range.</div>';
+          render();
           showStatus("status", "");
         } catch (e) {
           showStatus("status", e.message, true);
         }
+      }
+
+      // ---- Views: List, Month, Week -------------------------------------------------------------------------------
+      // Draws the chosen view from the events and can_edit of the last answer.
+      function render() {
+        const grid = view !== "list";
+        $("listToolbar").hidden = grid;
+        $("periodNav").hidden = !grid;
+        $("grid").hidden = !grid;
+        $("events").hidden = grid;
+        for (const button of document.querySelectorAll(".view-switch button")) button.setAttribute("aria-pressed", String(button.dataset.view === view));
+        if (grid) {
+          $("events").innerHTML = "";
+          renderGrid();
+        } else {
+          $("grid").innerHTML = "";
+          $("events").innerHTML = events.length
+            ? events.map((e, index) => eventCard(e, index, canEditNow)).join("")
+            : '<div class="empty">No events for your role and zone in this date range.</div>';
+        }
+      }
+
+      // The title of the period: "October 2026", or "5 Oct 2026 – 11 Oct 2026".
+      function periodTitle() {
+        const day = (key, options) => new Intl.DateTimeFormat(undefined, { ...options, timeZone: "UTC" }).format(G.fromKey(key));
+        if (view === "week") {
+          const days = G.weekDays(anchor);
+          const long = { day: "numeric", month: "short", year: "numeric" };
+          return day(days[0].key, long) + " – " + day(days[6].key, long);
+        }
+        return day(anchor, { month: "long", year: "numeric" });
+      }
+
+      // The grid: one table, a heading row of weekdays and a row per week. Every day is one button (Tab reaches one of
+      // them, the arrow keys move between days); the event titles in the cell are only a preview for the mouse, the day
+      // button opens the full events in a dialog.
+      function renderGrid() {
+        byDay = G.groupByDay(events, ZONE);
+        const today = G.dayKey(new Date(), ZONE);
+        const when = new Date(G.fromKey(anchor));
+        const weeks = view === "month" ? G.monthWeeks(when.getUTCFullYear(), when.getUTCMonth() + 1) : [G.weekDays(anchor)];
+        const utc = (options) => new Intl.DateTimeFormat(undefined, { ...options, timeZone: "UTC" });
+        const short = utc({ weekday: "short" });
+        const long = utc({ weekday: "long" });
+        const full = utc({ weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        const clock = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit", timeZone: ZONE });
+        const limit = view === "month" ? 3 : 50;
+        const keys = weeks.flat().map((d) => d.key);
+        if (!keys.includes(focusKey)) focusKey = keys.includes(today) ? today : keys.includes(anchor) ? anchor : keys[0];
+        const head = weeks[0]
+          .map((d) => `<th scope="col" abbr="${esc(long.format(G.fromKey(d.key)))}">${esc(short.format(G.fromKey(d.key)))}</th>`)
+          .join("");
+        const cell = (d) => {
+          const list = byDay.get(d.key) || [];
+          const label = T("calendar.dayCount", "{date} · Events: {count}", { date: full.format(G.fromKey(d.key)), count: list.length });
+          const chips = list
+            .slice(0, limit)
+            .map(({ event }) => `<li class="chip" data-day="${d.key}"><time>${esc(clock.format(new Date(event.starts_at)))}</time>${esc(event.title)}</li>`)
+            .join("");
+          const more = list.length > limit ? `<li class="chip more" data-day="${d.key}">${esc(T("calendar.moreEvents", "+{count} more", { count: list.length - limit }))}</li>` : "";
+          const classes = [d.inMonth === false ? "out" : "", d.key === today ? "today" : ""].filter(Boolean).join(" ");
+          return `<td class="${classes}"><button type="button" class="day-btn" data-day="${d.key}" tabindex="${d.key === focusKey ? 0 : -1}" aria-label="${esc(label)}"${d.key === today ? ' aria-current="date"' : ""}><span class="dow" aria-hidden="true">${esc(short.format(G.fromKey(d.key)))}</span><span class="num" aria-hidden="true">${d.day}</span>${list.length ? `<span class="count" aria-hidden="true">${list.length}</span>` : ""}</button><ul class="chips" aria-hidden="true">${chips}${more}</ul></td>`;
+        };
+        $("grid").innerHTML = `<table class="cal-grid ${view}" aria-label="${esc(T("calendar.gridLabel", "Calendar grid"))}"><thead><tr>${head}</tr></thead><tbody>${weeks.map((week) => `<tr>${week.map(cell).join("")}</tr>`).join("")}</tbody></table>`;
+        $("periodTitle").textContent = periodTitle();
+      }
+
+      // Moves the Tab stop to a day and the focus with it.
+      function focusDay(key) {
+        const button = $("grid").querySelector(`.day-btn[data-day="${key}"]`);
+        if (!button) return;
+        for (const other of $("grid").querySelectorAll(".day-btn")) other.tabIndex = -1;
+        button.tabIndex = 0;
+        focusKey = key;
+        button.focus();
+      }
+
+      // The day dialog: the full cards of that day's events (the same cards as the list, with the same buttons).
+      function openDay(key) {
+        openDayKey = key;
+        focusKey = key;
+        const items = byDay.get(key) || [];
+        $("dayTitle").textContent = new Intl.DateTimeFormat(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(G.fromKey(key));
+        $("dayEvents").innerHTML = items.length
+          ? items.map(({ event, index }) => eventCard(event, index, canEditNow)).join("")
+          : '<div class="empty">No events on this day.</div>';
+        $("dayNew").hidden = !canEditNow;
+        $("dayNew").style.display = canEditNow ? "" : "none";
+        $("dayDialog").showModal();
+      }
+
+      function setView(next) {
+        view = next;
+        try {
+          localStorage.setItem("calendar_view", view);
+        } catch {}
+        load();
+      }
+
+      // One month / one week on or back; "Today" jumps to the present.
+      function step(n) {
+        anchor = n === 0 ? G.dayKey(new Date(), ZONE) : G.shift(view, anchor, n);
+        focusKey = null;
+        return load();
       }
 
       // ---- The editor ---------------------------------------------------------------------------------------------
@@ -258,7 +484,7 @@
       // the series' first date.
       // It first waits for the lists of roles and zones. Saved without them, an event would have no roles and no
       // zones, and portal-api reads that as "the whole mission" (everyone would see it and get its reminders).
-      async function edit(event = null) {
+      async function edit(event = null, day = null) {
         const problem = await editorLists;
         if (problem) return showStatus("status", problem.message, true);
         editing = event;
@@ -268,10 +494,12 @@
         $("description").value = event?.description || "";
         $("location").value = event?.location || "";
         $("meeting").value = event?.meeting_url || "";
+        $("deck").value = event?.deck_link || "";
         const firstStart = event?.recurrence ? event.series_starts_at || event.starts_at : event?.starts_at;
         const firstEnd = event?.recurrence ? event.series_ends_at || event.ends_at : event?.ends_at;
-        $("start").value = event ? localZone(firstStart) : $("from").value + "T10:00";
-        $("end").value = event ? localZone(firstEnd) : $("from").value + "T11:00";
+        const firstDay = day || (view === "list" ? $("from").value : anchor); // a new event starts on this day
+        $("start").value = event ? localZone(firstStart) : firstDay + "T10:00";
+        $("end").value = event ? localZone(firstEnd) : firstDay + "T11:00";
         $("repeat").value = event?.recurrence?.frequency || "";
         $("repeatUntil").value = event?.recurrence?.until?.slice(0, 10) || "";
         $("reminder").value = event?.reminder_minutes ?? 30;
@@ -304,6 +532,7 @@
           zone_ids: selected("zones", true),
           location: $("location").value,
           meeting_url: $("meeting").value,
+          deck_link: $("deck").value,
           reminder_minutes: Number($("reminder").value),
         };
       }
@@ -427,20 +656,78 @@
 
       // ---- Buttons ------------------------------------------------------------------------------------------------
       // One listener for every button in the event list; the button's data-… says what it does.
-      $("events").onclick = (e) => {
+      // The same buttons work in the list and in the day dialog; an action from the dialog closes it first.
+      const onEventButton = (e) => {
         const button = e.target.closest("button");
         if (!button) return;
         const { edit: editIndex, delete: deleteIndex, attendance, removeFile, file } = button.dataset;
+        if (e.currentTarget === $("dayEvents") && (editIndex !== undefined || deleteIndex !== undefined || attendance !== undefined || removeFile)) {
+          $("dayDialog").close();
+        }
         if (editIndex !== undefined) edit(events[+editIndex]);
         if (deleteIndex !== undefined) deleteEvent(events[+deleteIndex], button);
         if (removeFile) removeAttachment(button);
         if (attendance !== undefined) recordAttendance(events[+attendance]);
         if (file) portalAttachment(file, button.dataset.name).catch((error) => showStatus("status", error.message, true));
       };
+      $("events").onclick = onEventButton;
+      $("dayEvents").onclick = onEventButton;
       $("closeEditor").onclick = () => $("editor").close();
       $("closeAttendance").onclick = () => $("attendanceDialog").close();
       $("newEvent").onclick = () => edit();
       $("refresh").onclick = load;
+
+      // The view switch, the period bar and the grid.
+      for (const button of document.querySelectorAll(".view-switch button")) button.onclick = () => setView(button.dataset.view);
+      $("prevPeriod").onclick = () => step(-1);
+      $("nextPeriod").onclick = () => step(1);
+      $("todayPeriod").onclick = () => step(0);
+      $("grid").onclick = (e) => {
+        const target = e.target.closest("[data-day]");
+        if (target) openDay(target.dataset.day);
+      };
+      $("closeDay").onclick = () => $("dayDialog").close();
+      $("dayDialog").addEventListener("close", () => {
+        if (view !== "list" && openDayKey) focusDay(openDayKey); // back to the day it was opened from
+      });
+      $("dayNew").onclick = () => {
+        const day = openDayKey;
+        $("dayDialog").close();
+        edit(null, day);
+      };
+      // Arrow keys move between days (left/right follow the page direction), Home/End go to the ends of the week row,
+      // Page Up / Page Down to the previous / next month or week.
+      $("grid").addEventListener("keydown", (e) => {
+        const current = e.target.closest(".day-btn");
+        if (!current) return;
+        const buttons = [...$("grid").querySelectorAll(".day-btn")];
+        const at = buttons.indexOf(current);
+        const rtl = getComputedStyle(document.documentElement).direction === "rtl";
+        const down = view === "month" ? 7 : 1;
+        const moves = {
+          ArrowLeft: at + (rtl ? 1 : -1),
+          ArrowRight: at + (rtl ? -1 : 1),
+          ArrowUp: at - down,
+          ArrowDown: at + down,
+          Home: at - (at % 7),
+          End: at - (at % 7) + 6,
+        };
+        if (e.key.toLowerCase().startsWith("page")) {
+          e.preventDefault();
+          anchor = G.shift(view, current.dataset.day, e.key.toLowerCase().endsWith("up") ? -1 : 1);
+          focusKey = anchor;
+          load().then(() => focusDay(anchor));
+        } else if (e.key in moves) {
+          e.preventDefault();
+          if (moves[e.key] >= 0 && moves[e.key] < buttons.length) focusDay(buttons[moves[e.key]].dataset.day);
+        }
+      });
+      // A new language redraws the grid (weekday and month names, the day labels).
+      window.addEventListener("mission-i18n-change", () => {
+        if (view !== "list" && !$("grid").hidden && $("grid").firstChild) {
+          renderGrid();
+        }
+      });
 
       // ---- Start --------------------------------------------------------------------------------------------------
       // The editor's lists: roles and zones (calendar editors may aim events at the whole mission).

@@ -38,9 +38,35 @@ In **DA Management → Places** (menu label **Places**):
 
 A place closed by hand stays closed **only until** a [roster](roster.html) names it or missionaries serve there again. Roster upload reopens as needed.
 
+### Deleting a closed place for good
+
+A place that is **closed** (and, for an area, has nobody serving in it) can be deleted for good from **DA Management → Places → Delete a closed place for good** (the page *Delete retired*). The page shows what is attached to it (plans, people, Call-ins, uploaded numbers), lets you **move** all of it onto the place that replaced it, makes a **database backup** first (its file name is written into the batch), asks you to **type the name**, and then deletes it as one **RETIRE** batch in Import history that **Undo** can put back. Plans, people and history are never deleted by this page: they must be moved. A retired Weekly Planning question is deleted from the same page (see [Uploads / Importer](uploads-importer.html)).
+
+## Links to web services
+
+**DA Management → Links to web services** (a tab for managers only) has one card per outside service the mission system relies on, each with a short line on what it is for and an *Open* button that opens the service in a new tab:
+
+| Service | What it is for |
+| --- | --- |
+| Brevo | Sends the system's emails (invitations and password emails). |
+| Porkbun | Holds the mission's web domain name: renewals and the DNS records. |
+| Cloudflare | Connects the web address to the system safely (the tunnel) and manages DNS and protection. |
+
+The addresses are **settings**, not code: `WEB_LINK_BREVO`, `WEB_LINK_PORKBUN` and `WEB_LINK_CLOUDFLARE` in `roster-importer/.env` (empty keeps the service's public sign-in page, `off` hides the card). **No password, key or token is stored here** and an address that contains one is not shown. You sign in at the service with your own account.
+
+## Wiki button
+
+**DA Management → Wiki** (a tab for managers only, next to *DA Docs*) has one card with an **Open the wiki** button. It opens the mission wiki (the page you are reading) in a new tab. The wiki is **not** in the portal's side menu on purpose: managers reach it from here.
+
+The address is a **setting**, not code: `WEB_LINK_WIKI` in `roster-importer/.env`. Empty works it out (the name you reached DA Management by, on the portal's port `PORTAL_PORT`, default 8070, then `/wiki/`; on the internet name the public portal address); `off` hides the button. An address with a password or key in it is not shown.
+
+## Unlocking a locked planning question
+
+Some Weekly Planning questions are **locked** (Dashboards, Call-ins, Presentations or Archetypal Health read them by their key). A manager (AP, President, Data Analyst) can unlock one on purpose in **DA Management → Planning questions →** the question → **Unlock this question**: write why and type the question's key. The unlock is in the **Change history** with who did it and why. An unlocked question can be changed or retired like any other; a question that reports read can be **locked again** with one button.
+
 ## Permissions
 
-Same as DA Management: AP, President, Data Analyst.
+Same as DA Management: AP, President, Data Analyst. Only a manager signed in through the portal may delete a place or question (the old shared password may not).
 
 ## Troubleshooting
 

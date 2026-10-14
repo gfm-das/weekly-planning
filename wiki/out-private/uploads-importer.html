@@ -23,6 +23,7 @@
 </ul>
 <h2>Using the portal</h2><ul>
 <li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="tutorial.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Tutorial</span></a></li>
 <li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
 <li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
 <li><a href="glimpse.html"><span class="nav-icon" aria-hidden="true">👀</span><span>Glimpse</span></a></li>
@@ -46,6 +47,14 @@
 <li><a href="installer-overview.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Installer overview</span></a></li>
 <li><a href="requirements.html"><span class="nav-icon" aria-hidden="true">✅</span><span>Requirements</span></a></li>
 </ul>
+<h2>Developer docs</h2><ul>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Developer docs</span></a></li>
+<li><a href="dev-architecture.html"><span class="nav-icon" aria-hidden="true">🏗️</span><span>Architecture</span></a></li>
+<li><a href="dev-folders.html"><span class="nav-icon" aria-hidden="true">🗂️</span><span>Folders and services</span></a></li>
+<li><a href="dev-database.html"><span class="nav-icon" aria-hidden="true">🛢️</span><span>Database and migrations</span></a></li>
+<li><a href="dev-testing.html"><span class="nav-icon" aria-hidden="true">🧪</span><span>Testing</span></a></li>
+<li><a href="dev-deploy-ubuntu.html"><span class="nav-icon" aria-hidden="true">🚀</span><span>Deploy on Ubuntu</span></a></li>
+</ul>
 </nav></aside>
     <div class="wiki-main">
       <div class="wiki-topbar">
@@ -68,7 +77,10 @@
 <li><a href="#usage">Usage</a></li>
 <li style="margin-left:1rem"><a href="#historical-csv">Historical CSV</a></li>
 <li style="margin-left:1rem"><a href="#people-upload">People upload</a></li>
+<li style="margin-left:1rem"><a href="#geo-data">Geo data</a></li>
+<li style="margin-left:1rem"><a href="#fc-number">FC number</a></li>
 <li style="margin-left:1rem"><a href="#same-person">Same person?</a></li>
+<li style="margin-left:1rem"><a href="#delete-retired-places-and-questions">Delete retired places and questions</a></li>
 <li style="margin-left:1rem"><a href="#after-apply">After Apply</a></li>
 <li><a href="#how-it-works">How it works</a></li>
 <li><a href="#permissions">Permissions</a></li>
@@ -81,8 +93,14 @@
 <p>Imports past weekly forms. Can also read people named on each form (new members, baptismal-date friends, high-potential friends) and place them on the matching weekly plans.</p>
 <h3 id="people-upload">People upload</h3>
 <p>Spreadsheet upload for <strong>new members</strong> (office templates / “Vollzogen” / New Member Database Raw layouts). Area is resolved from area name or from ward/branch when only one open area serves it. Unclear rows are left out and counted — not guessed.</p>
+<h3 id="geo-data">Geo data</h3>
+<p><strong>Data uploads → Geo data</strong> brings in <strong>population, size (km²), density and households per area</strong>, each row with its <strong>source</strong> and the <strong>date the figures are from</strong>. Download the template (it lists every area with what is saved), fill it in and upload it; an empty cell keeps what is saved, and a new population or size without a density makes the density be worked out again. Figures are stored by the stable area id, shown in a table per area (<em>See the Geo data of every area</em>), and available to dashboards (<code>dashboards.area_geo_data</code>, and <code>dashboards.area_week_per_capita</code> with the key indicators per 10,000 residents). One upload is one batch in Import history with Undo. German numbers such as 21.000 are read as 21000.</p>
+<h3 id="fc-number">FC number</h3>
+<p>The People upload reads an optional <strong>FC number</strong> column (the FindeChristus number). It is the <strong>first and exact</strong> way to recognise a person: the same number is always the same person, whatever the name or area, and two different numbers are never joined by name alone. A number is saved only where there was none and a saved number is never overwritten. The check page flags the same number for different names, and one number saved for two people (they are not joined). Undo takes the number back with the rest of the batch.</p>
 <h3 id="same-person">Same person?</h3>
 <p>When names might match existing people, the check page <strong>asks</strong> before Apply. Answers are remembered. Typed answers on a person are never overwritten; only empty fields are filled.</p>
+<h3 id="delete-retired-places-and-questions">Delete retired places and questions</h3>
+<p>From <strong>Places</strong> and <strong>Planning questions</strong> (link <em>Delete … for good</em>, page <em>Delete retired</em>), a manager signed in through the portal can delete a <strong>closed</strong> zone, district or area, or a <strong>retired</strong> Weekly Planning question that is no longer needed (for example after a rename): (1) an <strong>impact preview</strong> counts everything attached (plans, people, Call-ins, saved answers, uploaded history); (2) an optional <strong>merge</strong> moves it onto the item that replaced it, and the check says when both have data for the same week or plan; (3) a <strong>database backup</strong> (pg_dump) is made and read back first and its file name is written into the batch, and if it fails nothing is deleted; (4) you <strong>type the name</strong> (or the question key); (5) the delete is <strong>one batch</strong> (kind RETIRE) in Import history with Undo. Locked questions (read by Dashboards, Call-ins, Presentations or Archetypal Health), open places and areas with missionaries serving are refused, also by the database. A question&#x27;s saved answers may instead be deleted with it on purpose; plans, people and history of a place are only ever moved.</p>
 <h3 id="after-apply">After Apply</h3>
 <ul><li>Each import is one <strong>batch</strong> in <strong>Import history</strong> (before/after rows).</li><li><strong>Undo</strong> reverses the batch while later edits have not made reversal unsafe.</li><li>Current-week draft plans can be filled so people carry forward by the same rules as opening Weekly Planning.</li></ul>
 <h2 id="how-it-works">How it works</h2>
@@ -108,7 +126,7 @@
 <div class="navbox-group">
 <div class="navbox-label">Get started</div>
 <div class="navbox-list">
-<a href="signing-in.html">Signing in</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
 </div></div>
 <div class="navbox-group">
 <div class="navbox-label">Planning</div>
@@ -140,6 +158,19 @@
 <div class="navbox-label">Setup</div>
 <div class="navbox-list">
 <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
 </div></div>
 </details>
 </div>

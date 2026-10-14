@@ -1,19 +1,11 @@
 {
-  "_comment": "The DataEase datasets behind the Dashboards. Each is one SQL query (dataease/dashboards/sql/) that the read-only login gfm_dashboard_reader runs against the dashboards views of migrations 018 and 025. Complete weeks only: the week still being reported is always left out. Field names are the SQL column names; 'labels' gives the English name people see in DataEase. 'calculated' fields are worked out by DataEase after the zone, district and week filters (so a % of goal is right for any choice). Keep 'index' fixed once live: it makes the ids that charts refer to.",
+  "_comment": "The DataEase datasets behind the Dashboards. Each is one SQL query (dataease/dashboards/sql/) that the read-only login gfm_dashboard_reader runs against the dashboards views of migrations 018 and 025. Complete weeks only: the week still being reported is always left out. Field names are the SQL column names; 'labels' gives the English name people see in DataEase. 'calculated' fields are worked out by DataEase after the zone, district and week filters (so a % of goal is right for any choice). Keep 'index' fixed once live: it makes the ids that charts refer to. Datasets 7 to 12 (round 13) feed the dashboards Areas, Trend and Per 10,000 residents; 11 and 12 read the Geo data views of migration 046 (geo-areas may be empty until Geo data is uploaded: optionalRows; geo-coverage has no week: weekless).",
   "folder": "Mission",
   "datasource": "GFM mission data (read-only)",
   "datasets": [
     {
       "key": "kpi-weeks", "index": 1, "name": "Key indicators by week and district", "sql": "sql/kpi-weeks.sql",
-      "labels": {
-        "week": "Week", "zone": "Zone", "district": "District",
-        "npbt_actual": "New People Being Taught", "npbt_goal": "New People Being Taught: goal set the week before", "npbt_trend": "New People Being Taught: trend",
-        "bc_actual": "Baptisms and confirmations", "bc_goal": "Baptisms and confirmations: goal set the week before", "bc_trend": "Baptisms and confirmations: trend",
-        "bd_actual": "Baptismal dates", "bd_goal": "Baptismal dates: goal set the week before", "bd_trend": "Baptismal dates: trend",
-        "sa_actual": "Sacrament attendance", "sa_goal": "Sacrament attendance: goal set the week before", "sa_trend": "Sacrament attendance: trend",
-        "ml_actual": "Members at lessons", "ml_goal": "Members at lessons: goal set the week before", "ml_trend": "Members at lessons: trend",
-        "nms_actual": "New member sacrament attendance", "nms_goal": "New member sacrament attendance: goal set the week before", "nms_trend": "New member sacrament attendance: trend"
-      }
+      "labels": { "week": "Week", "zone": "Zone", "district": "District", "npbt_actual": "New People Being Taught", "npbt_goal": "New People Being Taught: goal set the week before", "npbt_trend": "New People Being Taught: trend", "bc_actual": "Baptisms and confirmations", "bc_goal": "Baptisms and confirmations: goal set the week before", "bc_trend": "Baptisms and confirmations: trend", "bd_actual": "Baptismal dates", "bd_goal": "Baptismal dates: goal set the week before", "bd_trend": "Baptismal dates: trend", "sa_actual": "Sacrament attendance", "sa_goal": "Sacrament attendance: goal set the week before", "sa_trend": "Sacrament attendance: trend", "ml_actual": "Members at lessons", "ml_goal": "Members at lessons: goal set the week before", "ml_trend": "Members at lessons: trend", "nms_actual": "New member sacrament attendance", "nms_goal": "New member sacrament attendance: goal set the week before", "nms_trend": "New member sacrament attendance: trend" }
     },
     {
       "key": "kpi-latest", "index": 2, "name": "Key indicators, last complete week", "sql": "sql/kpi-latest.sql",
@@ -45,6 +37,61 @@
       "labels": { "week": "Week", "week_label": "Week (text)", "zone": "Zone", "district": "District" },
       "calculated": [
         { "name": "latest_week", "label": "Last complete week", "expression": "MAX([week_label])", "deType": 0 }
+      ]
+    },
+    {
+      "key": "area-latest", "index": 7, "name": "Key indicators by area, last complete week", "sql": "sql/area-latest.sql",
+      "labels": { "week": "Week", "week_label": "Week (text)", "zone": "Zone", "district": "District", "area": "Area" },
+      "calculated": [
+        { "name": "latest_week", "label": "Last complete week", "expression": "MAX([week_label])", "deType": 0 },
+        { "name": "npbt_pct", "label": "New People Being Taught: % of goal", "expression": "ROUND(SUM([npbt_actual]) * 100.0 / NULLIF(SUM([npbt_goal]), 0))", "deType": 2 },
+        { "name": "bc_pct", "label": "Baptisms and confirmations: % of goal", "expression": "ROUND(SUM([bc_actual]) * 100.0 / NULLIF(SUM([bc_goal]), 0))", "deType": 2 },
+        { "name": "bd_pct", "label": "Baptismal dates: % of goal", "expression": "ROUND(SUM([bd_actual]) * 100.0 / NULLIF(SUM([bd_goal]), 0))", "deType": 2 },
+        { "name": "sa_pct", "label": "Sacrament attendance: % of goal", "expression": "ROUND(SUM([sa_actual]) * 100.0 / NULLIF(SUM([sa_goal]), 0))", "deType": 2 },
+        { "name": "ml_pct", "label": "Members at lessons: % of goal", "expression": "ROUND(SUM([ml_actual]) * 100.0 / NULLIF(SUM([ml_goal]), 0))", "deType": 2 },
+        { "name": "nms_pct", "label": "New member sacrament attendance: % of goal", "expression": "ROUND(SUM([nms_actual]) * 100.0 / NULLIF(SUM([nms_goal]), 0))", "deType": 2 }
+      ]
+    },
+    {
+      "key": "area-4weeks", "index": 8, "name": "Areas, last 4 complete weeks", "sql": "sql/area-4weeks.sql",
+      "labels": { "zone": "Zone", "district": "District", "area": "Area", "npbt_pct_of_goal": "New People Being Taught: % of goal", "bc_pct_of_goal": "Baptisms and confirmations: % of goal" }
+    },
+    {
+      "key": "trend-weeks", "index": 9, "name": "Trend by week and district", "sql": "sql/trend-weeks.sql",
+      "labels": { "week": "Week", "zone": "Zone", "district": "District" },
+      "calculated": [
+        { "name": "npbt_pct", "label": "New People Being Taught: % of goal", "expression": "ROUND(SUM([npbt_actual]) * 100.0 / NULLIF(SUM([npbt_goal]), 0))", "deType": 2 },
+        { "name": "bc_pct", "label": "Baptisms and confirmations: % of goal", "expression": "ROUND(SUM([bc_actual]) * 100.0 / NULLIF(SUM([bc_goal]), 0))", "deType": 2 },
+        { "name": "bd_pct", "label": "Baptismal dates: % of goal", "expression": "ROUND(SUM([bd_actual]) * 100.0 / NULLIF(SUM([bd_goal]), 0))", "deType": 2 },
+        { "name": "sa_pct", "label": "Sacrament attendance: % of goal", "expression": "ROUND(SUM([sa_actual]) * 100.0 / NULLIF(SUM([sa_goal]), 0))", "deType": 2 },
+        { "name": "ml_pct", "label": "Members at lessons: % of goal", "expression": "ROUND(SUM([ml_actual]) * 100.0 / NULLIF(SUM([ml_goal]), 0))", "deType": 2 },
+        { "name": "nms_pct", "label": "New member sacrament attendance: % of goal", "expression": "ROUND(SUM([nms_actual]) * 100.0 / NULLIF(SUM([nms_goal]), 0))", "deType": 2 }
+      ]
+    },
+    {
+      "key": "trend-periods", "index": 10, "name": "Trend, last 4 complete weeks against the 4 before", "sql": "sql/trend-periods.sql",
+      "labels": { "week_label": "Week (text)", "zone": "Zone", "district": "District" },
+      "calculated": [
+        { "name": "latest_week", "label": "Last complete week", "expression": "MAX([week_label])", "deType": 0 },
+        { "name": "npbt_change", "label": "New People Being Taught: change in %", "expression": "ROUND((SUM([npbt_last4]) - SUM([npbt_prev4])) * 100.0 / NULLIF(SUM([npbt_prev4]), 0))", "deType": 2 },
+        { "name": "bc_change", "label": "Baptisms and confirmations: change in %", "expression": "ROUND((SUM([bc_last4]) - SUM([bc_prev4])) * 100.0 / NULLIF(SUM([bc_prev4]), 0))", "deType": 2 },
+        { "name": "bd_change", "label": "Baptismal dates: change in %", "expression": "ROUND((SUM([bd_last4]) - SUM([bd_prev4])) * 100.0 / NULLIF(SUM([bd_prev4]), 0))", "deType": 2 },
+        { "name": "sa_change", "label": "Sacrament attendance: change in %", "expression": "ROUND((SUM([sa_last4]) - SUM([sa_prev4])) * 100.0 / NULLIF(SUM([sa_prev4]), 0))", "deType": 2 },
+        { "name": "ml_change", "label": "Members at lessons: change in %", "expression": "ROUND((SUM([ml_last4]) - SUM([ml_prev4])) * 100.0 / NULLIF(SUM([ml_prev4]), 0))", "deType": 2 },
+        { "name": "nms_change", "label": "New member sacrament attendance: change in %", "expression": "ROUND((SUM([nms_last4]) - SUM([nms_prev4])) * 100.0 / NULLIF(SUM([nms_prev4]), 0))", "deType": 2 }
+      ]
+    },
+    {
+      "key": "geo-areas", "index": 11, "name": "Per 10,000 residents, last 4 complete weeks", "sql": "sql/geo-areas.sql", "optionalRows": true,
+      "labels": { "zone": "Zone", "district": "District", "area": "Area", "population": "Population" }
+    },
+    {
+      "key": "geo-coverage", "index": 12, "name": "Geo data of the areas", "sql": "sql/geo-coverage.sql", "weekless": true,
+      "labels": { "week_label": "Week (text)", "zone": "Zone", "district": "District", "area": "Area", "population": "Population", "size_km2": "Size (km²)", "density_per_km2": "People per km²", "source": "Source", "data_date": "Data date" },
+      "calculated": [
+        { "name": "latest_week", "label": "Last complete week", "expression": "MAX([week_label])", "deType": 0 },
+        { "name": "areas_with_population", "label": "Areas with a population", "expression": "SUM([has_population])", "deType": 2 },
+        { "name": "areas_total", "label": "All areas", "expression": "SUM([area_count])", "deType": 2 }
       ]
     }
   ]
