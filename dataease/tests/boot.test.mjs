@@ -99,7 +99,7 @@ test('after DataEase\'s own "Log out" the page goes back to where it was (the ne
 });
 
 test('default.conf: boot.js is asked for with a version (old copies in browsers are not used) and never kept', () => {
-  assert.match(conf, /sub_filter '<head>' '<head><script src="\/gfm\/boot\.js\?v=2"><\/script><script src="\/gfm\/preload\.js\?v=1"><\/script>';/);
+  assert.match(conf, /sub_filter '<head>' '<head><script src="\/gfm\/theme\.js\?v=1"><\/script><script src="\/gfm\/boot\.js\?v=2"><\/script><script src="\/gfm\/preload\.js\?v=1"><\/script>';/);
   const gfm = /location \/gfm\/ \{([^}]*)\}/.exec(conf)[1];
   assert.match(gfm, /add_header Cache-Control "no-store" always;/);
   assert.doesNotMatch(gfm, /no-cache/);
@@ -137,4 +137,13 @@ test('preload.js asks for the script and style files of the Dashboards page at o
   assert.ok(links.every(l => /^\/(assets\/(chunk|css)\/|js\/)[^?]*-\d+\.\d+\.\d+-dataease\.(js|css)$/.test(l.href)));
   assert.ok(links.some(l => l.rel === 'modulepreload'));
   assert.ok(links.filter(l => /\.css$/.test(l.href)).every(l => l.rel === 'preload' && l.as === 'style'));
+});
+
+test('theme: /gfm-start passes the portal theme on, and theme.js is loaded before boot.js', async () => {
+  const { startTarget } = await import('../gate/gate.mjs');
+  assert.equal(startTarget([], false, 'de', 'dark').split('#')[0], '/?gfmLang=de&gfmTheme=dark');
+  assert.equal(startTarget([], false, null, 'dark').split('#')[0], '/?gfmTheme=dark');
+  assert.equal(startTarget([], false, null, 'x<').split('#')[0], '/');
+  const conf = fs.readFileSync(path.join(HERE, '..', 'web', 'default.conf'), 'utf8');
+  assert.ok(conf.includes('<head><script src="/gfm/theme.js?v=1"></script><script src="/gfm/boot.js'));
 });

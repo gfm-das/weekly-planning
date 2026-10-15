@@ -36,8 +36,8 @@ class FcNumberTests(PeopleBase):
         return f"{day.month}/{day.day}/{day.year}"
 
     def post_file(self, data):
-        response = self.client.post("/people-upload/preview", content_type="multipart/form-data",
-                                    data={"csrf_token": "test-csrf", "file": (io.BytesIO(data), "people.csv")})
+        response = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                    data={"csrf_token": "test-csrf", "kind": "people", "file": (io.BytesIO(data), "people.csv")})
         self.assertEqual(response.status_code, 302, response.get_data(as_text=True)[:500])
         review = self.client.get("/people-upload/review")
         self.assertEqual(review.status_code, 200)

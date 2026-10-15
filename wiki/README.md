@@ -2,7 +2,7 @@
 
 Static documentation site for **Weekly Planning 3.0** (Germany Frankfurt Mission portal).
 
-Style notes (layout only - not Minecraft content or trademarks): page title + bold lead, right-hand infobox, table of contents, Usage / How it works / Permissions / Troubleshooting / History / See also, collapsible navboxes (all three sections on every page), stub notices, sidebar, light + dark mode (`?theme=dark` / `?theme=light`), client-side search, mobile sidebar menu.
+Layout: page title + bold lead, right-hand infobox, table of contents, Usage / How it works / Permissions / Troubleshooting / History / See also, collapsible navboxes (all three sections on every page), stub notices, sidebar, light + dark mode (`?theme=dark` / `?theme=light`), client-side search, mobile sidebar menu.
 
 Visual theme: deep navy + white + soft gold (missionary suit / shirt / accent), name-tag site brand (CSS only - no church logos or trademarked imagery), serif headings, warm "Did you know" / stub flavour text. Keep article body professional; flavour lives in notices, taglines, footer, and Did you know.
 

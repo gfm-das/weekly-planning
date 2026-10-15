@@ -44,7 +44,7 @@ A place that is **closed** (and, for an area, has nobody serving in it) can be d
 
 ## Links to web services
 
-**DA Management → Links to web services** (a tab for managers only) has one card per outside service the mission system relies on, each with a short line on what it is for and an *Open* button that opens the service in a new tab:
+**DA Management → History → Links to web services** (managers only) has one card per outside service the mission system relies on, each with a short line on what it is for and an *Open* button that opens the service in a new tab:
 
 | Service | What it is for |
 | --- | --- |

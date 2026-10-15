@@ -276,7 +276,7 @@ class TextTests(unittest.TestCase):
         for part in ("title", "about", "columns", "merge"):
             for name in ("areas", "geo", "finding", "zoneHistory", "referralArchive", "rates", "baptisms"):
                 self.assertIn(f"uploads.{name}.{part}", TEXT)
-        for key in ("uploads.names.zone", "uploads.names.area", "uploads.status.applied", "uploads.status.undone"):
+        for key in ("uploads.names.zone", "uploads.names.area"):
             self.assertIn(key, TEXT)
         self.assertEqual(plain("uploads.hub.last", date="1 Jan", file="a.csv"), "Last upload: 1 Jan · a.csv")
 

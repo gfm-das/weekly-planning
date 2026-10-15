@@ -15,7 +15,7 @@ const template = fs.readFileSync(path.join(__dirname, '../index.template.html'),
 const PORTAL = 'http://portal.test';
 const ORIGIN = PORTAL + ':8088';
 const START = ORIGIN + '/gfm-start';
-const START_EN = START + '?gfmLang=en'; // the viewer's portal language goes along (English when none is set)
+const START_EN = START + '?gfmLang=en&gfmTheme=mission';
 
 function world() {
   const log = { fetches: [], opened: [], visible: {}, timers: [], listeners: {}, messages: [], created: [], buttons: {} };
@@ -128,7 +128,7 @@ async function signedIn(role) {
   assert.ok(!ap.log.fetches.some(f => f.url === ORIGIN + '/gfm-signout'), "a manager's sign-in leaves the Dashboards sign-in alone");
   assert.equal(vm.runInContext('URLS.insights', ap), START_EN, 'Dashboards point at DataEase on :8088 (/gfm-start), with the language');
   ap.sessionStorage.setItem('mission_language', 'ar');
-  assert.equal(vm.runInContext('URLS.insights', ap), START + '?gfmLang=ar', 'the portal language of the moment (Arabic)');
+  assert.equal(vm.runInContext('URLS.insights', ap), START + '?gfmLang=ar&gfmTheme=mission', 'the portal language of the moment (Arabic)');
   ap.sessionStorage.removeItem('mission_language');
   assert.equal(vm.runInContext('TITLES.insights', ap), 'Dashboards');
   vm.runInContext("openPage('insights')", ap);

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Presentations operations — Weekly Planning Wiki</title>
+  <meta name="description" content="Slidev manager: ports, publishing, editors, sign-in rules, settings, restart.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="presentations-ops" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="presentations-ops">
+          <a class="tab is-active" href="presentations-ops.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=presentations-ops" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=presentations-ops" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Presentations operations</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Presentations operations</strong> is the admin guide to the Presentations (Slidev) container - the two addresses, publishing, editors, settings and what to do when it misbehaves.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li style="margin-left:1rem"><a href="#settings">Settings</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>For making and showing slides, see <a href="presentation-library.html">Presentation Library</a>. This page is for the person who keeps it running.</p>
+<p><strong>Restart after a change</strong> (the manager folder is mounted into the container, so a restart is enough):</p>
+<pre><code class="language-bash">docker compose -p slidev -f slidev/slidev-compose.yml -f slidev/local-override.yml up -d --no-deps slidev
+docker logs --tail 50 &lt;the slidev container&gt;      # find the name with: docker ps
+bash health.sh</code></pre>
+<p><strong>What people do</strong> (all in the portal): open the library (a card per deck), open a deck to present it, open the editor (<strong>/studio/&lt;deck&gt;</strong>), press <strong>Publish now</strong>, download a PDF.</p>
+<ul><li>A deck is a folder with a <code>slides.md</code> file written in Markdown.</li><li>The editor saves <code>slides.md</code> after every change but does <strong>not</strong> publish. A deck is published by <strong>Publish now</strong>, when the editor page is left, or when an idle editor stops.</li><li>If a build fails, viewers keep the last good copy. A failed build never takes a deck away.</li></ul>
+<h2 id="how-it-works">How it works</h2>
+<p>There are two addresses on purpose:</p>
+<table><thead><tr><th>Address</th><th>Port</th><th>What</th></tr></thead><tbody><tr><td>Manager</td><td>3030</td><td>The library, the editor page, the chart builder, the Whiteboard&#x27;s chart frames</td></tr><tr><td>Decks</td><td>8089</td><td>Published decks and the editors. The manager&#x27;s sign-in is never accepted here</td></tr></tbody></table>
+<p>A deck can run JavaScript in the browser of whoever opens it, and Zone Leaders write decks too. So decks live on a second address and get a short <strong>deck pass</strong> for one deck instead of the manager&#x27;s sign-in.</p>
+<ul><li><strong>Who may do what</strong> is asked from portal-api on every request (and remembered for 15 seconds). Leaders see only their own stewardship&#x27;s numbers. People numbers are counts, never names.</li><li><strong>Charts</strong> in a deck get their mission numbers only for charts written in that deck&#x27;s slides.</li><li><strong>Editors:</strong> one Slidev editor runs per deck being edited. At most 10 run at once. An unused one stops after 40 minutes.</li><li><strong>Faster decks:</strong> compressed copies are kept; the editor of a deck can start ahead of time.</li><li><strong>Chart add-on:</strong> a change to the add-on or chart libraries makes published decks rebuild by themselves (one at a time, a minute after the start).</li></ul>
+<h3 id="settings">Settings</h3>
+<p>Set in the container&#x27;s environment (<code>slidev/slidev-compose.yml</code> and <code>slidev/.env</code>). Each has a default.</p>
+<table><thead><tr><th>Setting</th><th>Default</th><th>What it is</th></tr></thead><tbody><tr><td><code>PRESENTATIONS_PUBLIC_PORT</code>, <code>PRESENTATIONS_DECK_PORT</code></td><td>3030, 8089</td><td>The ports browsers use</td></tr><tr><td><code>PRESENTATIONS_PORTAL_ORIGINS</code></td><td>the portal on 8070</td><td>The only addresses that may sign in and frame the pages</td></tr><tr><td><code>PRESENTATION_ACL_API_URL</code>, <code>PORTAL_SERVICE_KEY</code></td><td>portal-api</td><td>Where to ask who may do what, and the key that proves it</td></tr><tr><td><code>SLIDEV_MAX_RUNNING</code>, <code>SLIDEV_IDLE_MINUTES</code></td><td>10, 40</td><td>How many editors may run; when an unused one stops</td></tr><tr><td><code>SLIDEV_PRESTART</code></td><td>on</td><td><code>0</code> turns off starting an editor ahead of time</td></tr><tr><td><code>SLIDEV_ADDON_REBUILD</code></td><td>on</td><td><code>0</code> turns off the automatic rebuild after a new chart add-on</td></tr><tr><td><code>SLIDEV_BUILD_CONCURRENCY</code></td><td>1</td><td>Builds at once (at most 2)</td></tr></tbody></table>
+<p>Keys and passwords stay in <code>slidev/.env</code>, never in Git or in chat.</p>
+<h2 id="permissions">Permissions</h2>
+<table><thead><tr><th>Who</th><th>What</th></tr></thead><tbody><tr><td>AP, President, Data Analyst</td><td>All decks, make, publish</td></tr><tr><td>ZL, STL</td><td>Zone presentations</td></tr><tr><td>DL</td><td>Decks shared with them</td></tr></tbody></table>
+<p>Portal-api decides each time. Running the commands above needs a shell on the server.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Presentations sign you out</td><td>The Slidev container restarted. Wait a minute for the portal to renew the sign-in</td></tr><tr><td>Library empty or &quot;not allowed&quot;</td><td>Check your role. See <a href="roles-and-permissions.html">Roles and permissions</a></td></tr><tr><td>A deck shows the old version</td><td>Press <strong>Publish now</strong> in the editor. Check the container log for a failed build</td></tr><tr><td>The editor is slow to open</td><td>Normal for the first open. The library menu can start it ahead of time</td></tr><tr><td>Screen mirroring unavailable</td><td>Needs https or localhost. Plain http on the office network cannot mirror</td></tr><tr><td>PDF missing</td><td>Use Download PDF on the published deck</td></tr><tr><td>Chart is empty in a deck</td><td>The chart must be written in that deck&#x27;s slides. Check the query and your stewardship</td></tr><tr><td>Many editors, slow server</td><td>Lower <code>SLIDEV_MAX_RUNNING</code> or <code>SLIDEV_IDLE_MINUTES</code>, then restart the container</td></tr><tr><td>Health row for Presentations or &quot;deck address guards&quot; FAIL</td><td><code>docker logs --tail 50</code> of the Slidev container. Both ports 3030 and 8089 must answer</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Earlier rounds</td><td>Presentation manager, Studio and publishing built</td></tr><tr><td>Oct 2026</td><td>Page written from <code>slidev/manager/README.md</code></td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="presentation-library.html">Presentation Library</a></li><li><a href="server-overview.html">Server overview</a></li><li><a href="health-check.html">Health check</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Presentations ops</div>
+<div class="infobox-icon" aria-hidden="true">🎞️</div>
+<table>
+<tr><th>Library and editor</th><td>Port 3030</td></tr>
+<tr><th>Published decks</th><td>Port 8089</td></tr>
+<tr><th>Compose project</th><td>slidev</td></tr>
+<tr><th>Code</th><td>slidev/manager</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Presentations operations</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

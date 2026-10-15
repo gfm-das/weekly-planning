@@ -66,8 +66,8 @@ class DataUploadTests(unittest.TestCase):
 
     def upload(self, slug, data, filename):
         """Upload and check a file; returns the check page."""
-        response = self.client.post(f"/uploads/{slug}/preview", content_type="multipart/form-data",
-                                    data={"csrf_token": "test-csrf", "file": (io.BytesIO(data), filename)})
+        response = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                    data={"csrf_token": "test-csrf", "kind": slug, "file": (io.BytesIO(data), filename)})
         self.assertEqual(response.status_code, 302, response.get_data(as_text=True)[:500])
         page = self.client.get(f"/uploads/{slug}/review")
         self.assertEqual(page.status_code, 200)
@@ -92,7 +92,7 @@ class DataUploadTests(unittest.TestCase):
     # Tests --------------------------------------------------------------------------------------------------------
     def test_01_managers_only(self):
         guest = app.app.test_client()
-        for path in ["/uploads", "/uploads/finding", "/uploads/areas/table", "/uploads/names", "/uploads/zone-history/template"]:
+        for path in ["/uploads", "/uploads/areas/table", "/uploads/names", "/uploads/zone-history/template"]:
             self.assertEqual(guest.get(path).status_code, 302, path)
             self.assertEqual(self.client.get(path).status_code, 200, path)
         zl = self.role_person("TEST-UPLOAD-ZL", leaders=["ZL"])
@@ -105,14 +105,14 @@ class DataUploadTests(unittest.TestCase):
         with forged.session_transaction() as sess:
             sess.update(authenticated=True, portal_user_id=zl["profile_id"], portal_role="AP", portal_mission_id=2,
                         portal_expires_at=time.time() + 1800, csrf_token="test-csrf")
-        response = forged.post("/uploads/finding/preview", content_type="multipart/form-data",
-                               data={"csrf_token": "test-csrf", "file": (io.BytesIO(b"x"), "x.csv")})
+        response = forged.post("/uploads/check", content_type="multipart/form-data",
+                               data={"csrf_token": "test-csrf", "kind": "finding", "file": (io.BytesIO(b"x"), "x.csv")})
         self.assertEqual(response.status_code, 302)
         self.assertIn("/login", response.headers["Location"])
         self.assertEqual(forged.get("/uploads").status_code, 302)  # the refused session was cleared
         # An AP has full rights here.
         ap = self.role_person("TEST-UPLOAD-AP", leaders=["AP"])
-        self.assertEqual(management_tests().admin_client(self, ap, "AP").get("/uploads/finding").status_code, 200)
+        self.assertEqual(management_tests().admin_client(self, ap, "AP").get("/uploads").status_code, 200)
 
     def test_01b_archived_referral_archive_is_not_offered_but_still_works(self):
         # FindeChristus is archived (migration 038): the hub no longer lists the referral archive upload, but its page
@@ -120,8 +120,8 @@ class DataUploadTests(unittest.TestCase):
         hub = self.client.get("/uploads").get_data(as_text=True)
         self.assertNotIn('href="/uploads/referral-archive"', hub)
         self.assertNotIn("FindeChristus", hub)
-        self.assertIn('href="/uploads/finding"', hub)
-        self.assertEqual(self.client.get("/uploads/referral-archive").status_code, 200)
+        self.assertIn("Finding export", hub)
+        self.assertEqual(self.client.get("/uploads/referral-archive").status_code, 302)  # old address: leads to /uploads
         self.assertEqual(self.client.get("/uploads/referral-archive/template").status_code, 200)
 
     def test_02_area_data_upload_table_and_undo(self):
@@ -319,13 +319,15 @@ class DataUploadTests(unittest.TestCase):
             conn.rollback()
 
     def test_07_file_problems_are_explained(self):
-        response = self.client.post("/uploads/zone-history/preview", content_type="multipart/form-data",
-                                    data={"csrf_token": "test-csrf", "file": (io.BytesIO(b"%PDF"), "sheet.pdf")})
+        response = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                    data={"csrf_token": "test-csrf", "kind": "zone-history", "file": (io.BytesIO(b"%PDF"), "sheet.pdf")})
         self.assertEqual(response.status_code, 400)
         self.assertIn("Choose a CSV or XLSX file.", response.get_data(as_text=True))
         with patch.dict(os.environ, {"PERSON_KEY_SECRET": ""}):
-            page = self.client.get("/uploads/finding").get_data(as_text=True)
-            self.assertIn("PERSON_KEY_SECRET", page)
+            answer = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                      data={"csrf_token": "test-csrf", "kind": "finding", "file": (io.BytesIO(b"x"), "x.csv")})
+            self.assertEqual(answer.status_code, 400)
+            self.assertIn("PERSON_KEY_SECRET", answer.get_data(as_text=True))
 
     def test_08_findechristus_referrals_start_with_the_first_whole_week(self):
         """The finding export starts on a Wednesday: its first week misses Monday and Tuesday, so that week comes from

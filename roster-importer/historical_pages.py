@@ -35,34 +35,25 @@ SESSION_KEYS = ("historical_file", "historical_filename", "historical_choices")
 
 @pages.route("/historical")
 def historical_home():
-    """Step 1: the upload form."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    return page.render("""<div class="card"><div class="step">1 · Upload</div><h2>Historical Weekly Planning</h2>
-          <p class="muted">Import a CSV export of past Weekly Planning forms. Original area labels and every answer are retained; reporting uses the current mapped area.</p>
-          <form action="/historical/preview" method="post" enctype="multipart/form-data"><div class="form-field"><label class="file-pick"><span>Historical CSV</span><input type="file" name="file" accept=".csv" required></label></div><label class="form-field">When a report already exists<select name="duplicate_policy"><option value="replace">Replace it with the imported report</option><option value="stop">Stop and ask me to resolve it</option></select></label><label><input type="checkbox" name="combine_mapped" value="yes" checked> Combine old areas that report for the same current area, ward/branch and week (untick to choose in the preview)</label><p><button>Validate &amp; preview</button></p></form></div>
-          <div class="card"><h3>Before you begin</h3><ul><li>Use the original form-export headings, including Timestamp, Email Address, companionship, Ward/Branch, and reporting Sunday.</li><li>The latest submission wins when an area submitted twice for the same Sunday.</li><li><a href="/mappings">Confirm area-name mappings</a> before applying.</li><li>Missionaries serving two wards/branches fill out one form per unit each week: both are imported, each as its own unit report. The preview shows which unit each Ward/Branch answer was matched to and lets you correct it.</li><li>Choose whether existing reports are replaced (Replace overwrites that unit's report) or the import stops. Old areas reporting for the same current area and unit can be combined into one report.</li></ul></div>""")
+    """The historical CSV is uploaded on the one Uploads page."""
+    return redirect("/uploads")
 
 
-@pages.route("/historical/preview", methods=["POST"])
-def historical_preview_route():
-    """Keeps the uploaded CSV waiting and shows its check."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
+def start_historical(upload, duplicate_policy, combine_mapped):
+    """Keeps the uploaded CSV waiting and shows its check (called from the Uploads page)."""
     try:
-        upload = request.files["file"]
         if Path(upload.filename or "").suffix.lower() != ".csv":
             raise ValueError("Upload a CSV file.")
         path = settings.UPLOAD_DIR / (str(uuid.uuid4()) + ".csv")
         upload.save(path)
         session["historical_file"] = str(path)
         session["historical_filename"] = Path(upload.filename).name
-        session["historical_duplicate_policy"] = request.form.get("duplicate_policy", "replace")
-        session["historical_combine_mapped"] = request.form.get("combine_mapped") == "yes"
+        session["historical_duplicate_policy"] = duplicate_policy
+        session["historical_combine_mapped"] = combine_mapped
         session["historical_choices"] = {}
         return check_page(path)
     except Exception as e:
-        return page.render(f"<div class='error'><b>Validation blocked.</b><br>{h(e)}</div><p><a href='/historical'>Back</a></p>", 400)
+        return page.render(f"<div class='error'><b>Validation blocked.</b><br>{h(e)}</div><p><a href='/uploads'>Back</a></p>", 400)
 
 
 # ------------------------------------------------------------------------------------------ 2. the check

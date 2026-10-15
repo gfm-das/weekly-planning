@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Releases and updates — Weekly Planning Wiki</title>
+  <meta name="description" content="Build, publish, install and roll back a release.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="releases-and-updates" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li class="current"><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="releases-and-updates">
+          <a class="tab is-active" href="releases-and-updates.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=releases-and-updates" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=releases-and-updates" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Releases and updates</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Releases and updates</strong> explains in plain English how a new version is built, published and installed from DA Management &gt; Updates, and how to go back.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li style="margin-left:1rem"><a href="#install-a-new-version-any-data-analyst">Install a new version (any Data Analyst)</a></li>
+<li style="margin-left:1rem"><a href="#the-same-in-a-terminal-on-the-server">The same in a terminal on the server</a></li>
+<li style="margin-left:1rem"><a href="#make-and-publish-a-release-the-makers">Make and publish a release (the makers)</a></li>
+<li style="margin-left:1rem"><a href="#roll-back">Roll back</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<h3 id="install-a-new-version-any-data-analyst">Install a new version (any Data Analyst)</h3>
+<ol><li>Open <strong>DA Management &gt; Updates</strong>.</li><li>Press <strong>Check for updates</strong>. The page shows the version you have, the newest release and what is new.</li><li>Read what is new. Choose a quiet time (not Sunday evening, when plans are being filled).</li><li>Press <strong>Update now</strong> and type <code>UPDATE</code> to confirm.</li><li>Wait. The page shows the steps. It takes a few minutes.</li><li>The page says it worked, or that it went back to the old version. Then open the portal and click through Overview and Weekly Planning.</li></ol>
+<p>Only the AP, the President and the Data Analyst can open this page.</p>
+<h3 id="the-same-in-a-terminal-on-the-server">The same in a terminal on the server</h3>
+<pre><code class="language-bash">bash updater/gfm-updater.sh check      # what is new?
+bash updater/gfm-updater.sh update     # install it (asks you to type UPDATE)
+bash updater/gfm-updater.sh status     # what it found and did
+bash health.sh                          # every row must say OK</code></pre>
+<h3 id="make-and-publish-a-release-the-makers">Make and publish a release (the makers)</h3>
+<p>Do this from a worktree, never in the live folder.</p>
+<pre><code class="language-bash">bash release/build-release.sh v1.1.0   # 1. build (about 10 minutes, it runs the tests twice)
+# 2. read backups/release/v1.1.0/RELEASE-NOTES.md
+#    (put your own text in release/notes/v1.1.0.md first, then build again)
+bash release/publish.sh v1.1.0         # 3. shows the plan, changes nothing
+bash release/publish.sh v1.1.0 --go    # 4. publishes - only after the owner says go</code></pre>
+<p>Version numbers are <code>vMAJOR.MINOR.PATCH</code>:</p>
+<table><thead><tr><th>Part</th><th>Use it for</th></tr></thead><tbody><tr><td>PATCH (v1.0.<strong>5</strong>)</td><td>Fixes</td></tr><tr><td>MINOR (v1.<strong>1</strong>.0)</td><td>New things that install by themselves, including new database migrations</td></tr><tr><td>MAJOR (v<strong>2</strong>.0.0)</td><td>A change that needs a person, for example a new database server version</td></tr></tbody></table>
+<p>A published version is never replaced. A mistake is fixed by the next version.</p>
+<h3 id="roll-back">Roll back</h3>
+<ul><li><strong>Automatic:</strong> if the health check fails after an update, the updater puts the old version back by itself. The Updates page says so.</li><li><strong>Page says &quot;needs a person&quot;:</strong> follow <a href="updater.html">Updater</a>, section &quot;Roll back by hand&quot;.</li><li><strong>A bad release nobody has installed yet:</strong> delete the GitHub Release and its tag, then publish the corrected version under the same number and say so in the notes (needs a person with admin rights on the public repository).</li><li><strong>A bad release that people installed:</strong> publish the next PATCH. Never rewrite an installed release.</li></ul>
+<h2 id="how-it-works">How it works</h2>
+<p><strong>Building</strong> (<code>release/build-release.sh</code>):</p>
+<ol><li>Takes the committed files of the private repository. Work that is not committed never goes in.</li><li>Leaves out files that are only for us (the server&#x27;s notes, the release folder, the website source).</li><li>Adds the public README, the licence, the notices and the version file.</li><li>Replaces this mission&#x27;s own names, addresses and paths with neutral ones.</li><li><strong>Scans</strong> the result for names, keys, tokens, <code>.env</code> files and dumps (<code>release/scan.sh</code>). One hit stops the build.</li><li><strong>Verifies</strong>: runs the tests on the original and on the release, and compares. If they differ, a rewrite broke something and the build stops.</li><li>Packs the release: a <code>.tar.gz</code>, the two starter scripts, a checksum list and the release notes.</li></ol>
+<p><strong>Publishing</strong> (<code>release/publish.sh</code>): checks the build and that the version is new, then commits <code>Release vX.Y.Z</code> to the public repository, tags it, makes the GitHub Release with the files and notes, and updates the website. It does nothing until you add <code>--go</code>. Nothing is ever pushed to the private repository&#x27;s branches or tags.</p>
+<p><strong>Installing:</strong> every installed copy follows the public releases (<code>Track: tags</code> in <code>updater/settings.json</code>). The public repository has one commit per release, so each update is a plain step forward. The updater tests the new version, checks health, saves a way back, installs, and checks health again. Details: <a href="updater.html">Updater</a>.</p>
+<h2 id="permissions">Permissions</h2>
+<table><thead><tr><th>Who</th><th>What</th></tr></thead><tbody><tr><td>AP, President, Data Analyst</td><td>See and use DA Management &gt; Updates</td></tr><tr><td>The makers (with the owner&#x27;s go)</td><td>Run <code>publish.sh --go</code> (needs the GitHub <code>gh</code> program, signed in)</td></tr></tbody></table>
+<p>The page never runs a program. It only leaves a small request file that the updater checks.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Updates page shows no version or no status</td><td>The updater is not running. See <a href="updater.html">Updater</a></td></tr><tr><td>&quot;Refused: changes GitHub does not have&quot;</td><td>Someone edited files on the server by hand. A developer must clean that first</td></tr><tr><td>&quot;Refused: install by hand&quot;</td><td>The new release has a migration that needs a person. Ask a developer</td></tr><tr><td>Update went back by itself</td><td>Read the last lines of the log in <code>updater/logs/</code>. The old version is running and healthy</td></tr><tr><td>Page says &quot;needs a person&quot;</td><td><a href="updater.html">Updater</a>, &quot;Roll back by hand&quot;</td></tr><tr><td>Build stops at the scan</td><td>A forbidden name or file is in the release. The message names the file</td></tr><tr><td>Build stops at verify</td><td>A test fails in the source, or the release differs from it. Fix the test or add it to <code>release/exclude.txt</code> with a reason</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>6 Oct 2026</td><td>Public release repository and licence decided</td></tr><tr><td>Oct 2026</td><td>Page written from <code>release/README.md</code> and <code>updater/README.md</code></td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="updater.html">Updater</a></li><li><a href="dev-deploy-ubuntu.html">Deploy and roll back on Ubuntu</a></li><li><a href="backups-and-restore.html">Backups and restore</a></li><li><a href="health-check.html">Health check</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Releases</div>
+<div class="infobox-icon" aria-hidden="true">📦</div>
+<table>
+<tr><th>Install from</th><td>DA Management &gt; Updates</td></tr>
+<tr><th>Version form</th><td>vMAJOR.MINOR.PATCH</td></tr>
+<tr><th>Runs on</th><td>Ubuntu</td></tr>
+<tr><th>Way back</th><td>Automatic</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<strong>Releases and updates</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

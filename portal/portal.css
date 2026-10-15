@@ -493,8 +493,12 @@ html[dir="rtl"] .nav-item.active {
   border: 0;
   border-radius: 18px;
   color: #183240;
+  background: #fff;
   box-shadow: 0 28px 90px #142e3b55;
 }
+html[data-theme="dark"] .portal-customizer { background: #132b36; color: #eaf4f5; }
+html[data-theme="dark"] .portal-customizer p { color: #a8bdc6; }
+html[data-theme="dark"] .portal-customizer select { background: #101a21; color: #eaf4f5; border-color: #365361; }
 .portal-customizer::backdrop {
   background: #142e3b88;
 }
@@ -738,6 +742,7 @@ html[data-theme="dark"] .frame-exit-fullscreen {
 /* ---- Round 14 (clean UI) ---------------------------------------------------------------------------------------- */
 /* No white flash: the shell, the frame's box and the frame itself carry the theme's background before a page paints,
    and the frame stays invisible until its page has loaded (.frame-loading, portal-enhancements.js). */
+html { color-scheme: light; }  /* the theme decides, not the computer: a light theme never gets dark form controls or dialogs */
 html[data-theme="dark"], html[data-theme="dark"] body { background: #0d2029; color-scheme: dark; }
 html[data-theme="dark"] #appFrame { background: #101a21; border-color: #29424e; }
 .frame-wrap.frame-loading #appFrame { visibility: hidden; }

@@ -49,8 +49,8 @@ class VollzogenTests(PeopleBase):
                                   "Konfirmiert", "Country", "Gender", "Preferred Language", "FC number"], rows)
 
     def post_file(self, data, name="vollzogen.csv"):
-        response = self.client.post("/uploads/vollzogen/preview", content_type="multipart/form-data",
-                                    data={"csrf_token": "test-csrf", "file": (io.BytesIO(data), name)})
+        response = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                    data={"csrf_token": "test-csrf", "kind": "vollzogen", "file": (io.BytesIO(data), name)})
         self.assertEqual(response.status_code, 302, response.get_data(as_text=True)[:500])
         review = self.client.get("/uploads/vollzogen/review")
         self.assertEqual(review.status_code, 200)
@@ -82,9 +82,10 @@ class VollzogenTests(PeopleBase):
     # -- tests -------------------------------------------------------------------------------------------------
     def test_01_pages_open_for_managers_only(self):
         guest = app.app.test_client()
-        for path in ["/uploads/vollzogen", "/uploads/vollzogen/table", "/uploads/vollzogen/template"]:
-            self.assertEqual(guest.get(path).status_code, 302, path)
+        for path in ["/uploads", "/uploads/vollzogen/table", "/uploads/vollzogen/template"]:
+            self.assertIn("/login", guest.get(path).headers["Location"], path)
             self.assertEqual(self.client.get(path).status_code, 200, path)
+        self.assertEqual(self.client.get("/uploads/vollzogen").headers["Location"], "/uploads")  # the old address
         self.assertIn("Vollzogen", self.client.get("/uploads").get_data(as_text=True))
 
     def test_02_the_sheet_is_saved_as_one_batch_and_undo_takes_it_back(self):
@@ -170,7 +171,7 @@ class VollzogenTests(PeopleBase):
         zl = tm.ManagementIntegrationTests.role_person(self, "TEST-VZ-ZL", leaders=["ZL"])
         try:
             client = tm.ManagementIntegrationTests.admin_client(self, zl, "ZL")
-            self.assertEqual(client.get("/uploads/vollzogen").status_code, 302)  # refused: sent to the sign-in
+            self.assertIn("/login", client.get("/uploads/vollzogen/table").headers["Location"])  # refused: sent to the sign-in
         finally:
             tm.ManagementIntegrationTests.remove_person(self, zl)
 

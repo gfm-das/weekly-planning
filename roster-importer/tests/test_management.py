@@ -118,9 +118,11 @@ class ManagementIntegrationTests(unittest.TestCase):
 
     def test_01_routes_role_gate_csrf_and_account_loading(self):
         guest = app.app.test_client()
-        for path in ["/", "/accounts", "/historical", "/mappings", "/imports", "/docs"]:
+        for path in ["/uploads", "/accounts", "/mappings", "/imports", "/docs"]:
             self.assertEqual(guest.get(path).status_code, 302, path)
             self.assertEqual(self.client.get(path).status_code, 200, path)
+        for path in ["/", "/historical", "/people-upload"]:  # the old upload addresses lead to /uploads
+            self.assertEqual(self.client.get(path).headers["Location"], "/uploads", path)
         self.assertEqual(self.client.get(f"/accounts/{self.person['id']}").status_code, 200)
         self.assertEqual(self.client.get("/accounts?mission_id=999999").status_code, 403)
         self.assertEqual(self.client.post("/mappings/save", data={"source": "Invalid"}).status_code, 403)
@@ -128,7 +130,7 @@ class ManagementIntegrationTests(unittest.TestCase):
                          "user_active": True, "mission_id": 2, "management_role": "DATA_ADMIN"}
         with patch.object(sign_in, "portal_context", return_value=admin_context), patch.object(sign_in, "current_management_context", return_value=admin_context):
             self.assertEqual(guest.get("/?portal_token=opaque-test-token").status_code, 302)
-            self.assertEqual(guest.get("/").status_code, 200)
+            self.assertEqual(guest.get("/uploads").status_code, 200)
         with patch.object(sign_in, "portal_context", return_value={"app_role": "AP", "user_active": False}):
             self.assertEqual(guest.get("/?portal_token=opaque-test-token").status_code, 403)
         with patch.object(sign_in, "portal_context", return_value={"app_role": "OFFICE", "user_active": True}):
@@ -972,7 +974,7 @@ class ManagementIntegrationTests(unittest.TestCase):
         ap = self.role_person("TEST-ROLE-APPLYING-AP", leaders=["AP"])  # DA Management access only through the AP row
         client = self.admin_client(ap, "AP")
         rows = [self.roster_row(ap, [])]  # the roster no longer lists them as AP
-        upload = lambda day: client.post("/preview", data={"csrf_token": "test-csrf", "mission_id": "2", "transfer_date": day.isoformat(),
+        upload = lambda day: client.post("/uploads/check", data={"csrf_token": "test-csrf", "kind": "roster", "transfer_date": day.isoformat(),
                                                            "file": (io.BytesIO(b"test roster"), "roster.csv")}, content_type="multipart/form-data")
         batch_count = self.scalar("select count(*) from public.roster_import_batches")
         with patch.object(roster_file, "read_roster", return_value=rows):

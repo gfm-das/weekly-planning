@@ -11,6 +11,8 @@ Welcome. This wiki is the clean set of notes for running the mission portal. Sta
 
 ## First day
 
+A full checklist is in [First day as a Data Analyst](first-day-as-da.html).
+
 1. Sign in to the portal with your Data Analyst account.
 2. Open **Wiki** in the side menu (Information). You are reading it.
 3. Open **DA Management** (Manager tools) for imports, places, accounts and updates.
@@ -36,4 +38,7 @@ Welcome. This wiki is the clean set of notes for running the mission portal. Sta
 - [Accounts](accounts.html)
 - [DBeaver access](dbeaver-access.html)
 - [Backups and restore](backups-and-restore.html)
+- [Releases and updates](releases-and-updates.html)
+- [Updater](updater.html), [Nightly backup](nightly-backup.html)
+- [Dashboards operations](dashboards-ops.html), [Presentations operations](presentations-ops.html)
 - [Developer overview](dev-overview.html)

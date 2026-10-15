@@ -95,7 +95,7 @@ function keyIndicators(w, { gaugeMax, note }) {
 function baptismalGoal(w, { zoneScoped, now }) {
   const { t } = w;
   const month = w.card(290, 108, t('thisMonth'), 'cyan',
-    `mode="period" period="month" :digits="0" goal="" hide-goal last-at="right" ${zoneScoped ? 'no-bar no-pct' : 'placeholder'} ${zoneScoped ? `footer-text="${esc(t('zoneLabel'))}"` : ''} ${query(['baptisms_confirmations.actual'], { weeks: 30, ...FINISHED })}`);
+    `mode="period" period="month" :digits="0" goal="" hide-goal last-at="right" ${zoneScoped ? 'no-bar no-pct' : ''} ${zoneScoped ? `footer-text="${esc(t('zoneLabel'))}"` : ''} ${query(['baptisms_confirmations.actual'], { weeks: 30, ...FINISHED })}`);
   const quarter = w.card(630, 108, t('thisQuarter'), 'cyan',
     zoneScoped
       ? `mode="manual" :digits="0" placeholder hide-last goal-at="top" bar-label="${esc(t('missionLabel'))}" footer-text="" value="" goal="" last=""`
@@ -122,9 +122,9 @@ function memberPresent(w) {
   const both = ['follow_up_lessons.actual', 'members_at_lessons.actual'];
   const inner = [
     w.card(290, 105, t('lessonsMember'), 'green', query(kpi('members_at_lessons'), { weeks: 4, ...FINISHED })),
-    w.card(690, 110, t('followUp'), 'green', `mode="share" goal-at="top" hide-last target="–" placeholder ${query(both, { weeks: 4, ...FINISHED })}`),
+    w.card(690, 110, t('followUp'), 'green', `mode="share" goal-at="top" hide-last target="–" ${query(both, { weeks: 4, ...FINISHED })}`),
     w.trend(65, 325, 640, 250, t('last90'), [t('followUp'), t('lessonsMember')], ['#d32f2f', '#2e7d32'], both),
-    w.gauge(712, 325, 362, 250, t('pctMember'), 'green', `mode="ratio" :target="0.55" placeholder ${query(both, { weeks: 4, ...FINISHED })}`),
+    w.gauge(712, 325, 362, 250, t('pctMember'), 'green', `mode="ratio" :target="0.55" ${query(both, { weeks: 4, ...FINISHED })}`),
   ].join('\n');
   return slideText(w.frame(t('memberPresent'), 'green', 'a', inner), [t('noteLive'), t('noteManual')]);
 }
@@ -135,7 +135,7 @@ function newMemberActivity(w, { byArea }) {
   const inner = [
     w.card(180, 98, t('churchAttendance'), 'cyan', query(kpi('new_member_sacrament'), { weeks: 4, ...FINISHED })),
     w.gauge(450, 82, 252, 205, t('pctActive'), 'cyan', 'mode="manual" :max="1" placeholder'),
-    w.card(803, 98, t('totalNew'), 'cyan', `mode="share" goal-at="top" hide-last target="–" placeholder bar-label="${esc(t('atChurch'))}" ${query(people, { weeks: 1, ...FINISHED })}`),
+    w.card(803, 98, t('totalNew'), 'cyan', `mode="share" goal-at="top" hide-last target="–" bar-label="${esc(t('atChurch'))}" ${query(people, { weeks: 1, ...FINISHED })}`),
     `<MmmTable x="38" y="325" w="520" h="250" :headers='${jsonAttr(byArea ? [t('companionship'), t('total'), t('churchQ'), t('atChurchPct')] : [t('zone'), t('total'), t('atChurch'), t('atChurchPct')])}' :top="6" ${query(people, byArea ? { level: 'area', by: 'unit', weeks: 1, ...FINISHED } : { level: 'zone', by: 'unit', weeks: 1, ...FINISHED })} />`,
     w.trend(595, 325, 520, 250, t('last90'), [t('totalNew'), t('atChurch')], ['#d32f2f', '#2e7d32'], people, 'trend', { weeks: 13 }),
   ].join('\n');
@@ -235,7 +235,7 @@ function stake(lang, title) {
   const summary = slideText(w.frame(t('memberPresent'), 'cyan', 'a', [
     `<MmmPair x="170" y="150" w="170" labels="${esc(bar([`${t('followUp')} (${t('actual')})`, t('goal')]))}" :weeks="4" ${query(['follow_up_lessons.actual', 'follow_up_lessons.goal'], { weeks: 4, ...FINISHED })} />`,
     `<MmmPair x="430" y="150" w="170" labels="${esc(bar([`${t('lessonsMember')} (${t('actual')})`, t('goal')]))}" :weeks="4" ${query(kpi('members_at_lessons'), { weeks: 4, ...FINISHED })} />`,
-    w.gauge(690, 110, 330, 330, t('pctMember'), 'cyan', `mode="ratio" :target="0.55" placeholder ${query(['follow_up_lessons.actual', 'members_at_lessons.actual'], { weeks: 4, ...FINISHED })}`),
+    w.gauge(690, 110, 330, 330, t('pctMember'), 'cyan', `mode="ratio" :target="0.55" ${query(['follow_up_lessons.actual', 'members_at_lessons.actual'], { weeks: 4, ...FINISHED })}`),
   ].join('\n'), dark), [t('noteLive'), t('noteManual')]);
   const hand = slideText(w.frame([t('dinner'), t('youth'), t('miniMissions')].join(' / '), 'cyan', 'a', [
     w.card(110, 130, t('dinner'), 'cyan', `mode="manual" placeholder no-bar no-pct value="" last="" goal=""`),

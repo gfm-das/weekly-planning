@@ -101,6 +101,17 @@
     const DASHBOARDS_PUBLIC_ORIGIN = 'https://dashboards.' + SITE_DOMAIN;
     const DATAEASE_ORIGIN = PUBLIC_SITE ? DASHBOARDS_PUBLIC_ORIGIN : PORTAL_HOST + ':8088';
 
+    // On the public address every part has its own name, and each first request to a name costs a new connection through the
+    // tunnel (DNS, TLS). Opening them while the shell loads makes the first click on Dashboards, DA Management or Presentations quicker.
+    if (PUBLIC_SITE) {
+        for (const origin of [MANAGEMENT_ORIGIN, DATAEASE_ORIGIN, 'https://presentations.' + SITE_DOMAIN]) {
+            const hint = document.createElement('link');
+            hint.rel = 'preconnect';
+            hint.href = origin;
+            document.head.append(hint);
+        }
+    }
+
     function viewerLanguage() {
         try { return sessionStorage.getItem('mission_language') || 'en'; } catch { return 'en'; }
     }
@@ -108,7 +119,7 @@
     Object.defineProperty(URLS, 'insights', {
         configurable: true,
         enumerable: true,
-        get: () => DATAEASE_ORIGIN + '/gfm-start?gfmLang=' + encodeURIComponent(viewerLanguage())
+        get: () => DATAEASE_ORIGIN + '/gfm-start?' + new URLSearchParams({gfmLang: viewerLanguage(), gfmTheme: savedTheme()})
     });
     TITLES.insights = 'Dashboards';
 
@@ -567,8 +578,18 @@
         frame.contentWindow?.postMessage(message, '*');
     }
 
+    // DA Management lives on its own address and cannot read this page's storage: it learns the theme from a cookie
+    // (for the whole domain on the public address) and renders the right colour in its very first byte.
+    function rememberTheme(theme) {
+        const cookie = ['gfm_theme=' + theme, 'path=/', 'max-age=31536000'].join(';');
+        document.cookie = cookie;
+        const host = location.hostname.toLowerCase();
+        if (SITE_DOMAIN && (host === SITE_DOMAIN || host.endsWith('.' + SITE_DOMAIN))) document.cookie = cookie + ';domain=' + SITE_DOMAIN + ';secure';
+    }
+
     function applyTheme() {
         document.documentElement.dataset.theme = savedTheme();
+        rememberTheme(savedTheme());
         tellFrame({type: 'portal-theme', theme: savedTheme()});
     }
 

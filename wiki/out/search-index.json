@@ -8,6 +8,18 @@
     "private": false
   },
   {
+    "title": "First day as a Data Analyst",
+    "href": "first-day-as-da.html",
+    "summary": "Day-one checklist, tool map, daily and weekly routine, who to ask.",
+    "tags": [
+      "start",
+      "analyst",
+      "onboarding"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
     "title": "Glimpse",
     "href": "glimpse.html",
     "summary": "Mission Glimpse for managers on Overview.",

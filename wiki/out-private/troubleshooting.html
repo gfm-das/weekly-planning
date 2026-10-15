@@ -21,6 +21,7 @@
 <nav>
 <h2>Start</h2><ul>
 <li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
 <li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
 <li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
 </ul>
@@ -36,6 +37,7 @@
 <li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
 <li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
 <li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
 <li class="current"><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
 <li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
 </ul>
@@ -62,25 +64,37 @@
 <li><a href="#portal-users">Portal users</a></li>
 <li><a href="#dashboards-presentations">Dashboards / Presentations</a></li>
 <li><a href="#data-imports">Data / imports</a></li>
+<li><a href="#updates-and-releases">Updates and releases</a></li>
+<li><a href="#backups">Backups</a></li>
+<li><a href="#dashboards-server-side">Dashboards (server side)</a></li>
+<li><a href="#presentations-server-side">Presentations (server side)</a></li>
 <li><a href="#known-soft-spots-not-always-bugs">Known soft spots (not always “bugs”)</a></li>
 <li><a href="#see-also">See also</a></li>
 </ol></nav><h2 id="first-checks-analysts">First checks (analysts)</h2>
-<ol><li>Run <a href="health-check.html">health.ps1</a> — read which row failed.</li><li>Check that Docker Desktop is running; if the PC rebooted badly, run <code>start-gfm.ps1</code>.</li><li>Look at logs for the failing part: <code>docker logs --tail 50 &lt;container&gt;</code>.</li><li>If a change just went live, consider rolling back only that part (see ops start-here guide in the repo).</li></ol>
+<ol><li>Run <a href="health-check.html">health.sh</a> (<code>bash health.sh</code>) — read which row failed.</li><li>Check that Docker is running; if the server rebooted badly, run <code>bash start-gfm.sh</code>, then <code>bash health.sh --wait 180</code>.</li><li>Look at logs for the failing part: <code>docker logs --tail 50 &lt;container&gt;</code>.</li><li>If a change just went live, consider rolling back only that part (see ops start-here guide in the repo).</li></ol>
 <h2 id="portal-users">Portal users</h2>
 <table><thead><tr><th>Symptom</th><th>Likely cause / action</th></tr></thead><tbody><tr><td>Cannot sign in</td><td>Account inactive or wrong email — ask Data Analyst</td></tr><tr><td>Wrong menu items</td><td>Role/stewardship — see <a href="roles-and-permissions.html">Roles</a></td></tr><tr><td>Plan read-only</td><td>Submitted — ask DL/ZL/manager to unlock</td></tr><tr><td>No push reminders on phone</td><td>Need https or localhost</td></tr><tr><td>Presentations signed out</td><td>Slidev restart — wait for portal renew</td></tr><tr><td>Screen mirroring unavailable</td><td>Insecure http on LAN — present without mirror or use localhost/https</td></tr></tbody></table>
 <h2 id="dashboards-presentations">Dashboards / Presentations</h2>
 <table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Dashboards won’t open</td><td>Manager role? Health row for DataEase / sign-in boundary</td></tr><tr><td>Language copy stale</td><td>Re-run translate script after English dashboard edits</td></tr><tr><td>PDF missing</td><td>Use Download PDF / export on published deck</td></tr><tr><td>Chart interactions differ on two windows</td><td>Expected — see <a href="presentation-library.html">Presentation Library</a></td></tr></tbody></table>
 <h2 id="data-imports">Data / imports</h2>
 <table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Undo blocked</td><td>Later edits — use backup path if critical</td></tr><tr><td>Closed place reopened</td><td>Roster wins — see <a href="management.html">Places</a></td></tr><tr><td>People not carried</td><td>Carry-forward rules / upload week coverage</td></tr></tbody></table>
+<h2 id="updates-and-releases">Updates and releases</h2>
+<table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Updates page shows nothing, or an old time</td><td>The updater is not watching. <code>bash updater/gfm-updater.sh status</code>, then <code>bash updater/register-watcher.sh</code> — see <a href="updater.html">Updater</a></td></tr><tr><td>&quot;Quick tests did not pass&quot;</td><td>The new version is faulty; nothing was changed. Tell the makers</td></tr><tr><td>Update refused: changes GitHub does not have, or files changed by hand</td><td>Someone edited the live folder. A developer checks <code>git status</code></td></tr><tr><td>Update refused: install by hand</td><td>A migration needs a person. Ask a developer</td></tr><tr><td>Update went back by itself</td><td>The old version runs. Read <code>updater/logs/</code></td></tr><tr><td>Page says &quot;needs a person&quot;</td><td><a href="updater.html">Updater</a>, &quot;Roll back by hand&quot;</td></tr><tr><td>Release build stops at the scan or verify step</td><td>See <a href="releases-and-updates.html">Releases and updates</a></td></tr></tbody></table>
+<h2 id="backups">Backups</h2>
+<table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Nightly backup row FAIL</td><td><code>cat backups/nightly/last-run.txt</code>, <code>docker logs gfm-backup</code> — see <a href="nightly-backup.html">Nightly backup</a></td></tr><tr><td>Row says &quot;waiting&quot; on a new install</td><td>First run is at 02:30; or <code>docker exec gfm-backup /backup/nightly.sh --now</code></td></tr><tr><td>Password errors in the backup log</td><td>Rewrite the password file with the current database password (no trailing newline)</td></tr><tr><td>Need an old state back</td><td>Restore into a new empty database, never <code>--clean</code> over the live one</td></tr></tbody></table>
+<h2 id="dashboards-server-side">Dashboards (server side)</h2>
+<table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>&quot;Dashboards are starting&quot; or not available</td><td>Wait a minute; <code>bash health.sh --wait 180</code>; <code>docker logs --tail 50 gfm-dataease</code></td></tr><tr><td>Per-resident charts empty</td><td>Upload Geo data; check migration 046 — see <a href="dashboards-ops.html">Dashboards operations</a></td></tr><tr><td>Other languages show old chart words</td><td><code>bash dataease/translate-dashboards.sh</code></td></tr><tr><td>Every chart should answer</td><td><code>bash dataease/seed-dashboards.sh --check</code></td></tr><tr><td>Never</td><td><code>docker compose ... down -v</code> on DataEase (deletes every dashboard)</td></tr></tbody></table>
+<h2 id="presentations-server-side">Presentations (server side)</h2>
+<table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Deck shows an old version</td><td><strong>Publish now</strong> in the editor; look for a failed build in the container log</td></tr><tr><td>Editor slow or too many editors</td><td>Lower <code>SLIDEV_MAX_RUNNING</code> / <code>SLIDEV_IDLE_MINUTES</code>, restart — see <a href="presentations-ops.html">Presentations operations</a></td></tr><tr><td>Presentations signed out after a restart</td><td>Wait for the portal to renew the sign-in</td></tr></tbody></table>
 <h2 id="known-soft-spots-not-always-bugs">Known soft spots (not always “bugs”)</h2>
 <ul><li>Manager Overview can feel slow on a phone (chart library).</li><li>All backups currently on one computer (no off-site copy yet).</li><li>Older unused Supabase stack may still appear in health until fully retired.</li></ul>
 <div class="needs-checking"><strong>Needs checking:</strong> Refresh this list against the latest <code>docs/handoff/11_KNOWN_ISSUES.md</code> after each major round.</div>
 <h2 id="see-also">See also</h2>
-<ul><li><a href="health-check.html">Health check</a></li><li><a href="server-overview.html">Server overview</a></li><li><a href="signing-in.html">Signing in</a></li></ul></div><aside class="infobox">
+<ul><li><a href="health-check.html">Health check</a></li><li><a href="server-overview.html">Server overview</a></li><li><a href="signing-in.html">Signing in</a></li><li><a href="first-day-as-da.html">First day as a Data Analyst</a></li><li><a href="updater.html">Updater</a></li><li><a href="nightly-backup.html">Nightly backup</a></li></ul></div><aside class="infobox">
 <div class="infobox-title">Troubleshooting</div>
 <div class="infobox-icon" aria-hidden="true">🔧</div>
 <table>
-<tr><th>First step</th><td>health.ps1</td></tr>
+<tr><th>First step</th><td>bash health.sh</td></tr>
 <tr><th>Logs</th><td>docker logs --tail 50 …</td></tr>
 <tr><th>Data safety</th><td>Backup before risky fixes</td></tr>
 </table></aside></div>
@@ -115,13 +129,18 @@
 <div class="navbox-list">
 <a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Troubleshooting</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
 </div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
 </details>
 <details class="navbox">
 <summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
 <div class="navbox-group">
 <div class="navbox-label">Setup</div>
 <div class="navbox-list">
-<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
 </div></div>
 </details>
 <details class="navbox">
@@ -140,7 +159,6 @@
 </div>
         <p class="wiki-footer">
           Plain-language docs for the Germany Frankfurt Mission portal.
-          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>

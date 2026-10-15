@@ -23,9 +23,8 @@ import database
 import page
 import sign_in
 import vollzogen_upload
-from data_files import FileProblem
 from data_text import plain, t
-from page import h, mission_time
+from page import h
 
 pages = Blueprint("vollzogen_pages", __name__)
 SLUG = vollzogen_upload.SLUG
@@ -80,27 +79,6 @@ def question_card(questions):
 
 
 # ------------------------------------------------------------------------------------------ the pages
-
-def start_page():
-    with database.connect() as conn:
-        with database.cursor(conn) as cur:
-            recent = data_upload_pages.recent_uploads(cur, vollzogen_upload.KIND)
-    rows = "".join(f"<tr><td><a href='/imports/{r['id']}'>{h(r['filename'])}</a></td><td>{mission_time(r['created_at'])}</td>"
-                   f"<td>{h(r['actor'])}</td><td>{t('uploads.status.' + r['status'].lower())}</td></tr>" for r in recent)
-    history = (f"<div class='scroll'><table><thead><tr><th>{t('uploads.col.file')}</th><th>{t('uploads.col.when')}</th>"
-               f"<th>{t('uploads.col.by')}</th><th>{t('uploads.col.status')}</th></tr></thead><tbody>{rows}</tbody></table></div>"
-               if rows else f"<p class='muted'>{t('uploads.hub.none')}</p>")
-    return f"""{data_upload_pages.pending_card(SLUG)}<div class="card"><div class="step">{t("uploads.page.step1")}</div>
-      <h2>{t("uploads.vollzogen.title")}</h2><p class="muted">{t("uploads.vollzogen.about")}</p>
-      <p><a href="{BASE}/template">{t("uploads.page.template")}</a></p><p><a href="{BASE}/table">{t("uploads.vollzogen.viewTable")}</a></p>
-      <form action="{BASE}/preview" method="post" enctype="multipart/form-data">
-        <div class="form-field"><label class="file-pick"><span>{t("uploads.page.file")}</span><input type="file" name="file" accept=".csv,.xlsx" required></label></div>
-        <button>{t("uploads.page.check")}</button></form></div>
-      <div class="card"><h3>{t("uploads.page.how")}</h3><ul><li>{t("uploads.vollzogen.columns")}</li>
-        <li>{t("uploads.vollzogen.merge")}</li><li>{t("uploads.vollzogen.privacy")}</li><li>{t("uploads.vollzogen.fcAbout")}</li>
-        <li>{t("uploads.page.never")}</li></ul></div>
-      <div class="card"><h3>{t("uploads.page.recent")}</h3>{history}<p><a href="/uploads">{t("uploads.page.back")}</a></p></div>"""
-
 
 def review_page(pending):
     parsed = pending["parsed"]
@@ -162,9 +140,8 @@ def table_page():
 
 @pages.route(BASE)
 def start():
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    return page.render(start_page())
+    """The Vollzogen list is uploaded on the one Uploads page."""
+    return redirect("/uploads")
 
 
 @pages.route(f"{BASE}/template")
@@ -174,23 +151,6 @@ def template():
     headings, rows = data_types.vollzogen_template()
     return Response(data_files.as_csv(headings, rows), mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=template-vollzogen.csv"})
-
-
-@pages.route(f"{BASE}/preview", methods=["POST"])
-def preview():
-    """Reads the uploaded file in memory, keeps its rows waiting, and opens the check."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    upload = request.files.get("file")
-    try:
-        if not upload or not upload.filename:
-            raise FileProblem(plain("uploads.problem.noFile"))
-        parsed = data_types.parse_vollzogen(data_files.read_table(upload.filename, upload.read()))
-    except FileProblem as error:
-        return page.render(f"<div class='error'><b>{t('uploads.review.notRead')}</b><br>{h(error)}</div>"
-                           f"<p><a href='{BASE}'>{t('uploads.page.back')}</a></p>", 400)
-    data_uploads.save_pending(SLUG, upload.filename, parsed)
-    return redirect(f"{BASE}/review")
 
 
 @pages.route(f"{BASE}/review")

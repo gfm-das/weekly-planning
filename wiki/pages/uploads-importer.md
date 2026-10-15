@@ -13,7 +13,15 @@ tags: [admin, uploads]
 
 ## Usage
 
-Open **DA Management** (portal menu or port 8090). Analysts use several upload paths:
+Open **DA Management → Uploads** (portal menu or port 8090). There is **one page and one drop zone** for every file: roster, historical CSV, people, Vollzogen, baptism history, area data, geo data, the Church finding export, zone history and teaching/contact rates.
+
+1. Drop the file (CSV or XLSX). Leave **What is in the file?** on *Find out from the file*, or choose the kind yourself.
+2. The page reads only the heading row. If it clearly is one kind, you go straight to that kind's check page.
+3. If the file could be more than one kind (a Vollzogen sheet also looks like a people list, area data also looks like geo data) the page says so and **asks**; it never guesses. Choose the kind and send the file again.
+4. For a roster, set the *Transfer effective date* under **Only for a roster or a historical CSV**; for a historical CSV the same place has the duplicate-report choice.
+5. Check page, then Apply (one batch in Import history).
+
+Each kind has a short card under the drop zone with its template download and the date of the last upload. The old addresses (`/historical`, `/people-upload`, `/uploads/<kind>`) lead to this page. The kinds:
 
 ### Historical CSV
 

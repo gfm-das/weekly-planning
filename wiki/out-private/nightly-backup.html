@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nightly backup — Weekly Planning Wiki</title>
+  <meta name="description" content="How the nightly backup works, how to check it, restore from it and change it.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="nightly-backup" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="nightly-backup">
+          <a class="tab is-active" href="nightly-backup.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=nightly-backup" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=nightly-backup" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Nightly backup</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Nightly backup</strong> is the container that copies the mission database every night, checks the copy, and keeps it for 14 days.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li style="margin-left:1rem"><a href="#restore-bring-a-copy-back">Restore (bring a copy back)</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li style="margin-left:1rem"><a href="#change-something">Change something</a></li>
+<li style="margin-left:1rem"><a href="#switch-it-off-for-good">Switch it off for good</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>Think of it as a photocopier that wakes up every night, copies the mission&#x27;s notebook, checks that the copy can be read, puts it in a drawer, and throws away copies older than two weeks.</p>
+<p><strong>Every day, check it:</strong></p>
+<pre><code class="language-bash">bash health.sh                              # first row, &quot;Nightly backup&quot;, should say OK
+tail -n 20 backups/nightly/nightly.log      # what the last nights did
+docker logs gfm-backup                      # the same lines, from the container
+cat backups/nightly/last-run.txt            # &quot;OK &lt;time&gt;&quot; or &quot;FAILED &lt;time&gt;: &lt;parts&gt;&quot;</code></pre>
+<p><strong>One backup right now</strong> (for example before a change):</p>
+<pre><code class="language-bash">docker exec gfm-backup /backup/nightly.sh --now</code></pre>
+<p><strong>Before any database change</strong>, also make a named dump. See <a href="backups-and-restore.html">Backups and restore</a>.</p>
+<h3 id="restore-bring-a-copy-back">Restore (bring a copy back)</h3>
+<p>Always restore into an <strong>empty</strong> database. Never use <code>pg_restore --clean</code> into the running one: it makes the database rights wider.</p>
+<ol><li>To look at a copy or take single rows out of it: restore it into a new database on a throw-away test server, look, then drop that database.</li><li>To replace the whole database, in this order:</li></ol>
+<p>1. Take a dump of the current state first. 2. Copy the nightly <code>beta-&lt;date&gt;.dump</code> into the database container (<code>docker cp</code>) and restore it into a <strong>new</strong> database called <code>postgres_restored</code>. It must end without errors. On a brand-new server, apply the roles file first. 3. Stop everything that uses the database (the other <code>gfm-beta-*</code> containers, portal-api, portal-reminders, DA Management, <code>gfm-backup</code>). 4. Rename the databases: the old one to <code>postgres_before_restore_&lt;date&gt;</code>, the new one to <code>postgres</code>. 5. Restart the database container, start the others, run migration 019 again, then <code>bash health.sh</code>. 6. Drop the old database only when everything is fine.</p>
+<p>The exact tested commands are in <code>docs/handoff/round6/ops.md</code>, section &quot;Restore (commands)&quot;. They were written for Windows: only the paths differ on Ubuntu. If you have never done this, do it first on a throw-away server, and ask a developer to sit with you.</p>
+<h2 id="how-it-works">How it works</h2>
+<pre><code class="language-"> 02:15  gfm-dataease-backup  -&gt; backups/nightly/dataease-&lt;date&gt;.sql.gz
+ 02:30  gfm-backup
+          1. a dump of each database -&gt; backups/nightly/beta-&lt;date&gt;.dump
+          2. its roles (no passwords) -&gt; beta-roles-&lt;date&gt;.sql.gz
+          3. small extra jobs in nightly-backup/hooks.d/ (checks the DataEase file is there and readable)
+          4. a part that failed is tried again every 15 minutes, 3 times
+          5. files older than 14 days are deleted (only files named like the ones above)
+          6. last-run.txt and nightly.log say what happened
+ morning  health.sh reads last-run.txt and the newest beta-*.dump: OK, waiting, SKIPPED or FAIL</code></pre>
+<p>Every copy is first written as <code>&lt;name&gt;.partial</code>. Only when <code>pg_restore</code> can read it and it holds table data is it renamed to <code>&lt;name&gt;.dump</code>. So a file called <code>.dump</code> is always complete.</p>
+<p>The files: <code>nightly-backup/backup-compose.yml</code> (time, days to keep, which databases), <code>nightly-backup/nightly.sh</code> (the program in the container), <code>nightly-backup/hooks.d/</code> (extra jobs), and the password file <code>nightly-backup/secrets/db-password</code> (never in Git, never printed).</p>
+<p><strong>All backups are on the one server.</strong> There is no off-site copy yet. Copy the folder <code>backups/nightly</code> somewhere else now and then.</p>
+<h3 id="change-something">Change something</h3>
+<table><thead><tr><th>To change</th><th>Do</th></tr></thead><tbody><tr><td>Time, days to keep, databases</td><td>Edit <code>nightly-backup/backup-compose.yml</code>, then <code>docker compose -p gfm-backup -f nightly-backup/backup-compose.yml up -d</code></td></tr><tr><td><code>nightly.sh</code></td><td>Then <code>docker restart gfm-backup</code> (the container reads it at start)</td></tr><tr><td>A hook or the password file</td><td>Nothing to restart; they are read every night</td></tr><tr><td>The old second database stack (<code>production=...</code> in <code>BACKUP_TARGETS</code>)</td><td>When that stack is switched off, remove it there, or every night fails on purpose</td></tr></tbody></table>
+<h3 id="switch-it-off-for-good">Switch it off for good</h3>
+<p><code>docker compose -p gfm-backup -f nightly-backup/backup-compose.yml down</code> (the backups stay). Then the health row says FAIL while backup files exist without the container, so the &quot;Nightly backup&quot; part of <code>health.sh</code> must be taken out too. Ask the owner first.</p>
+<h2 id="permissions">Permissions</h2>
+<p>Server operators and Data Analysts with a shell on the server. The password file must stay private.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Health row FAIL</td><td><code>cat backups/nightly/last-run.txt</code> and <code>docker logs gfm-backup</code> say which part failed</td></tr><tr><td>Health row &quot;waiting&quot;</td><td>New install: the first run is at 02:30. Run <code>docker exec gfm-backup /backup/nightly.sh --now</code></td></tr><tr><td>Every night fails for one database</td><td>That database or its network is gone. Remove it from <code>BACKUP_TARGETS</code></td></tr><tr><td>&quot;Password&quot; errors in the log</td><td>The password file is wrong or has a trailing newline or Windows line ending. Rewrite <code>nightly-backup/secrets/db-password</code> with the current database password</td></tr><tr><td>Disk is full</td><td>Check <code>df -h</code> and the size of <code>backups/</code>. Move old files away (do not delete without the owner)</td></tr><tr><td>DataEase file missing</td><td>Check <code>docker logs gfm-dataease-backup</code> and <code>nightly-backup/hooks.d/README.md</code></td></tr><tr><td>A file ends in <code>.partial</code></td><td>That copy did not finish. It is not a backup. The next try replaces it</td></tr></tbody></table>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 6</td><td>Nightly backup container introduced</td></tr><tr><td>Oct 2026</td><td>Page written from <code>nightly-backup/README.md</code></td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="backups-and-restore.html">Backups and restore</a></li><li><a href="health-check.html">Health check</a></li><li><a href="dashboards-ops.html">Dashboards operations</a></li><li><a href="server-overview.html">Server overview</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Nightly backup</div>
+<div class="infobox-icon" aria-hidden="true">🗃️</div>
+<table>
+<tr><th>Container</th><td>gfm-backup</td></tr>
+<tr><th>Time</th><td>02:30 (DataEase 02:15)</td></tr>
+<tr><th>Keep</th><td>14 days</td></tr>
+<tr><th>Folder</th><td>backups/nightly</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Nightly backup</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

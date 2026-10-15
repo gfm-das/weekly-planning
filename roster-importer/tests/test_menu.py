@@ -67,7 +67,7 @@ class GroupTests(unittest.TestCase):
             "/accounts/12": ("people", "/accounts"),
             "/places/change": ("places", "/places"), "/mappings/save": ("places", "/mappings"),
             "/retire/place/area/3": ("places", "/retire"),
-            "/staff/new": ("people", "/staff"), "/links": ("people", "/links"), "/abilities": ("people", "/abilities"),
+            "/staff/new": ("people", "/staff"), "/links": ("history", "/links"), "/abilities": ("people", "/abilities"),
             "/imports/abc": ("history", "/imports"), "/updates/check": ("history", "/updates"),
             "/docs": ("history", "/imports"), "/wiki-link": ("history", "/imports"),
             "/login": (None, None),
@@ -105,7 +105,8 @@ class HtmlTests(unittest.TestCase):
         self.assertIn('<nav class="nav tabs"', html)
         self.assertIn('<nav class="nav sub"', html)
         self.assertIn('<a href="/links" class="on" aria-current="page">Links to web services</a>', html)
-        self.assertIn(">Staff accounts</a>", html)
+        self.assertIn(">Updates</a>", html)
+        self.assertNotIn(">Staff accounts</a>", html)
         self.assertNotIn(">Delete retired</a>", html)
 
 

@@ -63,8 +63,8 @@ class GeoDataTests(unittest.TestCase):
           order by a.id limit %s""", (count,))]
 
     def upload(self, data, filename="geo.csv"):
-        response = self.client.post("/uploads/geo/preview", content_type="multipart/form-data",
-                                    data={"csrf_token": "test-csrf", "file": (io.BytesIO(data), filename)})
+        response = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                    data={"csrf_token": "test-csrf", "kind": "geo", "file": (io.BytesIO(data), filename)})
         self.assertEqual(response.status_code, 302, response.get_data(as_text=True)[:500])
         page = self.client.get("/uploads/geo/review")
         self.assertEqual(page.status_code, 200)
@@ -83,7 +83,7 @@ class GeoDataTests(unittest.TestCase):
 
     def test_01_pages_open_for_managers_only(self):
         guest = app.app.test_client()
-        for path in ["/uploads/geo", "/uploads/geo/table", "/uploads/geo/template"]:
+        for path in ["/uploads", "/uploads/geo/table", "/uploads/geo/template"]:
             self.assertEqual(guest.get(path).status_code, 302, path)
             self.assertEqual(self.client.get(path).status_code, 200, path)
         self.assertIn("Geo data", self.client.get("/uploads").get_data(as_text=True))
@@ -177,7 +177,7 @@ class GeoDataTests(unittest.TestCase):
         zl = self.role_person("TEST-GEO-ZL", leaders=["ZL"])
         try:
             client = management_tests().admin_client(self, zl, "ZL")
-            self.assertEqual(client.get("/uploads/geo").status_code, 302)  # refused: sent to the sign-in
+            self.assertIn("/login", client.get("/uploads/geo/table").headers["Location"])  # refused: sent to the sign-in
         finally:
             self.remove_person(zl)
 

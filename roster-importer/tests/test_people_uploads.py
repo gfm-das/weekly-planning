@@ -322,8 +322,8 @@ class PeopleSheetTests(PeopleBase):
             session_data.update(authenticated=True, portal_mission_id=2, portal_user="Integration test", csrf_token="test-csrf")
 
     def post_file(self, data, filename="people.csv"):
-        response = self.client.post("/people-upload/preview", content_type="multipart/form-data",
-                                    data={"csrf_token": "test-csrf", "file": (io.BytesIO(data), filename)})
+        response = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                    data={"csrf_token": "test-csrf", "kind": "people", "file": (io.BytesIO(data), filename)})
         self.assertEqual(response.status_code, 302, response.get_data(as_text=True)[:500])
         review = self.client.get("/people-upload/review")
         self.assertEqual(review.status_code, 200)

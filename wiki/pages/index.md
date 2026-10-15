@@ -24,7 +24,7 @@ Nothing here invents features. Where a fact still needs a person to confirm it o
 
 ### For data analysts
 
-New here? Start with **[Data analyst onboarding](analyst-onboarding.html)** — the clean set of notes that replaced DA Docs.
+Starting from nothing? Follow **[First day as a Data Analyst](first-day-as-da.html)**, then **[Data analyst onboarding](analyst-onboarding.html)** — the clean set of notes that replaced DA Docs.
 
 ## Using the portal
 
@@ -33,6 +33,8 @@ Start with [Signing in](signing-in.html), then the [Tutorial](tutorial.html) (th
 ### Data and admin
 
 [Uploads / Importer](uploads-importer.html), [Management (Places)](management.html), [Roster](roster.html), [Accounts](accounts.html), [DBeaver access](dbeaver-access.html), [Backups and restore](backups-and-restore.html), [Health check](health-check.html), [Server overview](server-overview.html), [Troubleshooting](troubleshooting.html).
+
+Operations: [Releases and updates](releases-and-updates.html), [Updater](updater.html), [Nightly backup](nightly-backup.html), [Dashboards operations](dashboards-ops.html), [Presentations operations](presentations-ops.html).
 
 ### Installing
 

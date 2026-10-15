@@ -21,6 +21,7 @@
 <nav>
 <h2>Start</h2><ul>
 <li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
 <li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
 <li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
 </ul>
@@ -36,6 +37,7 @@
 <li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
 <li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
 <li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
 <li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
 <li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
 </ul>
@@ -59,7 +61,7 @@
         <h1>Dashboards</h1>
         <div class="wiki-layout no-infobox"><div class="wiki-body"><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
 <li><a href="#usage">Usage</a></li>
-<li style="margin-left:1rem"><a href="#the-three-dashboards">The three dashboards</a></li>
+<li style="margin-left:1rem"><a href="#the-six-dashboards">The six dashboards</a></li>
 <li><a href="#how-it-works">How it works</a></li>
 <li><a href="#permissions">Permissions</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -67,17 +69,17 @@
 <li><a href="#see-also">See also</a></li>
 </ol></nav><p>﻿--- title: Dashboards slug: dashboards lead: are interactive DataEase reports for key indicators, zones and districts, and covenant-path counts. summary: DataEase Dashboards for managers. status: full navboxes: [using] infobox_title: Dashboards icon: &quot;📊&quot; infobox_rows: [&quot;Who|AP, President, Data Analyst&quot;, &quot;Engine|DataEase v2&quot;, &quot;Port|8088&quot;, &quot;Languages|14&quot;] tags: [users, managers, analytics] ---</p>
 <h2 id="usage">Usage</h2>
-<ol><li>Open <strong>Dashboards</strong> in the portal menu (managers only).</li><li>The portal signs you in with a short-lived cookie â€” no separate DataEase password.</li><li>Use the slim bar to switch between the three mission dashboards and <strong>All dashboards and Edit</strong>.</li><li>Filter by zone, district, and weeks as needed.</li></ol>
-<h3 id="the-three-dashboards">The three dashboards</h3>
-<table><thead><tr><th>Dashboard</th><th>What it shows</th></tr></thead><tbody><tr><td>Key indicators</td><td>Six tiles (New People Being Taught first) plus trend charts vs goal</td></tr><tr><td>Zones &amp; districts</td><td>Zones vs goals, heat maps, districts that may need help, district table</td></tr><tr><td>Covenant path</td><td>Counts only: new members, baptismal-date friends, high-potential friends</td></tr></tbody></table>
+<ol><li>Open <strong>Dashboards</strong> in the portal menu (managers only).</li><li>The portal signs you in with a short-lived cookie — no separate DataEase password.</li><li>Use the slim bar to switch between the six mission dashboards and <strong>All dashboards and Edit</strong>.</li><li>Filter by zone, district, and weeks as needed.</li></ol>
+<h3 id="the-six-dashboards">The six dashboards</h3>
+<table><thead><tr><th>Dashboard</th><th>What it shows</th></tr></thead><tbody><tr><td>Key indicators</td><td>Six tiles (New People Being Taught first) plus trend charts vs goal</td></tr><tr><td>Zones &amp; districts</td><td>Zones vs goals, heat maps, districts that may need help, district table</td></tr><tr><td>Areas</td><td>The same six tiles per area (one companionship), the ten areas furthest below their goals</td></tr><tr><td>Trend</td><td>Last 4 weeks against the 4 before, and % of goal over 26 weeks</td></tr><tr><td>Per 10,000 residents</td><td>The six indicators per 10,000 residents of each area, with the Geo data behind them</td></tr><tr><td>Covenant path</td><td>Counts only: new members, baptismal-date friends, high-potential friends</td></tr></tbody></table>
 <h2 id="how-it-works">How it works</h2>
-<ul><li>DataEase reads <strong>only</strong> the <code>dashboards</code> database views through a read-only login and dbproxy.</li><li>Everyone shares one DataEase account labelled <strong>Mission</strong>; the gate logs who opened or changed what.</li><li>Chart labels in other languages come from translated copies â€” after editing <strong>English</strong> dashboards, analysts must run the translate script.</li></ul>
+<ul><li>DataEase reads <strong>only</strong> the <code>dashboards</code> database views through a read-only login and dbproxy.</li><li>Everyone shares one DataEase account labelled <strong>Mission</strong>; the gate logs who opened or changed what.</li><li>Chart labels in other languages come from translated copies — after editing <strong>English</strong> dashboards, analysts must run the translate script.</li></ul>
 <h2 id="permissions">Permissions</h2>
 <p>AP, President, and Data Analyst only (same group as Glimpse). Cookie lasts about 15 minutes and renews while Dashboards stays open.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Cannot open Dashboards</td><td>Confirm manager role; run <a href="health-check.html">health check</a></td></tr><tr><td>Other languages look old</td><td>Re-run <code>dataease/translate-dashboards.ps1</code> after English edits</td></tr><tr><td>Share / public links</td><td>Intentionally disabled</td></tr><tr><td>Second device</td><td>Confirm from a second device on the current public or LAN setup (needs checking).</td></tr></tbody></table>
 <h2 id="history">History</h2>
-<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 6</td><td>DataEase replaces Grafana/Superset</td></tr><tr><td>Round 8â€“9</td><td>14 languages; speed tidy-up</td></tr></tbody></table>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 6</td><td>DataEase replaces Grafana/Superset</td></tr><tr><td>Round 8–9</td><td>14 languages; speed tidy-up</td></tr></tbody></table>
 <h2 id="see-also">See also</h2>
 <ul><li><a href="glimpse.html">Glimpse</a></li><li><a href="roles-and-permissions.html">Roles and permissions</a></li><li><a href="server-overview.html">Server overview</a></li></ul></div></div>
         <div class="navboxes-wrap">
@@ -111,13 +113,18 @@
 <div class="navbox-list">
 <a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
 </div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
 </details>
 <details class="navbox">
 <summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
 <div class="navbox-group">
 <div class="navbox-label">Setup</div>
 <div class="navbox-list">
-<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
 </div></div>
 </details>
 <details class="navbox">
@@ -136,7 +143,6 @@
 </div>
         <p class="wiki-footer">
           Plain-language docs for the Germany Frankfurt Mission portal.
-          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>

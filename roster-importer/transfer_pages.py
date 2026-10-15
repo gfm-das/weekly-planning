@@ -1,7 +1,7 @@
 """The Roster Import pages (the first page of DA Management): upload a transfer roster, check the preview, apply it.
 
-  /         the upload form
-  /preview  reads the roster (roster_file.py), shows what would change (transfer.preview), and keeps the file
+  /         goes to the Uploads page, where the roster is dropped (start_roster() reads it, roster_file.py, and shows what
+            would change, transfer.preview, and keeps the file)
   /apply    applies the checked roster (transfer.apply_roster_batch) after the "I reviewed" tick
 
 The roster file waits in UPLOAD_DIR between /preview and /apply; the session remembers which one.
@@ -26,42 +26,15 @@ PENDING_KEYS = ("pending_file", "pending_mission_id", "pending_transfer_date", "
 
 @pages.route("/")
 def index():
-    """Step 1: the upload form."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    return page.render(f"""
-    <div class="card">
-      <div class="step">1 · Upload roster</div><h2>Prepare a transfer import</h2>
-      <p class="muted">Upload the complete current roster. You will review every change before applying it.</p>
-      <form action="/preview" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="mission_id" value="{sign_in.current_mission_id()}">
-        <p><label>Transfer effective date<br><input type="date" name="transfer_date" value="{date.today().isoformat()}" required></label></p>
-        <p><label class="file-pick"><span>Roster CSV/XLSX</span><input type="file" name="file" accept=".csv,.xlsx" required></label></p>
-        <button>Preview changes</button>
-      </form>
-    </div>
-    <div class="card"><h3>What this import updates</h3>
-      <ul>
-        <li>Current assignments and email addresses are updated without duplicating missionaries.</li>
-        <li>Moves retain the previous assignment in history.</li>
-        <li>Areas are linked to the wards and branches named in the roster.</li>
-        <li>DL, ZL, STL, and AP leadership is updated from roster positions. An account whose saved role is a leadership role the roster no longer gives goes back to Missionary. DA, President, and Office access stays manually assigned.</li>
-        <li>Missionaries missing from this complete roster are marked released. Review this carefully.</li>
-      </ul>
-    </div>""")
+    """The roster is uploaded on the one Uploads page."""
+    return redirect("/uploads")
 
 
-@pages.route("/preview", methods=["POST"])
-def preview_page():
-    """Step 2: reads the roster, keeps it waiting, and shows what applying it would change."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
+def start_roster(upload, transfer_date_text):
+    """Step 2, from the Uploads page: reads the roster, keeps it waiting, and shows what applying it would change."""
     try:
-        mission_id = int(request.form["mission_id"])
-        if mission_id != sign_in.current_mission_id():
-            raise ValueError("The selected mission is outside your management scope.")
-        transfer_date = date.fromisoformat(request.form["transfer_date"])
-        upload = request.files["file"]
+        mission_id = sign_in.current_mission_id()
+        transfer_date = date.fromisoformat(transfer_date_text)
         path = keep_upload(upload)
         rows = roster_file.read_roster(path)
         changes = transfer.preview(rows, mission_id, transfer_date)
@@ -72,7 +45,7 @@ def preview_page():
         loss = transfer.own_access_loss(rows, transfer_date, session.get("portal_user_id"))
         return page.render(preview_html(changes, transfer_date, loss))
     except Exception as e:
-        return page.render(f"<div class='error'><b>Import blocked.</b>\n{h(e)}</div><p><a href='/'>Back</a></p>", 400)
+        return page.render(f"<div class='error'><b>Import blocked.</b>\n{h(e)}</div><p><a href='/uploads'>Back</a></p>", 400)
 
 
 def keep_upload(upload):

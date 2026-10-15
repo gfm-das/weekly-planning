@@ -21,6 +21,7 @@
 <nav>
 <h2>Start</h2><ul>
 <li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
 <li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
 <li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
 </ul>
@@ -36,6 +37,7 @@
 <li class="current"><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
 <li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
 <li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
 <li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
 <li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
 </ul>
@@ -72,7 +74,9 @@
 <li><a href="#history">History</a></li>
 <li><a href="#see-also">See also</a></li>
 </ol></nav><h2 id="usage">Usage</h2>
-<p>Open <strong>DA Management</strong> (portal menu or port 8090). Analysts use several upload paths:</p>
+<p>Open <strong>DA Management → Uploads</strong> (portal menu or port 8090). There is <strong>one page and one drop zone</strong> for every file: roster, historical CSV, people, Vollzogen, baptism history, area data, geo data, the Church finding export, zone history and teaching/contact rates.</p>
+<ol><li>Drop the file (CSV or XLSX). Leave <strong>What is in the file?</strong> on <em>Find out from the file</em>, or choose the kind yourself.</li><li>The page reads only the heading row. If it clearly is one kind, you go straight to that kind&#x27;s check page.</li><li>If the file could be more than one kind (a Vollzogen sheet also looks like a people list, area data also looks like geo data) the page says so and <strong>asks</strong>; it never guesses. Choose the kind and send the file again.</li><li>For a roster, set the <em>Transfer effective date</em> under <strong>Only for a roster or a historical CSV</strong>; for a historical CSV the same place has the duplicate-report choice.</li><li>Check page, then Apply (one batch in Import history).</li></ol>
+<p>Each kind has a short card under the drop zone with its template download and the date of the last upload. The old addresses (<code>/historical</code>, <code>/people-upload</code>, <code>/uploads/&lt;kind&gt;</code>) lead to this page. The kinds:</p>
 <h3 id="historical-csv">Historical CSV</h3>
 <p>Imports past weekly forms. Can also read people named on each form (new members, baptismal-date friends, high-potential friends) and place them on the matching weekly plans.</p>
 <h3 id="people-upload">People upload</h3>
@@ -135,13 +139,18 @@
 <div class="navbox-list">
 <a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
 </div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
 </details>
 <details class="navbox">
 <summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
 <div class="navbox-group">
 <div class="navbox-label">Setup</div>
 <div class="navbox-list">
-<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
 </div></div>
 </details>
 <details class="navbox">
@@ -160,7 +169,6 @@
 </div>
         <p class="wiki-footer">
           Plain-language docs for the Germany Frankfurt Mission portal.
-          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>

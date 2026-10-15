@@ -103,9 +103,10 @@ def spec_of(slug):
     return spec
 
 
-def title_of(slug):
+def title_of(slug, plain_text=False):
     """The page title of an upload, for example 'Zone history'."""
-    return t(f"uploads.{spec_of(slug)['text']}.title")
+    key = f"uploads.{spec_of(slug)['text']}.title"
+    return plain(key) if plain_text else t(key)
 
 
 def kind_label(kind):

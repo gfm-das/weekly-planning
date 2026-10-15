@@ -22,7 +22,6 @@ import page
 import people_pages
 import people_upload
 import sign_in
-from data_files import FileProblem
 from data_text import t
 from page import h
 
@@ -32,30 +31,8 @@ SLUG = people_upload.SLUG
 
 @pages.route("/people-upload")
 def start():
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    waiting = data_uploads.load_pending(SLUG)
-    note = (f"<div class='flash'>A checked file is waiting: {h(waiting['filename'])} "
-            "<a href='/people-upload/review'>Open the check</a></div>" if waiting else "")
-    return page.render(f"""{note}<div class="card"><div class="step">1 · Upload</div><h2>People upload</h2>
-      <p class="muted">Put in new members with their details from a spreadsheet, for example the office's Vollzogen sheets or the
-      New Member Database Raw form. People who are already stored are recognised and only get their blanks filled; nobody is
-      counted twice. Anyone still relevant (a new member up to one year after the baptism) is loaded into this week's plan of
-      their area.</p>
-      <p><a href="/people-upload/template">Download the template (CSV)</a></p>
-      <form action="/people-upload/preview" method="post" enctype="multipart/form-data">
-        <div class="form-field"><label class="file-pick"><span>CSV or XLSX file</span><input type="file" name="file" accept=".csv,.xlsx" required></label></div>
-        <button>Check the file</button></form></div>
-      <div class="card"><h3>How it works</h3><ul>
-        <li>Columns read: First name and Last name (or Name), Baptism date (Date of Baptism, Taufdatum), Zone, Area (or the
-        companionship), Ward or branch (Gemeinde), Confirmation date, Finding source, Gender, Age range and the other details of the
-        New Member Database. A row without a baptism date is left out.</li>
-        <li>The area comes from the area name. A closed area is asked about: the standard is to move its people to a current area.
-        A row with no area is placed by its ward or branch when only one open area serves it, otherwise it is left out.</li>
-        <li>A name that may be someone already stored is asked about before anything is saved, and your answer is remembered.</li>
-        <li>{t("uploads.people.fcAbout")}</li>
-        <li>Names are stored with the person, like a New Member typed in by a missionary. Everything is one entry in
-        <a href="/imports">Import history</a>, where it can be undone.</li></ul></div>""")
+    """People are uploaded on the one Uploads page."""
+    return redirect("/uploads")
 
 
 @pages.route("/people-upload/template")
@@ -65,22 +42,6 @@ def template():
     headings, rows = data_types.people_template()
     return Response(data_files.as_csv(headings, rows), mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=template-people.csv"})
-
-
-@pages.route("/people-upload/preview", methods=["POST"])
-def preview():
-    """Reads the uploaded file in memory, keeps its rows waiting, and opens the check."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    upload = request.files.get("file")
-    try:
-        if not upload or not upload.filename:
-            raise FileProblem("Choose a file first.")
-        parsed = data_types.parse_people(data_files.read_table(upload.filename, upload.read()))
-    except FileProblem as error:
-        return page.render(f"<div class='error'><b>The file could not be read.</b><br>{h(error)}</div><p><a href='/people-upload'>Back</a></p>", 400)
-    data_uploads.save_pending(SLUG, upload.filename, parsed)
-    return redirect("/people-upload/review")
 
 
 def waiting_or_start():

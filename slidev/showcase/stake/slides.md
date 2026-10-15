@@ -59,7 +59,7 @@ layout: gfm-freeform
 <MmmFrame heading="Member Present" tone="cyan" corners="a" dark no-footer footer-lead="Supporting Missionaries in" footer-faith="Faith," footer-hope="Hope," footer-charity="&amp; Charity:" verse="Moroni 10: 20-21">
 <MmmPair x="170" y="150" w="170" labels="Follow-up Lessons (Actual)|Goal" :weeks="4" :query='{"measures":["follow_up_lessons.actual","follow_up_lessons.goal"],"weeks":4,"includeCurrent":false}' />
 <MmmPair x="430" y="150" w="170" labels="Lessons with Member (Actual)|Goal" :weeks="4" :query='{"measures":["members_at_lessons.actual","members_at_lessons.previous_goal"],"weeks":4,"includeCurrent":false}' />
-<MmmGauge x="690" y="110" w="330" h="330" tone="cyan" title="% with Member" tag="Manual" mode="ratio" :target="0.55" placeholder :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":4,"includeCurrent":false}' />
+<MmmGauge x="690" y="110" w="330" h="330" tone="cyan" title="% with Member" tag="Manual" mode="ratio" :target="0.55" :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":4,"includeCurrent":false}' />
 </MmmFrame>
 
 <!--

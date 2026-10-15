@@ -95,9 +95,9 @@ layout: gfm-freeform
 
 <MmmFrame heading="Member Present" tone="green" corners="a" footer-lead="Supporting Missionaries in" footer-faith="Faith," footer-hope="Hope," footer-charity="&amp; Charity:" verse="Moroni 10: 20-21">
 <MmmCard x="290" y="105" w="190" h="190" tone="green" title="Lessons with Member" last-label="Last" goal-label="Goal" na-text="N/A" tag="Manual" :query='{"measures":["members_at_lessons.actual","members_at_lessons.previous_goal"],"weeks":4,"includeCurrent":false}' />
-<MmmCard x="690" y="110" w="190" h="190" tone="green" title="Follow-up Lessons" last-label="Last" goal-label="Goal" na-text="N/A" tag="Manual" mode="share" goal-at="top" hide-last target="–" placeholder :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":4,"includeCurrent":false}' />
+<MmmCard x="690" y="110" w="190" h="190" tone="green" title="Follow-up Lessons" last-label="Last" goal-label="Goal" na-text="N/A" tag="Manual" mode="share" goal-at="top" hide-last target="–" :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":4,"includeCurrent":false}' />
 <MmmTrend x="65" y="325" w="640" h="250" title="Last 90 Days" :labels='["Follow-up Lessons","Lessons with Member"]' :colors='["#d32f2f","#2e7d32"]'  :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":13,"includeCurrent":false}' />
-<MmmGauge x="712" y="325" w="362" h="250" tone="green" title="% with Member" tag="Manual" mode="ratio" :target="0.55" placeholder :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":4,"includeCurrent":false}' />
+<MmmGauge x="712" y="325" w="362" h="250" tone="green" title="% with Member" tag="Manual" mode="ratio" :target="0.55" :query='{"measures":["follow_up_lessons.actual","members_at_lessons.actual"],"weeks":4,"includeCurrent":false}' />
 </MmmFrame>
 
 <!--
@@ -113,7 +113,7 @@ layout: gfm-freeform
 <MmmFrame heading="New Member Activity" tone="cyan" corners="b" footer-lead="Supporting Missionaries in" footer-faith="Faith," footer-hope="Hope," footer-charity="&amp; Charity:" verse="Moroni 10: 20-21">
 <MmmCard x="180" y="98" w="190" h="190" tone="cyan" title="Church Attendance" last-label="Last" goal-label="Goal" na-text="N/A" tag="Manual" :query='{"measures":["new_member_sacrament.actual","new_member_sacrament.previous_goal"],"weeks":4,"includeCurrent":false}' />
 <MmmGauge x="450" y="82" w="252" h="205" tone="cyan" title="% Active" tag="Manual" mode="manual" :max="1" placeholder />
-<MmmCard x="803" y="98" w="190" h="190" tone="cyan" title="Total New Members" last-label="Last" goal-label="Goal" na-text="N/A" tag="Manual" mode="share" goal-at="top" hide-last target="–" placeholder bar-label="At Church" :query='{"measures":["new_members.total","new_members.at_church"],"weeks":1,"includeCurrent":false}' />
+<MmmCard x="803" y="98" w="190" h="190" tone="cyan" title="Total New Members" last-label="Last" goal-label="Goal" na-text="N/A" tag="Manual" mode="share" goal-at="top" hide-last target="–" bar-label="At Church" :query='{"measures":["new_members.total","new_members.at_church"],"weeks":1,"includeCurrent":false}' />
 <MmmTable x="38" y="325" w="520" h="250" :headers='["Companionship","Total","Church?","At Church %"]' :top="6" :query='{"measures":["new_members.total","new_members.at_church"],"level":"area","by":"unit","weeks":1,"includeCurrent":false}' />
 <MmmTrend x="595" y="325" w="520" h="250" title="Last 90 Days" :labels='["Total New Members","At Church"]' :colors='["#d32f2f","#2e7d32"]' trend :query='{"measures":["new_members.total","new_members.at_church"],"weeks":13,"includeCurrent":false}' />
 </MmmFrame>

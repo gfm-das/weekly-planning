@@ -30,6 +30,18 @@
     "private": true
   },
   {
+    "title": "Dashboards operations",
+    "href": "dashboards-ops.html",
+    "summary": "DataEase containers, sign-in gate, the six dashboards, translations, backup and checks.",
+    "tags": [
+      "admin",
+      "ops",
+      "dashboards"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
     "title": "Dashboards",
     "href": "dashboards.html",
     "summary": "",
@@ -126,6 +138,18 @@
     "private": true
   },
   {
+    "title": "First day as a Data Analyst",
+    "href": "first-day-as-da.html",
+    "summary": "Day-one checklist, tool map, daily and weekly routine, who to ask.",
+    "tags": [
+      "start",
+      "analyst",
+      "onboarding"
+    ],
+    "stub": false,
+    "private": false
+  },
+  {
     "title": "Glimpse",
     "href": "glimpse.html",
     "summary": "Mission Glimpse for managers on Overview.",
@@ -192,6 +216,18 @@
     "private": true
   },
   {
+    "title": "Nightly backup",
+    "href": "nightly-backup.html",
+    "summary": "How the nightly backup works, how to check it, restore from it and change it.",
+    "tags": [
+      "admin",
+      "ops",
+      "backup"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
     "title": "Overview",
     "href": "overview.html",
     "summary": "Portal Overview page for missionaries and managers.",
@@ -212,6 +248,31 @@
     ],
     "stub": false,
     "private": false
+  },
+  {
+    "title": "Presentations operations",
+    "href": "presentations-ops.html",
+    "summary": "Slidev manager: ports, publishing, editors, sign-in rules, settings, restart.",
+    "tags": [
+      "admin",
+      "ops",
+      "presentations"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
+    "title": "Releases and updates",
+    "href": "releases-and-updates.html",
+    "summary": "Build, publish, install and roll back a release.",
+    "tags": [
+      "admin",
+      "ops",
+      "release",
+      "update"
+    ],
+    "stub": false,
+    "private": true
   },
   {
     "title": "Requirements",
@@ -292,6 +353,18 @@
     ],
     "stub": false,
     "private": false
+  },
+  {
+    "title": "Updater",
+    "href": "updater.html",
+    "summary": "How the updater works, its settings, its files and a manual roll back.",
+    "tags": [
+      "admin",
+      "ops",
+      "update"
+    ],
+    "stub": false,
+    "private": true
   },
   {
     "title": "Uploads / Importer",

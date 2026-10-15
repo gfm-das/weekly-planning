@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboards operations — Weekly Planning Wiki</title>
+  <meta name="description" content="DataEase containers, sign-in gate, the six dashboards, translations, backup and checks.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="dashboards-ops" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="dashboards-ops">
+          <a class="tab is-active" href="dashboards-ops.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=dashboards-ops" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=dashboards-ops" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Dashboards operations</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Dashboards operations</strong> is the admin guide to the Dashboards (DataEase) containers, how a visit works, and how to check, change, back up and restore them.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#permissions">Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>For what the dashboards show and who may open them, see <a href="dashboards.html">Dashboards</a>. This page is for the person who keeps them running.</p>
+<p><strong>Check them</strong> (from <code>~/weekly-planning</code>):</p>
+<pre><code class="language-bash">bash health.sh                          # rows &quot;Dashboards (DataEase)&quot; and &quot;DataEase Sign-in Boundary&quot;
+bash dataease/seed-dashboards.sh --check   # every chart answers
+docker logs --tail 50 gfm-dataease-gate    # who opened Dashboards and every change</code></pre>
+<p><strong>The six dashboards</strong> (in the order of the bar): Key indicators, Zones &amp; districts, Areas, Trend, Per 10,000 residents, Covenant path. They show the portal&#x27;s six key indicators. They hold numbers and organisation names only, never the names of people.</p>
+<p><strong>Change a dashboard:</strong></p>
+<ol><li>Open Dashboards, then <strong>All dashboards and Edit</strong>, then Edit. Change it. DataEase keeps the change in its own database (backed up every night).</li><li>Run <code>bash dataease/translate-dashboards.sh</code> so the other 13 languages follow. Never edit a language copy: it is replaced the next time.</li></ol>
+<p><strong>After a new release that adds dashboards or datasets:</strong></p>
+<pre><code class="language-bash">bash dataease/seed-dashboards.sh        # adds new datasets and dashboards
+bash dataease/translate-dashboards.sh   # makes the 78 language copies (6 dashboards x 13 languages)
+bash dataease/seed-dashboards.sh --check
+bash dataease/translate-dashboards.sh --check</code></pre>
+<p>The &quot;Per 10,000 residents&quot; charts need database migration 046 and uploaded Geo data. Until Geo data is uploaded in DA Management, they are empty. That is expected.</p>
+<p><strong>Back up and restore:</strong> the nightly job (02:15) puts a copy in <code>backups/nightly</code>. The &quot;backup now&quot; and &quot;restore&quot; helper is <code>dataease/backup-dataease.ps1</code>, which has no <code>.sh</code> twin yet. On Ubuntu, take a copy by waiting for the nightly job, or ask a developer to run the container&#x27;s backup program (<code>dataease/backup/nightly.sh</code>).</p>
+<h2 id="how-it-works">How it works</h2>
+<p>Six containers. Only nginx is open to the network.</p>
+<table><thead><tr><th>Container</th><th>What it does</th></tr></thead><tbody><tr><td><code>gfm-dataease</code></td><td>DataEase itself (Java). No internet, no other services</td></tr><tr><td><code>gfm-dataease-mysql</code></td><td>DataEase&#x27;s own notebook: dashboards, charts, datasets</td></tr><tr><td><code>gfm-dataease-web</code></td><td>nginx on port 8088, the only open door. Every request needs the portal&#x27;s sign-in</td></tr><tr><td><code>gfm-dataease-gate</code></td><td>Checks the portal&#x27;s sign-in cookie and holds DataEase&#x27;s own sign-in</td></tr><tr><td><code>gfm-dataease-dbproxy</code></td><td>A pipe to the database port, and nothing else</td></tr><tr><td><code>gfm-dataease-backup</code></td><td>Every night at 02:15 copies DataEase&#x27;s notebook into <code>backups/nightly</code></td></tr></tbody></table>
+<p>A visit: the portal asks portal-api &quot;is this an AP, the President or a Data Analyst?&quot;. If yes, the browser gets a signed cookie (15 minutes, renewed while Dashboards is open). nginx asks the gate if the cookie is good, adds DataEase&#x27;s own sign-in (never sent to the browser), and DataEase reads the database through one read-only login (<code>gfm_dashboard_reader</code>) that can see only the <code>dashboards</code> views.</p>
+<ul><li>The free DataEase has one account and no single sign-on. That is why the portal&#x27;s cookie and the gate stand in. DataEase&#x27;s own sign-in page is switched off.</li><li>DataEase is always told &quot;English&quot;, or it would start in Chinese after a restart. The words are then shown in the viewer&#x27;s language. Chart words that DataEase draws as pictures come from the translated copies of the dashboards.</li><li>Settings are in <code>dataease/.env</code> (made by the installer, secret, not in Git).</li></ul>
+<h2 id="permissions">Permissions</h2>
+<p>AP, President and Data Analyst, through the portal only. Running the scripts needs a shell on the server.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>Problem</th><th>What to try</th></tr></thead><tbody><tr><td>Dashboards say &quot;not available right now&quot; or &quot;starting&quot;</td><td>DataEase needs a minute after a start. <code>bash health.sh --wait 180</code></td></tr><tr><td>Health row for DataEase FAIL</td><td><code>docker logs --tail 50 gfm-dataease</code> and <code>docker ps</code> for the six containers</td></tr><tr><td>Cannot open Dashboards</td><td>Is your role AP, President or Data Analyst? See <a href="roles-and-permissions.html">Roles and permissions</a></td></tr><tr><td>Other languages show old chart words</td><td>Run <code>bash dataease/translate-dashboards.sh</code> after English edits</td></tr><tr><td>Per-resident charts are empty</td><td>Upload Geo data (DA Management &gt; Uploads) and check migration 046 is applied</td></tr><tr><td>Reader login cannot read</td><td><code>bash dataease/set-reader-password.sh</code>, then <code>bash dataease/seed-dashboards.sh --check</code></td></tr><tr><td>A change to the SQL of a dataset only</td><td>Back up first, then <code>bash dataease/seed-dashboards.sh</code> (updates in place)</td></tr><tr><td>Dashboards were reset</td><td>Restore the nightly DataEase copy. Ask a developer</td></tr></tbody></table>
+<p><strong>Never</strong> run <code>docker compose ... down -v</code> here. The <code>-v</code> deletes the volumes, and with them every dashboard people built.</p>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 6</td><td>DataEase replaces Grafana and Superset</td></tr><tr><td>Round 8-9</td><td>14 languages, speed tidy-up</td></tr><tr><td>Round 13</td><td>Six dashboards on the six key indicators (13 Oct 2026)</td></tr><tr><td>Oct 2026</td><td>Page written from <code>dataease/README.md</code></td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="dashboards.html">Dashboards</a></li><li><a href="nightly-backup.html">Nightly backup</a></li><li><a href="health-check.html">Health check</a></li><li><a href="server-overview.html">Server overview</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Dashboards ops</div>
+<div class="infobox-icon" aria-hidden="true">📈</div>
+<table>
+<tr><th>Engine</th><td>DataEase v2 Community</td></tr>
+<tr><th>Port</th><td>8088</td></tr>
+<tr><th>Compose project</th><td>gfm-dataease</td></tr>
+<tr><th>Backup</th><td>02:15 nightly</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Dashboards operations</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

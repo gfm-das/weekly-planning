@@ -2,9 +2,8 @@
 
 Pages:
   /uploads                      the six uploads, with the date of the last one
-  /uploads/<kind>               1. one upload: the template, the file form, how it works, uploads so far
+  /uploads                      1. the one drop zone for every kind of file (/uploads/check finds the kind: upload_detect.py)
   /uploads/<kind>/template      the template as a CSV file
-  /uploads/<kind>/preview       reads the file (in memory) and keeps its rows waiting, then shows the check
   /uploads/<kind>/review        2. the check, with the names to match (3.) and the Apply form (4.)
   /uploads/<kind>/names         saves the matched names
   /uploads/<kind>/apply         4. Apply, after the "I checked" tick
@@ -17,6 +16,7 @@ Pages:
 Every text is from data_text.py (the portal translates it).
 """
 import re
+from datetime import date
 
 from flask import Blueprint, Response, flash, redirect, request
 
@@ -24,12 +24,15 @@ import data_files
 import data_names
 import data_types
 import database
+import historical_pages
 import page
 import sign_in
-from data_files import FileProblem, clean
+import transfer_pages
+import upload_detect
+from data_files import FileProblem, clean, read_table
 from data_text import plain, t
 from data_uploads import (ARCHIVED_UPLOADS, UPLOADS, apply_upload, area_rows, check_upload, day_text, drop_pending,
-                          geo_district_rows, geo_rows, geo_zone_rows, load_pending, person_secret, read_upload, save_area_records, save_pending, spec_of,
+                          geo_district_rows, geo_rows, geo_zone_rows, load_pending, read_upload, save_area_records, save_pending, spec_of,
                           template_file, title_of)
 from page import h, mission_time
 
@@ -120,68 +123,113 @@ def recent_uploads(cur, kind, limit=5):
     return cur.fetchall()
 
 
-def hub_page():
-    """The Data uploads page: the uploads it offers (not the archived ones), each with the date of the last one."""
+def kind_title(kind, plain_text=False):
+    """The name of one kind of file, as the drop-down and the notes show it."""
+    say = plain if plain_text else t
+    if kind in UPLOADS:
+        return title_of(kind, plain_text)
+    return say({"roster": "uploads.kind.roster", "historical": "uploads.kind.historical", "people": "uploads.kind.people",
+                "vollzogen": "uploads.vollzogen.title"}[kind])
+
+
+def review_address(kind):
+    """Where the check of a waiting file of this kind is."""
+    return {"people": "/people-upload/review", "vollzogen": "/uploads/vollzogen/review"}.get(kind, f"/uploads/{kind}/review")
+
+
+def template_address(kind):
+    return {"people": "/people-upload/template", "vollzogen": "/uploads/vollzogen/template"}.get(kind, f"/uploads/{kind}/template")
+
+
+def hub_page(message="", chosen="auto"):
+    """The one Uploads page: one drop zone for every file the mission imports. The kind is found from the file's headings
+    (upload_detect.py) unless one is chosen; a file that could be several kinds is asked about, never guessed."""
     with database.connect() as conn:
         with database.cursor(conn) as cur:
             cur.execute("""select distinct on (kind) kind,filename,created_at from public.roster_import_batches
-              where mission_id=%s and status='APPLIED' and kind=any(%s) order by kind,created_at desc""",
-                        (sign_in.current_mission_id(), [s["kind"] for s in UPLOADS.values()] + ["VOLLZOGEN"]))
+              where mission_id=%s and status='APPLIED' order by kind,created_at desc""", (sign_in.current_mission_id(),))
             last = {r["kind"]: r for r in cur.fetchall()}
+    waiting = ""
+    for kind in upload_detect.CHECKED_KINDS:
+        pending = load_pending(kind)
+        if pending:
+            waiting += (f"<div class='flash'>{t('uploads.page.waiting', file=pending['filename'])} "
+                        f"<a href='{review_address(kind)}'>{t('uploads.page.openCheck')}</a></div>")
+    options = "".join(f'<option value="{kind}"{" selected" if kind == chosen else ""}>{kind_title(kind)}</option>'
+                      for kind in upload_detect.KINDS)
+    stored = {"roster": "ROSTER", "historical": "HISTORICAL", "people": "PEOPLE", "vollzogen": "VOLLZOGEN"}
     cards = []
-    for slug, spec in UPLOADS.items():
-        if slug in ARCHIVED_UPLOADS:  # archived (migration 038): not offered here; its page still works
-            continue
-        latest = last.get(spec["kind"])
-        status = (t("uploads.hub.last", date=mission_time(latest["created_at"]), file=latest["filename"]) if latest
+    for kind in upload_detect.KINDS:
+        about = (t(f"uploads.{UPLOADS[kind]['text']}.about") if kind in UPLOADS else
+                 t({"roster": "uploads.kind.rosterAbout", "historical": "uploads.kind.historicalAbout",
+                    "people": "uploads.kind.peopleAbout", "vollzogen": "uploads.vollzogen.about"}[kind]))
+        batch = last.get(UPLOADS[kind]["kind"] if kind in UPLOADS else stored[kind])
+        status = (t("uploads.hub.last", date=mission_time(batch["created_at"]), file=batch["filename"]) if batch
                   else t("uploads.hub.none"))
-        cards.append(f"""<div class="card"><h3>{title_of(slug)}</h3><p class="muted">{t(f"uploads.{spec['text']}.about")}</p>
-          <p class="muted">{status}</p><p><a href="/uploads/{slug}">{t("uploads.hub.open")}</a></p></div>""")
-    latest = last.get("VOLLZOGEN")
-    status = (t("uploads.hub.last", date=mission_time(latest["created_at"]), file=latest["filename"]) if latest
-              else t("uploads.hub.none"))
-    cards.append(f"""<div class="card"><h3>{t("uploads.vollzogen.title")}</h3><p class="muted">{t("uploads.vollzogen.about")}</p>
-      <p class="muted">{status}</p><p><a href="/uploads/vollzogen">{t("uploads.hub.open")}</a></p></div>""")
-    # Round 14: one Uploads page. Sections for every file the mission imports (roster, historical CSV, people, then
-    # the data uploads and Vollzogen). Each section opens the existing page that already does the work.
-    other = [("dam.rosterImport", "Roster Import", "/"), ("dam.historicalCsv", "Historical CSV", "/historical"),
-             ("dam.peopleUpload", "People upload", "/people-upload")]
-    other_cards = "".join(
-        f"""<div class="card"><h3 data-i18n="{key}">{title}</h3>
-          <p><a href="{href}">{t("uploads.hub.open")}</a></p></div>""" for key, title, href in other)
-    return f"""<div class="card"><div class="step">{t("uploads.hub.step")}</div><h2>{t("uploads.hub.title")}</h2>
+        link = "" if kind in ("roster", "historical") else f'<a href="{template_address(kind)}">{t("uploads.page.template")}</a>'
+        tables = {"areas": ("/uploads/areas/table", "uploads.areas.editTable"), "geo": ("/uploads/geo/table", "uploads.geo.viewTable"),
+                  "vollzogen": ("/uploads/vollzogen/table", "uploads.vollzogen.viewTable")}
+        if kind in tables:
+            link += f' · <a href="{tables[kind][0]}">{t(tables[kind][1])}</a>'
+        how = ""
+        if kind in UPLOADS:
+            how = f"<li>{t('uploads.' + UPLOADS[kind]['text'] + '.columns')}</li><li>{t('uploads.' + UPLOADS[kind]['text'] + '.merge')}</li>"
+        elif kind == "people":
+            how = f"<li>{t('uploads.people.fcAbout')}</li>"
+        elif kind == "vollzogen":
+            how = "".join(f"<li>{t('uploads.vollzogen.' + part)}</li>" for part in ("columns", "merge", "privacy", "fcAbout"))
+        how = f"<details><summary>{t('uploads.page.how')}</summary><ul>{how}</ul></details>" if how else ""
+        cards.append(f'<div class="card"><h3>{kind_title(kind)}</h3><p class="muted">{about}</p>'
+                     f'<p class="muted">{status}</p>{how}<p>{link}</p></div>')
+    return f"""{waiting}{message}<div class="card"><div class="step">{t("uploads.hub.step")}</div><h2>{t("uploads.hub.title")}</h2>
       <p class="muted">{t("uploads.hub.intro")}</p><p class="muted">{t("uploads.hub.privacy")}</p>
+      <form action="/uploads/check" method="post" enctype="multipart/form-data">
+        <div class="form-field"><label>{t("uploads.hub.kind")}<select name="kind"><option value="auto">{t("uploads.hub.auto")}</option>{options}</select></label></div>
+        <div class="form-field"><label class="file-pick"><span>{t("uploads.page.file")}</span><input type="file" name="file" accept=".csv,.xlsx,.xlsm,.txt" required></label></div>
+        <details><summary>{t("uploads.hub.more")}</summary>
+          <p><label>{t("uploads.hub.transferDate")}<br><input type="date" name="transfer_date" value="{date.today().isoformat()}"></label></p>
+          <p><label>{t("uploads.hub.duplicate")}<br><select name="duplicate_policy"><option value="replace">{t("uploads.hub.replace")}</option>
+            <option value="stop">{t("uploads.hub.stop")}</option></select></label></p>
+          <p><label><input type="checkbox" name="combine_mapped" value="yes" checked> {t("uploads.hub.combine")}</label></p></details>
+        <p><button>{t("uploads.page.check")}</button></p></form>
       <p><a href="/uploads/names">{t("uploads.hub.names")}</a></p></div>
-      <div class="grid">{other_cards}{''.join(cards)}</div>"""
+      <div class="grid">{''.join(cards)}</div>"""
 
 
-def upload_page(slug):
-    """Step 1 of one upload: the template, the file form, how it works, and the uploads so far."""
-    spec = spec_of(slug)
-    with database.connect() as conn:
-        with database.cursor(conn) as cur:
-            recent = recent_uploads(cur, spec["kind"])
-    rows = "".join(f"<tr><td><a href='/imports/{r['id']}'>{h(r['filename'])}</a></td><td>{mission_time(r['created_at'])}</td>"
-                   f"<td>{h(r['actor'])}</td><td>{t('uploads.status.' + r['status'].lower())}</td></tr>" for r in recent)
-    history = (f"<div class='scroll'><table><thead><tr><th>{t('uploads.col.file')}</th><th>{t('uploads.col.when')}</th>"
-               f"<th>{t('uploads.col.by')}</th><th>{t('uploads.col.status')}</th></tr></thead><tbody>{rows}</tbody></table></div>"
-               if rows else f"<p class='muted'>{t('uploads.hub.none')}</p>")
-    secret_note = (f"<div class='error'>{t('uploads.finding.noSecret')}</div>"
-                   if slug == "finding" and not person_secret() else "")
-    table_link = (f"<p><a href='/uploads/areas/table'>{t('uploads.areas.editTable')}</a></p>" if slug == "areas" else
-                  f"<p><a href='/uploads/geo/table'>{t('uploads.geo.viewTable')}</a></p>" if slug == "geo" else "")
-    text = spec["text"]
-    report_week = (f"<li>{t('uploads.page.reportWeek')}</li><li>{t('uploads.page.oneReport')}</li>"
-                   if slug in ("referral-archive", "rates") else f"<li>{t('uploads.geo.tablesAbout')}</li>" if slug == "geo" else "")
-    return f"""{pending_card(slug)}{secret_note}<div class="card"><div class="step">{t("uploads.page.step1")}</div>
-      <h2>{title_of(slug)}</h2><p class="muted">{t(f"uploads.{text}.about")}</p>
-      <p><a href="/uploads/{slug}/template">{t("uploads.page.template")}</a></p>{table_link}
-      <form action="/uploads/{slug}/preview" method="post" enctype="multipart/form-data">
-        <div class="form-field"><label class="file-pick"><span>{t("uploads.page.file")}</span><input type="file" name="file" accept=".csv,.xlsx" required></label></div>
-        <button>{t("uploads.page.check")}</button></form></div>
-      <div class="card"><h3>{t("uploads.page.how")}</h3><ul><li>{t(f"uploads.{text}.columns")}</li>
-        <li>{t(f"uploads.{text}.merge")}</li><li>{t("uploads.page.weeks")}</li>{report_week}<li>{t("uploads.page.never")}</li></ul></div>
-      <div class="card"><h3>{t("uploads.page.recent")}</h3>{history}<p><a href="/uploads">{t("uploads.page.back")}</a></p></div>"""
+def check_upload_file():
+    """POST /uploads/check: find the kind of the dropped file (or take the chosen one) and go to that kind's check."""
+    chosen = request.form.get("kind", "auto")
+    upload = request.files.get("file")
+    try:
+        if not upload or not upload.filename:
+            raise FileProblem(plain("uploads.problem.noFile"))
+        data = upload.read()
+        if chosen == "auto":
+            found = upload_detect.detect(upload.filename, data)
+            if len(found) > 1:
+                names = ", ".join(kind_title(kind, plain_text=True) for kind in found)
+                return page.render(hub_page(f"<div class='error'>{h(plain('uploads.hub.ambiguous', kinds=names))}</div>", found[0]), 400)
+            if not found:
+                return page.render(hub_page(f"<div class='error'>{t('uploads.hub.unknown')}</div>"), 400)
+            chosen = found[0]
+        if chosen not in upload_detect.KINDS and chosen not in ARCHIVED_UPLOADS:  # the archived referral upload is not offered, but still reads
+            return unknown_upload()
+        upload.stream.seek(0)  # the roster and the historical CSV are kept as files; the rest was read above
+        if chosen == "roster":
+            return transfer_pages.start_roster(upload, request.form.get("transfer_date", ""))
+        if chosen == "historical":
+            return historical_pages.start_historical(upload, request.form.get("duplicate_policy", "replace"),
+                                                     request.form.get("combine_mapped") == "yes")
+        if chosen == "people":
+            parsed = data_types.parse_people(read_table(upload.filename, data))
+        elif chosen == "vollzogen":
+            parsed = data_types.parse_vollzogen(read_table(upload.filename, data))
+        else:
+            parsed = read_upload(chosen, upload.filename, data)  # read in memory; the file is never saved
+    except FileProblem as error:
+        return page.render(hub_page(f"<div class='error'><b>{t('uploads.review.notRead')}</b><br>{h(error)}</div>", chosen), 400)
+    save_pending(chosen, upload.filename, parsed)
+    return redirect(review_address(chosen))
 
 
 def review_page(slug, pending):
@@ -398,13 +446,17 @@ def uploads_hub():
     return page.render(hub_page())
 
 
-@pages.route("/uploads/<slug>")
-def upload_start(slug):
+@pages.route("/uploads/check", methods=["POST"])
+def upload_check():
     if not sign_in.allowed():
         return sign_in.go_to_login()
-    if slug not in UPLOADS:
-        return unknown_upload()
-    return page.render(upload_page(slug))
+    return check_upload_file()
+
+
+@pages.route("/uploads/<slug>")
+def upload_start(slug):
+    """The old address of one upload: every kind of file is dropped on /uploads now."""
+    return redirect("/uploads")
 
 
 @pages.route("/uploads/<slug>/template")
@@ -419,25 +471,6 @@ def upload_template(slug):
             filename, headings, rows = template_file(slug, cur)
     return Response(data_files.as_csv(headings, rows), mimetype="text/csv",
                     headers={"Content-Disposition": f"attachment; filename={filename}"})
-
-
-@pages.route("/uploads/<slug>/preview", methods=["POST"])
-def upload_preview(slug):
-    """Reads the uploaded file in memory, keeps its rows waiting, and opens the check."""
-    if not sign_in.allowed():
-        return sign_in.go_to_login()
-    if slug not in UPLOADS:
-        return unknown_upload()
-    upload = request.files.get("file")
-    try:
-        if not upload or not upload.filename:
-            raise FileProblem(plain("uploads.problem.noFile"))
-        parsed = read_upload(slug, upload.filename, upload.read())  # read in memory; the file is never saved
-    except FileProblem as error:
-        return page.render(f"<div class='error'><b>{t('uploads.review.notRead')}</b><br>{h(error)}</div>"
-                           f"<p><a href='/uploads/{slug}'>{t('uploads.page.back')}</a></p>", 400)
-    save_pending(slug, upload.filename, parsed)
-    return redirect(f"/uploads/{slug}/review")
 
 
 @pages.route("/uploads/<slug>/review")

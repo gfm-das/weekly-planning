@@ -179,10 +179,12 @@ export class Keeper {
  * preview page, which gives the dashboard the whole portal frame (web/gfm/boot.js adds a slim bar with the other
  * dashboards and "All dashboards and Edit"); on a phone DataEase's phone page. No dashboard: DataEase's list.
  * lang (optional, 'de'...): open that language's copy when it exists, and keep ?gfmLang= in the address.
+ * theme (optional): keep ?gfmTheme= in the address, so /gfm/theme.js darkens the very first page.
  */
-export function startTarget(tree, phone = false, lang = null) {
+export function startTarget(tree, phone = false, lang = null, theme = null) {
   const code = normalizeLanguage(lang);
-  const query = code ? `?gfmLang=${code}` : '';
+  const parts = [code && `gfmLang=${code}`, ['dark', 'light', 'mission'].includes(theme) && `gfmTheme=${theme}`].filter(Boolean);
+  const query = parts.length ? '?' + parts.join('&') : '';
   const folder = flattenTree(tree).find(n => !n.leaf && n.name === START_FOLDER);
   // The English dashboards only: the language folders inside "Mission" hold the translated copies.
   const leaves = flattenTree(folder?.children).filter(n => n.leaf && !isCopyId(n.id));
@@ -232,10 +234,11 @@ export function handler({ key, keeper, log = () => {} }) {
     }
     log(`Dashboards opened by portal user ${identity.sub}.`);
     const lang = url.searchParams.get('gfmLang');
-    let target = startTarget([], false, lang);
+    const theme = url.searchParams.get('gfmTheme');
+    let target = startTarget([], false, lang, theme);
     try {
       const answer = await keeper.client(keeper.base).raw('/dataVisualization/tree', { method: 'POST', body: { busiFlag: 'dashboard' }, token });
-      if (answer.status === 200 && answer.json?.code === 0) target = startTarget(answer.json.data, isPhone(req.headers['user-agent']), lang);
+      if (answer.status === 200 && answer.json?.code === 0) target = startTarget(answer.json.data, isPhone(req.headers['user-agent']), lang, theme);
     } catch { /* DataEase's list instead */ }
     return send(302, undefined, { Location: target });
   };

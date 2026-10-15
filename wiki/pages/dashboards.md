@@ -14,23 +14,26 @@ tags: [users, managers, analytics]
 ## Usage
 
 1. Open **Dashboards** in the portal menu (managers only).
-2. The portal signs you in with a short-lived cookie â€” no separate DataEase password.
-3. Use the slim bar to switch between the three mission dashboards and **All dashboards and Edit**.
+2. The portal signs you in with a short-lived cookie — no separate DataEase password.
+3. Use the slim bar to switch between the six mission dashboards and **All dashboards and Edit**.
 4. Filter by zone, district, and weeks as needed.
 
-### The three dashboards
+### The six dashboards
 
 | Dashboard | What it shows |
 | --- | --- |
 | Key indicators | Six tiles (New People Being Taught first) plus trend charts vs goal |
 | Zones & districts | Zones vs goals, heat maps, districts that may need help, district table |
+| Areas | The same six tiles per area (one companionship), the ten areas furthest below their goals |
+| Trend | Last 4 weeks against the 4 before, and % of goal over 26 weeks |
+| Per 10,000 residents | The six indicators per 10,000 residents of each area, with the Geo data behind them |
 | Covenant path | Counts only: new members, baptismal-date friends, high-potential friends |
 
 ## How it works
 
 - DataEase reads **only** the `dashboards` database views through a read-only login and dbproxy.
 - Everyone shares one DataEase account labelled **Mission**; the gate logs who opened or changed what.
-- Chart labels in other languages come from translated copies â€” after editing **English** dashboards, analysts must run the translate script.
+- Chart labels in other languages come from translated copies — after editing **English** dashboards, analysts must run the translate script.
 
 ## Permissions
 
@@ -50,7 +53,7 @@ AP, President, and Data Analyst only (same group as Glimpse). Cookie lasts about
 | Date | Note |
 | --- | --- |
 | Round 6 | DataEase replaces Grafana/Superset |
-| Round 8â€“9 | 14 languages; speed tidy-up |
+| Round 8–9 | 14 languages; speed tidy-up |
 
 ## See also
 

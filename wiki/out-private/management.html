@@ -21,6 +21,7 @@
 <nav>
 <h2>Start</h2><ul>
 <li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
 <li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
 <li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
 </ul>
@@ -36,6 +37,7 @@
 <li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
 <li class="current"><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
 <li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
 <li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
 <li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
 </ul>
@@ -84,7 +86,7 @@
 <h3 id="deleting-a-closed-place-for-good">Deleting a closed place for good</h3>
 <p>A place that is <strong>closed</strong> (and, for an area, has nobody serving in it) can be deleted for good from <strong>DA Management → Places → Delete a closed place for good</strong> (the page <em>Delete retired</em>). The page shows what is attached to it (plans, people, Call-ins, uploaded numbers), lets you <strong>move</strong> all of it onto the place that replaced it, makes a <strong>database backup</strong> first (its file name is written into the batch), asks you to <strong>type the name</strong>, and then deletes it as one <strong>RETIRE</strong> batch in Import history that <strong>Undo</strong> can put back. Plans, people and history are never deleted by this page: they must be moved. A retired Weekly Planning question is deleted from the same page (see <a href="uploads-importer.html">Uploads / Importer</a>).</p>
 <h2 id="links-to-web-services">Links to web services</h2>
-<p><strong>DA Management → Links to web services</strong> (a tab for managers only) has one card per outside service the mission system relies on, each with a short line on what it is for and an <em>Open</em> button that opens the service in a new tab:</p>
+<p><strong>DA Management → History → Links to web services</strong> (managers only) has one card per outside service the mission system relies on, each with a short line on what it is for and an <em>Open</em> button that opens the service in a new tab:</p>
 <table><thead><tr><th>Service</th><th>What it is for</th></tr></thead><tbody><tr><td>Brevo</td><td>Sends the system&#x27;s emails (invitations and password emails).</td></tr><tr><td>Porkbun</td><td>Holds the mission&#x27;s web domain name: renewals and the DNS records.</td></tr><tr><td>Cloudflare</td><td>Connects the web address to the system safely (the tunnel) and manages DNS and protection.</td></tr></tbody></table>
 <p>The addresses are <strong>settings</strong>, not code: <code>WEB_LINK_BREVO</code>, <code>WEB_LINK_PORKBUN</code> and <code>WEB_LINK_CLOUDFLARE</code> in <code>roster-importer/.env</code> (empty keeps the service&#x27;s public sign-in page, <code>off</code> hides the card). <strong>No password, key or token is stored here</strong> and an address that contains one is not shown. You sign in at the service with your own account.</p>
 <h2 id="wiki-button">Wiki button</h2>
@@ -138,13 +140,18 @@
 <div class="navbox-list">
 <a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
 </div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
 </details>
 <details class="navbox">
 <summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
 <div class="navbox-group">
 <div class="navbox-label">Setup</div>
 <div class="navbox-list">
-<a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
 </div></div>
 </details>
 <details class="navbox">
@@ -163,7 +170,6 @@
 </div>
         <p class="wiki-footer">
           Plain-language docs for the Germany Frankfurt Mission portal.
-          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>

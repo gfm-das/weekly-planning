@@ -70,6 +70,7 @@ WIKI_HEAD = '<meta charset="utf-8">\n  <meta name="color-scheme" content="light 
 SIDEBAR = [
     ("Start", [
         ("index", "Main page", "🏠"),
+        ("first-day-as-da", "First day as a DA", "✅"),
         ("analyst-onboarding", "Data analyst onboarding", "🧭"),
         ("glossary", "Glossary", "📖"),
     ]),
@@ -85,6 +86,7 @@ SIDEBAR = [
         ("uploads-importer", "Uploads", "⬆️"),
         ("management", "Places and questions", "🗺️"),
         ("accounts", "Accounts", "🪪"),
+        ("releases-and-updates", "Releases and updates", "📦"),
         ("troubleshooting", "Troubleshooting", "🔧"),
         ("dev-overview", "Server and developer docs", "🧰"),
     ]),
@@ -106,13 +108,14 @@ NAVBOXES = {
         "groups": [
             ("People & places", [("uploads-importer", "Uploads / Importer"), ("management", "Management"), ("roster", "Roster"), ("accounts", "Accounts")]),
             ("Server", [("dbeaver-access", "DBeaver access"), ("backups-and-restore", "Backups and restore"), ("health-check", "Health check"), ("server-overview", "Server overview"), ("troubleshooting", "Troubleshooting"), ("editing-the-wiki", "Editing the wiki")]),
+            ("Operations", [("releases-and-updates", "Releases and updates"), ("updater", "Updater"), ("nightly-backup", "Nightly backup"), ("dashboards-ops", "Dashboards operations"), ("presentations-ops", "Presentations operations")]),
         ],
     },
     "install": {
         "title": "Installing",
         "icon": "🛠️",
         "groups": [
-            ("Setup", [("installer-overview", "Installer overview"), ("requirements", "Requirements"), ("glossary", "Glossary")]),
+            ("Setup", [("first-day-as-da", "First day as a DA"), ("installer-overview", "Installer overview"), ("requirements", "Requirements"), ("glossary", "Glossary")]),
         ],
     },
     "dev": {
@@ -556,7 +559,6 @@ def page_template(
         {navbox_html}
         <p class="wiki-footer">
           Plain-language docs for the Germany Frankfurt Mission portal.
-          Style only inspired by public wiki layouts — not affiliated with Minecraft or Mojang.
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>
@@ -623,7 +625,6 @@ def build_private_stub(slug: str, meta: dict, navbox_html: str) -> str:
         {navbox_html}
         <p class="wiki-footer">
           Plain-language docs for the Germany Frankfurt Mission portal.
-          Style only inspired by public wiki layouts \u2014 not affiliated with Minecraft or Mojang.
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>
@@ -922,6 +923,31 @@ def main() -> None:
     print("  - history.html")
 
 
+def check_links(folder: Path, others: Path | None = None) -> list[str]:  # others: the private stubs only have page links to check
+    """Every local link and #anchor in the built pages must lead somewhere (other sites are not checked)."""
+    pages = {f.name: f.read_text(encoding="utf-8") for f in folder.glob("*.html")}
+    shared = set(pages) | {f.name for f in (others or folder).glob("*.html")}  # the private pages link to the public ones
+    anchors = {name: set(re.findall(r'\sid="([^"]+)"', html)) for name, html in pages.items()}
+    broken = []
+    for name, html in pages.items():
+        for target in re.findall(r'<a [^>]*?href="([^"]*)"', html):
+            if re.match(r"([a-z]+:|//|/)", target) or not target:
+                continue
+            page_name, _, anchor = target.partition("#")
+            page_name = page_name or name
+            if page_name.endswith(".html") and page_name not in shared:
+                broken.append(f"{folder.name}/{name}: {target}")
+            elif anchor and others is None and page_name in anchors and anchor not in anchors[page_name]:
+                broken.append(f"{folder.name}/{name}: {target}")
+    return broken
+
 
 if __name__ == "__main__":
     main()
+    broken = check_links(OUT) + check_links(OUT_PRIVATE, OUT)  # only a whole build is checked (the wiki editor builds a few pages)
+    if broken:
+        print("Broken links:")
+        for line in broken:
+            print("  " + line)
+        raise SystemExit(1)
+    print("Links: all pages and anchors found.")

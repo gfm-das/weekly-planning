@@ -39,14 +39,13 @@ MENU_GROUPS = [
     ("uploads", "Uploads", [
         ("/uploads", "Uploads", ["/", "/preview", "/apply", "/historical", "/people-upload", "/people/",
                                  "/uploads/geo", "/uploads/vollzogen", "/uploads/areas", "/uploads/finding",
-                                 "/uploads/zone-history", "/uploads/referral-archive", "/uploads/rates",
+                                 "/uploads/zone-history", "/uploads/rates",
                                  "/uploads/baptisms", "/uploads/names"]),
     ]),
     ("people", "People", [
         ("/accounts", "Account Manager", []),
         ("/staff", "Staff accounts", []),
         ("/abilities", "Role abilities", []),
-        ("/links", "Links to web services", []),
     ]),
     ("places", "Places", [
         ("/places", "Places", []),
@@ -57,6 +56,7 @@ MENU_GROUPS = [
     ("history", "History", [
         ("/imports", "Import history", ["/docs", "/wiki-link"]),
         ("/updates", "Updates", []),
+        ("/links", "Links to web services", []),
     ]),
 ]
 
@@ -103,7 +103,7 @@ def menu_html(path):
 
 STYLE = """
 /* The look of every page */
-:root{color-scheme:light;--navy:#153441;--teal:#087f8c;--line:#dce7ea}*{box-sizing:border-box}
+:root{color-scheme:light;background:#f4f7f8;--navy:#153441;--teal:#087f8c;--line:#dce7ea}*{box-sizing:border-box}
 body{font-family:Inter,system-ui,sans-serif;max-width:1220px;margin:0 auto;padding:26px 24px;background:#f4f7f8;color:#183240}
 .scroll{overflow:auto;border:1px solid var(--line);border-radius:10px}/* before .card: a card that scrolls keeps its round corners */
 a{color:var(--teal);text-decoration:none}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px 0;box-shadow:0 2px 8px #17394704}
@@ -123,7 +123,7 @@ label{font-size:12px;font-weight:650}.form-field{display:grid;gap:6px;margin:15p
 .plan{background:#eef5f5;border-radius:10px;padding:12px 14px;margin:14px 0}.plan ul{margin:6px 0 0;padding-left:20px}
 
 /* Dark theme (the portal says which theme it shows) */
-[data-theme="dark"]{color-scheme:dark}[data-theme="dark"] body{background:#101a21;color:#edf7f8}[data-theme="dark"] .card{background:#18262f;border-color:#2d414b}[data-theme="dark"] input,[data-theme="dark"] select{background:#101a21;color:#edf7f8;border-color:#39515d}[data-theme="dark"] .muted{color:#a9bdc3}[data-theme="dark"] .metric{background:#21343d}[data-theme="dark"] .plan{background:#21343d}[data-theme="dark"] .metric b{color:#edf7f8}
+[data-theme="dark"]{color-scheme:dark;background:#101a21}[data-theme="dark"] body{background:#101a21;color:#edf7f8}[data-theme="dark"] .card{background:#18262f;border-color:#2d414b}[data-theme="dark"] input,[data-theme="dark"] select{background:#101a21;color:#edf7f8;border-color:#39515d}[data-theme="dark"] .muted{color:#a9bdc3}[data-theme="dark"] .metric{background:#21343d}[data-theme="dark"] .plan{background:#21343d}[data-theme="dark"] .metric b{color:#edf7f8}
 [data-theme="dark"] a,[data-theme="dark"] .step{color:#5cc6cf}[data-theme="dark"] label,[data-theme="dark"] .filters label{color:#c9dade}[data-theme="dark"] th{background:#21343d;color:#edf7f8}[data-theme="dark"] th,[data-theme="dark"] td{border-bottom-color:#2d414b}[data-theme="dark"] .scroll,[data-theme="dark"] .choice-group{border-color:#2d414b}[data-theme="dark"] code{background:#21343d;color:#edf7f8}
 [data-theme="dark"] .error{background:#3a1f23;border-color:#8a3b40;color:#ffd9d5}[data-theme="dark"] .flash{background:#3a3219;color:#fbe7b0}[data-theme="dark"] .good{color:#62d6ab}[data-theme="dark"] .warn{color:#f5bd62}[data-theme="dark"] .bad{color:#ff9b91}[data-theme="dark"] .badge{background:#173d3f;color:#9fe3dc}
 [data-theme="dark"] .nav a,[data-theme="dark"] .secondary{background:#18262f;border-color:#39515d;color:#edf7f8}[data-theme="dark"] .nav a:hover{background:#21343d;border-color:#4b6a76}
@@ -191,11 +191,10 @@ button.danger,.danger{background:#b42318;border-color:#b42318;color:#fff}
 # The frame of every page. {{ ... }} are the holes that render() fills (Jinja, Flask's template language).
 FRAME = r"""
 <!doctype html>
-<html lang="{{ page_lang }}" dir="{{ page_dir }}">
+<html lang="{{ page_lang }}" dir="{{ page_dir }}" data-theme="{{ page_theme }}">
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
-<script>/* Theme before paint (round 14). */(function(){try{var t=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme||"mission";document.documentElement.dataset.theme=t;document.documentElement.style.background=t==="dark"?"#101a21":"";}catch(e){}})()</script>
 <script>/* Interface translation (round 6): the portal's i18n.js, in the language the portal chose (cookie gfm_lang or ?lang=). */(function(){var s=document.createElement("script");s.src={{ i18n_src|tojson }}||location.protocol+"//"+location.hostname+":8070/i18n.js";document.head.appendChild(s)})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mission Admin</title>
@@ -208,7 +207,7 @@ FRAME = r"""
 {% if messages %}{% for m in messages %}<div class="flash">{{m}}</div>{% endfor %}{% endif %}
 {% endwith %}
 {{ body|safe }}
-<script>addEventListener("message",e=>{if(e.data?.type==="portal-theme")document.documentElement.dataset.theme=e.data.theme||"mission"})</script></body>
+<script>addEventListener("message",e=>{if(e.data?.type!=="portal-theme")return;var t=e.data.theme||"mission";document.documentElement.dataset.theme=t;document.cookie=["gfm_theme="+t,"path=/","max-age=31536000"].join(";")})</script></body>
 </html>
 """
 
@@ -237,7 +236,7 @@ def render(body, status=200, bare=False):
     nav = "" if bare else menu_html(request.path)
     html = frame(current_app.jinja_env).render(body=body, style=STYLE, nav=nav, page_lang=language,
                                                page_dir="rtl" if language in RIGHT_TO_LEFT else "ltr",
-                                               i18n_src=i18n_source())
+                                               i18n_src=i18n_source(), page_theme=page_theme())
     return html, status
 
 
@@ -254,6 +253,13 @@ def page_language():
     raw = (request.args.get("lang") or request.cookies.get("gfm_lang") or "en").strip().lower().replace("_", "-")
     base = CHURCH_CODES.get(raw, raw.split("-")[0])
     return base if base in PAGE_LANGUAGES else "en"
+
+
+def page_theme():
+    """The page's theme, known on the server so the very first byte has the right colour (no light flash in dark mode).
+    From ?theme= or the gfm_theme cookie (the portal writes it, and this page rewrites it on every portal message)."""
+    raw = request.args.get("theme") or request.cookies.get("gfm_theme") or "mission"
+    return raw if raw in ("mission", "light", "dark") else "mission"
 
 
 def h(value):
