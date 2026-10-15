@@ -201,13 +201,17 @@ def may_use():
 def page_html(status):
     """The Updates page from the updater's status."""
     parts = [overview_card(status)]
+    last = status.get("last_update") if isinstance(status.get("last_update"), dict) else None
+    if last and last.get("result") in ("refused", "tests_failed", "rolled_back", "needs_person"):
+        parts.append(last_update_card(last, problem=True))  # an update that did not go through is the first thing to read
+        last = None
     changes = status.get("new_changes") or []
     if changes and status.get("check_result") in ("updates", "diverged"):
         parts.append(changes_card(status, changes))
     if status.get("can_update") and updater_running(status) and not busy(status):
         parts.append(install_card(status))
-    if isinstance(status.get("last_update"), dict):
-        parts.append(last_update_card(status["last_update"]))
+    if last:
+        parts.append(last_update_card(last))
     # Look again only while the updater is there to answer; otherwise the page would reload every 5 s for nothing.
     if updater_running(status) and (busy(status) or request_waiting()):
         parts.append(LOOK_AGAIN)
@@ -302,8 +306,8 @@ def install_card(status):
       style="max-width:220px"></label><button data-i18n="updates.updateNow">{escape(TEXT['updates.updateNow'])}</button></form></div>"""
 
 
-def last_update_card(last):
-    """The result of the last update."""
+def last_update_card(last, problem=False):
+    """The result of the last update (problem: it did not go through, so the card is drawn as an error)."""
     result = last.get("result") or ""
     lines = [say(f"updates.last.{result}", "p", ' class="status"')] if f"updates.last.{result}" in TEXT else []
     reason = last.get("reason") or ""
@@ -319,7 +323,7 @@ def last_update_card(last):
         lines.append(f"<p class='muted'>{say('updates.backupFolder')} {data(last['rollback_folder'], 'code', WRAP)}</p>")
     if last.get("log"):
         lines.append(f"<p class='muted'>{say('updates.logFile')} {data(last['log'], 'code', WRAP)}</p>")
-    return f"<div class='card'>{say('updates.lastUpdate', 'h3')}{''.join(lines)}</div>"
+    return f"<div class='card{' error' if problem else ''}'>{say('updates.lastUpdate', 'h3')}{''.join(lines)}</div>"
 
 
 # Routes ---------------------------------------------------------------------------------------------------------

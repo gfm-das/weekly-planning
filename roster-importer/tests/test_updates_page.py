@@ -150,6 +150,17 @@ class UpdatesPageTests(unittest.TestCase):
         self.assertIn('data-i18n="updates.updateNow"', html)
         self.assertIn('<a href="/updates" class="on" aria-current="page">Updates</a>', html)  # the menu link (History tab, round 13)
 
+    def test_an_update_that_did_not_go_through_is_the_first_card_after_the_overview_and_drawn_as_an_error(self):
+        data = status()
+        data["last_update"] = {"result": "refused", "reason": "rollback_point_failed", "from": "a" * 40, "to": "b" * 40,
+                               "finished_at": data.get("updater_seen_at")}
+        self.write_status(data)
+        self.sign_in()
+        html = self.page()
+        self.assertIn("The way back (database backup and copies) could not be saved", html)
+        self.assertIn("class='card error'", html)
+        self.assertLess(html.index("class='card error'"), html.index('data-i18n="updates.updateNow"'))
+
     def test_the_page_says_when_the_updater_has_not_run_or_is_not_running(self):
         self.sign_in()
         (self.dir / "status" / "status.json").unlink()

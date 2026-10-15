@@ -309,7 +309,8 @@ quick_tests() {  # quick_tests commit stamp
       if run_step 'Quick tests' bash "$tests" --root "$folder"; then log 'The quick tests passed.'; else rc=1; fi
     else log 'There is no quick-tests.sh: the quick tests are skipped.'; fi
   else log 'The copy of the new version could not be unpacked.'; rc=1; fi
-  rm -rf "$folder"
+  # The tests run in containers; files they made as another user cannot be removed here, so a container removes them if needed.
+  rm -rf "$folder" 2>/dev/null || docker run --rm -v "$BACKUPS:/b" node:24-alpine rm -rf "/b/$2-tests" >/dev/null 2>&1 || true
   [ $rc -eq 0 ] || log 'The quick tests did not pass, so nothing is installed.'
   return $rc
 }
@@ -355,9 +356,13 @@ prune_rollback_points() {
     rm -f -- "$old" && log "  Removed an old update backup: ${old##*/}"
   done
   # shellcheck disable=SC2012
-  ls -1dt "$BACKUPS"/*/ 2>/dev/null | tail -n +$((keep + 1)) | while IFS= read -r old; do
+  # (the "<stamp>-tests" copies are not ways back: they are the unpacked new versions of the quick tests and are removed by quick_tests itself)
+  # shellcheck disable=SC2012
+  ls -1dt "$BACKUPS"/*/ 2>/dev/null | grep -v -- '-tests/$' | tail -n +$((keep + 1)) | while IFS= read -r old; do
     rm -rf -- "${old%/}" && log "  Removed an old way back: ${old%/}"
   done
+  # Pruning must never make the update refuse: a folder that cannot be removed is left for the next time.
+  return 0
 }
 
 update_code() {

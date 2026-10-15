@@ -24,7 +24,7 @@ part() {  # part "name" command...: output is shown (the updater's log keeps it)
 }
 in_container() {  # in_container "name" image workdir command...
   local name=$1 image=$2 dir=$3; shift 3
-  part "$name" docker run --rm --network none -v "$MOUNT:/repo" -w "$dir" "$image" "$@"
+  part "$name" docker run --rm --network none -u "$(id -u):$(id -g)" -v "$MOUNT:/repo" -w "$dir" "$image" "$@"
 }
 
 # 1. Presentations. One of these tests measures time; a busy computer can make it fail once, so it gets a second try.

@@ -94,6 +94,7 @@ The page never runs a program. It only leaves a small request file that the upda
 | Updates page shows no version or no status | The updater is not running. See [Updater](updater.html) |
 | "Refused: changes GitHub does not have" | Someone edited files on the server by hand. A developer must clean that first |
 | "Refused: install by hand" | The new release has a migration that needs a person. Ask a developer |
+| "The way back could not be saved" (refused, `rollback_point_failed`), version 1.0.6 | Old quick-test folders in `backups/updater/` hold files the updater cannot delete. Remove them once, then press Update now again: `docker run --rm -v ~/weekly-planning/backups/updater:/b node:24-alpine sh -c 'rm -rf /b/*-tests'`. Version 1.0.8 and newer clean up after themselves |
 | Update went back by itself | Read the last lines of the log in `updater/logs/`. The old version is running and healthy |
 | Page says "needs a person" | [Updater](updater.html), "Roll back by hand" |
 | Build stops at the scan | A forbidden name or file is in the release. The message names the file |
@@ -105,6 +106,7 @@ The page never runs a program. It only leaves a small request file that the upda
 | --- | --- |
 | 6 Oct 2026 | Public release repository and licence decided |
 | Oct 2026 | Page written from `release/README.md` and `updater/README.md` |
+| 15 Oct 2026 | The refused-update fix of version 1.0.8 and its one-time clean-up added |
 
 ## See also
 
