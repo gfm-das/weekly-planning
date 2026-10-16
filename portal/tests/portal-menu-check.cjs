@@ -185,8 +185,11 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
   const n = world();
   eq(vm.runInContext('[TITLES.planning, TITLES.callins, TITLES.overview, TITLES.insights, TITLES.vollzogen, TITLES.wiki]', n),
     ['Weekly Planning', 'Call-ins', 'Overview', 'Dashboards', 'Vollzogen', 'Wiki'], 'page titles: Weekly Planning, Call-ins (no "Alpha")');
-  ok(/data-page="planning"[^>]*>Weekly Planning</.test(template) && /data-page="callins"[^>]*>Call-ins</.test(template),
-    'menu: "Weekly Planning" and "Call-ins"');
+  const icon = '<span class="nav-icon" aria-hidden="true">[^<]+</span>';
+  ok(new RegExp(`data-page="planning"[^>]*>${icon}Weekly Planning<`).test(template) && new RegExp(`data-page="callins"[^>]*>${icon}Call-ins<`).test(template),
+    'menu: "Weekly Planning" and "Call-ins", each with its icon');
+  ok([...template.matchAll(/<button class="nav-item"[^>]*>(.*?)<\/button>/g)].every(m => new RegExp(`^${icon}`).test(m[1])),
+    'menu: every menu entry written in the shell has an icon');
   ok(!n.log.texts.some(t => /Alpha|Beta/.test(t)) && !/Alpha|Beta/.test(code(template)), 'menu: no "Alpha" or "Beta" label');
   // The menu is shown in the language by i18n.js, from the catalogs (the shell keeps no second list of menu words).
   const catalog = language => JSON.parse(read(`i18n/${language}.json`));
@@ -250,9 +253,9 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
   const at = text => home.indexOf(text);
   ok(at('<section id="glimpse" hidden') > at('<main class="wrap loading" id="overview">') && at('<section id="glimpse" hidden') < at('id="overviewCards"'),
     'home.html: the glimpse sits at the top of the Overview, before the cards, hidden until it is started');
-  // Round 13: key indicators first, then this week's tasks, then the calendar and announcements, then the rest.
+  // The welcome first, then key indicators, the AP Tip of the Week, announcements, plan, goals, events, the rest.
   const cardOrder = [...home.matchAll(/<(?:div|section)[^>]*\bdata-card="(\w+)"/g)].map(m => m[1]);
-  eq(cardOrder, ['indicators', 'welcome', 'plan', 'goals', 'events', 'announcements', 'assignment', 'weeks', 'focus', 'stewardship'],
+  eq(cardOrder, ['welcome', 'indicators', 'focus', 'announcements', 'plan', 'goals', 'events', 'weeks', 'assignment', 'stewardship'],
     'home.html: cards come in the new order, none lost');
   const registry = [...home.match(/const cardRegistry = \[([\s\S]*?)\];/)[1].matchAll(/\["(\w+)"/g)].map(m => m[1]);
   eq(registry, cardOrder, 'home.html: the default layout (cardRegistry) has the same order as the page');

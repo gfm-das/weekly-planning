@@ -66,7 +66,7 @@ body {
   margin: 0;
   font-size: 27px;
   letter-spacing: -0.04em;
-  color: var(--navy);
+  color: #152d3a; /* not var(--navy): the light theme makes it the menu's near-white */
 }
 .login-subtitle {
   margin-top: 5px;
@@ -492,21 +492,35 @@ html[dir="rtl"] .nav-item.active {
 }
 
 /* ---- The Customize dialog (the portal theme) ---- */
+/* Every pop-up of the shell: a visible border, a soft shadow and a dimmed page behind it (as workspace.css and home.css). */
+dialog {
+  border: 1px solid var(--line);
+  box-shadow:
+    0 24px 64px #0f2a3640,
+    0 2px 8px #0f2a3624;
+}
+dialog::backdrop {
+  background: #0f2a3673;
+}
+html[data-theme="dark"] dialog {
+  border-color: #6a8794;
+  box-shadow:
+    0 24px 64px #000000a6,
+    0 0 0 1px #00000066;
+}
+html[data-theme="dark"] dialog::backdrop {
+  background: #000000a6;
+}
 .portal-customizer {
   width: min(520px, 94vw);
   padding: 0;
-  border: 0;
   border-radius: 18px;
   color: #183240;
   background: #fff;
-  box-shadow: 0 28px 90px #142e3b55;
 }
-html[data-theme="dark"] .portal-customizer { background: #132b36; color: #eaf4f5; }
-html[data-theme="dark"] .portal-customizer p { color: #a8bdc6; }
-html[data-theme="dark"] .portal-customizer select { background: #101a21; color: #eaf4f5; border-color: #365361; }
-.portal-customizer::backdrop {
-  background: #142e3b88;
-}
+html[data-theme="dark"] .portal-customizer { background: #1e303a; color: #f2f8f9; }
+html[data-theme="dark"] .portal-customizer p { color: #c0d0d5; }
+html[data-theme="dark"] .portal-customizer select { background: #101a21; color: #f2f8f9; border-color: #6a8794; }
 .portal-customizer form {
   padding: 25px;
 }
@@ -557,29 +571,44 @@ html[data-theme="light"] .nav-item.active {
 html[data-theme="light"] .brand-subtitle,
 html[data-theme="light"] .user-summary,
 html[data-theme="light"] .nav-group-title {
-  color: #718690;
+  color: #5b707a;
 }
 html[data-theme="light"] .nav-group-title {
   border-bottom-color: #dfe8ec;
 }
+html[data-theme="light"] .nav-item .nav-icon {
+  color: #3f7472;
+}
 html[data-theme="dark"] body,
 html[data-theme="dark"] .main,
 html[data-theme="dark"] .frame-wrap {
-  background: #0d2029;
-  color: #e9f2f4;
+  background: #101a21;
+  color: #f2f8f9;
 }
 html[data-theme="dark"] .topbar {
-  background: #132b36;
-  border-color: #29424e;
+  background: #1e303a;
+  border-color: #4c6875;
 }
 html[data-theme="dark"] .page-subtitle {
-  color: #a8bdc6;
+  color: #c0d0d5;
 }
 html[data-theme="dark"] .portal-action,
 html[data-theme="dark"] .portal-language {
-  background: #173644;
-  color: #eaf4f5;
-  border-color: #365361;
+  background: #2e4855;
+  color: #f2f8f9;
+  border-color: #6a8794;
+}
+html[data-theme="dark"] .portal-action:hover {
+  background: #3a5866;
+}
+html[data-theme="dark"] .portal-action.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+html[data-theme="dark"] .nav-group-title,
+html[data-theme="dark"] .brand-subtitle,
+html[data-theme="dark"] .user-summary {
+  color: #a9c2cd;
 }
 
 /* ---- Full screen for the page in the frame (portal-enhancements.js, section 4): the browser's own full screen of
@@ -661,12 +690,12 @@ html.frame-expanded-open body {
 }
 html[data-theme="dark"] .frame-wrap:fullscreen,
 html[data-theme="dark"] .frame-wrap.frame-expanded {
-  background: #0d2029;
+  background: #101a21;
 }
 html[data-theme="dark"] .frame-exit-fullscreen {
-  background: #173644e6;
-  color: #eaf4f5;
-  border-color: #365361;
+  background: #2e4855e6;
+  color: #f2f8f9;
+  border-color: #6a8794;
 }
 @media (max-width: 780px) {
   .frame-exit-fullscreen {
@@ -748,12 +777,12 @@ html[data-theme="dark"] .frame-exit-fullscreen {
 /* No white flash: the shell, the frame's box and the frame itself carry the theme's background before a page paints,
    and the frame stays invisible until its page has loaded (.frame-loading, portal-enhancements.js). */
 html { color-scheme: light; }  /* the theme decides, not the computer: a light theme never gets dark form controls or dialogs */
-html[data-theme="dark"], html[data-theme="dark"] body { background: #0d2029; color-scheme: dark; }
-html[data-theme="dark"] #appFrame { background: #101a21; border-color: #29424e; }
+html[data-theme="dark"], html[data-theme="dark"] body { background: #101a21; color-scheme: dark; }
+html[data-theme="dark"] #appFrame { background: #101a21; border-color: #4c6875; }
 .frame-wrap.frame-loading #appFrame { visibility: hidden; }
 /* The loading chip sits at the bottom centre, so it never covers a page's own top-right buttons (Whiteboard "New board"). */
 .portal-loading { top: auto; right: auto; bottom: 28px; left: 50%; transform: translateX(-50%); }
-html[data-theme="dark"] .portal-loading { background: #173644; color: #eaf4f5; }
+html[data-theme="dark"] .portal-loading { background: #2e4855; color: #f2f8f9; }
 /* The one Settings menu in the header: language, theme, tour, reload. */
 .portal-settings { position: relative; }
 .portal-settings > summary { list-style: none; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -764,10 +793,10 @@ html[data-theme="dark"] .portal-loading { background: #173644; color: #eaf4f5; }
 .portal-settings-item:hover, .portal-settings-item:focus-visible { background: #e7f2f2; }
 .portal-settings-language { display: grid; gap: 4px; padding: 4px 8px 8px; font-size: 12px; font-weight: 700; color: #5a7380; border-bottom: 1px solid var(--line, #d9e5e8); }
 .portal-settings-language .portal-language { width: 100%; min-height: 40px; }
-html[data-theme="dark"] .portal-settings-panel { background: #132b36; border-color: #29424e; }
-html[data-theme="dark"] .portal-settings-item { color: #eaf4f5; }
-html[data-theme="dark"] .portal-settings-item:hover { background: #1d3a47; }
-html[data-theme="dark"] .portal-settings-language { color: #a8bdc6; border-color: #29424e; }
+html[data-theme="dark"] .portal-settings-panel { background: #1e303a; border-color: #6a8794; box-shadow: 0 10px 30px #000000a6; }
+html[data-theme="dark"] .portal-settings-item { color: #f2f8f9; }
+html[data-theme="dark"] .portal-settings-item:hover { background: #2e4855; }
+html[data-theme="dark"] .portal-settings-language { color: #c0d0d5; border-color: #4c6875; }
 .mobile-menu svg { display: block; margin: auto; }
 @media (max-width: 780px) {
   /* In the side menu: the Settings menu opens in place, every row 44 px. */
@@ -781,10 +810,13 @@ html[data-theme="dark"] .portal-settings-language { color: #a8bdc6; border-color
 }
 
 /* Round 14: the sign-in card follows the theme (no white flash on a dark device). */
-html[data-theme="dark"] .login-screen{background:#0d2029;color:#e9f2f4}
-html[data-theme="dark"] .login-card{background:#132b36;border-color:#29424e;color:#e9f2f4;box-shadow:0 20px 60px #0006}
-html[data-theme="dark"] .login-card input{background:#101a21;color:#e9f2f4;border-color:#365361}
-html[data-theme="dark"] .login-subtitle{color:#a8bdc6}
+html[data-theme="dark"] .login-screen{background:#101a21;color:#f2f8f9}
+html[data-theme="dark"] .login-card{background:#1e303a;border-color:#4c6875;color:#f2f8f9;box-shadow:0 20px 60px #0009}
+html[data-theme="dark"] .login-card h1{color:#f2f8f9}
+html[data-theme="dark"] .login-card label{color:#d7e6ea}
+html[data-theme="dark"] .login-card input{background:#101a21;color:#f2f8f9;border-color:#6a8794}
+html[data-theme="dark"] .login-subtitle{color:#c0d0d5}
+html[data-theme="dark"] #loginError{color:#ff9b91}
 
 /* Round 14: Mission drive is a real link (new tab), styled like the other menu buttons. */
 a.nav-item.nav-link{text-decoration:none;display:flex;align-items:center;box-sizing:border-box}

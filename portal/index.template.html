@@ -28,8 +28,8 @@
 <title>Mission System</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4">
 <link rel="manifest" href="/manifest.webmanifest">
-<link rel="stylesheet" href="/portal.css?v=15">
-<link rel="stylesheet" href="/tour.css?v=1">
+<link rel="stylesheet" href="/portal.css?v=16">
+<link rel="stylesheet" href="/tour.css?v=2">
 <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
 </head>
 
@@ -83,12 +83,12 @@
          Mission drive. MANAGER TOOLS: DA Management. portal-enhancements.js adds the entries that are not written here and
          hides what a role does not have (applyRoleNavigation); a heading with nothing under it is hidden too. -->
     <div class="nav-group-title" id="groupWeekly">WEEKLY</div>
-    <button class="nav-item" id="navPlanning" data-page="planning">Weekly Planning</button>
-    <button class="nav-item" id="navCallIns" data-page="callins" style="display: none">Call-ins</button>
+    <button class="nav-item" id="navPlanning" data-page="planning"><span class="nav-icon" aria-hidden="true">▣</span>Weekly Planning</button>
+    <button class="nav-item" id="navCallIns" data-page="callins" style="display: none"><span class="nav-icon" aria-hidden="true">☏</span>Call-ins</button>
 
     <div class="nav-group-title" id="insightsGroupTitle" style="display: none">INSIGHTS</div>
-    <button class="nav-item" id="navInsights" data-page="insights" style="display: none">Dashboards</button>
-    <button class="nav-item" id="navPresentations" data-page="presentations" style="display: none">Presentations</button>
+    <button class="nav-item" id="navInsights" data-page="insights" style="display: none"><span class="nav-icon" aria-hidden="true">▥</span>Dashboards</button>
+    <button class="nav-item" id="navPresentations" data-page="presentations" style="display: none"><span class="nav-icon" aria-hidden="true">▷</span>Presentations</button>
 
     <div class="nav-group-title" id="groupInformation">INFORMATION</div>
 
@@ -96,7 +96,7 @@
 
     <div class="sidebar-bottom">
       <div id="userSummary" class="user-summary"></div>
-      <button class="nav-item" id="logoutButton">Sign Out</button>
+      <button class="nav-item" id="logoutButton"><span class="nav-icon" aria-hidden="true">↪</span>Sign Out</button>
     </div>
   </aside>
 
@@ -490,6 +490,6 @@ startPortal();
 </script>
 
 <script src="/tour.js?v=1"></script>
-<script src="/portal-enhancements.js?v=33"></script>
+<script src="/portal-enhancements.js?v=34"></script>
 </body>
 </html>

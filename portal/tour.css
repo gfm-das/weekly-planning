@@ -33,6 +33,7 @@
   position: absolute;
   width: min(340px, calc(100vw - 24px));
   padding: 18px 18px 14px;
+  border: 1px solid #d3dee3;
   border-radius: 14px;
   background: #fff;
   color: #172d3b;
@@ -96,16 +97,17 @@
   outline-offset: 2px;
 }
 html[data-theme="dark"] .tour-card {
-  background: #173644;
-  color: #eaf4f5;
+  background: #1e303a;
+  border-color: #6a8794;
+  color: #f2f8f9;
 }
 html[data-theme="dark"] .tour-count,
 html[data-theme="dark"] .tour-buttons .tour-skip {
   color: #a8bec9;
 }
 html[data-theme="dark"] .tour-buttons button {
-  background: #1f4657;
-  border-color: #365361;
+  background: #2e4855;
+  border-color: #6a8794;
   color: #eaf4f5;
 }
 html[data-theme="dark"] .tour-buttons .tour-next {

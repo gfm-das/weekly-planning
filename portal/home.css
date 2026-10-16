@@ -1,7 +1,7 @@
 /*
  * home.css: the look of the Overview (home.html), the first page everyone sees in the portal.
  *
- * Sections, top to bottom: the page, the welcome banner, buttons, key indicators, cards, lists, mission focus,
+ * Sections, top to bottom: the page, the welcome banner, buttons, key indicators, cards, lists, AP Tip of the Week,
  * messages, stewardship planning, loading, smaller screens, dialogs, then the themes (mission, light, dark), the week
  * list and the movable cards. The mission glimpse at the top of the managers' Overview has its own file, glimpse.css.
  * A rule further down wins over an earlier one of the same weight, so keep the order.
@@ -90,7 +90,7 @@ a {
 }
 .action small {
   display: block;
-  color: #66808c;
+  color: #586f7a;
   margin-bottom: 7px;
   font-size: 11px;
 }
@@ -99,7 +99,7 @@ a {
   line-height: 1.4;
 }
 .action p {
-  color: #66808c;
+  color: #586f7a;
   font-size: 11px;
   margin: 7px 0 0;
 }
@@ -421,7 +421,7 @@ button:focus-visible {
   align-items: center;
 }
 
-/* ---- Mission focus: the quote card ---- */
+/* ---- AP Tip of the Week: the quote card ---- */
 .quote {
   background: #e9f3f2;
   border: 0;
@@ -671,17 +671,21 @@ button:focus-visible {
   }
 }
 
-/* ---- Dialogs: Weekly mission focus, Customize overview cards ---- */
+/* ---- Dialogs: AP Tip of the Week, Customize overview cards ---- */
+/* Every pop-up: a visible border, a soft shadow and a dimmed page behind it (the same look as workspace.css). */
 dialog {
-  border: 0;
+  border: 1px solid var(--line);
   border-radius: 17px;
   padding: 25px;
   width: min(620px, 94vw);
-  box-shadow: 0 24px 80px #17364455;
-  color: #183240;
+  box-shadow:
+    0 24px 64px #0f2a3640,
+    0 2px 8px #0f2a3624;
+  background: var(--panel);
+  color: var(--text);
 }
 dialog::backdrop {
-  background: #15344166;
+  background: #0f2a3673;
 }
 dialog label {
   display: grid;
@@ -729,11 +733,11 @@ dialog textarea {
 }
 [data-theme="dark"] {
   --page: #101a21;
-  --panel: #18262f;
-  --text: #edf7f8;
-  --muted: #a9bdc3;
-  --line: #2d414b;
-  --soft: #21343d;
+  --panel: #1e303a;
+  --text: #f2f8f9;
+  --muted: #c0d0d5;
+  --line: #4c6875;
+  --soft: #2a414d;
   color-scheme: dark;
 }
 body {
@@ -774,17 +778,83 @@ body {
   background: #19353c;
   color: var(--text);
 }
-[data-theme="dark"] .button.secondary {
-  background: #274049;
-  color: #d5eff0;
+[data-theme="dark"] .button.secondary,
+[data-theme="dark"] .unlock {
+  background: #2e4855;
+  color: #f2f8f9;
+  box-shadow: inset 0 0 0 1px #6a8794;
+}
+[data-theme="dark"] .unlock {
+  border-color: transparent;
 }
 [data-theme="dark"] dialog {
-  background: var(--panel);
+  border-color: #6a8794;
+  box-shadow:
+    0 24px 64px #000000a6,
+    0 0 0 1px #00000066;
+}
+[data-theme="dark"] dialog::backdrop {
+  background: #000000a6;
+}
+[data-theme="dark"] .quote blockquote {
   color: var(--text);
 }
-[data-theme="dark"] .quote blockquote,
-[data-theme="dark"] .quote cite {
+/* Dark theme: text at least 4.5:1 on its background (WCAG AA), visible borders and form fields. */
+[data-theme="dark"] a,
+[data-theme="dark"] .plan-unit,
+[data-theme="dark"] .quote .eyebrow,
+[data-theme="dark"] .quote cite,
+[data-theme="dark"] .area-title,
+[data-theme="dark"] .subplans summary {
+  color: #6fd3d6;
+}
+[data-theme="dark"] .kpi h3,
+[data-theme="dark"] .section-head p,
+[data-theme="dark"] .goal-number small,
+[data-theme="dark"] .fact span,
+[data-theme="dark"] .empty {
+  color: var(--muted);
+}
+[data-theme="dark"] .empty {
+  border-color: #5a7684;
+}
+[data-theme="dark"] .item,
+[data-theme="dark"] .actual,
+[data-theme="dark"] .subplans {
+  border-top-color: var(--line);
+}
+[data-theme="dark"] .progress {
+  background: #2a414d;
+}
+[data-theme="dark"] .pill,
+[data-theme="dark"] .filter.active {
+  background: #1d4a4c;
+  color: #c9f1ee;
+}
+[data-theme="dark"] .pill.pending {
+  background: #4a3c1c;
+  color: #f8dc9c;
+}
+[data-theme="dark"] .pill.urgent,
+[data-theme="dark"] .notice {
+  background: #4a2422;
+  color: #ffd2cc;
+}
+[data-theme="dark"] .toolbar input,
+[data-theme="dark"] .week-picker select,
+[data-theme="dark"] dialog input,
+[data-theme="dark"] dialog textarea {
+  background: #101a21;
   color: var(--text);
+  border-color: #6a8794;
+}
+[data-theme="dark"] .filter {
+  background: var(--panel);
+  color: var(--muted);
+  border-color: #6a8794;
+}
+[data-theme="dark"] .filter.active {
+  border-color: #4fa7a0;
 }
 
 /* ---- The reporting week list, the "Customize overview cards" button, text only for screen readers ---- */
@@ -885,7 +955,7 @@ body {
 [data-card] .card-grip + * {
   margin-right: auto;
 }
-/* The welcome banner is a movable card too (round 13: it comes after the key indicators). It has no heading row,
+/* The welcome banner is a movable card too (by default the first card). It has no heading row,
    so its handle sits in the banner's top corner (the start side, also for right-to-left languages). */
 .welcome-card {
   position: relative;

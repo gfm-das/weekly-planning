@@ -4,17 +4,17 @@
 
   What it shows, top to bottom:
     - the mission glimpse (managers only, glimpse.js): the last finished week of the whole mission;
-    - movable cards, in this default order (round 13): key indicators of conversion (goal and reported actual); this
-      week's tasks = a welcome with the next required action (usually: submit this week's plan in Weekly Planning),
-      the weekly action plan and the additional weekly goals; upcoming events and announcements; then your
-      assignment, recent reporting weeks, the mission focus and, for leaders, Stewardship planning (which areas have
-      submitted their plan; a leader can unlock a submitted plan or look at an area's goals).
+    - movable cards, in this default order: a welcome with the next required action (usually: submit this week's plan
+      in Weekly Planning); key indicators of conversion (goal and reported actual); the AP Tip of the Week;
+      announcements; the weekly action plan and the additional weekly goals; upcoming events; recent reporting weeks;
+      your assignment and, for leaders, Stewardship planning (which areas have submitted their plan; a leader can
+      unlock a submitted plan or look at an area's goals).
   Everyone can drag the cards into their own order or hide some ("Customize overview cards"); the layout is kept per
   person in this browser.
 
   How it fits: it opens inside the portal shell's frame. portal-client.js brings portalAPI; GET /api/overview
   (portal-api app.py) answers everything for the signed-in person's stewardship; PUT /api/mission-focus saves the
-  weekly focus (managers); POST /api/planning/reports/<id>/unlock unlocks a plan (leaders). The look is home.css
+  AP Tip of the Week (managers); POST /api/planning/reports/<id>/unlock unlocks a plan (leaders). The look is home.css
   (and glimpse.css); SortableJS (Sortable.min.js, vendored) moves the cards; i18n.js translates every English text.
 -->
 <html lang="en">
@@ -27,7 +27,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="referrer" content="no-referrer" />
     <title>Mission overview</title>
-    <link rel="stylesheet" href="home.css?v=2" />
+    <link rel="stylesheet" href="home.css?v=3" />
     <link rel="stylesheet" href="glimpse.css" />
     <script src="site-config.js"></script><script src="i18n.js?v=6"></script>
   </head>
@@ -49,17 +49,9 @@
       <div id="cardLive" class="visually-hidden" aria-live="assertive" aria-atomic="true" data-i18n-ignore></div>
 
       <!-- The movable cards. Each has data-card (its name in the saved layout); the script adds a grip to its title. -->
-      <!-- Default order (round 13): key indicators, then this week's tasks (the welcome with the next required action,
-           the weekly action plan, the additional weekly goals), then the calendar and announcements, then the rest. -->
+      <!-- Default order: the welcome with the next required action, key indicators, the AP Tip of the Week,
+           announcements, this week's plan and goals, the calendar, then the rest (same order as cardRegistry). -->
       <div class="grid card-grid" id="overviewCards">
-        <section data-card="indicators" data-span="full" aria-labelledby="indicatorTitle">
-          <div class="section-head">
-            <h2 id="indicatorTitle">Key indicators of conversion</h2>
-            <label class="week-picker">Reporting week<select id="weekSelect" aria-label="Reporting week"></select></label>
-          </div>
-          <div class="kpis" id="indicators" aria-live="polite"></div>
-        </section>
-
         <!-- Welcome, and the next required action. -->
         <div class="welcome-card" data-card="welcome" data-span="full">
           <section class="hero">
@@ -77,6 +69,31 @@
               </button>
             </div>
           </section>
+        </div>
+
+        <section data-card="indicators" data-span="full" aria-labelledby="indicatorTitle">
+          <div class="section-head">
+            <h2 id="indicatorTitle">Key indicators of conversion</h2>
+            <label class="week-picker">Reporting week<select id="weekSelect" aria-label="Reporting week"></select></label>
+          </div>
+          <div class="kpis" id="indicators" aria-live="polite"></div>
+        </section>
+
+        <div class="panel quote" data-card="focus">
+          <div class="panel-head">
+            <div class="eyebrow" id="inspirationSource">AP Tip of the Week</div>
+            <button class="button secondary hidden" id="editFocus" type="button">Edit this week</button>
+          </div>
+          <blockquote id="inspirationText">Serve with faith. Plan with purpose.</blockquote>
+          <cite id="inspirationReference"></cite>
+        </div>
+
+        <div class="panel" data-card="announcements">
+          <div class="panel-head">
+            <h2>Announcements</h2>
+            <a href="/#announcements" target="_parent" class="text-link" data-open="announcements">View all →</a>
+          </div>
+          <div id="announcements" class="empty">Loading announcements…</div>
         </div>
 
         <div class="panel" data-card="plan">
@@ -111,12 +128,9 @@
           <div id="events" class="empty">Loading your mission calendar…</div>
         </div>
 
-        <div class="panel" data-card="announcements">
-          <div class="panel-head">
-            <h2>Announcements</h2>
-            <a href="/#announcements" target="_parent" class="text-link" data-open="announcements">View all →</a>
-          </div>
-          <div id="announcements" class="empty">Loading announcements…</div>
+        <div class="panel" data-card="weeks">
+          <div class="panel-head"><h2>Recent reporting weeks</h2></div>
+          <div id="weeks" class="empty">Loading reports…</div>
         </div>
 
         <section class="panel assignment-panel" data-card="assignment" data-span="full">
@@ -134,20 +148,6 @@
             <div><strong>Assigned units</strong> <span id="units">—</span></div>
           </div>
         </section>
-
-        <div class="panel" data-card="weeks">
-          <div class="panel-head"><h2>Recent reporting weeks</h2></div>
-          <div id="weeks" class="empty">Loading reports…</div>
-        </div>
-
-        <div class="panel quote" data-card="focus">
-          <div class="panel-head">
-            <div class="eyebrow" id="inspirationSource">Mission focus</div>
-            <button class="button secondary hidden" id="editFocus" type="button">Edit this week</button>
-          </div>
-          <blockquote id="inspirationText">Serve with faith. Plan with purpose.</blockquote>
-          <cite id="inspirationReference"></cite>
-        </div>
 
         <!-- Leaders only (the server's answer has "stewardship"). -->
         <section class="panel stewardship hidden" id="stewardship" data-card="stewardship" data-span="full">
@@ -169,10 +169,10 @@
       </div>
     </main>
 
-    <!-- The weekly mission focus (managers: "Edit this week"). -->
+    <!-- The AP Tip of the Week (managers: "Edit this week"). -->
     <dialog id="focusDialog">
       <form id="focusForm">
-        <h2>Weekly mission focus</h2>
+        <h2>AP Tip of the Week</h2>
         <p class="meta">Save a translation for the selected mission language. Other language versions remain available.</p>
         <label>Language code<input id="focusLanguage" maxlength="35" required /></label>
         <label>Focus<textarea id="focusText" maxlength="1000" required></textarea></label>
@@ -420,7 +420,7 @@
         renderRecentWeeks(planning);
       }
 
-      // ==== Events, announcements, mission focus ================================================================
+      // ==== Events, announcements, AP Tip of the Week ==========================================================
       function eventRow(event) {
         const start = event.occurrence || event.starts_at || event.start_at || event.start;
         const link = safeUrl(event.video_url || event.meeting_url);
@@ -448,7 +448,7 @@
         );
       }
 
-      // The quote card: this week's mission focus (or a scripture), its reference and link. Managers may edit it.
+      // The quote card: this week's AP Tip of the Week (or a scripture), its reference and link. Managers may edit it.
       function renderInspiration(data) {
         const inspiration = data.inspiration;
         if (!inspiration) return;
@@ -459,7 +459,7 @@
         text("inspirationText", inspiration.text || inspiration.quote);
         text(
           "inspirationSource",
-          inspiration.source || inspiration.book || (inspiration.paraphrase ? "Preach My Gospel · paraphrase" : "Mission focus"),
+          inspiration.source || inspiration.book || (inspiration.paraphrase ? "Preach My Gospel · paraphrase" : "AP Tip of the Week"),
         );
         const reference = el("inspirationReference");
         reference.textContent = inspiration.reference || inspiration.citation || "";
@@ -601,7 +601,7 @@
         if (button) await unlockPlan(button);
       });
 
-      // ==== The weekly mission focus (managers) =================================================================
+      // ==== The AP Tip of the Week (managers) ====================================================================
       // The dialog opens with the focus in the chosen language (or the one shown).
       el("editFocus").onclick = () => {
         const focus = currentData?.mission_focus || {};
@@ -638,15 +638,15 @@
       // Each person can reorder the cards (drag, keyboard or the Customize dialog) and hide some. The layout
       // {order, hidden} is saved per signed-in person in this browser.
       const cardRegistry = [
-        ["indicators", "Key indicators of conversion"],
         ["welcome", "Welcome and next action"],
+        ["indicators", "Key indicators of conversion"],
+        ["focus", "AP Tip of the Week"],
+        ["announcements", "Announcements"],
         ["plan", "Weekly action plan"],
         ["goals", "Additional weekly goals"],
         ["events", "Upcoming events"],
-        ["announcements", "Announcements"],
-        ["assignment", "Your assignment"],
         ["weeks", "Recent reporting weeks"],
-        ["focus", "Mission focus"],
+        ["assignment", "Your assignment"],
         ["stewardship", "Stewardship planning"],
       ];
       const cardIds = cardRegistry.map(([id]) => id);

@@ -153,7 +153,7 @@
         item.className = 'nav-item';
         item.id = id;
         item.dataset.page = page;
-        item.innerHTML = `<span class="nav-icon">${icon}</span>${label}`;
+        item.innerHTML = `<span class="nav-icon" aria-hidden="true">${icon}</span>${label}`;
         item.addEventListener('click', () => openPage(page));
         if (hidden) item.style.display = 'none';
         return item;
@@ -172,7 +172,7 @@
         item.href = href;
         item.target = '_blank';
         item.setAttribute('rel', ['noopener', 'noreferrer'].join(' '));
-        item.innerHTML = `<span class="nav-icon">${icon}</span>${label}`;
+        item.innerHTML = `<span class="nav-icon" aria-hidden="true">${icon}</span>${label}`;
         return item;
     }
 
