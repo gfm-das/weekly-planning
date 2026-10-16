@@ -83,6 +83,37 @@ END $$;
 -- Everything below belongs to postgres, like the tables and views of 033 (DA Management connects as postgres).
 SET LOCAL ROLE postgres;
 
+-- 2a. A view that has MORE or other columns than the new definition cannot be replaced by CREATE OR REPLACE VIEW ("cannot drop columns
+--     from view"). The real server's dashboards.archetype_area_week still has two old social-media columns (the first two after lessons_asked_referral)
+--     (they came from migration 034; the social-media section was deleted in 056, so they are meant to go).
+--     So: when the columns of a view are not the start of the new column list, its rights are remembered, the view is dropped
+--     (WITHOUT CASCADE: if another object reads it, this file stops with a clear message and nothing is changed) and made again below.
+DO $$
+DECLARE
+  v record;
+  have text[];
+  acl text;
+BEGIN
+  FOR v IN SELECT * FROM (VALUES
+      ('dashboards.archetype_area_week', ARRAY['sunday', 'week', 'reporting_week_id', 'mission_id', 'zone_id', 'zone', 'district_id', 'district', 'area_id', 'area', 'reports', 'friends_found', 'lessons_with_friends', 'follow_up_lessons', 'members_at_lessons', 'baptismal_dates', 'baptisms_confirmations', 'sacrament_attendance', 'first_time_sacrament', 'new_member_sacrament', 'first_time_first_week_sacrament', 'member_meals_active', 'member_meals_less_active', 'member_meals_part_member', 'member_visits_active', 'member_visits_less_active', 'member_visits_part_member', 'member_referral_asks', 'lessons_asked_referral', 'youth_activities', 'service_hours', 'less_active_sacrament', 'new_members_on_plan', 'new_member_lessons', 'new_members_at_church', 'new_member_lessons_per_member', 'new_member_sacrament_share', 'findechristus_referrals', 'finding_people_found', 'finding_people_reached', 'finding_first_lessons', 'baptism_records']),
+      ('public.data_upload_week_batches', ARRAY['kind', 'mission_id', 'sunday', 'batch_id'])
+    ) AS t(name, want) LOOP
+    IF to_regclass(v.name) IS NULL THEN CONTINUE; END IF;
+    SELECT array_agg(attname::text ORDER BY attnum) INTO have FROM pg_attribute
+    WHERE attrelid = v.name::regclass AND attnum > 0 AND NOT attisdropped;
+    IF cardinality(have) <= cardinality(v.want) AND have = v.want[1:cardinality(have)] THEN CONTINUE; END IF;
+    SELECT coalesce(string_agg(CASE WHEN a.grantee = 0 THEN 'PUBLIC' ELSE pg_get_userbyid(a.grantee) END || '|' || a.privilege_type || '|' || a.is_grantable, ';'), '')
+      INTO acl FROM pg_class c, aclexplode(c.relacl) a WHERE c.oid = v.name::regclass;
+    PERFORM set_config('gfm.view_acl_' || replace(v.name, '.', '_'), acl, true);
+    RAISE NOTICE 'Dropping % (columns: %) to make it again with the new column list.', v.name, have;
+    BEGIN
+      EXECUTE format('DROP VIEW %s', v.name);
+    EXCEPTION WHEN dependent_objects_still_exist THEN
+      RAISE EXCEPTION 'Stopped, nothing was changed: another object reads %. Drop or change that object first (%).', v.name, SQLERRM;
+    END;
+  END LOOP;
+END $$;
+
 -- 2. Archetypal Health counts FindeChristus referrals from the Finding export only. Same columns as before.
 CREATE OR REPLACE VIEW dashboards.archetype_area_week AS
  WITH plans AS MATERIALIZED (
@@ -269,6 +300,26 @@ CREATE OR REPLACE VIEW public.data_upload_week_batches AS
    FROM weeks w
      JOIN roster_import_batches b ON b.id = w.batch_id AND b.status = 'APPLIED'::text
   ORDER BY w.kind, w.mission_id, w.sunday, b.created_at DESC, b.id DESC;
+
+-- 3a. Rights of a view that was dropped and made again above: the remembered rights come back (the owner is postgres, as before).
+DO $$
+DECLARE
+  v text;
+  r text[];
+  acl text;
+  one text;
+BEGIN
+  FOREACH v IN ARRAY ARRAY['dashboards.archetype_area_week', 'public.data_upload_week_batches'] LOOP
+    acl := current_setting('gfm.view_acl_' || replace(v, '.', '_'), true);
+    IF acl IS NULL OR acl = '' THEN CONTINUE; END IF;
+    FOREACH one IN ARRAY string_to_array(acl, ';') LOOP
+      r := string_to_array(one, '|');
+      IF r[1] = 'postgres' THEN CONTINUE; END IF;
+      EXECUTE format('GRANT %s ON %s TO %s%s', r[2], v, CASE WHEN r[1] = 'PUBLIC' THEN 'PUBLIC' ELSE quote_ident(r[1]) END,
+                     CASE WHEN r[3] = 'true' THEN ' WITH GRANT OPTION' ELSE '' END);
+    END LOOP;
+  END LOOP;
+END $$;
 
 -- 4. The views and tables of the two uploads are gone.
 DROP VIEW IF EXISTS dashboards.findechristus_referrals_week;

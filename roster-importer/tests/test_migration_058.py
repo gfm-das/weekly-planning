@@ -62,6 +62,31 @@ class Migration058(unittest.TestCase):
             self.assertIsNone(re.search(r"archetype_plan_rows\(\)\s+(?:AS\s+)?\w+\s*\(", text),
                               "a positional alias list on dashboards.archetype_plan_rows() is back")
 
+    def test_a_view_with_other_columns_is_dropped_first_without_cascade(self):
+        """The real server's dashboards.archetype_area_week still has facebook_finding_days and facebook_friends_found (034), which the new
+        definition lacks. CREATE OR REPLACE VIEW cannot drop columns ("cannot drop columns from view"), so both files drop the view
+        when its columns are not the start of the new list, remember and restore its rights, and never use CASCADE on it."""
+        import re
+        for text in (self.up, self.down):
+            self.assertIn("DROP VIEW %s", text)
+            self.assertIn("dependent_objects_still_exist", text)
+            self.assertIn("gfm.view_acl_", text)
+            code = "\n".join(l for l in text.splitlines() if not l.lstrip().startswith("--"))
+            self.assertIsNone(re.search(r"DROP\s+VIEW[^;]*CASCADE", code, re.I | re.S), "no CASCADE on a dropped view")
+            if text is self.up:
+                self.assertNotIn("CASCADE", code.upper())
+            self.assertIn("'dashboards.archetype_area_week', ARRAY['sunday', 'week'", text)
+            self.assertIn("'public.data_upload_week_batches', ARRAY['kind', 'mission_id', 'sunday', 'batch_id']", text)
+            # the drop comes before the first CREATE OR REPLACE of either view, the rights come back after the last one
+            drop = text.index("DROP VIEW %s")
+            self.assertLess(drop, text.index("CREATE OR REPLACE VIEW public.data_upload_week_batches"))
+            self.assertLess(drop, text.index("CREATE OR REPLACE VIEW dashboards.archetype_area_week"))
+            self.assertGreater(text.index("current_setting('gfm.view_acl_'"), text.index("CREATE OR REPLACE VIEW dashboards.archetype_area_week"))
+        # the new view does not select the deleted social-media columns
+        view = self.up[self.up.index("CREATE OR REPLACE VIEW dashboards.archetype_area_week"):]
+        view = view[:view.index("-- 3.")]
+        self.assertNotIn("facebook", view)
+
     def test_the_kind_constraint_is_found_by_content_not_by_name(self):
         for text in (self.up, self.down):
             self.assertNotIn("DROP CONSTRAINT roster_import_batches_kind_check", text)
