@@ -26,19 +26,25 @@ END $$;
 DO $$
 DECLARE
   kinds text[];
+  cname name;
 BEGIN
+  -- The kind constraint is found by what it says (a list that holds 'TRANSFER'), not by its name: an older database may have named it differently.
+  SELECT c.conname INTO cname
+  FROM pg_constraint c
+  WHERE c.conrelid = 'public.roster_import_batches'::regclass AND c.contype = 'c' AND pg_get_constraintdef(c.oid) LIKE '%''TRANSFER''%'
+  ORDER BY c.conname LIMIT 1;
   SELECT array_agg(DISTINCT m[1] ORDER BY m[1]) INTO kinds
   FROM pg_constraint c
   CROSS JOIN LATERAL regexp_matches(pg_get_constraintdef(c.oid), '''([A-Z_]+)''', 'g') AS m
-  WHERE c.conrelid = 'public.roster_import_batches'::regclass AND c.conname = 'roster_import_batches_kind_check';
+  WHERE c.conrelid = 'public.roster_import_batches'::regclass AND c.conname = cname;
   IF kinds IS NULL OR NOT ('TRANSFER' = ANY (kinds)) THEN
-    RAISE EXCEPTION 'The list of batch kinds could not be read from roster_import_batches_kind_check (found: %).', kinds;
+    RAISE EXCEPTION 'The list of batch kinds could not be read from the kind constraint of roster_import_batches (found: %).', kinds;
   END IF;
   IF NOT ('REFERRAL_ARCHIVE' = ANY (kinds) AND 'RATES' = ANY (kinds)) THEN
     kinds := array_remove(array_remove(kinds, 'REFERRAL_ARCHIVE'), 'RATES') || ARRAY['REFERRAL_ARCHIVE', 'RATES']::text[];
-    ALTER TABLE public.roster_import_batches DROP CONSTRAINT roster_import_batches_kind_check;
-    EXECUTE format('ALTER TABLE public.roster_import_batches ADD CONSTRAINT roster_import_batches_kind_check CHECK (kind IN (%s))',
-      (SELECT string_agg(quote_literal(k), ', ' ORDER BY k) FROM unnest(kinds) k));
+    EXECUTE format('ALTER TABLE public.roster_import_batches DROP CONSTRAINT %I', cname);
+    EXECUTE format('ALTER TABLE public.roster_import_batches ADD CONSTRAINT %I CHECK (kind IN (%s))',
+      cname, (SELECT string_agg(quote_literal(k), ', ' ORDER BY k) FROM unnest(kinds) k));
   END IF;
 END $$;
 
@@ -322,7 +328,7 @@ CREATE OR REPLACE VIEW dashboards.archetype_area_week AS
             archetype_plan_rows.new_members_on_plan,
             archetype_plan_rows.new_member_lessons,
             archetype_plan_rows.new_members_at_church
-           FROM dashboards.archetype_plan_rows() archetype_plan_rows(reporting_week_id, area_id, first_time_first_week_sacrament, member_meals_active, member_meals_less_active, member_meals_part_member, member_visits_active, member_visits_less_active, member_visits_part_member, member_referral_asks, lessons_asked_referral, youth_activities, service_hours, less_active_sacrament, new_members_on_plan, new_member_lessons, new_members_at_church)
+           FROM dashboards.archetype_plan_rows() archetype_plan_rows
         ), fc AS (
          SELECT f.sunday,
             f.area_id,
@@ -439,7 +445,7 @@ BEGIN
                     'public.referral_archive_weeks', 'public.finding_rate_weeks']) v
   WHERE to_regclass(v) IS NULL;
   IF found IS NOT NULL THEN RAISE EXCEPTION 'Rollback check failed: missing: %', found; END IF;
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'roster_import_batches_kind_check'
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'public.roster_import_batches'::regclass AND contype = 'c'
                  AND pg_get_constraintdef(oid) LIKE '%REFERRAL_ARCHIVE%' AND pg_get_constraintdef(oid) LIKE '%RATES%') THEN
     RAISE EXCEPTION 'Rollback check failed: the batch kinds are not allowed.';
   END IF;

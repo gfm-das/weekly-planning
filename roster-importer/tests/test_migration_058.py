@@ -52,6 +52,21 @@ class Migration058(unittest.TestCase):
         self.assertIn("NOT come back", self.up)
         self.assertIn("NOT COME BACK", self.down)
 
+    def test_no_positional_column_list_on_archetype_plan_rows(self):
+        """A live database may have another column set in dashboards.archetype_plan_rows() (the 034 version has 19 columns, the baseline 17).
+        `archetype_plan_rows(a, b, c ...)` after the function call renames columns by position and broke 058 on the real server
+        (column reference "new_member_lessons" is ambiguous). The view must name the columns it needs instead."""
+        import re
+        for text in (self.up, self.down):
+            self.assertRegex(text, r"FROM dashboards\.archetype_plan_rows\(\) archetype_plan_rows\s*\n")
+            self.assertIsNone(re.search(r"archetype_plan_rows\(\)\s+(?:AS\s+)?\w+\s*\(", text),
+                              "a positional alias list on dashboards.archetype_plan_rows() is back")
+
+    def test_the_kind_constraint_is_found_by_content_not_by_name(self):
+        for text in (self.up, self.down):
+            self.assertNotIn("DROP CONSTRAINT roster_import_batches_kind_check", text)
+            self.assertIn("pg_get_constraintdef(c.oid) LIKE '%''TRANSFER''%'", text)
+
 
 if __name__ == "__main__":
     unittest.main()
