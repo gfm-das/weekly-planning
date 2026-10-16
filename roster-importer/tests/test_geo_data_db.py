@@ -143,7 +143,7 @@ class GeoDataTests(unittest.TestCase):
                                  districts=[[d1, *figures], ["Ghost District", 1, 1, 1, 1, 1, 1, 1, 1, 1, "Town"]],
                                  areas=[[a1, *figures], ["Media Elders", *figures], ["Office Sisters", 7, 7, 7, 7, 7, 7, 7, 7, 7, "City"]])
         page = self.upload(data)
-        self.assertIn("Three tables found: 1 zones, 2 districts, 3 areas.", page)
+        self.assertIn("Three tables found: 1 zones, 2 districts, 1 areas.", page)
         self.assertIn("Rows held back", page)  # Media Elders (a stand-in) and Office Sisters
         self.assertIn("Ghost District", page)  # not a district of the portal: said, not asked
         batch = self.apply()

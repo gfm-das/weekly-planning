@@ -290,22 +290,6 @@ def read_decimal(value):
     return number
 
 
-def read_rate(value):
-    """A rate as a fraction: '26.00%' and 26 become 0.26, 0.26 stays 0.26. None for an empty cell."""
-    if value is None:
-        return None
-    text = clean(value)
-    if not text or text.startswith("#"):  # '#DIV/0!' from a sheet: no rate that week
-        return None
-    percent = text.endswith("%")
-    number = read_decimal(text.rstrip("%").strip())
-    if number is None:
-        return None
-    if percent or number > 1.5:
-        number = number / 100
-    return round(number, 4)
-
-
 def week_of(day):
     """The Sunday that ends the Monday-Sunday week this day is in (for event dates: a lesson on Monday 21 Sep
     counts for the week that ends on Sunday 27 Sep)."""
@@ -316,22 +300,6 @@ def week_before(day):
     """The Sunday on or before this day (a Sunday stays itself). The zone history sheet names each week by its
     Sunday, so its dates are read with this."""
     return day - timedelta(days=(day.weekday() + 1) % 7)
-
-
-def week_reported_on(day):
-    """The week a FindeChristus report dated `day` shows (the referral archive and the rate archive).
-
-    The reports are made for the Monday meeting. The owner's FC Data Studio sheet: "when the report is viewed on a
-    Monday, it displays data from 14 to 8 days earlier", so Monday 28 Sep shows Monday 14 to Sunday 20 Sep. But the
-    archives are not always dated on a Monday. Checked on 29 Sep 2026 against the finding export and the FC Data
-    Studio sheet (counts only):
-      - Monday dates (most reports) show the week that ended 8 days before;
-      - Sunday dates are the next Monday's report: 27 Sep 2026 holds exactly the numbers of the 28 Sep report;
-      - Thursday to Saturday dates (spring 2026) show the week that ended the Sunday before;
-      - the one Tuesday (3 Jun 2025) is the Monday report of the day before, a day late.
-    One rule gives all of these: the report shows the last whole week that ended at least three days before it.
-    Returns that week's Sunday."""
-    return week_before(day - timedelta(days=3))
 
 
 def as_csv(headings, rows):

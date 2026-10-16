@@ -52,7 +52,7 @@ A place that is **closed** (and, for an area, has nobody serving in it) can be d
 | Porkbun | Holds the mission's web domain name: renewals and the DNS records. |
 | Cloudflare | Connects the web address to the system safely (the tunnel) and manages DNS and protection. |
 
-The addresses are **settings**, not code: `WEB_LINK_BREVO`, `WEB_LINK_PORKBUN` and `WEB_LINK_CLOUDFLARE` in `roster-importer/.env` (empty keeps the service's public sign-in page, `off` hides the card). **No password, key or token is stored here** and an address that contains one is not shown. You sign in at the service with your own account.
+The addresses are **settings**, not code: `WEB_LINK_BREVO`, `WEB_LINK_PORKBUN` and `WEB_LINK_CLOUDFLARE` in `roster-importer/.env` (empty keeps the service's public sign-in page, `off` hides the card). **No password, key or token is stored here** and an address that contains one is not shown. You sign in at the service with your own account. The Brevo card opens Brevo's page for email (SMTP) keys. If emails stop arriving, see [Email (Brevo)](email-brevo.html).
 
 ## Wiki button
 
@@ -88,3 +88,4 @@ Same as DA Management: AP, President, Data Analyst. Only a manager signed in thr
 - [Roster](roster.html)
 - [Uploads / Importer](uploads-importer.html)
 - [Accounts](accounts.html)
+- [Email (Brevo)](email-brevo.html)

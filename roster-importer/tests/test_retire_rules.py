@@ -163,7 +163,7 @@ class RuleTests(unittest.TestCase):
     def test_history_must_move_to_a_successor_but_settings_may_just_go(self):
         with self.assertRaisesRegex(retire.Refusal, "Choose below where it moves to"):
             self.check(found=[self.attached()])
-        place, found, successor = self.check(found=[self.attached("area_profiles", 1, removable=True)])
+        place, found, successor = self.check(found=[self.attached("area_geo_data", 1, removable=True)])
         self.assertIsNone(successor)
         self.assertEqual(len(found), 1)
         place, found, successor = self.check(found=[self.attached()], successor={**self.PLACE, "id": 8, "active": True}, successor_id=8)
@@ -201,6 +201,7 @@ class RuleTests(unittest.TestCase):
                 text += path.read_text(encoding="utf-8", errors="replace")
         pattern = re.compile(r"(?:ALTER TABLE ONLY|ALTER TABLE) (?:public\.)?(\w+)\s+ADD CONSTRAINT \w+ FOREIGN KEY \(\w+\) REFERENCES (?:public\.)?(zones|districts|areas)\(", re.I)
         referencing = {m.group(1) for m in pattern.finditer(text)}
+        referencing -= {m.group(1) for m in re.finditer(r"^DROP TABLE IF EXISTS public\.(\w+);", text, re.M | re.I)}  # a migration that drops a table (057 drops the Area data table)
         # Tables made by a migration with an inline REFERENCES (area_geo_data of 046).
         referencing |= {"area_geo_data"} if re.search(r"area_geo_data \($\n  area_id bigint PRIMARY KEY REFERENCES public\.areas", text, re.M) else set()
         # (zone_geo_data and district_geo_data of 052 the same way)
@@ -227,8 +228,8 @@ class RuleTests(unittest.TestCase):
         self.assertNotIn("presentation_access", tables)
 
     def test_places_come_back_before_what_points_at_them(self):
-        rows = {"weekly_area_reports": {}, "districts": {}, "zones": {}, "areas": {}, "area_profiles": {}}
-        self.assertEqual(retire.ordered(rows), ["zones", "districts", "areas", "area_profiles", "weekly_area_reports"])
+        rows = {"weekly_area_reports": {}, "districts": {}, "zones": {}, "areas": {}, "area_geo_data": {}}
+        self.assertEqual(retire.ordered(rows), ["zones", "districts", "areas", "area_geo_data", "weekly_area_reports"])
         self.assertEqual(retire.QUESTION_TABLES[0], "planning_questions")  # the question before its parts, the answers last
         self.assertEqual(retire.QUESTION_TABLES[-1], "weekly_planning_answers")
 
@@ -285,7 +286,7 @@ class PageRenderTests(unittest.TestCase):
     CLOSED = {"id": 7, "name": "Alt <Stadt>", "active": False, "mission_id": 2, "parent_id": 3, "parent_name": "Frankfurt 1"}
     FOUND = [{"schema": "public", "table": "weekly_area_reports", "column": "area_id", "rule": "r", "width": 1, "count": 5,
               "category": "plans", "removable": False, "supported": True, "pk": ["id"]},
-             {"schema": "public", "table": "area_profiles", "column": "area_id", "rule": "c", "width": 1, "count": 1,
+             {"schema": "public", "table": "area_geo_data", "column": "area_id", "rule": "c", "width": 1, "count": 1,
               "category": "settings", "removable": True, "supported": True, "pk": ["area_id"]}]
 
     def render_place(self, place=None, into=None, fail=None, serving=0):

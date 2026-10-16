@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email (Brevo) — Weekly Planning Wiki</title>
+  <meta name="description" content="How email works, and a step-by-step fix when Brevo needs to be reconnected.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="email-brevo" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="email-brevo">
+          <a class="tab is-active" href="email-brevo.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=email-brevo" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=email-brevo" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Email (Brevo)</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Email (Brevo)</strong> explains how the system sends invitation and password emails through Brevo, and how to fix it when they stop arriving.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#how-to-fix-it-in-this-order">How to fix it (in this order)</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="usage">Usage</h2>
+<p>The system sends two kinds of email: <strong>invitations</strong> and <strong>password emails</strong>. They come from Account Manager and from Staff accounts in DA Management. Brevo is the service that delivers them.</p>
+<p>Brevo is <strong>not</strong> logged in anywhere inside the portal. The only connection is a set of mail settings (called SMTP settings) in the file <code>supabase/.env</code> on the server. The card <strong>Links to web services &gt; Brevo</strong> is just a shortcut to Brevo&#x27;s page for email keys. It stores no password.</p>
+<p><strong>Signs that Brevo needs to be reconnected:</strong> a person says no invitation or password email arrived, and the check below shows an error.</p>
+<h2 id="how-to-fix-it-in-this-order">How to fix it (in this order)</h2>
+<ol><li><strong>Look for warnings in Brevo.</strong> Sign in at app.brevo.com. A red banner can mean a suspended account, no email credits left, or a sender that is not verified.</li><li><strong>Allow the server (Authorised IPs).</strong> In Brevo open <strong>Security &gt; Authorised IPs</strong>. If blocking is on, the server&#x27;s public address must be in the list, or blocking must be turned off. After the move to the Ubuntu server the address is new, so this is a likely cause. To find the address, type this on the server: <code>curl -s https://ifconfig.me</code></li><li><strong>Check the SMTP details.</strong> In Brevo open <strong>SMTP &amp; API &gt; SMTP</strong> (the card in Links opens the SMTP keys page directly). Note the server name <code>smtp-relay.brevo.com</code>, the port <code>587</code> and the login shown there.</li><li><strong>Make a new SMTP key.</strong> On the same page create a <strong>new SMTP key</strong>. It must be an SMTP key, not an API key. Copy it once; Brevo shows it only one time. Never paste it into chat or into a document.</li><li><strong>Check the sender.</strong> In Brevo open <strong>Senders, Domains &amp; Dedicated IPs</strong> and make sure the address the system sends from (<code>SMTP_ADMIN_EMAIL</code>) is verified.</li><li><strong>Put the new details on the server (only after the owner says go).</strong> On the server edit <code>~/weekly-planning/supabase/.env</code> and set <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>SMTP_ADMIN_EMAIL</code> and <code>SMTP_SENDER_NAME</code>. Then make the sign-in service pick them up:</li></ol>
+<pre><code class="language-bash">cd ~/weekly-planning
+docker compose -p gfm-beta --env-file supabase/.env -f supabase/supabase-compose.yml -f supabase/beta-override.yml up -d --no-deps --force-recreate supabase-auth</code></pre>
+<p>A plain <code>docker restart</code> is <strong>not</strong> enough: it keeps the old settings.</p>
+<h2 id="testing">Testing</h2>
+<ol><li>In DA Management open <strong>People &gt; Staff accounts</strong> and send a password email to yourself.</li><li>On the server look at the log:</li></ol>
+<pre><code class="language-bash">docker logs --since 10m gfm-beta-supabase-auth-1 2&gt;&amp;1 | grep -iE &#x27;mail|smtp&#x27; | tail</code></pre>
+<table><thead><tr><th>What the log says</th><th>Meaning</th></tr></thead><tbody><tr><td><code>535 Authentication failed</code></td><td>The key or login is wrong or was deleted: make a new SMTP key (step 4).</td></tr><tr><td>Connection refused or timed out</td><td>The server&#x27;s address is blocked: step 2.</td></tr><tr><td>Sender not valid or not verified</td><td>Step 5.</td></tr><tr><td>Quota or account suspended</td><td>Look at the banner in Brevo (step 1).</td></tr></tbody></table>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul><li>The email is &quot;sent&quot; but nothing arrives: check the spam folder, then Brevo&#x27;s <strong>Transactional &gt; Logs</strong> for the address.</li><li>Never put the SMTP key into the repository, a wiki page or a chat.</li></ul>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 16</td><td>Page added after emails needed a reconnect following the move to the Ubuntu server</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="management.html">Management</a></li><li><a href="accounts.html">Accounts</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Email (Brevo)</div>
+<div class="infobox-icon" aria-hidden="true">✉️</div>
+<table>
+<tr><th>Service</th><td>Brevo (app.brevo.com)</td></tr>
+<tr><th>Used for</th><td>Invitations and password emails</td></tr>
+<tr><th>Settings</th><td>supabase/.env (SMTP_*)</td></tr>
+<tr><th>Test</th><td>DA Management &gt; People &gt; Staff accounts</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Email (Brevo)</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

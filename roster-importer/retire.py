@@ -19,7 +19,7 @@ Safety rules (they hold in the database as well as on the page):
     (protected); the database refuses everything else (migration 048).
   - Attached plans, people, Call-ins and history are never deleted by this page: they must be MOVED onto a successor. (For a
     question, the saved answers may also be deleted on purpose: they are plain rows that Undo puts back.) A place's own
-    settings (area data, Geo data, the wards it serves, remembered name matches) are removed with it or, with a successor,
+    settings (Geo data, the wards it serves, remembered name matches) are removed with it or, with a successor,
     moved unless the successor has its own.
   - Nothing is deleted before the backup exists and before the typed confirmation matches.
 """
@@ -44,15 +44,15 @@ CATEGORY = {
     "missionary_assignments": "people", "leadership_assignments": "people", "companionships": "people",
     "new_members": "people", "new_member_area_assignments": "people", "baptismal_date_person_area_assignments": "people",
     "call_in_area_updates": "callins", "call_in_districts": "callins", "call_in_zones": "callins",
-    "baptism_history_weeks": "history", "referral_archive_weeks": "history", "finding_people": "history",
-    "zone_history_weeks": "history", "finding_rate_weeks": "history", "import_weekly_planning_area_map": "history",
+    "baptism_history_weeks": "history", "finding_people": "history",
+    "zone_history_weeks": "history", "import_weekly_planning_area_map": "history",
     "archetype_notes": "history",
     "districts": "places", "areas": "places",
-    "area_profiles": "settings", "area_geo_data": "settings", "area_units": "settings", "data_name_matches": "settings",
+    "area_geo_data": "settings", "area_units": "settings", "data_name_matches": "settings",
     "zone_geo_data": "settings", "district_geo_data": "settings",
 }
 # The place's own settings: removed together with it, or (with a successor) moved unless the successor has its own.
-REMOVABLE = {"area_profiles", "area_geo_data", "area_units", "data_name_matches", "zone_geo_data", "district_geo_data"}
+REMOVABLE = {"area_geo_data", "area_units", "data_name_matches", "zone_geo_data", "district_geo_data"}
 QUESTION_TABLES = ["planning_questions", "planning_question_options", "planning_question_grid_rows",
                    "planning_question_visibility_rules", "weekly_planning_answers"]
 CHOICE_TYPES = {"SELECT", "RADIO", "CHECKBOX", "GRID"}

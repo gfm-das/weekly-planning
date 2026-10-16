@@ -666,9 +666,9 @@ def peer_usual(rows, groups, base, settings, available, until):
 def standardize(profiles, groups, usual):
     """{area_id: {archetype: score}}: each area's profile compared with its peer group's usual week."""
     scores = {}
-    for area_id, area_profiles in profiles.items():
+    for area_id, archetype_scores_of_area in profiles.items():
         group_usual = usual.get(groups.get(area_id), {})
-        scores[area_id] = {a: z_score(area_profiles[a], *group_usual.get(a, (None, None))) for a in ARCHETYPES}
+        scores[area_id] = {a: z_score(archetype_scores_of_area[a], *group_usual.get(a, (None, None))) for a in ARCHETYPES}
     return scores
 
 

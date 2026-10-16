@@ -76,7 +76,7 @@ class RetireTests(unittest.TestCase):
                 cur.execute("""insert into public.new_members(area_id,first_name,display_name,baptism_date)
                   values(%s,'Retire','Retire Person',current_date - 30) returning id""", (self.old,))
                 self.person = cur.fetchone()["id"]
-                cur.execute("insert into public.area_profiles(area_id,population) values(%s,1234)", (self.old,))
+                cur.execute("insert into public.area_geo_data(area_id,population) values(%s,1234)", (self.old,))
 
     def wipe(self):
         with database.connect() as conn:
@@ -84,7 +84,7 @@ class RetireTests(unittest.TestCase):
                 cur.execute("delete from public.roster_import_changes where batch_id in (select id from public.roster_import_batches where kind='RETIRE')")
                 cur.execute("delete from public.roster_import_batches where kind='RETIRE'")
                 cur.execute("delete from public.new_members where display_name='Retire Person'")
-                cur.execute("delete from public.area_profiles where area_id in (select id from public.areas where name like %s)", (PREFIX + "%",))
+                cur.execute("delete from public.area_geo_data where area_id in (select id from public.areas where name like %s)", (PREFIX + "%",))
                 cur.execute("delete from public.areas where name like %s", (PREFIX + "%",))
                 cur.execute("delete from public.districts where name like %s", (PREFIX + "%",))
                 cur.execute("delete from public.zones where name like %s", (PREFIX + "%",))
@@ -150,7 +150,7 @@ class RetireTests(unittest.TestCase):
         batch = response.headers["Location"].rsplit("/", 1)[-1]
         self.assertEqual(self.old_exists(), 0)
         self.assertEqual(self.scalar("select area_id from public.new_members where id=%s", (self.person,)), self.new)
-        self.assertEqual(self.scalar("select population from public.area_profiles where area_id=%s", (self.new,)), 1234)  # settings moved
+        self.assertEqual(self.scalar("select population from public.area_geo_data where area_id=%s", (self.new,)), 1234)  # settings moved
         self.assertEqual(self.scalar("select summary->>'backup' from public.roster_import_batches where id=%s", (batch,)),
                          "gfm-before-delete-test.dump")
         self.assertEqual(self.scalar("select kind from public.roster_import_batches where id=%s", (batch,)), "RETIRE")
@@ -159,8 +159,8 @@ class RetireTests(unittest.TestCase):
         self.assertEqual(undone.status_code, 302, undone.get_data(as_text=True)[:600])
         self.assertEqual(self.old_exists(), 1)
         self.assertEqual(self.scalar("select area_id from public.new_members where id=%s", (self.person,)), self.old)
-        self.assertEqual(self.scalar("select population from public.area_profiles where area_id=%s", (self.old,)), 1234)
-        self.assertEqual(self.scalar("select count(*) from public.area_profiles where area_id=%s", (self.new,)), 0)
+        self.assertEqual(self.scalar("select population from public.area_geo_data where area_id=%s", (self.old,)), 1234)
+        self.assertEqual(self.scalar("select count(*) from public.area_geo_data where area_id=%s", (self.new,)), 0)
 
     def test_21_a_row_changed_after_the_delete_blocks_undo_and_changes_nothing(self):
         batch = self.post_place(self.old, into=self.new).headers["Location"].rsplit("/", 1)[-1]
@@ -178,10 +178,10 @@ class RetireTests(unittest.TestCase):
         response = self.post_place(self.old)
         self.assertEqual(response.status_code, 302, response.get_data(as_text=True)[:600])
         self.assertEqual(self.old_exists(), 0)
-        self.assertEqual(self.scalar("select count(*) from public.area_profiles where area_id=%s", (self.old,)), 0)
+        self.assertEqual(self.scalar("select count(*) from public.area_geo_data where area_id=%s", (self.old,)), 0)
         batch = response.headers["Location"].rsplit("/", 1)[-1]
         self.admin.post(f"/imports/{batch}/undo", data={"csrf_token": "test-csrf", "confirmation": "UNDO"})
-        self.assertEqual(self.scalar("select count(*) from public.area_profiles where area_id=%s", (self.old,)), 1)
+        self.assertEqual(self.scalar("select count(*) from public.area_geo_data where area_id=%s", (self.old,)), 1)
 
     # ------------------------------------------------------------------------------------------ questions
     def make_question(self, key, active=False, protected=False):

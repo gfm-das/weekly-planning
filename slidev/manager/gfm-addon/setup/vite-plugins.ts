@@ -24,6 +24,18 @@ export default (options: { userRoot?: string, cliRoot?: string } = {}) => [
       return STUDIO_BLOCK.test(id) ? 'export default {}' : null
     },
   },
+  // Round 16: publishing failed for decks with a utility class that UnoCSS turns into `::after:1.5rem`: Slidev 52.19's
+  // CSS minifier (lightningcss 1.33) refuses such a selector and ended the whole build ("Invalid token in pseudo
+  // element"). The published CSS is no longer minified (a few KB), so a rule a browser would ignore anyway cannot stop
+  // a publish. The editor (apply: 'serve') is not affected.
+  {
+    name: 'gfm-addon:css-not-minified',
+    enforce: 'post' as const,
+    apply: 'build' as const,
+    config() {
+      return { build: { cssMinify: false } }
+    },
+  },
   // One Vite dependency cache per deck. Slidev runs "installed globally" here
   // (/slidev/node_modules is above every deck), so it puts one cache for all
   // decks in @slidev/cli/node_modules/.vite. Vite's cache key includes the deck

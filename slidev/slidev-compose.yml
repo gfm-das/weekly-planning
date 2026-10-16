@@ -33,13 +33,22 @@ services:
       # package.json come from the repo, read-only, on top of the data volume.
       - './manager:/slidev/manager:ro'
       - './package.json:/slidev/package.json:ro'
+      # Round 16: the lock file pins every version (vite, lightningcss ...), so a restart cannot bring a newer one.
+      - './package-lock.json:/slidev/package-lock.json:ro'
     expose:
       - '3040'
       - '3041'
     command:
       - sh
       - '-ec'
-      - "npm install --no-audit --no-fund\nexec npm start\n"
+      # npm ci installs exactly what package-lock.json says. It is skipped when the installed copy is already that one
+      # (a plain restart stays fast and works without internet); a changed lock file installs again.
+      - |
+        if ! cmp -s package-lock.json node_modules/.gfm-lock; then
+          npm ci --no-audit --no-fund || exit 1
+          cp package-lock.json node_modules/.gfm-lock
+        fi
+        exec npm start
     env_file:
       - .env
 volumes:

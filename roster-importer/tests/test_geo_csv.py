@@ -154,7 +154,7 @@ class TemplateTests(unittest.TestCase):
 
     def test_the_template_has_the_three_tables_with_the_saved_figures(self):
         headings, rows = data_types.geo_template_tables(self.ZONES, self.DISTRICTS, self.AREAS)
-        self.assertEqual(len(headings), 11 * 3 + 2)
+        self.assertEqual(len(headings), 11 * 3 + 2 + 2)  # the Area table also has Urban type and Assignment type
         self.assertEqual([headings[0], headings[12], headings[24]], ["Zone", "District", "Area"])
         self.assertEqual((headings[11], headings[23]), ("", ""))  # the blank columns between the tables
         self.assertIn("Dense Urban Cluster (223)", headings)
@@ -172,6 +172,18 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(result.left_out, 3)  # Beta Zone, Nord Dorf and Third have no figure yet
         self.assertEqual(result.problem_count, 0)
         self.assertEqual(result.flagged, [])
+
+    def test_the_area_table_of_the_template_carries_urban_and_assignment_type(self):
+        """Round 16: the former Area data labels travel with Geo data, in the Area table only."""
+        areas = [{"area": "Testville", "population": 250, "size_km2": 2.5, "urban_type": "Rural", "assignment_type": "Sisters"},
+                 {"area": "Nord Dorf", "urban_type": "City"}]
+        headings, rows = data_types.geo_template_tables(self.ZONES, self.DISTRICTS, areas)
+        self.assertEqual(headings[-2:], ["Urban type", "Assignment type"])
+        self.assertEqual(headings.count("Urban type"), 1)
+        result = data_types.parse_geo_data(data_files.read_table("t.csv", data_files.as_csv(headings, rows)))
+        found = by_level(result)["area"]
+        self.assertEqual((found["Testville"]["urban_type"], found["Testville"]["assignment_type"]), ("Rural", "Sisters"))
+        self.assertEqual((found["Nord Dorf"]["urban_type"], found["Nord Dorf"]["population"]), ("City", None))  # a type alone is kept
 
     def test_the_download_is_the_three_table_template(self):
         class Cursor:

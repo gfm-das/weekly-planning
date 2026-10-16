@@ -233,5 +233,50 @@ if [ -n "$docker_real" ]; then
   echo "$out" | grep -q "bad=0"; check "every saved status file parses and has the fields the page reads ($(echo "$out" | tail -1))" $?
 else echo "SKIP  (no Docker here to parse the JSON)"; fi
 
+echo "---- Dashboards (DataEase) and Presentations compose files (round 16)"
+settings tags
+git -C "$COMPUTER" reset -q --hard "$E"; echo 0 > "$GFM_TEST_HEALTH"
+# the seed and translate scripts are stand-ins that write down how they were called (the real ones start a node container)
+dataease_files() {
+  mkdir -p dataease/web dataease/gate dataease/dashboards dataease/lib dataease/tests slidev
+  for f in seed-dashboards translate-dashboards; do
+    printf '#!/usr/bin/env bash\necho "%s $* project=${GFM_DATAEASE_PROJECT:-}" >> "$GFM_TEST_DIR/docker.log"\n[ -z "${STUB_SEED_FAIL:-}" ] || exit 1\n' "$f.sh" > "dataease/$f.sh"
+  done
+  echo "server { }" > dataease/web/default.conf; echo "// gate" > dataease/gate/gate.mjs; echo "{}" > dataease/dashboards/six.json; echo "// lib" > dataease/lib/a.mjs
+  echo "t" > dataease/tests/x.test.mjs
+  printf 'services:\n  slidev: {}\n' > slidev/slidev-compose.yml; echo "{}" > slidev/package-lock.json
+}
+release v1.12.0 "Release 1.12.0" dataease_files
+F=$(git -C "$MAKER" rev-parse HEAD)
+RUN check >/dev/null 2>&1
+has '"check_result": "updates"' "$STATUS"; check "dataease and compose files changed: an update is offered" $?
+hasnt '"dataease"' "$STATUS"; check "dataease is no longer listed as 'install by hand' (the updater renews it)" $?
+: > "$TMP/docker.log"; STUB_SEED_FAIL=1 RUN update --confirmed >/dev/null 2>&1
+[ "$(head_of)" = "$E" ] && has '"result": "rolled_back"' "$STATUS"; check "a seed that fails puts the previous version back (rolled_back)" $?
+[ "$(grep -c 'force-recreate web gate' "$TMP/docker.log")" -ge 2 ]; check "and web and gate are made new again with the previous files" $?
+has 'docker exec gfm-dataease-backup /backup/nightly.sh --now' "$TMP/docker.log"; check "DataEase was backed up before the seed" $?
+: > "$TMP/docker.log"; RUN update --confirmed >/dev/null 2>&1
+[ "$(head_of)" = "$F" ] && has '"result": "done"' "$STATUS"; check "the update with the dataease and compose changes is done" $?
+has 'compose -p gfmtest-stub-gfm-dataease -f .*dataease/compose.yml up -d --no-deps --force-recreate web gate' "$TMP/docker.log"; check "a dataease/ change makes the web and gate containers new" $?
+nb=$(grep -n 'nightly.sh --now' "$TMP/docker.log" | head -1 | cut -d: -f1); ns=$(grep -n '^seed-dashboards.sh --allow-empty project=gfmtest-stub-gfm-dataease' "$TMP/docker.log" | head -1 | cut -d: -f1)
+nt=$(grep -n '^translate-dashboards.sh' "$TMP/docker.log" | head -1 | cut -d: -f1); nc=$(grep -n '^seed-dashboards.sh --check --allow-empty' "$TMP/docker.log" | head -1 | cut -d: -f1)
+[ -n "$nb" ] && [ -n "$ns" ] && [ -n "$nt" ] && [ -n "$nc" ] && [ "$nb" -lt "$ns" ] && [ "$ns" -lt "$nt" ] && [ "$nt" -lt "$nc" ]; check "DataEase: backup, then seed, then translate, then the check (in that order, with the project name)" $?
+has 'compose -p gfmtest-stub-slidev -f .*slidev/slidev-compose.yml.* up -d --no-deps --force-recreate slidev' "$TMP/docker.log"; check "a changed slidev-compose.yml / package-lock.json makes the Presentations container new" $?
+hasnt 'docker restart gfmtest-stub-slidev' "$TMP/docker.log"; check "(a plain restart would not have been enough, so it was not used)" $?
+
+# only tests and notes of dataease/ changed: nothing is renewed. Only slidev/manager changed: a restart, not a new container.
+release v1.12.1 "Release 1.12.1" bash -c "echo t2 >> dataease/tests/x.test.mjs; echo notes > dataease/README.md"
+: > "$TMP/docker.log"; RUN check >/dev/null 2>&1; RUN update --confirmed >/dev/null 2>&1
+hasnt 'force-recreate' "$TMP/docker.log" && hasnt 'seed-dashboards' "$TMP/docker.log"; check "only tests and notes of dataease/ changed: DataEase is left alone" $?
+release v1.12.2 "Release 1.12.2" bash -c "mkdir -p slidev/manager; echo m > slidev/manager/a.mjs"
+: > "$TMP/docker.log"; RUN check >/dev/null 2>&1; RUN update --confirmed >/dev/null 2>&1
+has 'docker restart gfmtest-stub-slidev' "$TMP/docker.log" && hasnt 'force-recreate slidev' "$TMP/docker.log"; check "only slidev/manager changed: Presentations is restarted, not made new" $?
+release v1.12.3 "Release 1.12.3" bash -c "echo '// gate 2' > dataease/gate/gate.mjs"
+: > "$TMP/docker.log"; RUN check >/dev/null 2>&1; RUN update --confirmed >/dev/null 2>&1
+has 'force-recreate web gate' "$TMP/docker.log" && hasnt 'seed-dashboards' "$TMP/docker.log"; check "a gate-only change recreates web and gate and does not seed" $?
+release v1.12.4 "Release 1.12.4" bash -c "echo '{\"a\":1}' > dataease/dashboards/six.json"
+: > "$TMP/docker.log"; STUB_FAIL="inspect" RUN check >/dev/null 2>&1; STUB_FAIL="inspect" RUN update --confirmed >/dev/null 2>&1
+hasnt 'seed-dashboards' "$TMP/docker.log" && has '"result": "done"' "$STATUS" && has 'is not installed here' "$(LOGFILE)"; check "a computer without Dashboards: the dataease part is skipped and the update is done" $?
+
 echo; echo "$checks checks: $([ "$failed" = 0 ] && echo 'all passed' || echo "$failed failed")"
 exit "$failed"

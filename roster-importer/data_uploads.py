@@ -1,6 +1,6 @@
 """Data uploads: the numbers the portal does not collect itself (the rules; the pages are data_upload_pages.py).
 
-Seven uploads (area data, geo data, finding export, zone history, referral archive, rates, baptism history), each with
+Four uploads (geo data, finding export, zone history, baptism history), each with
 the same four steps:
   1. Upload: download the template, pick a CSV or XLSX file. The file is read in memory and never saved.
   2. Check: row counts, problems, and how the data joins what is already stored (check_upload).
@@ -40,46 +40,29 @@ import sign_in
 from data_files import FileProblem, clean
 from data_text import plain, t
 
-# Batches whose rows live in their own table (each row carries its batch id; Undo removes them). Area data instead
+# Batches whose rows live in their own table (each row carries its batch id; Undo removes them). Geo data instead
 # records its changed rows like every other batch (batches.py).
-ROW_KINDS = {"FINDING", "ZONE_HISTORY", "REFERRAL_ARCHIVE", "RATES", "BAPTISMS"}
-AREA_TABLES = batches.AREA_DATA_TABLES
+ROW_KINDS = {"FINDING", "ZONE_HISTORY", "BAPTISMS"}
 # How Import history names each kind (text keys of data_text.py).
-KIND_LABELS = {"AREA_DATA": "uploads.kind.areas", "FINDING": "uploads.kind.finding",
-               "ZONE_HISTORY": "uploads.kind.zoneHistory", "REFERRAL_ARCHIVE": "uploads.kind.referralArchive",
-               "RATES": "uploads.kind.rates", "BAPTISMS": "uploads.kind.baptisms",
+KIND_LABELS = {"FINDING": "uploads.kind.finding",
+               "ZONE_HISTORY": "uploads.kind.zoneHistory", "BAPTISMS": "uploads.kind.baptisms",
                "GEO_DATA": "uploads.kind.geo", "RETIRE": "uploads.kind.retire", "VOLLZOGEN": "uploads.kind.vollzogen"}
 
 # One entry per upload page. level: which names are matched ('area' falls back to the zone when a row has no
-# area). historical: whether a name may be kept as a historical name (for area data this means "leave the row
-# out": area data is only stored for portal areas). table: where the rows of a finding or weekly upload go.
+# area). historical: whether a name may be kept as a historical name. table: where the rows of a finding or weekly upload go.
 UPLOADS = {
-    "areas": {"kind": "AREA_DATA", "text": "areas", "level": "area", "historical": True},
     "geo": {"kind": "GEO_DATA", "text": "geo", "level": "area", "historical": True},
     "finding": {"kind": "FINDING", "text": "finding", "level": "area", "historical": True, "table": "finding_people"},
     "zone-history": {"kind": "ZONE_HISTORY", "text": "zoneHistory", "level": "zone", "historical": True,
                      "table": "zone_history_weeks"},
-    "referral-archive": {"kind": "REFERRAL_ARCHIVE", "text": "referralArchive", "level": "area", "historical": True,
-                         "table": "referral_archive_weeks"},
-    "rates": {"kind": "RATES", "text": "rates", "level": "zone", "historical": True, "table": "finding_rate_weeks"},
     "baptisms": {"kind": "BAPTISMS", "text": "baptisms", "level": "area", "historical": True,
                  "table": "baptism_history_weeks"},
 }
 TABLE_OF_KIND = {spec["kind"]: spec["table"] for spec in UPLOADS.values() if "table" in spec}
-# Archived uploads (migration 038, Oct 2026: FindeChristus is archived). The Data uploads page no longer offers them;
-# their page, template, check and Apply still work at their address, and Import history keeps (and can undo) every
-# earlier upload. Put a slug back by removing it here.
-ARCHIVED_UPLOADS = {"referral-archive"}
-
 # The columns of each weekly table and the record field that fills each one.
 WEEKLY_COLUMNS = {
     "zone-history": [("sunday", "sunday"), ("zone_id", "zone_id"), ("zone_name", "zone")]
                     + [(f, f) for f in data_types.ZONE_HISTORY_FIELDS],
-    "referral-archive": [("sunday", "sunday"), ("report_date", "report_date"), ("zone_id", "zone_id"),
-                         ("area_id", "area_id"), ("zone_name", "zone"), ("area_name", "area"), ("source", "source")]
-                        + [(f, f) for f in data_types.ARCHIVE_FIELDS],
-    "rates": [("sunday", "sunday"), ("report_date", "report_date"), ("zone_id", "zone_id"), ("zone_name", "zone"),
-              ("is_mission", "is_mission"), ("teaching_rate", "teaching_rate"), ("contact_rate", "contact_rate")],
     "baptisms": [("sunday", "sunday"), ("zone_id", "zone_id"), ("area_id", "area_id"), ("zone_name", "zone"),
                  ("area_name", "area"), ("ward", "ward"), ("finding_source", "finding_source"),
                  ("baptisms", "baptisms"), ("confirmations", "confirmations")],
@@ -209,8 +192,6 @@ def drop_pending(slug):
 def read_upload(slug, filename, data):
     """The rows of an uploaded file as records (data_types.Parsed)."""
     rows = data_files.read_table(filename, data)
-    if slug == "areas":
-        return data_types.parse_area_data(rows)
     if slug == "geo":
         return data_types.parse_geo_data(rows)
     if slug == "finding":
@@ -219,27 +200,17 @@ def read_upload(slug, filename, data):
         return data_types.parse_finding(rows, person_key)
     if slug == "zone-history":
         return data_types.parse_zone_history(rows)
-    if slug == "referral-archive":
-        return data_types.parse_archive(rows)
-    if slug == "rates":
-        return data_types.parse_rates(rows)
     return data_types.parse_baptisms(rows)
 
 
 def template_file(slug, cur):
     """(file name, headings, rows) of the template for an upload."""
-    if slug == "areas":
-        headings, rows = data_types.area_template(area_rows(cur))
-    elif slug == "geo":  # the owner's format: three tables side by side (Zone, District, Area)
+    if slug == "geo":  # the owner's format: three tables side by side (Zone, District, Area)
         headings, rows = data_types.geo_template_tables(geo_zone_rows(cur), geo_district_rows(cur), geo_rows(cur))
     elif slug == "finding":
         headings, rows = data_types.finding_template()
     elif slug == "zone-history":
         headings, rows = data_types.zone_history_template()
-    elif slug == "referral-archive":
-        headings, rows = data_types.archive_template()
-    elif slug == "rates":
-        headings, rows = data_types.rates_template()
     else:
         headings, rows = data_types.baptism_template()
     return f"template-{slug}.csv", headings, rows
@@ -250,11 +221,7 @@ def template_file(slug, cur):
 def place_records(matcher, slug, records):
     """Adds zone_id and area_id to every record; returns the names that still need a manager's match."""
     spec = spec_of(slug)
-    to_place = [r for r in records if not r.get("is_mission")]  # rate rows of the whole mission have no zone
-    for record in records:
-        if record.get("is_mission"):
-            record["zone_id"] = None
-    questions = data_names.place_all(matcher, to_place, spec["level"])
+    questions = data_names.place_all(matcher, records, spec["level"])
     for record in records:  # a district of the Geo data file is matched quietly: saved only when it is a portal district
         if record.get("level") == "district":
             record["district_id"] = matcher.district_id_quietly(record.get("district"))
@@ -263,22 +230,10 @@ def place_records(matcher, slug, records):
 
 # --------------------------------------------------------------------------------------------- saving
 
-def area_rows(cur):
-    """Every area of the mission with its area data: current areas first, older areas only when they have data."""
-    cur.execute("""select a.id area_id,a.name area,d.name district,z.name zone,a.active,p.population,p.size_km2,
-        case when p.population is not null and p.size_km2>0 then round(p.population/p.size_km2,1) end density_per_km2,
-        p.urban_type,p.assignment_type,coalesce(p.extra,'{}'::jsonb) extra
-      from public.areas a join public.districts d on d.id=a.district_id join public.zones z on z.id=d.zone_id
-      left join public.area_profiles p on p.area_id=a.id
-      where z.mission_id=%s and (a.active or p.area_id is not null)
-      order by a.active desc,z.name,d.name,a.name""", (sign_in.current_mission_id(),))
-    return cur.fetchall()
-
-
 GEO_VALUES = ["population", "size_km2", "density_per_km2", *data_types.URBAN_FIELDS, "area_type"]
 # Where each level of the Geo data file is saved: level -> (table, key column, the columns it has). Migration 046 made the
 # area table, migration 052 added the zone and district tables and the new columns.
-GEO_TABLES = {"area": ("area_geo_data", "area_id", GEO_VALUES + ["households"]),
+GEO_TABLES = {"area": ("area_geo_data", "area_id", GEO_VALUES + ["households", *data_types.PEER_FIELDS]),
               "zone": ("zone_geo_data", "zone_id", GEO_VALUES),
               "district": ("district_geo_data", "district_id", GEO_VALUES)}
 GEO_SELECT = ",".join(f"g.{c}" for c in GEO_VALUES)
@@ -286,7 +241,7 @@ GEO_SELECT = ",".join(f"g.{c}" for c in GEO_VALUES)
 
 def geo_rows(cur):
     """Every area of the mission with its Geo Data: current areas first, older areas only when they have figures."""
-    cur.execute(f"""select a.id area_id,a.name area,d.name district,z.name zone,a.active,{GEO_SELECT},g.households,
+    cur.execute(f"""select a.id area_id,a.name area,d.name district,z.name zone,a.active,{GEO_SELECT},g.households,g.urban_type,g.assignment_type,
         coalesce(g.density_per_km2,case when g.population is not null and g.size_km2>0
                                         then round(g.population/g.size_km2,1) end) density_per_km2_shown,
         g.source,g.data_date,coalesce(g.extra,'{{}}'::jsonb) extra
@@ -380,42 +335,40 @@ def save_geo_records(conn, records, filename):
     return batch
 
 
-def save_area_records(conn, records, blank_keeps, filename):
-    """Saves area data; returns the batch id, or None when nothing changed.
-
-    blank_keeps=True (an upload): an empty cell keeps what is saved, and extra attributes are added to the saved
-    ones. blank_keeps=False (the area table): the row is saved exactly as shown, so an empty box clears a value."""
-    batches.lock_tables(conn, AREA_TABLES)
-    before = batches.snapshot(conn, AREA_TABLES)
-    if blank_keeps:
-        new = ("coalesce(excluded.population,p.population)", "coalesce(excluded.size_km2,p.size_km2)",
-               "coalesce(excluded.urban_type,p.urban_type)", "coalesce(excluded.assignment_type,p.assignment_type)",
-               "p.extra||excluded.extra")
-    else:
-        new = ("excluded.population", "excluded.size_km2", "excluded.urban_type", "excluded.assignment_type",
-               "excluded.extra")
-    upsert = f"""insert into public.area_profiles as p
-        (area_id,population,size_km2,urban_type,assignment_type,extra,updated_at,updated_by)
-      values(%(area_id)s,%(population)s,%(size_km2)s,%(urban_type)s,%(assignment_type)s,%(extra)s,now(),%(actor)s)
-      on conflict (area_id) do update set population={new[0]},size_km2={new[1]},urban_type={new[2]},
-        assignment_type={new[3]},extra={new[4]},updated_at=now(),updated_by=excluded.updated_by
-      where (p.population,p.size_km2,p.urban_type,p.assignment_type,p.extra)
-        is distinct from ({new[0]},{new[1]},{new[2]},{new[3]},{new[4]})"""
+def save_geo_table(conn, records, filename):
+    """Saves the Geo data table of the page (one record per area): the row is saved exactly as typed, so an empty box clears a
+    value. Only what the table shows is touched: population, size, households, urban type, assignment type and the extra
+    attributes; the source, the date, the stated density and the urbanisation figures stay (a changed population or size
+    clears the stated density, as an upload does). Returns the batch id, or None when nothing changed."""
+    tables = batches.GEO_DATA_TABLES
+    batches.lock_tables(conn, tables)
+    before = batches.snapshot(conn, tables)
+    typed = ("population", "size_km2", "households", "urban_type", "assignment_type", "extra")
+    upsert = f"""insert into public.area_geo_data as g
+        (area_id,population,size_km2,households,urban_type,assignment_type,extra,updated_at,updated_by)
+      values(%(area_id)s,%(population)s,%(size_km2)s,%(households)s,%(urban_type)s,%(assignment_type)s,%(extra)s,now(),%(actor)s)
+      on conflict (area_id) do update set population=excluded.population,size_km2=excluded.size_km2,
+        households=excluded.households,urban_type=excluded.urban_type,assignment_type=excluded.assignment_type,
+        extra=excluded.extra,
+        density_per_km2=case when excluded.population is distinct from g.population or excluded.size_km2 is distinct from g.size_km2
+                             then null else g.density_per_km2 end,
+        updated_at=now(),updated_by=excluded.updated_by
+      where ({",".join("g." + c for c in typed)}) is distinct from ({",".join("excluded." + c for c in typed)})"""
     with database.cursor(conn) as cur:
-        cur.execute("select area_id from public.area_profiles")
+        cur.execute("select area_id from public.area_geo_data")
         saved = {r["area_id"] for r in cur.fetchall()}
         for r in records:
-            empty = all(r.get(f) is None for f in ("population", "size_km2", "urban_type", "assignment_type")) \
-                and not r.get("extra")
+            empty = all(r.get(f) is None for f in typed[:-1]) and not r.get("extra")
             if empty and r["area_id"] not in saved:
                 continue  # never add a row that says nothing
             cur.execute(upsert, {**r, "extra": psycopg2.extras.Json(r.get("extra") or {}), "actor": sign_in.actor_name()})
-    after = batches.snapshot(conn, AREA_TABLES)
-    changed = batches.count_changes(AREA_TABLES, before, after)
+    after = batches.snapshot(conn, tables)
+    changed = batches.count_changes(tables, before, after)
     if not changed:
         return None
-    batch = batches.create_batch(conn, "AREA_DATA", filename, None, {"areas_in_file": len(records), "areas_changed": changed})
-    batches.record_changes(conn, batch, AREA_TABLES, before, after)
+    batch = batches.create_batch(conn, "GEO_DATA", filename, None, {"areas_in_file": len(records), "zones_in_file": 0,
+                                                                    "districts_in_file": 0, "rows_changed": changed})
+    batches.record_changes(conn, batch, tables, before, after)
     return batch
 
 
@@ -563,9 +516,7 @@ def apply_upload(slug, pending, older_ok=False):
             if place_records(data_names.Matcher(cur, sign_in.current_mission_id(), with_districts=slug == "geo"), slug, records):
                 raise ValueError(plain("uploads.review.namesLeft"))
         rows_read = pending["parsed"]["rows_read"]
-        if slug == "areas":  # rows whose name was left out have no portal area
-            batch = save_area_records(conn, [r for r in records if r.get("area_id")], True, pending["filename"])
-        elif slug == "geo":
+        if slug == "geo":
             batch = save_geo_records(conn, records, pending["filename"])
         elif slug == "finding":
             batch = save_finding(conn, records, pending["filename"], rows_read, older_ok)
@@ -606,9 +557,7 @@ def check_upload(cur, slug, pending):
     matcher = data_names.Matcher(cur, sign_in.current_mission_id(), with_districts=slug == "geo")
     questions = place_records(matcher, slug, records)
     lines, older = [], None
-    if slug == "areas":
-        lines.append(t("uploads.review.areasBlank"))
-    elif slug == "geo":
+    if slug == "geo":
         lines.append(t("uploads.review.areasBlank"))
         levels = {level: sum(1 for r in records if (r.get("level") or "area") == level) for level in data_types.GEO_LEVELS}
         if levels["zone"] or levels["district"]:
@@ -625,7 +574,7 @@ def check_upload(cur, slug, pending):
         lines.append(t("uploads.review.people", new=counts["new"], changed=counts["changed"], same=counts["same"]))
         lines.append(t("uploads.review.foundBetween", first=day_text(found[0]), last=day_text(found[-1])))
         # The FindeChristus line (Media without "Facebook - Personal Profile") is archived (migration 038): the rows
-        # are still stored as before, and dashboards.findechristus_referrals_week still counts them.
+        # are still stored as before, and Archetypal Health still counts them (dashboards.archetype_area_week).
         lines.append(t("uploads.review.datesKept"))
         older = older_than_stored(cur, records)
         if older:
@@ -644,20 +593,16 @@ def check_upload(cur, slug, pending):
 
 # Where a stored row of each weekly table is, in the same shape as a record of the file (see place_key).
 PLACE_COLUMNS = {
-    "zone-history": "t.zone_id, t.zone_name zone, null::bigint area_id, '' area, false is_mission",
-    "rates": "t.zone_id, t.zone_name zone, null::bigint area_id, '' area, t.is_mission",
-    "referral-archive": "t.zone_id, t.zone_name zone, t.area_id, t.area_name area, false is_mission",
-    "baptisms": "t.zone_id, t.zone_name zone, t.area_id, t.area_name area, false is_mission",
+    "zone-history": "t.zone_id, t.zone_name zone, null::bigint area_id, '' area",
+    "baptisms": "t.zone_id, t.zone_name zone, t.area_id, t.area_name area",
 }
 
 
 def place_key(row):
-    """Where a row counts, to compare a stored row with the rows of the file: its portal area, the mission, or its
+    """Where a row counts, to compare a stored row with the rows of the file: its portal area, or its
     portal zone (with the area name as written, for historical areas)."""
     if row.get("area_id"):
         return ("area", row["area_id"])
-    if row.get("is_mission"):
-        return ("mission",)
     zone = row.get("zone_id") or clean(row.get("zone")).casefold()
     return ("zone", zone, clean(row.get("area")).casefold())
 

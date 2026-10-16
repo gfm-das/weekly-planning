@@ -66,6 +66,9 @@ An update, step by step:
    the portal's pages, in `backups\updater\<time>\`.
 5. **Install:** the new code, the new migrations in order (each followed by migration 019, the rights check), then
    only the parts that changed: portal-api, DA Management, Presentations (Slidev), the portal pages (`portal\deploy.ps1`).
+   The shell updater (`gfm-updater.sh`, used on the Ubuntu server) also renews Dashboards (the DataEase web and gate containers, then the
+   dashboard seed after a DataEase backup) and makes the Presentations container new when its compose files change; the PowerShell twin does
+   not do these two (round 16). Still "install by hand": `nightly-backup/`, `cloudflared/`, `supabase/`, `dataease/compose.yml` and other folders.
 6. **Health again** (6 tries, 30 s apart). If it does not pass, the updater puts the old version back by itself and the
    page says so. If even that fails, the page says "needs a person" and the log lists every step.
 

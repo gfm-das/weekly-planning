@@ -107,7 +107,7 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
   </section>
 </main>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<dialog id="publishDialog"><div class="modal"><h3>Publishing did not work</h3><p id="publishMessage"></p><details id="publishDetails" open><summary>Details from the slide builder</summary><pre id="publishLog" class="log"></pre></details><div class="modal-actions"><button id="publishViewOld" class="btn" type="button" hidden>View the last published version</button><button id="publishClose" class="btn primary" type="button">Close</button></div></div></dialog>
+<dialog id="publishDialog"><div class="modal"><h3>Publishing did not work</h3><p id="publishMessage"></p><details id="publishDetails" open><summary>Details from the slide builder</summary><pre id="publishLog" class="log"></pre></details><div class="modal-actions"><button id="publishCopy" class="btn" type="button" hidden>Copy details</button><button id="publishViewOld" class="btn" type="button" hidden>View the last published version</button><button id="publishClose" class="btn primary" type="button">Close</button></div></div></dialog>
 <script nonce="__NONCE__">
 (() => {
   const $ = id => document.getElementById(id), P = window.PresentationSession;
@@ -507,6 +507,9 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
       $('publishMessage').textContent = e.message;
       $('publishLog').textContent = e.data?.log || '';
       $('publishDetails').hidden = !e.data?.log;
+      $('publishCopy').hidden = false; $('publishCopy').dataset.text = [e.message, e.data?.log].filter(Boolean).join('
+
+');
       $('publishViewOld').hidden = !forView || !state.status?.published_at;
       $('publishDialog').showModal();
       return false;
@@ -670,6 +673,13 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
   });
 
   $('publishButton').addEventListener('click', () => publish(false));
+  // Copy details: the message and Slidev's lines, to send to whoever looks after the portal (round 16).
+  $('publishCopy').addEventListener('click', async () => {
+    const text = $('publishCopy').dataset.text || '';
+    try { await navigator.clipboard.writeText(text); }
+    catch { const box = document.createElement('textarea'); box.value = text; box.style.position = 'fixed'; box.style.opacity = '0'; $('publishDialog').appendChild(box); box.select(); try { document.execCommand('copy'); } catch {} box.remove(); }
+    const button = $('publishCopy'); button.textContent = 'Details copied.'; setTimeout(() => { button.textContent = 'Copy details'; }, 2500);
+  });
   $('publishClose').addEventListener('click', () => $('publishDialog').close());
   $('publishViewOld').addEventListener('click', () => { state.leaving = true; location.href = '/p/' + encodeURIComponent(state.slug) + '/'; });
   $('overlayRetry').addEventListener('click', startStudio);

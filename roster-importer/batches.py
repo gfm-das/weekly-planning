@@ -41,17 +41,16 @@ HISTORICAL_TABLES = PEOPLE_TABLES + ["reporting_weeks", "weekly_area_reports", "
                      "import_weekly_high_potential_friends"] + WEEKLY_PEOPLE_TABLES
 # A "People" data upload (names and details of new members and friends, no weekly forms): no import_* staging tables.
 PEOPLE_UPLOAD_TABLES = PEOPLE_TABLES + ["reporting_weeks", "weekly_area_reports"] + WEEKLY_PEOPLE_TABLES
-AREA_DATA_TABLES = ["area_profiles"]  # Data uploads > Area data (data_uploads.py)
 GEO_DATA_TABLES = ["area_geo_data", "zone_geo_data", "district_geo_data"]  # Data uploads > Geo data (data_uploads.py, migrations 046 and 052)
 VOLLZOGEN_TABLES = ["vollzogen_records"]  # Data uploads > Vollzogen (vollzogen_upload.py, migration 051)
 # The tables Undo may put back, for each kind of batch (any other kind: HISTORICAL_TABLES).
-TABLES_OF_KIND = {"TRANSFER": TRANSFER_TABLES, "ACCOUNT": ACCOUNT_TABLES, "AREA_DATA": AREA_DATA_TABLES,
+TABLES_OF_KIND = {"TRANSFER": TRANSFER_TABLES, "ACCOUNT": ACCOUNT_TABLES,
                   "PEOPLE": PEOPLE_UPLOAD_TABLES, "PLACES": PLACES_TABLES, "GEO_DATA": GEO_DATA_TABLES,
                   "VOLLZOGEN": VOLLZOGEN_TABLES}
 
 # How a row of each table is found again: its key columns ("id" unless listed here).
 KEYS = {"historical_planning_details": ["weekly_area_report_id"],
-        "area_profiles": ["area_id"], "area_geo_data": ["area_id"], "zone_geo_data": ["zone_id"], "district_geo_data": ["district_id"],
+        "area_geo_data": ["area_id"], "zone_geo_data": ["zone_id"], "district_geo_data": ["district_id"],
         "import_weekly_planning_reports": ["source_report_key"],
         "import_weekly_planning_answers": ["source_report_key", "source_column"],
         "import_weekly_new_members": ["source_report_key", "display_order"],

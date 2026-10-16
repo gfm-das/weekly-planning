@@ -59,7 +59,7 @@ MAX_UPLOAD_BYTES = 40 * 1024 * 1024
 # password, key or token belongs in these settings and an address with one is not shown (web_links.py). Empty keeps the default,
 # "off" hides the card.
 WEB_SERVICE_URLS = {
-    "brevo": os.environ.get("WEB_LINK_BREVO") or "https://app.brevo.com/",
+    "brevo": os.environ.get("WEB_LINK_BREVO") or "https://app.brevo.com/settings/keys/smtp",
     "porkbun": os.environ.get("WEB_LINK_PORKBUN") or "https://porkbun.com/account/login",
     "cloudflare": os.environ.get("WEB_LINK_CLOUDFLARE") or "https://dash.cloudflare.com/",
 }

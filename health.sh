@@ -3,6 +3,8 @@
 # for Mac, Linux and Windows with Git Bash). It only looks: it changes nothing.
 #   ./health.sh              one check; exit code 0 when no row says FAIL, 1 otherwise
 #   ./health.sh --wait 180   keep checking for up to 180 seconds until everything is fine (right after a start or an install)
+#   ./health.sh --deep       also the slow checks: "Presentations can build" makes a tiny test deck inside the Presentations container
+#                            (about 10 seconds) and fails when Slidev cannot build it, as happens when the installed versions drift
 # Rows: web addresses with the answer they must give (200 = the page is there; 401 or 403 on a page that needs a sign-in = the
 # door is locked, which is what we want); Dashboards and the Presentations deck address are SKIPPED while not installed; the
 # nightly backup (the newest dump under 26 hours old); the Cloudflare tunnel (SKIPPED without one, a WARNING and never a failure when it
@@ -15,9 +17,11 @@
 set -u
 HERE=$(cd "$(dirname "$0")" && pwd)
 WAIT=0
+DEEP=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --wait) WAIT=${2:?--wait needs a number of seconds}; shift 2 ;;
+    --deep) DEEP=1; shift ;;
     -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Unknown option: $1" >&2; exit 2 ;;
   esac
@@ -135,6 +139,26 @@ updater_check() {
   else row "$name" "-" "WARNING: not watching (updater/status/status.json is older than 15 minutes; bash updater/register-watcher.sh)"; fi
 }
 
+# --deep: can Presentations build a deck? A one-slide deck is built inside the container (nothing is kept and no real deck is touched).
+# GFM_HEALTH_BUILD_SECONDS (default 150) is the longest it may take.
+build_check() {
+  local name="Presentations can build" out
+  if [ -n "$SKIP" ] && [[ "|$SKIP|" == *"|$name|"* ]]; then row "$name" "-" "SKIPPED (this check is switched off)"; return; fi
+  if [ "$(docker inspect -f '{{.State.Running}}' "$SLIDEV_CONTAINER" 2>/dev/null)" != true ]; then row "$name" "-" "SKIPPED (not deployed: $SLIDEV_CONTAINER is not running)"; return; fi
+  if slidev_starting; then row "$name" "-" "waiting (Presentations installed their packages a moment ago)"; return; fi
+  out=$(docker exec "$SLIDEV_CONTAINER" sh -c '
+    cd /slidev && d=$(mktemp -d /tmp/gfm-health-XXXXXX) || exit 1
+    printf -- "---\ntheme: default\n---\n\n# Health check\n" > "$d/slides.md"
+    timeout '"${GFM_HEALTH_BUILD_SECONDS:-150}"' node_modules/.bin/slidev build "$d/slides.md" --out "$d/dist" --base /p/health-check/ >"$d/log" 2>&1; code=$?
+    if [ $code -eq 0 ] && [ -f "$d/dist/index.html" ]; then echo BUILD-OK; else echo BUILD-FAIL; grep -m1 -E "Error|error" "$d/log" | cut -c1-200 || echo "slidev build exit code $code"; fi
+    rm -rf "$d"' 2>&1)
+  if grep -q '^BUILD-OK' <<<"$out"; then row "$name" "-" "OK (a test deck was built)"
+  else
+    out=$(grep -v '^BUILD-FAIL' <<<"$out" | head -1 | cut -c1-160)
+    row "$name" "-" "FAIL: a test deck could not be built (${out:-no message; too slow, or the container stopped}; docker logs $SLIDEV_CONTAINER)"; fail
+  fi
+}
+
 run_checks() {
   ROWS=(); FAILED=0
   backup_check
@@ -164,6 +188,7 @@ run_checks() {
       row "$n" "-" "SKIPPED (not deployed: port 8089 not published yet)"
     done
   fi
+  [ "$DEEP" = 1 ] && build_check
 }
 
 print_rows() {

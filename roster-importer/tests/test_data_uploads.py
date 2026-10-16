@@ -33,8 +33,8 @@ def clear_uploads():
     with database.connect() as conn:
         with conn.cursor() as cur:
             cur.execute("""delete from public.roster_import_batches where kind in
-              ('AREA_DATA','FINDING','ZONE_HISTORY','REFERRAL_ARCHIVE','RATES','BAPTISMS')""")
-            cur.execute("delete from public.area_profiles")
+              ('GEO_DATA','FINDING','ZONE_HISTORY','BAPTISMS')""")
+            cur.execute("delete from public.area_geo_data")
             cur.execute("delete from public.data_name_matches")
 
 
@@ -86,13 +86,13 @@ class DataUploadTests(unittest.TestCase):
         return self.client.post(f"/imports/{batch}/undo", data={"csrf_token": "test-csrf", "confirmation": "UNDO"})
 
     def fc_referrals(self):
-        return self.scalar("select coalesce(sum(referrals),0) from dashboards.findechristus_referrals_week "
-                           "where mission_id=2 and data_source='finding export'")
+        return self.scalar("select coalesce(sum(people_found),0) from dashboards.finding_area_week "
+                           "where mission_id=2 and findechristus and people_found>0")
 
     # Tests --------------------------------------------------------------------------------------------------------
     def test_01_managers_only(self):
         guest = app.app.test_client()
-        for path in ["/uploads", "/uploads/areas/table", "/uploads/names", "/uploads/zone-history/template"]:
+        for path in ["/uploads", "/uploads/geo/table", "/uploads/names", "/uploads/zone-history/template"]:
             self.assertEqual(guest.get(path).status_code, 302, path)
             self.assertEqual(self.client.get(path).status_code, 200, path)
         zl = self.role_person("TEST-UPLOAD-ZL", leaders=["ZL"])
@@ -114,65 +114,76 @@ class DataUploadTests(unittest.TestCase):
         ap = self.role_person("TEST-UPLOAD-AP", leaders=["AP"])
         self.assertEqual(management_tests().admin_client(self, ap, "AP").get("/uploads").status_code, 200)
 
-    def test_01b_archived_referral_archive_is_not_offered_but_still_works(self):
-        # FindeChristus is archived (migration 038): the hub no longer lists the referral archive upload, but its page
-        # and template still open for anyone who has the address.
+    def test_01b_deleted_cards_are_not_offered_and_their_old_addresses_lead_to_the_hub(self):
+        # Round 16 (migration 058): Referral archive and Rates are gone for good.
         hub = self.client.get("/uploads").get_data(as_text=True)
-        self.assertNotIn('href="/uploads/referral-archive"', hub)
-        self.assertNotIn("FindeChristus", hub)
+        for slug in ("referral-archive", "rates"):
+            self.assertNotIn(f'href="/uploads/{slug}"', hub)
+            self.assertEqual(self.client.get(f"/uploads/{slug}").status_code, 302)  # old address: leads to /uploads
+        self.assertNotIn("Referral archive", hub)
+        self.assertNotIn("Teaching and contact rates", hub)
         self.assertIn("Finding export", hub)
-        self.assertEqual(self.client.get("/uploads/referral-archive").status_code, 302)  # old address: leads to /uploads
-        self.assertEqual(self.client.get("/uploads/referral-archive/template").status_code, 200)
+        self.assertIn("Baptism history", hub)
 
-    def test_02_area_data_upload_table_and_undo(self):
+    def test_02_geo_data_flat_file_with_peer_types_table_and_undo(self):
+        """Round 16: Area data is part of Geo data. A flat file with Urban type and Assignment type is read, a re-upload
+        changes nothing, the Geo data table edits the same figures, and Undo takes them back."""
         (z1, d1, a1), (z2, d2, a2) = self.portal_areas(2)
-        page = self.upload("areas", s.area_file([(z1, d1, a1, "34000", "2,5", "Big city", "Elders", "yes"),
-                                                 (z2, d2, a2, "", "12", "", "Sisters", ""),
-                                                 (z2, d2, "Not A Portal Area", "5", "", "", "", "")]), "areas.csv")
+        page = self.upload("geo", s.geo_flat_file([(z1, d1, a1, "34000", "2,5", "Big city", "Elders", "yes"),
+                                                   (z2, d2, a2, "", "12", "", "Sisters", ""),
+                                                   (z2, d2, "Not A Portal Area", "5", "", "", "", "")]), "geo-flat.csv")
         self.assertIn("Not A Portal Area", page)  # a name to match
-        self.assertIn("Leave these rows out", page)
-        self.client.post("/uploads/areas/names", data={"csrf_token": "test-csrf", "level": "area",
-                                                       "name": "Not A Portal Area", "choice": "historical"})
-        self.assertNotIn("names still need a match", self.client.get("/uploads/areas/review").get_data(as_text=True))
-        batch = self.apply("areas")
+        self.client.post("/uploads/geo/names", data={"csrf_token": "test-csrf", "level": "area",
+                                                     "name": "Not A Portal Area", "choice": "historical"})
+        self.assertNotIn("names still need a match", self.client.get("/uploads/geo/review").get_data(as_text=True))
+        batch = self.apply("geo")
         self.assertIsNotNone(batch)
-        row = self.rows("select * from dashboards.area_profile where area=%s", (a1,))[0]
+        row = self.rows("select * from dashboards.area_geo_data where area=%s", (a1,))[0]
         self.assertEqual((row["population"], float(row["size_km2"]), float(row["density_per_km2"]), row["urban_type"],
                           row["extra"]), (34000, 2.5, 13600.0, "Big city", {"Chapel nearby": "yes"}))
-        second = self.rows("select * from dashboards.area_profile where area=%s", (a2,))[0]
-        self.assertEqual((second["population"], second["assignment_type"]), (None, "Sisters"))
-        # The same file again changes nothing, and an empty cell keeps the saved value.
-        self.upload("areas", s.area_file([(z1, d1, a1, "", "", "", "", "")]), "areas-again.csv")
-        self.assertIsNone(self.apply("areas"))
-        # The area table: clearing a box clears the value; the save is a batch that Undo reverses.
-        table = self.client.get("/uploads/areas/table").get_data(as_text=True)
+        peers = {r["area_id"]: r for r in self.rows("select * from dashboards.archetype_area_profile where mission_id=2")}
+        first_id = self.scalar("select id from public.areas where name=%s", (a1,))
+        second_id = self.scalar("select id from public.areas where name=%s", (a2,))
+        self.assertEqual((peers[first_id]["urban_type"], peers[first_id]["assignment_type"], float(peers[first_id]["density_per_km2"])),
+                         ("Big city", "Elders", 13600.0))
+        self.assertEqual((peers[second_id]["population"], peers[second_id]["assignment_type"]), (None, "Sisters"))
+        # An empty cell keeps the saved value: a file of blanks says nothing.
+        self.upload("geo", s.geo_flat_file([(z1, d1, a1, "", "", "", "", "")]), "geo-again.csv")
+        self.assertIsNone(self.apply("geo"))
+        # The Geo data table: clearing a box clears the value; the save is a batch that Undo reverses.
+        table = self.client.get("/uploads/geo/table").get_data(as_text=True)
         self.assertIn(a1, table)
+        self.assertIn('name="urban"', table)
+        self.assertEqual(self.client.get("/uploads/areas/table").status_code, 404)  # the old Area data table is gone
         ids = [r["area_id"] for r in self.rows("""select a.id area_id from public.areas a join public.districts d on d.id=a.district_id
-          join public.zones z on z.id=d.zone_id left join public.area_profiles p on p.area_id=a.id
-          where z.mission_id=2 and (a.active or p.area_id is not null) order by a.active desc,z.name,d.name,a.name""")]
-        form = {"csrf_token": "test-csrf", "area_id": [], "population": [], "size": [], "urban": [], "assignment": [], "extra": []}
+          join public.zones z on z.id=d.zone_id left join public.area_geo_data g on g.area_id=a.id
+          where z.mission_id=2 and (a.active or g.area_id is not null) order by a.active desc,z.name,d.name,a.name""")]
+        form = {"csrf_token": "test-csrf", "area_id": [], "population": [], "size": [], "households": [], "urban": [],
+                "assignment": [], "extra": []}
         for area_id in ids:
-            saved = self.rows("select * from public.area_profiles where area_id=%s", (area_id,))
+            saved = self.rows("select * from public.area_geo_data where area_id=%s", (area_id,))
             p = saved[0] if saved else {}
             form["area_id"].append(str(area_id))
-            cleared = area_id == self.scalar("select id from public.areas where name=%s", (a1,))
+            cleared = area_id == first_id
             form["population"].append("" if cleared or p.get("population") is None else str(p["population"]))
             form["size"].append("" if p.get("size_km2") is None else str(p["size_km2"]))
-            form["urban"].append(p.get("urban_type") or "")
+            form["households"].append("" if p.get("households") is None else str(p["households"]))
+            form["urban"].append("Rural" if area_id == second_id else p.get("urban_type") or "")  # typed by hand
             form["assignment"].append(p.get("assignment_type") or "")
             form["extra"].append("; ".join(f"{k}: {v}" for k, v in (p.get("extra") or {}).items()))
-        first_id = self.scalar("select id from public.areas where name=%s", (a1,))
-        before = self.rows("select population from public.area_profiles where area_id=%s", (first_id,))
-        response = self.client.post("/uploads/areas/table", data=form)
+        before = self.rows("select * from public.area_geo_data where area_id in (%s,%s) order by area_id", (first_id, second_id))
+        response = self.client.post("/uploads/geo/table", data=form)
         self.assertEqual(response.status_code, 302)
         table_batch = str(self.scalar("select id from public.roster_import_batches order by created_at desc limit 1"))
-        self.assertIsNone(self.rows("select population from public.area_profiles where area_id=%s", (first_id,))[0]["population"])
+        self.assertIsNone(self.rows("select population from public.area_geo_data where area_id=%s", (first_id,))[0]["population"])
+        self.assertEqual(self.scalar("select urban_type from public.area_geo_data where area_id=%s", (second_id,)), "Rural")
+        self.assertEqual(self.scalar("select urban_type from dashboards.archetype_area_profile where area_id=%s", (second_id,)), "Rural")
         self.assertEqual(self.undo(table_batch).status_code, 302)
-        self.assertEqual(self.rows("select population from public.area_profiles where area_id=%s", (first_id,)), before)
+        self.assertEqual(self.rows("select * from public.area_geo_data where area_id in (%s,%s) order by area_id", (first_id, second_id)), before)
         bad = dict(form, population=["lots"] + form["population"][1:])
-        self.assertEqual(self.client.post("/uploads/areas/table", data=bad).status_code, 400)
+        self.assertEqual(self.client.post("/uploads/geo/table", data=bad).status_code, 400)
         self.assertEqual(self.undo(batch).status_code, 302)
-        self.assertEqual(self.scalar("select count(*) from public.area_profiles where area_id in (select id from public.areas where name=any(%s))",
+        self.assertEqual(self.scalar("select count(*) from public.area_geo_data where area_id in (select id from public.areas where name=any(%s))",
                                      ([a1, a2],)), 0)
 
     def test_03_finding_upload_reupload_undo_and_no_names(self):
@@ -271,25 +282,8 @@ class DataUploadTests(unittest.TestCase):
             self.assertEqual(self.undo(batch).status_code, 302)
         self.assertEqual(self.scalar("select count(*) from dashboards.zone_history_week where data_source='upload'"), 0)
 
-    def test_05_archive_rates_and_baptisms(self):
+    def test_05_baptisms(self):
         (zone, district, area), = self.portal_areas(1)
-        self.upload("referral-archive", s.archive_file("Dortmund", "Wesel", area), "FC Data Archives.csv")
-        self.client.post("/uploads/referral-archive/names", data={"csrf_token": "test-csrf", "level": "area", "name": "Wesel",
-                                                                  "choice": "", "keep_rest": "yes"})
-        archive = self.apply("referral-archive")
-        rows = {(r["area"], r["source"]): r for r in self.rows("select * from dashboards.referral_archive_week where mission_id=2")}
-        self.assertEqual(rows[("Wesel", "Lead-Ads")]["referrals_received"], 2)
-        self.assertEqual(rows[("Wesel", "Lead-Ads")]["zone"], "Dortmund")  # kept as written: an old zone
-        self.assertEqual(rows[(area, "FindeChristus Referrals")]["zone"], zone)  # the portal's zone of the area
-        fc = self.rows("select data_source,sum(referrals) n from dashboards.findechristus_referrals_week where mission_id=2 group by 1")
-        self.assertEqual({r["data_source"]: r["n"] for r in fc}, {"referral archive": 7})
-
-        self.upload("rates", s.rates_file(zone), "rates.csv")
-        rates = self.apply("rates")
-        latest = self.rows("select zone,teaching_rate from dashboards.finding_rate_week where mission_id=2 and sunday='2026-09-20' order by zone")
-        self.assertEqual({r["zone"]: float(r["teaching_rate"]) for r in latest}, {"Mission": 0.26, zone: 0.41})
-        self.assertEqual(self.scalar("select count(*) from dashboards.finding_rate_week where mission_id=2"), 7)
-
         self.upload("baptisms", s.vollzogen_file(zone), "Vollzogen 2026.xlsx")
         baptisms = self.apply("baptisms")
         counted = self.rows("select sum(baptisms) b,sum(confirmations) c from dashboards.baptism_history_week where mission_id=2")[0]
@@ -298,20 +292,26 @@ class DataUploadTests(unittest.TestCase):
         for secret in s.MADE_UP_NAMES:
             self.assertNotIn(secret, stored)
         history = self.client.get("/imports").get_data(as_text=True)
-        for label in ("Referral archive", "Rates", "Baptism history"):
-            self.assertIn(label, history)
-        for batch in (baptisms, rates, archive):
-            self.assertEqual(self.undo(batch).status_code, 302)
+        self.assertIn("Baptism history", history)
+        self.assertEqual(self.undo(baptisms).status_code, 302)
 
     def test_06_dashboards_reader_sees_views_not_tables(self):
         with database.connect() as conn:
             with conn.cursor() as cur:
                 cur.execute("set local role gfm_dashboard_reader")
-                for view in ("area_profile", "finding_area_week", "finding_cohort_week", "referral_archive_week",
-                             "findechristus_referrals_week", "finding_rate_week", "zone_history_week",
+                for view in ("area_geo_data", "archetype_area_profile", "finding_area_week", "finding_cohort_week", "zone_history_week",
                              "mission_history_week", "baptism_history_week"):
                     cur.execute(f"select count(*) from dashboards.{view}")
-                for table in ("finding_people", "area_profiles", "data_name_matches", "finding_people_latest"):
+                # Migration 058: the two deleted uploads left no table or view behind, and Archetypal Health no longer reads them.
+                cur.execute("reset role")
+                cur.execute("""select string_agg(n.nspname||'.'||c.relname, ', ') from pg_class c join pg_namespace n on n.oid=c.relnamespace
+                    where c.relname in ('referral_archive_weeks','finding_rate_weeks','referral_archive_week','finding_rate_week',
+                                        'findechristus_referrals_week')""")
+                self.assertIsNone(cur.fetchone()[0])
+                cur.execute("select pg_get_viewdef('dashboards.archetype_area_week'::regclass) like '%findechristus_referrals_week%'")
+                self.assertFalse(cur.fetchone()[0])
+                cur.execute("set local role gfm_dashboard_reader")
+                for table in ("finding_people", "area_geo_data", "data_name_matches", "finding_people_latest"):
                     cur.execute("savepoint s")
                     with self.assertRaises(Exception, msg=table):
                         cur.execute(f"select count(*) from public.{table}")
@@ -328,29 +328,6 @@ class DataUploadTests(unittest.TestCase):
                                       data={"csrf_token": "test-csrf", "kind": "finding", "file": (io.BytesIO(b"x"), "x.csv")})
             self.assertEqual(answer.status_code, 400)
             self.assertIn("PERSON_KEY_SECRET", answer.get_data(as_text=True))
-
-    def test_08_findechristus_referrals_start_with_the_first_whole_week(self):
-        """The finding export starts on a Wednesday: its first week misses Monday and Tuesday, so that week comes from
-        the referral archive while the archive has it."""
-        (zone, district, area), = self.portal_areas(1)
-        self.upload("referral-archive", s.archive_file("Dortmund", "Wesel", area), "FC Data Archives.csv")
-        self.client.post("/uploads/referral-archive/names", data={"csrf_token": "test-csrf", "level": "area",
-                                                                  "name": "Wesel", "choice": "", "keep_rest": "yes"})
-        archive = self.apply("referral-archive")
-        export = s.csv_bytes(s.FINDING_HEADINGS, [
-            s.finding_row("900000011", "Made Up One", "Media", "Headquarters Paid Ad", "9/16/2026", area, district, zone),
-            s.finding_row("900000012", "Made Up Two", "Media", "Headquarters Paid Ad", "9/22/2026", area, district, zone)])
-        self.upload("finding", export, "MissionFindingDetail.csv")
-        finding = self.apply("finding")
-        weeks = lambda: {(r["sunday"].isoformat(), r["data_source"]): r["n"] for r in self.rows(
-            "select sunday,data_source,sum(referrals) n from dashboards.findechristus_referrals_week where mission_id=2 group by 1,2")}
-        # Week 14-20 Sep 2026 starts before the export (Wednesday 16 Sep): the archive's 4, not the export's 1.
-        self.assertEqual(weeks(), {("2024-02-25", "referral archive"): 3, ("2026-09-20", "referral archive"): 4,
-                                   ("2026-09-27", "finding export"): 1})
-        # Without the archive, the export's part-week is better than nothing.
-        self.assertEqual(self.undo(archive).status_code, 302)
-        self.assertEqual(weeks(), {("2026-09-20", "finding export"): 1, ("2026-09-27", "finding export"): 1})
-        self.assertEqual(self.undo(finding).status_code, 302)
 
     def test_09_an_older_finding_export_keeps_the_newer_dates(self):
         areas = self.portal_areas(2)

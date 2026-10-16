@@ -1,4 +1,4 @@
-"""The five kinds of data upload: which columns each file has, and how its rows become the rows we store.
+"""The kinds of data upload: which columns each file has, and how its rows become the rows we store.
 
 Every kind turns the rows of a file into `records` (plain dicts) and a list of problems. Nothing here reads the
 database: matching zone and area names to the portal happens afterwards (data_names.py), and saving happens in
@@ -9,8 +9,7 @@ import re
 from datetime import date, timedelta
 
 from data_files import (FileProblem, cell, clean, find_heading_row, heading_key, read_big_count, read_confirmed, read_count,
-                        read_date, read_decimal, read_fc_number, read_loose_date, read_rate, week_before, week_of,
-                        week_reported_on)
+                        read_date, read_decimal, read_fc_number, read_loose_date, week_before, week_of)
 from data_names import fold
 from data_text import plain
 
@@ -46,39 +45,17 @@ def is_mission_total(*names):
     return bool(words) and all(w in MISSION_WORDS for w in words)
 
 
-def add_counts(total, row, fields):
-    """Adds the numbers of `row` to `total`; an empty cell adds nothing, and two empty cells stay empty."""
-    for field in fields:
-        if row.get(field) is not None:
-            total[field] = (total.get(field) or 0) + row[field]
+# --------------------------------------------------------------------------------------------- 1. geo data: shared pieces
 
-
-# --------------------------------------------------------------------------------------------- 1. area data
-
-AREA_FIELDS = {  # stored column: the headings that fill it (the first is the template's)
-    "population": ["Population", "Einwohner"],
-    "size_km2": ["Size (km2)", "Size km2", "Area (km2)", "km2", "Fläche (km2)"],
+AREA_NAME_HEADINGS = ["Zone", "District", "Area"]
+SIZE_HEADINGS = ["Size (km2)", "Size km2", "Area (km2)", "km2", "Fläche (km2)"]
+URBAN_TYPES = ["Big city", "City", "Town", "Rural"]
+ASSIGNMENT_TYPES = ["Elders", "Sisters", "Elders and sisters", "Senior couple"]
+# The two peer-group labels Archetypal Health compares areas by (round 16: they used to be a separate upload, Area data).
+PEER_FIELDS = {  # stored column: the headings that fill it (the first is the template's)
     "urban_type": ["Urban type", "Urban", "Stadt oder Land"],
     "assignment_type": ["Assignment type", "Assignment", "Missionaries"],
 }
-AREA_NAME_HEADINGS = ["Zone", "District", "Area"]
-# Shown in the template only, worked out from population and km2; never read back.
-AREA_INFO_HEADINGS = ["Density (people per km2)", "Density", "Active"]
-URBAN_TYPES = ["Big city", "City", "Town", "Rural"]
-ASSIGNMENT_TYPES = ["Elders", "Sisters", "Elders and sisters", "Senior couple"]
-
-
-def area_template(areas):
-    """Template rows: every current area with what is saved for it today, so the file only needs filling in."""
-    extra_names = sorted({k for a in areas for k in (a.get("extra") or {})})
-    headings = AREA_NAME_HEADINGS + [names[0] for names in AREA_FIELDS.values()] + [AREA_INFO_HEADINGS[0]] + extra_names
-    rows = []
-    for a in areas:
-        extra = a.get("extra") or {}
-        rows.append([a["zone"], a["district"], a["area"], none_as_blank(a.get("population")),
-                     number_text(a.get("size_km2")), a.get("urban_type") or "", a.get("assignment_type") or "",
-                     number_text(a.get("density_per_km2"))] + [extra.get(k, "") for k in extra_names])
-    return headings, rows
 
 
 def none_as_blank(value):
@@ -93,54 +70,11 @@ def number_text(value):
     return str(int(value)) if value == int(value) else str(round(value, 3))
 
 
-def parse_area_data(rows):
-    parsed = Parsed()
-    start, columns = find_heading_row(rows, ["Area"])
-    headings = rows[start]
-    known = {heading_key(h) for names in AREA_FIELDS.values() for h in names}
-    known |= {heading_key(h) for h in AREA_NAME_HEADINGS + AREA_INFO_HEADINGS}
-    # Every other heading is a free extra attribute (for example "Chapel nearby" or "Languages").
-    extras = [(index, clean(h)) for index, h in enumerate(headings) if clean(h) and heading_key(h) not in known]
-    seen = {}
-    for number, row in enumerate(rows[start + 1:], start=start + 2):
-        parsed.rows_read += 1
-        area = clean(cell(row, columns, "Area"))
-        if not area:
-            parsed.problem(number, plain("uploads.problem.noArea"))
-            continue
-        record = {"zone": clean(cell(row, columns, "Zone")), "district": clean(cell(row, columns, "District")),
-                  "area": area, "row": number, "extra": {}}
-        try:
-            record["population"] = read_big_count(cell(row, columns, *AREA_FIELDS["population"]))
-            size = read_decimal(cell(row, columns, *AREA_FIELDS["size_km2"]))
-            if size == 0:
-                raise ValueError(plain("uploads.problem.sizeZero"))
-            record["size_km2"] = size
-        except ValueError as error:
-            parsed.problem(number, plain("uploads.problem.where", where=area, problem=error))
-            continue
-        for field in ("urban_type", "assignment_type"):
-            value = clean(cell(row, columns, *AREA_FIELDS[field]))[:60]
-            record[field] = value or None
-        for index, name in extras:
-            value = clean(row[index]) if index < len(row) else ""
-            if value:
-                record["extra"][name[:60]] = value[:200]
-        key = (record["zone"].casefold(), area.casefold())
-        if key in seen:
-            parsed.problem(number, plain("uploads.problem.twiceLastWins", name=area))
-            parsed.records[seen[key]] = record
-        else:
-            seen[key] = len(parsed.records)
-            parsed.records.append(record)
-    return parsed
-
-
-# --------------------------------------------------------------------------------------------- 1b. geo data
+# --------------------------------------------------------------------------------------------- 1b. geo data: the file
 
 GEO_FIELDS = {  # stored column: the headings that fill it (the first is the template's)
     "population": ["Population", "Einwohner"],
-    "size_km2": AREA_FIELDS["size_km2"],
+    "size_km2": SIZE_HEADINGS,
     "density_per_km2": ["Density (people per km2)", "Density", "Population Density", "Einwohner je km2", "Bevölkerungsdichte"],
     "households": ["Households", "Haushalte"],
 }
@@ -155,6 +89,7 @@ URBAN_HEADINGS = {"pop_urban_centre": "Urban Centre (130)", "pop_dense_urban_clu
                   "pop_suburban": "Suburban or peri-urban grid cell (221)",
                   "pop_rural_very_low": "Very low density rural grid cell (311)", "pop_rural_low": "Low density rural grid cell (312)"}
 GEO_AREA_TYPE = ["Area Type", "Gebietstyp"]
+GEO_PEER_FIELDS = tuple(PEER_FIELDS)
 GEO_LEVELS = ("zone", "district", "area")  # the three tables of the owner's file, in the order they sit side by side
 # A name that is a stand-in, not a place (the owner's file keeps rows such as "Media Elders" and "Office Sisters").
 GEO_PLACEHOLDER_WORDS = {"aps", "ap", "media", "office", "das", "dummy", "test", "placeholder", "platzhalter", "offstrict",
@@ -190,8 +125,9 @@ def geo_template(areas):
 
 def geo_block_headings(level):
     """The 11 headings of one table of the owner's file: the name, Population, Area (km2), Population Density, the six
-    urbanisation populations and Area Type."""
-    return [level.title(), "Population", "Area", "Population Density", *URBAN_HEADINGS.values(), GEO_AREA_TYPE[0]]
+    urbanisation populations and Area Type; the Area table also has Urban type and Assignment type (peer groups)."""
+    peer = [names[0] for names in PEER_FIELDS.values()] if level == "area" else []
+    return [level.title(), "Population", "Area", "Population Density", *URBAN_HEADINGS.values(), GEO_AREA_TYPE[0], *peer]
 
 
 def geo_template_tables(zones, districts, areas):
@@ -207,7 +143,7 @@ def geo_template_tables(zones, districts, areas):
         for item in lists[level]:
             rows.append([item[level], none_as_blank(item.get("population")), number_text(item.get("size_km2")),
                          number_text(item.get("density_per_km2")), *[none_as_blank(item.get(f)) for f in URBAN_FIELDS],
-                         item.get("area_type") or ""])
+                         item.get("area_type") or "", *([item.get(f) or "" for f in PEER_FIELDS] if level == "area" else [])])
         blocks.append(rows)
     height = max(len(rows) for rows in blocks)
     table = []
@@ -216,7 +152,7 @@ def geo_template_tables(zones, districts, areas):
         for position, rows in enumerate(blocks):
             if position:
                 row.append("")
-            row += rows[index] if index < len(rows) else [""] * 11
+            row += rows[index] if index < len(rows) else [""] * len(geo_block_headings(GEO_LEVELS[position]))
         table.append(row)
     return headings, table
 
@@ -253,6 +189,10 @@ def geo_block_columns(headings, first, end):
             columns.setdefault("density_per_km2", index)
         elif key in {heading_key(h) for h in GEO_AREA_TYPE}:
             columns.setdefault("area_type", index)
+        else:
+            for field, names in PEER_FIELDS.items():
+                if key in {heading_key(h) for h in names}:
+                    columns.setdefault(field, index)
     return columns
 
 
@@ -275,6 +215,8 @@ def read_geo_figures(read, record):
     if record["size_km2"] == 0:
         raise ValueError(plain("uploads.problem.sizeZero"))
     record["area_type"] = clean(read("area_type"))[:60] or None
+    for field in GEO_PEER_FIELDS:
+        record[field] = clean(read(field))[:60] or None
 
 
 def parse_geo_tables(rows, start, blocks):
@@ -310,7 +252,7 @@ def parse_geo_tables(rows, start, blocks):
             except ValueError as error:
                 parsed.problem(number, plain("uploads.problem.where", where=name, problem=error))
                 continue
-            if all(record[f] is None for f in ("population", "size_km2", "density_per_km2", *URBAN_FIELDS)):
+            if all(record[f] is None for f in ("population", "size_km2", "density_per_km2", *URBAN_FIELDS, *GEO_PEER_FIELDS)):
                 parsed.left_out += 1  # no figure in this row: nothing to store
                 continue
             if is_geo_placeholder(name):
@@ -345,9 +287,10 @@ def parse_geo_data(rows):
     urban = urban_columns(headings)
     known = {heading_key(h) for names in GEO_FIELDS.values() for h in names}
     known |= {heading_key(h) for h in AREA_NAME_HEADINGS + GEO_SOURCE + GEO_DATE + GEO_AREA_TYPE}
+    known |= {heading_key(h) for names in PEER_FIELDS.values() for h in names}
     extras = [(index, clean(h)) for index, h in enumerate(headings)
               if clean(h) and heading_key(h) not in known and index not in urban.values()]
-    if not any(heading_key(h) in columns for names in GEO_FIELDS.values() for h in names):
+    if not any(heading_key(h) in columns for names in (*GEO_FIELDS.values(), *PEER_FIELDS.values()) for h in names):
         raise FileProblem(plain("uploads.problem.missingColumns", columns=GEO_FIELDS["population"][0]))
     seen = {}
     for number, row in enumerate(rows[start + 1:], start=start + 2):
@@ -374,13 +317,16 @@ def parse_geo_data(rows):
         for field in URBAN_FIELDS:
             record.setdefault(field, None)
         record["area_type"] = clean(cell(row, columns, *GEO_AREA_TYPE))[:60] or None
+        for field, names in PEER_FIELDS.items():
+            record[field] = clean(cell(row, columns, *names))[:60] or None
         record["data_date"] = day.isoformat() if day else None
         record["source"] = clean(cell(row, columns, *GEO_SOURCE))[:200] or None
         for index, name in extras:
             value = clean(row[index]) if index < len(row) else ""
             if value:
                 record["extra"][name[:60]] = value[:200]
-        if all(record[f] is None for f in (*GEO_FIELDS, *URBAN_FIELDS)) and not record["extra"] and not record["area_type"]:
+        if (all(record[f] is None for f in (*GEO_FIELDS, *URBAN_FIELDS, *GEO_PEER_FIELDS)) and not record["extra"]
+                and not record["area_type"]):
             parsed.left_out += 1  # no figure in this row: nothing to store
             continue
         key = (record["zone"].casefold(), area.casefold())
@@ -532,145 +478,6 @@ def parse_zone_history(rows):
             continue
         seen.add(key)
         parsed.records.append(record)
-    return parsed
-
-
-# --------------------------------------------------------------------------------------------- 3b. referral archive
-
-ARCHIVE_FIELDS = {
-    "referrals_received": ["Referrals Received"],
-    "referrals_contacted": ["Referrals Contacted"],
-    "friends_made": ["Friends Made"],
-    "lessons_taught": ["Lessons Taught"],
-    "church_attendance": ["Church Attendance"],
-    "baptismal_dates": ["Baptismal Date", "Baptismal Dates"],
-    "baptisms": ["Baptisms"],
-    "books_of_mormon": ["BOM Delivered", "Book of Mormon Delivered"],
-    "with_member": ["With Member"],
-    "follow_up_lessons": ["Follow-up Lessons", "Follow-up"],
-}
-
-
-def archive_template():
-    headings = ["Date", "Mission", "Zone", "Area", "Source"] + [names[0] for names in ARCHIVE_FIELDS.values()]
-    return headings, [["3/4/2024", "Frankfurt", "Heidelberg", "Worms", "BM Bestellung", 1, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-                      ["9/28/2026", "Frankfurt", "", "Bockenheim", "FindeChristus Referrals", 4, "", "", "", "", "", "", "", "", ""]]
-
-
-def one_report_per_week(parsed, first_rows):
-    """Keeps one report per week in the records of the referral archive or the rate archive.
-
-    The sheets have one report per week, but sometimes two dates of a file show the same week (in the owner's rate
-    archive Sunday 11 and Monday 12 Jan 2026). Adding both up would count that week twice, so the later report is
-    used and the check page names both dates. first_rows: {report date: the file row where that date starts}."""
-    dates_of_week = {}
-    for record in parsed.records:
-        dates_of_week.setdefault(record["sunday"], set()).add(record["report_date"])
-    used = {}
-    for sunday, dates in sorted(dates_of_week.items()):
-        dates = sorted(dates)
-        used[sunday] = dates[-1]
-        for older in dates[:-1]:
-            parsed.problem(first_rows[older], plain("uploads.problem.twoReports", older=short_day(older),
-                                                    newer=short_day(dates[-1]), week=short_day(sunday)))
-    parsed.records = [r for r in parsed.records if r["report_date"] == used[r["sunday"]]]
-
-
-def short_day(iso):
-    """'2026-09-27' -> '27 Sep 2026'."""
-    return date.fromisoformat(iso).strftime("%d %b %Y")
-
-
-def parse_archive(rows):
-    """The FC Data Archives sheet: one row per referral (or per area and week); added up per date, zone, area and
-    source. The referral number is not read. A report date counts for the week that report shows
-    (data_files.week_reported_on: a Monday report shows the week that ended 8 days before), one report per week."""
-    parsed = Parsed()
-    start, columns = find_heading_row(rows, ["Date", "Area", "Referrals Received"])
-    totals, first_rows = {}, {}
-    for number, row in enumerate(rows[start + 1:], start=start + 2):
-        parsed.rows_read += 1
-        zone, area = clean(cell(row, columns, "Zone")), clean(cell(row, columns, "Area"))
-        if is_mission_total(zone, area):
-            parsed.left_out += 1
-            continue
-        if not zone and not area:
-            parsed.problem(number, plain("uploads.problem.noZoneOrArea"))
-            continue
-        try:
-            day = read_date(cell(row, columns, "Date"))
-        except ValueError as error:
-            parsed.problem(number, str(error))
-            continue
-        if not day:
-            parsed.problem(number, plain("uploads.problem.noDate"))
-            continue
-        counts = {}
-        for field, names in ARCHIVE_FIELDS.items():
-            try:
-                counts[field] = read_count(cell(row, columns, *names))
-            except ValueError as error:
-                parsed.problem(number, plain("uploads.problem.where", where=names[0], problem=error))
-                counts[field] = None
-        source = clean(cell(row, columns, "Source"))[:120]
-        key = (day.isoformat(), zone[:120], area[:120], source)
-        total = totals.setdefault(key, {"sunday": week_reported_on(day).isoformat(), "report_date": day.isoformat(),
-                                        "zone": zone[:120], "area": area[:120], "source": source})
-        add_counts(total, counts, ARCHIVE_FIELDS)
-        first_rows.setdefault(day.isoformat(), number)
-    parsed.records = list(totals.values())
-    one_report_per_week(parsed, first_rows)
-    return parsed
-
-
-# --------------------------------------------------------------------------------------------- 3c. rates
-
-def rates_template():
-    return ["Date", "Zone", "Teaching Rate", "Contact Rate"], [["9/28/2026", "Mission", "26.00%", "99.30%"],
-                                                              ["9/28/2026", "Frankfurt", "41.00%", "98.30%"]]
-
-
-def parse_rates(rows):
-    """The Teaching_Contact Rate Archive sheet: rates per report date and zone. Like the referral archive, a report
-    date counts for the week the report shows (data_files.week_reported_on), one report per week."""
-    parsed = Parsed()
-    start, columns = find_heading_row(rows, ["Date", "Zone"])
-    teaching = ["Teaching Rate"]
-    contact = ["Contact Rate", "Contacting Rate"]
-    if not any(heading_key(h) in columns for h in teaching + contact):
-        raise FileProblem(plain("uploads.problem.missingColumns", columns="Teaching Rate, Contact Rate"))
-    by_date_and_zone, first_rows = {}, {}
-    for number, row in enumerate(rows[start + 1:], start=start + 2):
-        parsed.rows_read += 1
-        zone = clean(cell(row, columns, "Zone"))
-        if not zone:
-            parsed.left_out += 1
-            continue
-        try:
-            day = read_date(cell(row, columns, "Date"))
-            teaching_rate = read_rate(cell(row, columns, *teaching))
-            contact_rate = read_rate(cell(row, columns, *contact))
-        except ValueError as error:
-            parsed.problem(number, str(error))
-            continue
-        if not day:
-            parsed.problem(number, plain("uploads.problem.noDate"))
-            continue
-        if teaching_rate is None and contact_rate is None:
-            parsed.left_out += 1
-            continue
-        mission = is_mission_total(zone)
-        record = {"sunday": week_reported_on(day).isoformat(), "report_date": day.isoformat(),
-                  "zone": "Mission" if mission else zone[:120], "is_mission": mission,
-                  "teaching_rate": teaching_rate, "contact_rate": contact_rate}
-        key = (record["report_date"], record["zone"].casefold())
-        if key in by_date_and_zone:
-            parsed.problem(number, plain("uploads.problem.weekTwice", name=record["zone"]))
-            continue
-        by_date_and_zone[key] = record
-        first_rows.setdefault(record["report_date"], number)
-    parsed.records = list(by_date_and_zone.values())
-    one_report_per_week(parsed, first_rows)
     return parsed
 
 

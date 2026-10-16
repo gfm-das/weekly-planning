@@ -57,7 +57,7 @@ def staff_rows(cur, profile_id=None):
         coalesce(up.additional_roles,'{}') additional_roles,au.email,au.invited_at,au.last_sign_in_at
       from public.user_profiles up left join auth.users au on au.id=up.id
       where up.missionary_id is null and up.home_mission_id=%s and (%s::uuid is null or up.id=%s::uuid)
-      order by lower(up.display_name),up.id""" + (" for update of up" if profile_id else ""),
+      order by lower(regexp_replace(trim(up.display_name), '^.*[[:space:]]', '')),lower(up.display_name),up.id""" + (" for update of up" if profile_id else ""),
                 (sign_in.current_mission_id(), profile_id, profile_id))
     return cur.fetchall()
 

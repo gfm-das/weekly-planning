@@ -71,6 +71,10 @@ class PageTests(unittest.TestCase):
         self.assertNotRegex(html, r"<input[^>]*type=.password")  # no place to type a password
         self.assertIn("No password or key is kept here", html)
 
+    def test_the_brevo_card_opens_the_smtp_keys_page(self):
+        self.assertEqual(settings.WEB_SERVICE_URLS["brevo"], "https://app.brevo.com/settings/keys/smtp")
+        self.assertTrue(web_links.safe_url(settings.WEB_SERVICE_URLS["brevo"]))
+
     def test_a_card_without_a_safe_address_says_so(self):
         with patch.object(links_page.sign_in, "allowed", return_value=True), \
                 patch.dict(settings.WEB_SERVICE_URLS, {"brevo": "http://insecure.example/", "porkbun": "off"}):

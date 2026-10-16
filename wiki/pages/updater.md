@@ -46,7 +46,7 @@ An update, step by step:
 2. **Quick tests** on a copy of the new version. If they fail, nothing changes.
 3. **Health first.** An update only starts from a healthy system.
 4. **A way back is saved:** the current commit, a database backup, rollback copies of the images, a copy of the portal pages. All in `backups/updater/<time>/`.
-5. **Install:** the new code, the new migrations in order (each followed by migration 019, the rights check), then only the parts that changed: portal-api, DA Management, Presentations, the portal pages.
+5. **Install:** the new code, the new migrations in order (each followed by migration 019, the rights check), then only the parts that changed: portal-api, DA Management, Presentations (a new container when its settings changed), Dashboards (new web and gate containers; new dashboards after a DataEase backup), the portal pages.
 6. **Health again**, 6 tries, 30 seconds apart. If it fails, the old version is put back by itself and the page says so. If even that fails, the page says "needs a person".
 
 It does not install changes to Dashboards (`dataease/`), the nightly backup (`nightly-backup/`) or the database stack (`supabase/`). The Updates page lists such changes for a person.

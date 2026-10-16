@@ -85,36 +85,6 @@ def zone_history_file(rows):
                                              for s, z, g, a in rows])
 
 
-ARCHIVE_HEADINGS = ["Date", "Mission", "Zone", "Area", "Source", "Referral Number", "Referrals Received",
-                    "Referrals Contacted", "Friends Made", "Lessons Taught", "Church Attendance", "Baptismal Date",
-                    "Baptisms", "BOM Delivered", "With Member", "Extra 2", "Follow-up Lessons", "Extra 4"]
-
-
-def archive_file(old_zone, old_area, portal_area):
-    return csv_bytes(ARCHIVE_HEADINGS, [
-        ["3/4/2024", "Frankfurt", old_zone, old_area, "Lead-Ads", "11033", 1, 1, 0, 0, 0, 0, 0, "", "", "", "", ""],
-        ["3/4/2024", "Frankfurt", old_zone, old_area, "Lead-Ads", "11034", 1, "", 1, 1, 0, 0, 0, "", "", "", "", ""],
-        ["3/4/2024", "Frankfurt", old_zone, old_area, "BM Bestellung", "11035", 1, "", "", "", "", "", "", 1, "", "", "", ""],
-        ["9/28/2026", "Frankfurt", "", portal_area, "FindeChristus Referrals", "", 4, "", "", "", "", "", "", "", "", "", "", ""],
-        ["9/28/2026", "", "Mission", "", "", "", 76, "", "", "", "", "", "", "", "", "", "", ""],
-    ])
-
-
-def rates_file(zone):
-    """Dated like the owner's rate archive: Mondays, then Sundays from August 2026 on."""
-    return csv_bytes(["Date", "Zone", "Teaching Rate", "Contact Rate"], [
-        ["7/1/2024", "Mission", "0.135", ""],  # a Monday report: the week of 17-23 Jun 2024
-        ["7/27/2026", "Mission", "0.27", "0.98"],  # Monday 27 Jul: the week of 13-19 Jul
-        ["8/2/2026", "Mission", "0.28", "0.97"],  # Sunday 2 Aug is the report of Monday 3 Aug: 20-26 Jul
-        ["9/27/2026", "Mission", "26.00%", "99.30%"],  # Sunday 27 Sep = the 28 Sep report: 14-20 Sep
-        ["9/27/2026", zone, "41.00%", "98.30%"],
-        ["1/11/2026", zone, "0.21", "1"],  # Sunday 11 and Monday 12 Jan show the same week (29 Dec - 4 Jan):
-        ["1/12/2026", zone, "0.22", "1"],  # the later report is used and the check names both dates
-        ["4/4/2026", "Mission", "0.20", "0.99"],  # a Saturday report shows the week that just ended (23-29 Mar)
-        ["12/9/2024", zone, "#DIV/0!", ""],  # no rate that week: left out
-    ])
-
-
 def vollzogen_file(zone):
     """The office's Vollzogen sheet: a title row first, then the headings, then rows with names (never read)."""
     return xlsx_bytes([
@@ -185,8 +155,8 @@ def new_member_file(area):
     ])
 
 
-def area_file(rows, extra_heading="Chapel nearby"):
-    """rows: [(zone, district, area, population, km2, urban, assignment, extra), ...]"""
+def geo_flat_file(rows, extra_heading="Chapel nearby"):
+    """A flat Geo data file (one row per area). rows: [(zone, district, area, population, km2, urban, assignment, extra), ...]"""
     return csv_bytes(["Zone", "District", "Area", "Population", "Size (km2)", "Urban type", "Assignment type",
                       "Density (people per km2)", extra_heading],
                      [[z, d, a, p, s, u, t, "", e] for z, d, a, p, s, u, t, e in rows])

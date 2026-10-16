@@ -63,7 +63,7 @@ def account_rows(mission_id):
                 group by m.id,m.missionary_number,m.display_name,m.email,m.status,
                          a.id,a.name,d.id,d.name,z.id,z.name,ma.roster_position,ma.roster_position_abbr,
                          au.id,au.invited_at,au.confirmed_at,au.last_sign_in_at,up.id,up.missionary_id,up.active,up.app_role
-                order by z.name,d.name,a.name,m.display_name
+                order by z.name,d.name,a.name,lower(m.last_name),lower(coalesce(m.first_name,'')),m.id
             """, (mission_id,))
             rows = cur.fetchall()
     for r in rows:
@@ -249,7 +249,7 @@ def plans_for(selected, mission_id):
                   join public.areas a on a.id=ma.area_id join public.districts d on d.id=a.district_id
                   join public.zones z on z.id=d.zone_id
                   where ma.missionary_id=m.id and (ma.end_date is null or ma.end_date>=current_date) and z.mission_id=%s)
-                order by m.display_name
+                order by lower(m.last_name),lower(coalesce(m.first_name,'')),m.id
             """, (selected, mission_id))
             people = cur.fetchall()
             if len(people) != len(set(selected)):

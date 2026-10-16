@@ -306,5 +306,12 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
     const c = catalog(language);
     ok(['shell.groupWeekly', 'shell.groupInformation', 'shell.groupInsights', 'shell.groupManager'].every(k => typeof c[k] === 'string' && c[k]), `${language}: the four menu headings are translated`);
   }
+  // Round 16: the menu scrolls on its own and Sign Out has a real gap under it (laptop screens are shorter than the menu).
+  const css = read('portal.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  // The declarations of the first top-level rule that starts with exactly this selector (not inside a media block).
+  const rule = selector => { const at = css.indexOf('\n' + selector + ' {'); if (at < 0) return ''; const open = css.indexOf('{', at); return css.slice(open + 1, css.indexOf('}', open)); };
+  ok(/overflow-y:\s*auto/.test(rule('.sidebar')), 'menu: the desktop menu scrolls by itself (overflow-y: auto), so Sign Out is never cut off');
+  ok(/overscroll-behavior:\s*contain/.test(rule('.sidebar')), 'menu: scrolling the menu does not scroll the page behind it');
+  ok(/padding-bottom:\s*calc\(\s*(?:1[6-9]|[2-9]\d)px/.test(rule('.sidebar-bottom')), 'menu: at least 16px of space under Sign Out');
   console.log(`portal menu: ${passed} checks passed (menu per role, names, old deep links, the managers' glimpse, nothing retired left)`);
 })().catch(error => { console.error(error); process.exit(1); });

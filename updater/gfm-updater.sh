@@ -42,6 +42,10 @@ env_value() { [ -f "$1" ] && grep -E "^$2=" "$1" | tail -1 | cut -d= -f2- | tr -
 DB_CONTAINER=${GFM_DB_CONTAINER:-gfm-beta-supabase-db-1}
 PORTAL_CONTAINER=${GFM_PORTAL_CONTAINER:-$(env_value "$REPO/portal/.env" GFM_PORTAL_CONTAINER)}; PORTAL_CONTAINER=${PORTAL_CONTAINER:-portal-ydpgd5zwrjrvz5aa188sa60u}
 SLIDEV_CONTAINER=${GFM_SLIDEV_CONTAINER:-$(env_value "$REPO/slidev/.env" GFM_SLIDEV_CONTAINER)}; SLIDEV_CONTAINER=${SLIDEV_CONTAINER:-slidev-j5iyrpjbsssqlilqhw9axugx}
+# Dashboards (DataEase): the container names start with GFM_DATAEASE_NAME (dataease/compose.yml); the seed scripts find DataEase's private network by
+# GFM_DATAEASE_PROJECT, which is the name of the compose project (the installer passes the same value).
+DATAEASE_NAME=${GFM_DATAEASE_NAME:-$(env_value "$REPO/dataease/.env" GFM_DATAEASE_NAME)}; DATAEASE_NAME=${DATAEASE_NAME:-gfm-dataease}
+DATAEASE_PROJECT=${GFM_DATAEASE_PROJECT:-${PREFIX}gfm-dataease}
 # Every image a rebuild replaces, and the name its rollback copy gets.
 IMAGES=("${PREFIX}gfm-portal-portal-api:portal-api-rollback" "${PREFIX}gfm-portal-portal-reminders:portal-reminders-rollback" "${PREFIX}roster-importer-roster-importer:roster-importer-rollback")
 
@@ -148,11 +152,21 @@ parts_to_renew() {
   local files; files=$(cat | grep -vE '^[^/]+/tests/')
   echo "$files" | grep -E '^portal-api/' | grep -qvE '^portal-api/migrations/' && echo portal-api
   echo "$files" | grep -qE '^roster-importer/' && echo da-management
-  echo "$files" | grep -qE '^slidev/' && echo slidev
+  # Presentations: the compose file, its override and package.json / package-lock.json are single-file mounts or container settings that a
+  # restart does not pick up (git replaces the file, the container keeps the old one): they need a new container. Anything else only a restart.
+  if echo "$files" | grep -qE '^slidev/(slidev-compose.yml|local-override.yml|package(-lock)?.json)$'; then echo slidev-compose
+  elif echo "$files" | grep -qE '^slidev/'; then echo slidev; fi
   echo "$files" | grep -qE '^portal/' && echo portal
+  # Dashboards (DataEase), round 16: web/, i18n/ and gate/ are single-file mounts or loaded at start: the two containers are made new.
+  # The dashboards, the helper code and the seed scripts change what is inside DataEase: they are put in (added, nothing existing replaced).
+  echo "$files" | grep -qE '^dataease/(web|i18n|gate)/' && echo dataease-web
+  echo "$files" | grep -qE '^dataease/(dashboards/|lib/|seed-dashboards.(mjs|sh)$|translate-dashboards.(mjs|sh)$)' && echo dataease-content
   return 0
 }
-other_parts() { cat | grep '/' | cut -d/ -f1 | grep -vxE 'docs|ops-tests|updater|portal|portal-api|roster-importer|slidev|wiki|install' | sort -u; }
+# Folders a person still installs by hand: what the updater renews itself is left out, and so are the parts of dataease/ it handles (or that are only tests and notes).
+other_parts() {
+  cat | grep -vE '^dataease/(web/|i18n/|gate/|dashboards/|lib/|seed-dashboards.(mjs|sh)$|translate-dashboards.(mjs|sh)$|tests/|.*/tests/|[^/]*.md$)' | grep '/' | cut -d/ -f1     | grep -vxE 'docs|ops-tests|updater|portal|portal-api|roster-importer|slidev|wiki|install' | sort -u
+}
 
 # The newest release tag: vX.Y.Z only (a tag like v2-beta or v1.2 is not a release).
 latest_release_tag() { git_ tag --list 'v[0-9]*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1; }
@@ -400,14 +414,42 @@ compose_cmd() {
   [ -n "${GFM_OVERRIDE_DIR:-}" ] && [ -f "$REPO/$GFM_OVERRIDE_DIR/$part.yml" ] && extra=(-f "$REPO/$GFM_OVERRIDE_DIR/$part.yml")
   docker compose -p "$PREFIX$project" -f "$REPO/$file" ${extra[@]+"${extra[@]}"} "$@"
 }
+# Presentations: the project is ${PREFIX}slidev; the second file (ports, network) is used when it exists.
+slidev_compose() {
+  local extra=() part=slidev
+  [ -f "$REPO/slidev/local-override.yml" ] && extra=(-f "$REPO/slidev/local-override.yml")
+  [ -n "${GFM_OVERRIDE_DIR:-}" ] && [ -f "$REPO/$GFM_OVERRIDE_DIR/$part.yml" ] && extra+=(-f "$REPO/$GFM_OVERRIDE_DIR/$part.yml")
+  docker compose -p "${PREFIX}slidev" -f "$REPO/slidev/slidev-compose.yml" ${extra[@]+"${extra[@]}"} "$@"
+}
+# Dashboards: the two containers that read dataease/web and dataease/gate are made new (the other four DataEase containers stay as they are).
+dataease_recreate() { compose_cmd gfm-dataease dataease/compose.yml up -d --no-deps --force-recreate web gate; }
+# The new dashboards are put in with the scripts of the installer: the seed adds new datasets and dashboards and keeps the existing ones, the
+# translation makes their copies in the other languages, the check reads everything back. A backup of DataEase is taken first.
+dataease_content() {
+  local env_=(env "GFM_DATAEASE_PROJECT=$DATAEASE_PROJECT" "GFM_DATAEASE_NAME=$DATAEASE_NAME")
+  run_step 'Backup of DataEase (before the dashboards are changed)' docker exec "$DATAEASE_NAME-backup" /backup/nightly.sh --now || return 1
+  printf '%s
+' "$DATAEASE_NAME-backup: /backup/nightly.sh --now at $(now); the files are in backups/nightly (dataease-*.sql.gz, dataease-files-*.tgz)" > "$POINT_FOLDER/dataease-backup.txt"
+  run_step 'Dashboards: new datasets and dashboards (seed-dashboards.sh)' "${env_[@]}" bash "$REPO/dataease/seed-dashboards.sh" --allow-empty || return 1
+  run_step 'Dashboards: copies in the other languages (translate-dashboards.sh)' "${env_[@]}" bash "$REPO/dataease/translate-dashboards.sh" || return 1
+  run_step 'Dashboards: check (seed-dashboards.sh --check)' "${env_[@]}" bash "$REPO/dataease/seed-dashboards.sh" --check --allow-empty || return 1
+}
 update_parts() {
   local p
   for p in $1; do
+    case "$p" in
+      dataease-*)
+        # Not every computer has Dashboards: without the DataEase containers there is nothing to renew.
+        if ! docker inspect "$DATAEASE_NAME" >/dev/null 2>&1; then log "  Dashboards (DataEase) is not installed here: $p skipped."; continue; fi ;;
+    esac
     POINT_RENEWED="$POINT_RENEWED $p"
     case "$p" in
       portal-api) run_step 'Rebuilding portal-api and portal-reminders' compose_cmd gfm-portal portal-api/compose.yml up -d --build || return 1 ;;
       da-management) run_step 'Rebuilding DA Management' compose_cmd roster-importer roster-importer/docker-compose.yml up -d --build --no-deps roster-importer || return 1 ;;
       slidev) run_step 'Restarting Presentations (Slidev)' docker restart "$SLIDEV_CONTAINER" || return 1 ;;
+      slidev-compose) run_step 'Making Presentations (Slidev) a new container' slidev_compose up -d --no-deps --force-recreate slidev || return 1 ;;
+      dataease-web) run_step 'Dashboards: new web and gate containers' dataease_recreate || return 1 ;;
+      dataease-content) dataease_content || return 1 ;;
       portal) run_step 'Portal pages (portal/deploy.sh)' bash "$REPO/portal/deploy.sh" || return 1 ;;
     esac
   done
@@ -423,7 +465,13 @@ undo_parts() {
   case "$POINT_RENEWED" in *da-management*)
     run_step 'DA Management image back' docker tag "roster-importer-rollback:$stamp" "${PREFIX}roster-importer-roster-importer:latest" || rc=1
     run_step 'Starting the previous DA Management' compose_cmd roster-importer roster-importer/docker-compose.yml up -d --no-build --no-deps --force-recreate roster-importer || rc=1 ;; esac
-  case "$POINT_RENEWED" in *slidev*) run_step 'Restarting Presentations with the previous code' docker restart "$SLIDEV_CONTAINER" || rc=1 ;; esac
+  case "$POINT_RENEWED" in
+    *slidev-compose*) run_step 'Presentations: a new container with the previous files' slidev_compose up -d --no-deps --force-recreate slidev || rc=1 ;;
+    *slidev*) run_step 'Restarting Presentations with the previous code' docker restart "$SLIDEV_CONTAINER" || rc=1 ;;
+  esac
+  # Dashboards: the web and gate containers go back to the previous files (the code is already back). New dashboards that were put in stay: they are
+  # only added, and the backup taken before is named in <way back folder>/dataease-backup.txt (restore: dataease/README.md).
+  case "$POINT_RENEWED" in *dataease-web*) run_step 'Dashboards: web and gate with the previous files' dataease_recreate || rc=1 ;; esac
   case "$POINT_RENEWED" in *portal*)
     run_step 'Portal pages back' docker cp "$POINT_FOLDER/portal-html/." "$PORTAL_CONTAINER:/usr/share/nginx/html" || rc=1
     run_step 'Portal reload' docker exec "$PORTAL_CONTAINER" nginx -s reload || rc=1 ;; esac

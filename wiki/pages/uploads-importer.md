@@ -13,11 +13,11 @@ tags: [admin, uploads]
 
 ## Usage
 
-Open **DA Management → Uploads** (portal menu or port 8090). There is **one page and one drop zone** for every file: roster, historical CSV, people, Vollzogen, baptism history, area data, geo data, the Church finding export, zone history and teaching/contact rates.
+Open **DA Management → Uploads** (portal menu or port 8090). There is **one page and one drop zone** for every file: roster, historical CSV, people, Vollzogen, baptism history, geo data, the Church finding export and zone history.
 
 1. Drop the file (CSV or XLSX). Leave **What is in the file?** on *Find out from the file*, or choose the kind yourself.
 2. The page reads only the heading row. If it clearly is one kind, you go straight to that kind's check page.
-3. If the file could be more than one kind (a Vollzogen sheet also looks like a people list, area data also looks like geo data) the page says so and **asks**; it never guesses. Choose the kind and send the file again.
+3. If the file could be more than one kind (a Vollzogen sheet also looks like a people list) the page says so and **asks**; it never guesses. Choose the kind and send the file again.
 4. For a roster, set the *Transfer effective date* under **Only for a roster or a historical CSV**; for a historical CSV the same place has the duplicate-report choice.
 5. Check page, then Apply (one batch in Import history).
 
@@ -33,7 +33,7 @@ Spreadsheet upload for **new members** (office templates / “Vollzogen” / New
 
 ### Geo data
 
-**Data uploads → Geo data** brings in **population, size (km²), density and households per area**, each row with its **source** and the **date the figures are from**. Download the template (it lists every area with what is saved), fill it in and upload it; an empty cell keeps what is saved, and a new population or size without a density makes the density be worked out again. Figures are stored by the stable area id, shown in a table per area (*See the Geo data of every area*), and available to dashboards (`dashboards.area_geo_data`, and `dashboards.area_week_per_capita` with the key indicators per 10,000 residents). One upload is one batch in Import history with Undo. German numbers such as 21.000 are read as 21000.
+**Data uploads → Geo data** brings in **population, size (km²), density and households per area**, plus the **urban type** and **assignment type** that Archetypal Health uses to find similar areas, each row with its **source** and the **date the figures are from**. Download the template (it lists every area with what is saved), fill it in and upload it; an empty cell keeps what is saved, and a new population or size without a density makes the density be worked out again. Figures are stored by the stable area id, shown in a table per area that can be edited by hand (*Edit the area table*), and available to dashboards, (`dashboards.area_geo_data`, and `dashboards.area_week_per_capita` with the key indicators per 10,000 residents). One upload is one batch in Import history with Undo. German numbers such as 21.000 are read as 21000.
 
 ### FC number
 

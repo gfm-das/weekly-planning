@@ -44,7 +44,8 @@ class GeoPageTests(unittest.TestCase):
         self.assertEqual(data_uploads.kind_label("GEO_DATA"), "Geo data")
         self.assertEqual(data_uploads.kind_label("RETIRE"), "Deleted place or question")
         self.assertEqual([field for _, field in pages.SAMPLE_COLUMNS["geo"]],
-                         ["zone", "area", "population", "size_km2", "density_per_km2", "households", "source", "data_date"])
+                         ["zone", "area", "population", "size_km2", "density_per_km2", "households", "urban_type",
+                          "assignment_type", "source", "data_date"])
         table = pages.sample_table("geo", [{"zone": "Frankfurt", "area": "Bockenheim", "population": 34000, "size_km2": 2.5,
                                             "density_per_km2": None, "households": 18000, "source": "Amt",
                                             "data_date": "2024-12-31"}])

@@ -60,7 +60,7 @@ class GroupTests(unittest.TestCase):
         expected = {
             "/": ("uploads", "/uploads"), "/preview": ("uploads", "/uploads"), "/apply": ("uploads", "/uploads"),
             "/uploads/geo/table": ("uploads", "/uploads"), "/uploads/geo/review": ("uploads", "/uploads"),
-            "/uploads/areas/table": ("uploads", "/uploads"), "/uploads/names": ("uploads", "/uploads"),
+            "/uploads/names": ("uploads", "/uploads"),
             "/historical": ("uploads", "/uploads"), "/people-upload": ("uploads", "/uploads"),
             "/people/decide": ("uploads", "/uploads"), "/uploads/vollzogen": ("uploads", "/uploads"),
             "/planning-questions/questions/4": ("places", "/planning-questions"),

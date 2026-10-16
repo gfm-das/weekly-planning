@@ -245,7 +245,7 @@ class HistoricalFormTests(unittest.TestCase):
 class BatchAndUndoTests(unittest.TestCase):
     def test_row_keys(self):
         self.assertEqual(batches.row_key("areas", {"id": 4, "name": "x"}), {"id": 4})
-        self.assertEqual(batches.key_string(batches.row_key("area_profiles", {"area_id": 9})), '{"area_id":9}')
+        self.assertEqual(batches.key_string(batches.row_key("area_geo_data", {"area_id": 9})), '{"area_id":9}')
         before = {"areas": {"a": 1, "b": 2}}
         self.assertEqual(batches.count_changes(["areas"], before, {"areas": {"a": 1, "b": 3, "c": 4}}), 2)
 

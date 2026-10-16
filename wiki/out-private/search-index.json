@@ -138,6 +138,18 @@
     "private": true
   },
   {
+    "title": "Email (Brevo)",
+    "href": "email-brevo.html",
+    "summary": "How email works, and a step-by-step fix when Brevo needs to be reconnected.",
+    "tags": [
+      "admin",
+      "email",
+      "ops"
+    ],
+    "stub": false,
+    "private": true
+  },
+  {
     "title": "First day as a Data Analyst",
     "href": "first-day-as-da.html",
     "summary": "Day-one checklist, tool map, daily and weekly routine, who to ask.",

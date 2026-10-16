@@ -27,18 +27,8 @@ class ReadingTests(unittest.TestCase):
         self.assertEqual(data_files.week_of(date(2026, 9, 28)), date(2026, 10, 4))
         self.assertEqual(data_files.week_before(date(2026, 9, 28)), date(2026, 9, 27))  # a Monday report
         self.assertEqual(data_files.week_before(date(2026, 9, 27)), date(2026, 9, 27))
-        # A FindeChristus report shows the last week that ended at least three days before it (checked on the
-        # owner's archives: Monday and Sunday reports are for the Monday meeting, later ones show the week just ended).
-        self.assertEqual(data_files.week_reported_on(date(2026, 9, 28)), date(2026, 9, 20))  # Monday
-        self.assertEqual(data_files.week_reported_on(date(2026, 9, 27)), date(2026, 9, 20))  # Sunday = next Monday
-        self.assertEqual(data_files.week_reported_on(date(2026, 9, 29)), date(2026, 9, 20))  # Tuesday: a day late
-        self.assertEqual(data_files.week_reported_on(date(2026, 4, 4)), date(2026, 3, 29))  # Saturday
-        self.assertEqual(data_files.week_reported_on(date(2026, 5, 21)), date(2026, 5, 17))  # Thursday
-        # Monday 27 Jul and Sunday 2 Aug are two different weeks (they fell into one week before the fix).
-        self.assertEqual(data_files.week_reported_on(date(2026, 7, 27)), date(2026, 7, 19))
-        self.assertEqual(data_files.week_reported_on(date(2026, 8, 2)), date(2026, 7, 26))
 
-    def test_dates_numbers_rates(self):
+    def test_dates_and_numbers(self):
         self.assertEqual(data_files.read_date("9/27/2025 10:06:42 AM"), date(2025, 9, 27))
         self.assertEqual(data_files.read_date("27.09.2025"), date(2025, 9, 27))
         self.assertEqual(data_files.read_date("2025-09-27"), date(2025, 9, 27))
@@ -60,10 +50,6 @@ class ReadingTests(unittest.TestCase):
             data_files.read_count("-1")
         self.assertEqual(data_files.read_decimal("12,5"), 12.5)
         self.assertEqual(data_files.read_decimal("1.234,5"), 1234.5)
-        self.assertEqual(data_files.read_rate("26.00%"), 0.26)
-        self.assertEqual(data_files.read_rate("0.135"), 0.135)
-        self.assertEqual(data_files.read_rate("41"), 0.41)
-        self.assertIsNone(data_files.read_rate("#DIV/0!"))
 
     def test_wrong_file_type_and_missing_columns(self):
         with self.assertRaises(data_files.FileProblem):
@@ -111,50 +97,6 @@ class HistoryTests(unittest.TestCase):
         self.assertEqual((first["companionships"], first["first_time_sacrament_actual"]), (12, 2))
         self.assertIsNone(parsed.records[1]["friends_found_actual"])
 
-    def test_archive_adds_up_and_skips_mission_rows(self):
-        data = s.archive_file("Düsseldorf", "Wesel", "Bockenheim")
-        parsed = data_types.parse_archive(data_files.read_table("archive.csv", data))
-        self.assertEqual(parsed.left_out, 1)
-        by_source = {(r["area"], r["source"]): r for r in parsed.records}
-        lead = by_source[("Wesel", "Lead-Ads")]
-        self.assertEqual((lead["referrals_received"], lead["referrals_contacted"], lead["friends_made"]), (2, 1, 1))
-        self.assertEqual(lead["sunday"], "2024-02-25")  # a report of Monday 4 Mar 2024 shows 19-25 Feb
-        self.assertEqual(by_source[("Bockenheim", "FindeChristus Referrals")]["referrals_received"], 4)
-        self.assertNotIn("11033", json.dumps(parsed.as_dict()))  # referral numbers are not read
-
-    def test_rates(self):
-        parsed = data_types.parse_rates(data_files.read_table("rates.csv", s.rates_file("Frankfurt")))
-        rows = {(r["sunday"], r["zone"]): r for r in parsed.records}
-        self.assertEqual(rows[("2026-09-20", "Mission")]["teaching_rate"], 0.26)  # dated Sunday 27 Sep
-        self.assertTrue(rows[("2026-09-20", "Mission")]["is_mission"])
-        self.assertEqual(rows[("2026-09-20", "Frankfurt")]["teaching_rate"], 0.41)
-        self.assertEqual(rows[("2024-06-23", "Mission")]["teaching_rate"], 0.135)
-        self.assertEqual(rows[("2026-07-19", "Mission")]["teaching_rate"], 0.27)  # Monday 27 Jul
-        self.assertEqual(rows[("2026-07-26", "Mission")]["teaching_rate"], 0.28)  # Sunday 2 Aug: kept, not lost
-        self.assertEqual(rows[("2026-03-29", "Mission")]["teaching_rate"], 0.20)  # Saturday 4 Apr
-        self.assertEqual(rows[("2026-01-04", "Frankfurt")]["teaching_rate"], 0.22)  # the later of 11 and 12 Jan
-        self.assertEqual(len(parsed.records), 7)
-        self.assertEqual(parsed.problem_count, 1)  # two dates for one week, said with both dates
-        self.assertIn("11 Jan 2026 and 12 Jan 2026 both show the week ending 04 Jan 2026", parsed.problems[0][1])
-
-    def test_archive_keeps_one_report_per_week(self):
-        """A Monday report and a Sunday report of the same week are not added up: the later one is used."""
-        data = s.csv_bytes(s.ARCHIVE_HEADINGS, [
-            ["3/2/2026", "Frankfurt", "", "Bockenheim", "FindeChristus Referrals", "", 5] + [""] * 11,
-            ["3/8/2026", "Frankfurt", "", "Bockenheim", "FindeChristus Referrals", "", 6] + [""] * 11,
-            ["6/2/2025", "Frankfurt", "", "Bockenheim", "FindeChristus Referrals", "", 3] + [""] * 11,
-            ["6/3/2025", "Frankfurt", "", "Bockenheim", "FindeChristus Referrals", "", 4] + [""] * 11,
-        ])
-        parsed = data_types.parse_archive(data_files.read_table("archive.csv", data))
-        weeks = {r["sunday"]: (r["report_date"], r["referrals_received"]) for r in parsed.records}
-        # Monday 2 Mar shows 16-22 Feb; Sunday 8 Mar is the report of Monday 9 Mar: 23 Feb - 1 Mar.
-        self.assertEqual(weeks["2026-02-22"], ("2026-03-02", 5))
-        self.assertEqual(weeks["2026-03-01"], ("2026-03-08", 6))
-        # Monday 2 and Tuesday 3 Jun 2025 are the same report: only the later one counts.
-        self.assertEqual(weeks["2025-05-25"], ("2025-06-03", 4))
-        self.assertEqual(len(parsed.records), 3)
-        self.assertEqual([p[0] for p in parsed.problems], [4])  # the row where 2 Jun 2025 starts
-
     def test_vollzogen_and_new_member_sheets(self):
         parsed = data_types.parse_baptisms(data_files.read_table("Vollzogen 2026.xlsx", s.vollzogen_file("Frankfurt")))
         self.assertEqual(parsed.problem_count, 1)  # the row without a baptism date
@@ -167,16 +109,17 @@ class HistoryTests(unittest.TestCase):
         for secret in s.MADE_UP_NAMES + ["made-up@example.invalid", "Testa", "1990"]:
             self.assertNotIn(secret, text)
 
-    def test_area_data_with_extra_attribute(self):
-        data = s.area_file([("Frankfurt", "Frankfurt 1", "Bockenheim", "34000", "2,5", "Big city", "Elders", "yes"),
+    def test_flat_geo_file_with_peer_types_and_extra_attribute(self):
+        data = s.geo_flat_file([("Frankfurt", "Frankfurt 1", "Bockenheim", "34000", "2,5", "Big city", "Elders", "yes"),
                             ("Frankfurt", "Frankfurt 1", "Bornheim", "", "", "", "", ""),
                             ("Frankfurt", "Frankfurt 1", "Nowhere", "lots", "", "", "", "")])
-        parsed = data_types.parse_area_data(data_files.read_table("areas.csv", data))
-        first, second = parsed.records
-        self.assertEqual((first["population"], first["size_km2"], first["urban_type"]), (34000, 2.5, "Big city"))
+        parsed = data_types.parse_geo_data(data_files.read_table("areas.csv", data))
+        first, second = parsed.records[0], parsed.records[1:]
+        self.assertEqual((first["population"], first["size_km2"], first["urban_type"], first["assignment_type"]),
+                         (34000, 2.5, "Big city", "Elders"))
         self.assertEqual(first["extra"], {"Chapel nearby": "yes"})
-        self.assertIsNone(second["population"])  # blanks are allowed: nothing changes for them
-        self.assertEqual(parsed.problem_count, 1)
+        self.assertEqual(second, [])  # a row with no figure, no type and no extra says nothing and is left out
+        self.assertEqual((parsed.left_out, parsed.problem_count), (1, 1))
 
 
 class GeoDataTests(unittest.TestCase):
@@ -274,7 +217,7 @@ class TextTests(unittest.TestCase):
         self.assertTrue(used)
         self.assertEqual(sorted(used - set(TEXT)), [])
         for part in ("title", "about", "columns", "merge"):
-            for name in ("areas", "geo", "finding", "zoneHistory", "referralArchive", "rates", "baptisms"):
+            for name in ("geo", "finding", "zoneHistory", "baptisms"):
                 self.assertIn(f"uploads.{name}.{part}", TEXT)
         for key in ("uploads.names.zone", "uploads.names.area"):
             self.assertIn(key, TEXT)

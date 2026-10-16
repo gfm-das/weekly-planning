@@ -38,8 +38,8 @@ RIGHT_TO_LEFT = ("fa", "ar")
 MENU_GROUPS = [
     ("uploads", "Uploads", [
         ("/uploads", "Uploads", ["/", "/preview", "/apply", "/historical", "/people-upload", "/people/",
-                                 "/uploads/geo", "/uploads/vollzogen", "/uploads/areas", "/uploads/finding",
-                                 "/uploads/zone-history", "/uploads/rates",
+                                 "/uploads/geo", "/uploads/vollzogen", "/uploads/finding",
+                                 "/uploads/zone-history",
                                  "/uploads/baptisms", "/uploads/names"]),
     ]),
     ("people", "People", [
@@ -73,7 +73,7 @@ def _starts(path, start):
 
 def current_page(path):
     """(group key, address) of the menu page that path belongs to, or (None, None). The longest matching start wins
-    ("/uploads/geo/table" is Geo data, "/uploads/areas/table" is Data uploads)."""
+    ("/uploads/geo/table" is Geo data, an address of a removed page is Data uploads)."""
     best_length, best = 0, (None, None)
     for key, _tab, pages in MENU_GROUPS:
         for address, _text, more in pages:
@@ -147,9 +147,13 @@ label{font-size:12px;font-weight:650}.form-field{display:grid;gap:6px;margin:15p
 .file-pick{position:relative;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 14px;border:1px dashed #9db5bc;border-radius:10px;background:#f7fbfb;cursor:pointer;font-weight:650;color:#173644}
 .file-pick input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .file-pick:hover{border-color:var(--teal);background:#eef6f6}
-.file-pick .name{font-weight:500;color:#687d88;font-size:13px}
+.file-pick .name{font-weight:500;color:#687d88;font-size:13px;overflow-wrap:anywhere;min-width:0}
+.file-pick.has-file .name{color:var(--navy);font-weight:650}
+.card.drag-over,.file-pick.drag-over{border-color:var(--teal);outline:2px dashed var(--teal);outline-offset:-2px;background:#eef6f6}
+@media(max-width:700px){.file-pick{display:flex;flex-wrap:wrap;width:100%;box-sizing:border-box}}
 button.danger,.danger{background:#b42318;border-color:#b42318;color:#fff}
-[data-theme="dark"] .file-pick{background:#101a21;border-color:#39515d;color:#edf7f8}[data-theme="dark"] .file-pick .name{color:#a9bdc3}
+[data-theme="dark"] .file-pick{background:#101a21;border-color:#39515d;color:#edf7f8}[data-theme="dark"] .file-pick .name{color:#a9bdc3}[data-theme="dark"] .file-pick.has-file .name{color:#edf7f8}
+[data-theme="dark"] .card.drag-over,[data-theme="dark"] .file-pick.drag-over{background:#17262e}
 [data-theme="dark"] button.danger,[data-theme="dark"] .danger{background:#b42318;border-color:#b42318;color:#fff}
 @media(max-width:700px){.nav.tabs a,.nav.sub a{min-height:44px;padding:10px 12px}.nav.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}}
 
@@ -207,6 +211,24 @@ FRAME = r"""
 {% if messages %}{% for m in messages %}<div class="flash">{{m}}</div>{% endfor %}{% endif %}
 {% endwith %}
 {{ body|safe }}
+<script>/* Round 16: a file picker shows the chosen file's name and size, highlights while a file is dragged over, and takes a dropped file. */(function(){
+function tr(k,f){try{var v=window.MissionI18n&&MissionI18n.t&&MissionI18n.t(k);return v&&v!==k?v:f}catch(e){return f}}
+function size(n){return n<1024?n+" B":n<1048576?(n/1024).toFixed(1)+" KB":(n/1048576).toFixed(1)+" MB"}
+document.querySelectorAll(".file-pick").forEach(function(pick){
+var input=pick.querySelector("input[type=file]"),name=pick.querySelector(".name");if(!input||!name)return;
+var card=pick.closest(".card");var zone=card&&card.querySelectorAll(".file-pick").length===1?card:pick;
+function show(){var f=input.files&&input.files[0];pick.classList.toggle("has-file",!!f);
+name.textContent=f?f.name+" · "+size(f.size):tr("uploads.page.noneChosen",name.getAttribute("data-empty")||"No file chosen")}
+input.addEventListener("change",show);document.addEventListener("mission-i18n-change",function(){if(!(input.files&&input.files[0]))show()});
+function over(e){e.preventDefault();zone.classList.add("drag-over")}
+zone.addEventListener("dragenter",over);zone.addEventListener("dragover",over);
+zone.addEventListener("dragleave",function(e){if(!e.relatedTarget||!zone.contains(e.relatedTarget))zone.classList.remove("drag-over")});
+zone.addEventListener("drop",function(e){e.preventDefault();zone.classList.remove("drag-over");
+var files=e.dataTransfer&&e.dataTransfer.files;if(files&&files.length){try{input.files=files}catch(x){return}show()}});
+});
+addEventListener("dragover",function(e){if(e.target.closest&&e.target.closest(".file-pick,.card"))return;e.preventDefault()});
+addEventListener("drop",function(e){if(!(e.target.closest&&e.target.closest(".file-pick,.card")))e.preventDefault()});
+})()</script>
 <script>addEventListener("message",e=>{if(e.data?.type!=="portal-theme")return;var t=e.data.theme||"mission";document.documentElement.dataset.theme=t;document.cookie=["gfm_theme="+t,"path=/","max-age=31536000"].join(";")})</script></body>
 </html>
 """
