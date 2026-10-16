@@ -784,6 +784,7 @@ html[data-theme="dark"] .portal-settings-language { color: #a8bdc6; border-color
 html[data-theme="dark"] .login-screen{background:#0d2029;color:#e9f2f4}
 html[data-theme="dark"] .login-card{background:#132b36;border-color:#29424e;color:#e9f2f4;box-shadow:0 20px 60px #0006}
 html[data-theme="dark"] .login-card input{background:#101a21;color:#e9f2f4;border-color:#365361}
+html[data-theme="dark"] .login-card label{color:#edf7f8}
 html[data-theme="dark"] .login-subtitle{color:#a8bdc6}
 
 /* Round 14: Mission drive is a real link (new tab), styled like the other menu buttons. */

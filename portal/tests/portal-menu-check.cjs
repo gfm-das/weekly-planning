@@ -250,9 +250,9 @@ const eq = (a, b, message) => { assert.deepEqual(plain(a), plain(b), message); p
   const at = text => home.indexOf(text);
   ok(at('<section id="glimpse" hidden') > at('<main class="wrap loading" id="overview">') && at('<section id="glimpse" hidden') < at('id="overviewCards"'),
     'home.html: the glimpse sits at the top of the Overview, before the cards, hidden until it is started');
-  // Round 13: key indicators first, then this week's tasks, then the calendar and announcements, then the rest.
+  // Welcome and announcements first, then the AP tip, key indicators, this week's tasks and the rest.
   const cardOrder = [...home.matchAll(/<(?:div|section)[^>]*\bdata-card="(\w+)"/g)].map(m => m[1]);
-  eq(cardOrder, ['indicators', 'welcome', 'plan', 'goals', 'events', 'announcements', 'assignment', 'weeks', 'focus', 'stewardship'],
+  eq(cardOrder, ['welcome', 'announcements', 'focus', 'indicators', 'plan', 'goals', 'events', 'assignment', 'weeks', 'stewardship'],
     'home.html: cards come in the new order, none lost');
   const registry = [...home.match(/const cardRegistry = \[([\s\S]*?)\];/)[1].matchAll(/\["(\w+)"/g)].map(m => m[1]);
   eq(registry, cardOrder, 'home.html: the default layout (cardRegistry) has the same order as the page');
