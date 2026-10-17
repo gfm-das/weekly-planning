@@ -83,6 +83,12 @@ def status(r):
     return "Active" if r["last_sign_in_at"] else "Invited"
 
 
+def last_name_first(name):
+    """The sort key of a staff name: its last word first ("President Max Muster" -> "Muster President Max"), as in staff_rows."""
+    words = (name or "").split()
+    return " ".join(words[-1:] + words[:-1])
+
+
 def role_label(r):
     """The main role, plus an additional role the sign-in still has (e.g. from before it became a staff account)."""
     extras = [STAFF_ROLES.get(x, x) for x in roles.additional_roles_of(r) if x != r["app_role"]]
@@ -159,11 +165,11 @@ def staff_list():
             rows = staff_rows(cur)
             cur.execute("select name from public.missions where id=%s", (sign_in.current_mission_id(),))
             mission = (cur.fetchone() or {}).get("name") or ""
-    listed = "".join(f"""<tr><td>{h(r['display_name'])}</td><td>{h(r['email'])}</td><td>{h(role_label(r))}</td>
-            <td class="status">{status(r)}<br><a href="/staff/{r['id']}">Manage</a></td></tr>""" for r in rows)
+    listed = "".join(f"""<tr><td data-sort="{h(last_name_first(r['display_name']))}">{h(r['display_name'])}</td><td>{h(r['email'])}</td>
+            <td>{h(role_label(r))}</td><td class="status" data-sort="{status(r)}">{status(r)}<br><a href="/staff/{r['id']}">Manage</a></td></tr>""" for r in rows)
     return staff_page(f"""<div class="card"><h2>Staff accounts</h2><p class="muted">Sign-ins for the mission president, office staff and Data
           Analysts who do not serve in an area. Staff accounts do not have a weekly plan. Missionaries get their sign-in from
-          Account Manager.</p><div class="scroll"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Account</th></tr></thead>
+          Account Manager.</p><div class="scroll"><table class="sortable"><thead><tr><th data-sort-default>Name</th><th>Email</th><th>Role</th><th>Account</th></tr></thead>
           <tbody>{listed or '<tr><td colspan="4" class="muted">No staff accounts yet.</td></tr>'}</tbody></table></div></div>
           <div class="card"><h3>Add a staff account</h3><form action="/staff/new" method="post" id="staffForm">
           <div class="split"><label class="form-field">Name<input name="display_name" maxlength="120" autocomplete="off" required placeholder="President Muster"></label>

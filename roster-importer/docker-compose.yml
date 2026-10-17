@@ -21,7 +21,7 @@ services:
       UPDATES_DIR: /updates
       BACKUP_DIR: /backups
       BACKUP_COMMAND: "${BACKUP_COMMAND:-}"
-      WEB_LINK_BREVO: "${WEB_LINK_BREVO:-}"
+      WEB_LINK_GMAIL: "${WEB_LINK_GMAIL:-}"
       WEB_LINK_PORKBUN: "${WEB_LINK_PORKBUN:-}"
       WEB_LINK_CLOUDFLARE: "${WEB_LINK_CLOUDFLARE:-}"
       WEB_LINK_WIKI: "${WEB_LINK_WIKI:-}"

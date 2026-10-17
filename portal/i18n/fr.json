@@ -2867,7 +2867,7 @@
  "links.intro": "Les services web externes sur lesquels s'appuie le système de la mission. Chaque lien ouvre le service dans un nouvel onglet, où vous vous connectez avec votre propre compte.",
  "links.noSecrets": "Aucun mot de passe ni clé n'est conservé ici. Les adresses viennent des réglages de ce système.",
  "links.open": "Ouvrir {name}",
- "links.brevo.about": "Envoie les e-mails du système : invitations et e-mails de mot de passe aux missionnaires et au personnel.",
+ "links.gmail.about": "Envoie les e-mails du système (invitations et e-mails de mot de passe) depuis le compte Gmail de la mission. Le lien ouvre la page « Mots de passe des applications » de Google, où l’on crée ou remplace le mot de passe de messagerie.",
  "links.porkbun.about": "Gère le nom de domaine web de la mission : les renouvellements et les enregistrements DNS qui le dirigent vers ce système.",
  "links.cloudflare.about": "Relie de façon sûre l'adresse web de la mission à ce système (le tunnel Cloudflare) et gère son DNS et sa protection.",
  "links.notSet": "Non affiché : l'adresse dans les réglages manque ou n'est pas une adresse web sûre.",

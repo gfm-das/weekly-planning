@@ -12,7 +12,7 @@ TEXT = {
     "links.intro": "The outside web services the mission system relies on. Each link opens the service in a new tab, where you sign in with your own account.",
     "links.noSecrets": "No password or key is kept here. The addresses come from the settings of this system.",
     "links.open": "Open {name}",
-    "links.brevo.about": "Sends the system's emails: invitations and password emails to missionaries and staff.",
+    "links.gmail.about": "Sends the system's emails (invitations and password emails) from the mission's Gmail account. The link opens Google's App passwords page, where the mail password is made or replaced.",
     "links.porkbun.about": "Holds the mission's web domain name: renewals and the DNS records that point it to this system.",
     "links.cloudflare.about": "Connects the mission's web address to this system safely (the Cloudflare tunnel) and manages its DNS and protection.",
     "links.wiki.title": "Wiki",

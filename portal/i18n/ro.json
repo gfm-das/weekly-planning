@@ -2877,7 +2877,7 @@
  "links.intro": "Serviciile web externe pe care se sprijină sistemul misiunii. Fiecare link deschide serviciul într-o filă nouă, unde te autentifici cu propriul cont.",
  "links.noSecrets": "Aici nu se păstrează nicio parolă sau cheie. Adresele vin din setările acestui sistem.",
  "links.open": "Deschide {name}",
- "links.brevo.about": "Trimite e-mailurile sistemului: invitații și e-mailuri cu parola către misionari și personal.",
+ "links.gmail.about": "Trimite e-mailurile sistemului (invitații și e-mailuri pentru parolă) din contul Gmail al misiunii. Linkul deschide pagina Google „Parole pentru aplicații”, unde se creează sau se înlocuiește parola de e-mail.",
  "links.porkbun.about": "Ține numele de domeniu web al misiunii: reînnoirile și înregistrările DNS care îl îndreaptă spre acest sistem.",
  "links.cloudflare.about": "Leagă în siguranță adresa web a misiunii de acest sistem (tunelul Cloudflare) și gestionează DNS-ul și protecția.",
  "links.notSet": "Nu este afișat: adresa din setări lipsește sau nu este o adresă web sigură.",

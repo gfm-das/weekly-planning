@@ -1,4 +1,4 @@
-"""The Links to web services page (/links): a tidy card per outside service (Brevo, Porkbun, Cloudflare) with what it is for.
+"""The Links to web services page (/links): a tidy card per outside service (Gmail, Porkbun, Cloudflare) with what it is for.
 
 For managers only: it is part of DA Management, which only the managers of the mission can open (sign_in.allowed(), checked
 on every request). The addresses are settings (web_links.py); no password or key is stored or shown. Every text is links_text.py.

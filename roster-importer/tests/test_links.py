@@ -23,29 +23,29 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class AddressTests(unittest.TestCase):
     def test_a_plain_https_address_is_fine(self):
-        for good in ("https://app.brevo.com/", "https://dash.cloudflare.com/abc/home", "https://porkbun.com/account/login?lang=de"):
+        for good in ("https://mail.example.org/", "https://dash.cloudflare.com/abc/home", "https://porkbun.com/account/login?lang=de"):
             self.assertEqual(web_links.safe_url(good), good)
 
     def test_anything_that_could_carry_a_credential_or_is_not_a_web_page_is_refused(self):
-        for bad in ("", None, "app.brevo.com", "http://app.brevo.com/", "ftp://x.example/", "javascript:alert(1)",
-                    "https://admin:pw@app.brevo.com/", "https://admin@app.brevo.com/", "https://app.brevo.com/?token=abc",
-                    "https://app.brevo.com/?api_key=abc", "https://app.brevo.com/#access_token=abc",
-                    "https://app.brevo.com/?password=x", "https://localhost/", "https://app.brevo.com/ x",
+        for bad in ("", None, "mail.example.org", "http://mail.example.org/", "ftp://x.example/", "javascript:alert(1)",
+                    "https://admin:pw@mail.example.org/", "https://admin@mail.example.org/", "https://mail.example.org/?token=abc",
+                    "https://mail.example.org/?api_key=abc", "https://mail.example.org/#access_token=abc",
+                    "https://mail.example.org/?password=x", "https://localhost/", "https://mail.example.org/ x",
                     "https://" + "a" * 300 + ".com/"):
             self.assertIsNone(web_links.safe_url(bad), bad)
 
     def test_the_defaults_in_the_settings_are_public_sign_in_pages_without_secrets(self):
-        self.assertEqual(sorted(settings.WEB_SERVICE_URLS), ["brevo", "cloudflare", "porkbun"])
+        self.assertEqual(sorted(settings.WEB_SERVICE_URLS), ["cloudflare", "gmail", "porkbun"])
         for key, url in settings.WEB_SERVICE_URLS.items():
             self.assertEqual(web_links.safe_url(url), url, key)
 
     def test_the_cards_follow_the_settings(self):
-        shown = web_links.cards({"brevo": "https://mail.example.org/", "porkbun": "off", "cloudflare": "https://admin:pw@x.example/"})
-        self.assertEqual([c["key"] for c in shown], ["brevo", "cloudflare"])  # porkbun is off: left out
+        shown = web_links.cards({"gmail": "https://mail.example.org/", "porkbun": "off", "cloudflare": "https://admin:pw@x.example/"})
+        self.assertEqual([c["key"] for c in shown], ["gmail", "cloudflare"])  # porkbun is off: left out
         self.assertEqual(shown[0]["url"], "https://mail.example.org/")
         self.assertEqual(shown[0]["host"], "mail.example.org")
         self.assertIsNone(shown[1]["url"])  # an address with a password in it is not linked
-        self.assertEqual([c["key"] for c in web_links.cards({})], ["brevo", "porkbun", "cloudflare"])
+        self.assertEqual([c["key"] for c in web_links.cards({})], ["gmail", "porkbun", "cloudflare"])
 
     def test_no_address_is_written_in_the_program_files_only_in_the_settings(self):
         for name in ("web_links.py", "links_page.py", "links_text.py"):
@@ -62,7 +62,7 @@ class PageTests(unittest.TestCase):
             response = app.app.test_client().get("/links")
         html = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 200)
-        for name, host in (("Brevo", "app.brevo.com"), ("Porkbun", "porkbun.com"), ("Cloudflare", "dash.cloudflare.com")):
+        for name, host in (("Gmail", "myaccount.google.com"), ("Porkbun", "porkbun.com"), ("Cloudflare", "dash.cloudflare.com")):
             self.assertIn(f">{name}</h3>", html)
             self.assertIn(host, html)
             self.assertIn(f"Open {name}", html)
@@ -71,13 +71,13 @@ class PageTests(unittest.TestCase):
         self.assertNotRegex(html, r"<input[^>]*type=.password")  # no place to type a password
         self.assertIn("No password or key is kept here", html)
 
-    def test_the_brevo_card_opens_the_smtp_keys_page(self):
-        self.assertEqual(settings.WEB_SERVICE_URLS["brevo"], "https://app.brevo.com/settings/keys/smtp")
-        self.assertTrue(web_links.safe_url(settings.WEB_SERVICE_URLS["brevo"]))
+    def test_the_gmail_card_opens_the_app_passwords_page(self):
+        self.assertEqual(settings.WEB_SERVICE_URLS["gmail"], "https://myaccount.google.com/apppasswords")
+        self.assertTrue(web_links.safe_url(settings.WEB_SERVICE_URLS["gmail"]))
 
     def test_a_card_without_a_safe_address_says_so(self):
         with patch.object(links_page.sign_in, "allowed", return_value=True), \
-                patch.dict(settings.WEB_SERVICE_URLS, {"brevo": "http://insecure.example/", "porkbun": "off"}):
+                patch.dict(settings.WEB_SERVICE_URLS, {"gmail": "http://insecure.example/", "porkbun": "off"}):
             html = app.app.test_client().get("/links").get_data(as_text=True)
         self.assertIn("Not shown: the address in the settings", html)
         self.assertNotIn("insecure.example", html)
@@ -100,7 +100,7 @@ class TextTests(unittest.TestCase):
                 self.assertEqual(sorted(re.findall(r"\{(\w+)\}", catalog[key])), sorted(re.findall(r"\{(\w+)\}", TEXT[key])), (code, key))
 
     def test_the_helpers_fill_and_escape(self):
-        self.assertEqual(plain("links.open", name="Brevo"), "Open Brevo")
+        self.assertEqual(plain("links.open", name="Gmail"), "Open Gmail")
         self.assertEqual(t("links.open", name="<b>"), "Open &lt;b&gt;")
 
 

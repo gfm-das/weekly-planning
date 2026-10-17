@@ -138,9 +138,9 @@
     "private": true
   },
   {
-    "title": "Email (Brevo)",
-    "href": "email-brevo.html",
-    "summary": "How email works, and a step-by-step fix when Brevo needs to be reconnected.",
+    "title": "Email (Gmail)",
+    "href": "email.html",
+    "summary": "Sign-in emails through Gmail: the app password, the settings, applying them, testing and fixing.",
     "tags": [
       "admin",
       "email",

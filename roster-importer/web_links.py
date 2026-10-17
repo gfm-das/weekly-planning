@@ -1,6 +1,6 @@
 """Links to web services: which cards DA Management > Links to web services shows (the page is links_page.py).
 
-The addresses are settings (settings.WEB_SERVICE_URLS, from WEB_LINK_BREVO, WEB_LINK_PORKBUN and WEB_LINK_CLOUDFLARE), never
+The addresses are settings (settings.WEB_SERVICE_URLS, from WEB_LINK_GMAIL, WEB_LINK_PORKBUN and WEB_LINK_CLOUDFLARE), never
 code. Nothing secret is stored or shown: an address is shown only when it is a plain https address of a web page, without a
 user name or password in it and without a query that looks like it carries a key (a link must be safe to print on a screen
 that someone else may look at). "off" in a setting hides the card.
@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 import settings
 
 # The cards, in the order shown: (setting key, the service's name, the key of its short text "what it is for").
-SERVICES = [("brevo", "Brevo", "links.brevo.about"),
+SERVICES = [("gmail", "Gmail", "links.gmail.about"),
             ("porkbun", "Porkbun", "links.porkbun.about"),
             ("cloudflare", "Cloudflare", "links.cloudflare.about")]
 SECRET_WORDS = re.compile(r"pass|pwd|secret|token|key|auth|session|credential", re.IGNORECASE)

@@ -107,7 +107,7 @@ NAVBOXES = {
         "icon": "🗂️",
         "groups": [
             ("People & places", [("uploads-importer", "Uploads / Importer"), ("management", "Management"), ("roster", "Roster"), ("accounts", "Accounts")]),
-            ("Server", [("dbeaver-access", "DBeaver access"), ("backups-and-restore", "Backups and restore"), ("health-check", "Health check"), ("server-overview", "Server overview"), ("troubleshooting", "Troubleshooting"), ("email-brevo", "Email (Brevo)"), ("editing-the-wiki", "Editing the wiki")]),
+            ("Server", [("dbeaver-access", "DBeaver access"), ("backups-and-restore", "Backups and restore"), ("health-check", "Health check"), ("server-overview", "Server overview"), ("troubleshooting", "Troubleshooting"), ("email", "Email (Gmail)"), ("editing-the-wiki", "Editing the wiki")]),
             ("Operations", [("releases-and-updates", "Releases and updates"), ("updater", "Updater"), ("nightly-backup", "Nightly backup"), ("dashboards-ops", "Dashboards operations"), ("presentations-ops", "Presentations operations")]),
         ],
     },

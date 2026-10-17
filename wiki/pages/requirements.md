@@ -22,7 +22,7 @@ tags: [install]
 ### Optional / later
 
 - Cloudflare tunnel token (public hostnames)
-- SMTP settings for invite emails (planned)
+- An email account that can send by SMTP, for the invitation and password emails (for example Gmail with an App Password)
 - Tailscale or similar for remote DBeaver (planned path)
 
 ### Do not

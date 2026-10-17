@@ -2864,7 +2864,7 @@
  "links.intro": "Misyon sisteminin dayandığı harici web hizmetleri. Her bağlantı hizmeti yeni bir sekmede açar; orada kendi hesabınızla giriş yaparsınız.",
  "links.noSecrets": "Burada hiçbir parola veya anahtar saklanmaz. Adresler bu sistemin ayarlarından gelir.",
  "links.open": "{name} hizmetini aç",
- "links.brevo.about": "Sistemin e-postalarını gönderir: misyonerlere ve personele davetler ve parola e-postaları.",
+ "links.gmail.about": "Sistemin e-postalarını (davetler ve şifre e-postaları) misyonun Gmail hesabından gönderir. Bağlantı, Google'ın posta şifresinin oluşturulduğu veya değiştirildiği “Uygulama şifreleri” sayfasını açar.",
  "links.porkbun.about": "Misyonun web alan adını tutar: yenilemeler ve onu bu sisteme yönlendiren DNS kayıtları.",
  "links.cloudflare.about": "Misyonun web adresini bu sisteme güvenle bağlar (Cloudflare tüneli) ve DNS ile korumasını yönetir.",
  "links.notSet": "Gösterilmiyor: ayarlardaki adres eksik veya güvenli bir web adresi değil.",

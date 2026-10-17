@@ -39,7 +39,7 @@ def account_rows(mission_id):
         with database.cursor(conn) as cur:
             cur.execute("""
                 select
-                  m.id missionary_id,m.missionary_number,m.display_name,m.email,m.status missionary_status,
+                  m.id missionary_id,m.missionary_number,m.display_name,m.last_name,m.first_name,m.email,m.status missionary_status,
                   a.id area_id,a.name area,d.id district_id,d.name district,z.id zone_id,z.name zone,
                   ma.roster_position,ma.roster_position_abbr,min(ma.start_date) assignment_start,
                   au.id auth_user_id,au.invited_at,au.confirmed_at,au.last_sign_in_at,
@@ -60,10 +60,10 @@ def account_rows(mission_id):
                 left join public.leadership_assignments la on la.missionary_id=m.id and la.start_date<=current_date
                   and (la.end_date is null or la.end_date>=current_date)
                 where z.mission_id=%s and m.status='Active'
-                group by m.id,m.missionary_number,m.display_name,m.email,m.status,
+                group by m.id,m.missionary_number,m.display_name,m.last_name,m.first_name,m.email,m.status,
                          a.id,a.name,d.id,d.name,z.id,z.name,ma.roster_position,ma.roster_position_abbr,
                          au.id,au.invited_at,au.confirmed_at,au.last_sign_in_at,up.id,up.missionary_id,up.active,up.app_role
-                order by z.name,d.name,a.name,lower(m.last_name),lower(coalesce(m.first_name,'')),m.id
+                order by lower(m.last_name),lower(coalesce(m.first_name,'')),m.id
             """, (mission_id,))
             rows = cur.fetchall()
     for r in rows:
@@ -133,11 +133,11 @@ def table_row(r):
     return f"""
               <tr>
                 <td><input class="personBox" type="checkbox" name="missionary_id" value="{r['missionary_id']}"></td>
-                <td>{h(r['display_name'])}<br><span class="muted">{h(r['missionary_number'])}</span></td>
-                <td>{h(r['email']) or '<span class="bad">Missing email</span>'}</td>
-                <td>{h(r['area'])}{account_links.upcoming(r)}</td><td>{h(r['district'])}</td><td>{h(r['zone'])}</td>
+                <td data-sort="{h(f"{r.get('last_name') or ''} {r.get('first_name') or ''}".strip())}">{h(r['display_name'])}<br><span class="muted">{h(r['missionary_number'])}</span></td>
+                <td data-sort="{h(r['email'])}">{h(r['email']) or '<span class="bad">Missing email</span>'}</td>
+                <td data-sort="{h(r['area'])}">{h(r['area'])}{account_links.upcoming(r)}</td><td>{h(r['district'])}</td><td>{h(r['zone'])}</td>
                 <td>{h(role_display)}</td>
-                <td class="status">{h(r['account_status'])}<br><a href="/accounts/{r['missionary_id']}">Manage settings</a></td>
+                <td class="status" data-sort="{h(r['account_status'])}">{h(r['account_status'])}<br><a href="/accounts/{r['missionary_id']}">Manage settings</a></td>
               </tr>
             """
 
@@ -200,8 +200,8 @@ def accounts_html(mission_id, rows, shown, filters):
             <button type="button" class="secondary" onclick="setAll(false)">Clear selection</button>
             <button>Check and send account setup</button>
           </div>
-          <div class="card scroll"><table>
-            <thead><tr><th></th><th>Missionary</th><th>Email</th><th>Area</th><th>District</th><th>Zone</th><th>Role</th><th>Account</th></tr></thead>
+          <div class="card scroll"><table class="sortable">
+            <thead><tr><th></th><th data-sort-default>Missionary</th><th>Email</th><th>Area</th><th>District</th><th>Zone</th><th>Role</th><th>Account</th></tr></thead>
             <tbody>{''.join(table_rows) if table_rows else '<tr><td colspan="8" class="muted">No missionaries match these filters.</td></tr>'}</tbody>
           </table></div>
         </form>

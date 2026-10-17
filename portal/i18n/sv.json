@@ -2864,7 +2864,7 @@
  "links.intro": "De externa webbtjänster som missionssystemet förlitar sig på. Varje länk öppnar tjänsten i en ny flik, där du loggar in med ditt eget konto.",
  "links.noSecrets": "Inget lösenord eller nyckel sparas här. Adresserna kommer från det här systemets inställningar.",
  "links.open": "Öppna {name}",
- "links.brevo.about": "Skickar systemets e-post: inbjudningar och lösenordsmejl till missionärer och personal.",
+ "links.gmail.about": "Skickar systemets e-post (inbjudningar och lösenordsmejl) från missionens Gmail-konto. Länken öppnar Googles sida ”Applösenord”, där e-postlösenordet skapas eller byts ut.",
  "links.porkbun.about": "Håller missionens webbdomännamn: förnyelser och DNS-posterna som pekar det mot det här systemet.",
  "links.cloudflare.about": "Kopplar säkert missionens webbadress till det här systemet (Cloudflare-tunneln) och hanterar dess DNS och skydd.",
  "links.notSet": "Visas inte: adressen i inställningarna saknas eller är inte en säker webbadress.",

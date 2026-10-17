@@ -6,12 +6,13 @@
   <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Email (Brevo) — Weekly Planning Wiki</title>
-  <meta name="description" content="How email works, and a step-by-step fix when Brevo needs to be reconnected.">
+  <title>Email (Gmail) — Weekly Planning Wiki</title>
+  <meta name="description" content="Sign in to the portal to read this page.">
+  <meta name="robots" content="noindex">
   <link rel="stylesheet" href="assets/wiki.css">
   <script src="assets/wiki.js" defer></script>
 </head>
-<body data-wiki-base="." data-page="email-brevo" data-private="1">
+<body data-wiki-base="." data-page="email" data-private="1">
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
   <div class="wiki-shell">
     <aside class="wiki-sidebar" id="wikiSidebar">
@@ -46,53 +47,29 @@
       <div class="wiki-topbar">
         <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
         <div class="topbar-actions">
-          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">&#9776; Menu</button>
           <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
         </div>
       </div>
       <article class="wiki-article">
-        <!--wiki-article-start-->
-        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="email-brevo">
-          <a class="tab is-active" href="email-brevo.html" data-tab="read">Read</a>
-          <a class="tab tab-edit is-hidden" href="edit.html?page=email-brevo" data-tab="edit">Edit</a>
-          <a class="tab tab-history is-hidden" href="history.html?page=email-brevo" data-tab="history">History</a>
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="email">
+          <a class="tab is-active" href="email.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=email" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=email" data-tab="history">History</a>
           <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
         </nav>
-        <h1>Email (Brevo)</h1>
-        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Email (Brevo)</strong> explains how the system sends invitation and password emails through Brevo, and how to fix it when they stop arriving.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
-<li><a href="#usage">Usage</a></li>
-<li><a href="#how-to-fix-it-in-this-order">How to fix it (in this order)</a></li>
-<li><a href="#testing">Testing</a></li>
-<li><a href="#troubleshooting">Troubleshooting</a></li>
-<li><a href="#history">History</a></li>
-<li><a href="#see-also">See also</a></li>
-</ol></nav><h2 id="usage">Usage</h2>
-<p>The system sends two kinds of email: <strong>invitations</strong> and <strong>password emails</strong>. They come from Account Manager and from Staff accounts in DA Management. Brevo is the service that delivers them.</p>
-<p>Brevo is <strong>not</strong> logged in anywhere inside the portal. The only connection is a set of mail settings (called SMTP settings) in the file <code>supabase/.env</code> on the server. The card <strong>Links to web services &gt; Brevo</strong> is just a shortcut to Brevo&#x27;s page for email keys. It stores no password.</p>
-<p><strong>Signs that Brevo needs to be reconnected:</strong> a person says no invitation or password email arrived, and the check below shows an error.</p>
-<h2 id="how-to-fix-it-in-this-order">How to fix it (in this order)</h2>
-<ol><li><strong>Look for warnings in Brevo.</strong> Sign in at app.brevo.com. A red banner can mean a suspended account, no email credits left, or a sender that is not verified.</li><li><strong>Allow the server (Authorised IPs).</strong> In Brevo open <strong>Security &gt; Authorised IPs</strong>. If blocking is on, the server&#x27;s public address must be in the list, or blocking must be turned off. After the move to the Ubuntu server the address is new, so this is a likely cause. To find the address, type this on the server: <code>curl -s https://ifconfig.me</code></li><li><strong>Check the SMTP details.</strong> In Brevo open <strong>SMTP &amp; API &gt; SMTP</strong> (the card in Links opens the SMTP keys page directly). Note the server name <code>smtp-relay.brevo.com</code>, the port <code>587</code> and the login shown there.</li><li><strong>Make a new SMTP key.</strong> On the same page create a <strong>new SMTP key</strong>. It must be an SMTP key, not an API key. Copy it once; Brevo shows it only one time. Never paste it into chat or into a document.</li><li><strong>Check the sender.</strong> In Brevo open <strong>Senders, Domains &amp; Dedicated IPs</strong> and make sure the address the system sends from (<code>SMTP_ADMIN_EMAIL</code>) is verified.</li><li><strong>Put the new details on the server (only after the owner says go).</strong> On the server edit <code>~/weekly-planning/supabase/.env</code> and set <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>SMTP_ADMIN_EMAIL</code> and <code>SMTP_SENDER_NAME</code>. Then make the sign-in service pick them up:</li></ol>
-<pre><code class="language-bash">cd ~/weekly-planning
-docker compose -p gfm-beta --env-file supabase/.env -f supabase/supabase-compose.yml -f supabase/beta-override.yml up -d --no-deps --force-recreate supabase-auth</code></pre>
-<p>A plain <code>docker restart</code> is <strong>not</strong> enough: it keeps the old settings.</p>
-<h2 id="testing">Testing</h2>
-<ol><li>In DA Management open <strong>People &gt; Staff accounts</strong> and send a password email to yourself.</li><li>On the server look at the log:</li></ol>
-<pre><code class="language-bash">docker logs --since 10m gfm-beta-supabase-auth-1 2&gt;&amp;1 | grep -iE &#x27;mail|smtp&#x27; | tail</code></pre>
-<table><thead><tr><th>What the log says</th><th>Meaning</th></tr></thead><tbody><tr><td><code>535 Authentication failed</code></td><td>The key or login is wrong or was deleted: make a new SMTP key (step 4).</td></tr><tr><td>Connection refused or timed out</td><td>The server&#x27;s address is blocked: step 2.</td></tr><tr><td>Sender not valid or not verified</td><td>Step 5.</td></tr><tr><td>Quota or account suspended</td><td>Look at the banner in Brevo (step 1).</td></tr></tbody></table>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<ul><li>The email is &quot;sent&quot; but nothing arrives: check the spam folder, then Brevo&#x27;s <strong>Transactional &gt; Logs</strong> for the address.</li><li>Never put the SMTP key into the repository, a wiki page or a chat.</li></ul>
-<h2 id="history">History</h2>
-<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 16</td><td>Page added after emails needed a reconnect following the move to the Ubuntu server</td></tr></tbody></table>
-<h2 id="see-also">See also</h2>
-<ul><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="management.html">Management</a></li><li><a href="accounts.html">Accounts</a></li></ul></div><aside class="infobox">
-<div class="infobox-title">Email (Brevo)</div>
-<div class="infobox-icon" aria-hidden="true">✉️</div>
-<table>
-<tr><th>Service</th><td>Brevo (app.brevo.com)</td></tr>
-<tr><th>Used for</th><td>Invitations and password emails</td></tr>
-<tr><th>Settings</th><td>supabase/.env (SMTP_*)</td></tr>
-<tr><th>Test</th><td>DA Management &gt; People &gt; Staff accounts</td></tr>
-</table></aside></div>
+        <h1>Email (Gmail)</h1>
+        
+        <div class="private-gate" id="wikiPrivateGate" data-private-slug="email">
+          <div class="private-gate-icon" aria-hidden="true">&#128274;</div>
+          <h2>Sign in to read this page</h2>
+          <p>This page is in the <strong>Data and admin</strong> section. Sign in to the
+             mission portal to read it. Any portal account works.</p>
+          <p><a class="btn btn-primary" href="/?return=/wiki/email.html">Sign in to the portal</a></p>
+          <p class="muted">Already signed in? This page will load automatically.</p>
+        </div>
+        <div id="wikiPrivateMount" class="is-hidden" hidden></div>
+
         <div class="navboxes-wrap">
 <details class="navbox" open>
 <summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
@@ -122,7 +99,7 @@ docker compose -p gfm-beta --env-file supabase/.env -f supabase/supabase-compose
 <div class="navbox-group">
 <div class="navbox-label">Server</div>
 <div class="navbox-list">
-<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Email (Brevo)</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Email (Gmail)</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
 </div></div>
 <div class="navbox-group">
 <div class="navbox-label">Operations</div>
@@ -157,7 +134,6 @@ docker compose -p gfm-beta --env-file supabase/.env -f supabase/supabase-compose
           No church logos or trademarked imagery.
           <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
         </p>
-        <!--wiki-article-end-->
       </article>
     </div>
   </div>

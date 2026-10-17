@@ -2864,7 +2864,7 @@
  "links.intro": "Die externen Webdienste, auf die sich das Missionssystem stützt. Jeder Link öffnet den Dienst in einem neuen Tab, wo du dich mit deinem eigenen Konto anmeldest.",
  "links.noSecrets": "Hier wird kein Passwort und kein Schlüssel gespeichert. Die Adressen stammen aus den Einstellungen dieses Systems.",
  "links.open": "{name} öffnen",
- "links.brevo.about": "Verschickt die E-Mails des Systems: Einladungen und Passwort-E-Mails an Missionare und Mitarbeiter.",
+ "links.gmail.about": "Verschickt die E-Mails des Systems (Einladungen und Passwort-E-Mails) über das Gmail-Konto der Mission. Der Link öffnet Googles Seite „App-Passwörter“, auf der das Mail-Passwort erstellt oder ersetzt wird.",
  "links.porkbun.about": "Verwaltet den Domainnamen der Mission: Verlängerungen und die DNS-Einträge, die ihn auf dieses System zeigen lassen.",
  "links.cloudflare.about": "Verbindet die Webadresse der Mission sicher mit diesem System (der Cloudflare-Tunnel) und verwaltet DNS und Schutz.",
  "links.notSet": "Nicht angezeigt: Die Adresse in den Einstellungen fehlt oder ist keine sichere Webadresse.",

@@ -157,6 +157,12 @@ button.danger,.danger{background:#b42318;border-color:#b42318;color:#fff}
 [data-theme="dark"] button.danger,[data-theme="dark"] .danger{background:#b42318;border-color:#b42318;color:#fff}
 @media(max-width:700px){.nav.tabs a,.nav.sub a{min-height:44px;padding:10px 12px}.nav.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}}
 
+/* Sortable tables (table.sortable): the heading is a button with an arrow for the column and direction in use */
+th .sort-head{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:700;text-align:inherit;cursor:pointer}
+th .sort-head:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:4px}.sort-arrow:after{content:"\\2195";opacity:.45}
+th[aria-sort=ascending] .sort-arrow:after{content:"\\25B2";opacity:1;font-size:.8em}th[aria-sort=descending] .sort-arrow:after{content:"\\25BC";opacity:1;font-size:.8em}
+[data-theme="dark"] th .sort-head:focus-visible{outline-color:#6fd3d6}
+
 /* Phones */
 @media(max-width:700px){body{padding:16px 12px}.split{grid-template-columns:1fr}.card{padding:17px}.nav{gap:6px}.nav a{padding:8px}}
 
@@ -229,6 +235,23 @@ var files=e.dataTransfer&&e.dataTransfer.files;if(files&&files.length){try{input
 addEventListener("dragover",function(e){if(e.target.closest&&e.target.closest(".file-pick,.card"))return;e.preventDefault()});
 addEventListener("drop",function(e){if(!(e.target.closest&&e.target.closest(".file-pick,.card")))e.preventDefault()});
 })()</script>
+<script>/* Round 18: a table.sortable sorts by a column when its heading (a button) is clicked, again reverses; the arrow and aria-sort show how.
+A cell's data-sort (else its text) is compared case- and accent-blind, numbers as numbers; empty cells last. th[data-sort-default]: A to Z at the start. */(function(){
+var compare=new Intl.Collator(document.documentElement.lang||undefined,{sensitivity:"base",numeric:true}).compare;
+document.querySelectorAll("table.sortable").forEach(function(table){
+var heads=[].slice.call(table.tHead.rows[0].cells),body=table.tBodies[0];
+function key(row,i){var c=row.cells[i];return (c.hasAttribute("data-sort")?c.getAttribute("data-sort"):c.textContent).trim()}
+function sort(i,dir){
+[].slice.call(body.rows).filter(function(r){return r.cells.length===heads.length})
+.sort(function(a,b){var x=key(a,i),y=key(b,i);return (!x-!y)||dir*compare(x,y)}).forEach(function(r){body.appendChild(r)});
+heads.forEach(function(th,j){if(th.hasAttribute("aria-sort"))th.setAttribute("aria-sort",j===i?(dir>0?"ascending":"descending"):"none")})}
+heads.forEach(function(th,i){if(!th.textContent.trim())return;
+var b=document.createElement("button");b.type="button";b.className="sort-head";
+while(th.firstChild)b.appendChild(th.firstChild);b.insertAdjacentHTML("beforeend",'<span class="sort-arrow" aria-hidden="true"></span>');
+th.appendChild(b);th.setAttribute("aria-sort","none");
+b.addEventListener("click",function(){sort(i,th.getAttribute("aria-sort")==="ascending"?-1:1)})});
+var first=heads.findIndex(function(th){return th.hasAttribute("data-sort-default")});if(first>=0)sort(first,1);
+});})()</script>
 <script>addEventListener("message",e=>{if(e.data?.type!=="portal-theme")return;var t=e.data.theme||"mission";document.documentElement.dataset.theme=t;document.cookie=["gfm_theme="+t,"path=/","max-age=31536000"].join(";")})</script></body>
 </html>
 """

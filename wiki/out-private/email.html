@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email (Gmail) — Weekly Planning Wiki</title>
+  <meta name="description" content="Sign-in emails through Gmail: the app password, the settings, applying them, testing and fixing.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="email" data-private="1">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="/" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="email">
+          <a class="tab is-active" href="email.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="edit.html?page=email" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="history.html?page=email" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="edit.html?new=1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Email (Gmail)</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Email (Gmail)</strong> explains, step by step, how the system sends its sign-in emails through the mission&#x27;s Gmail account, how to make or replace the Gmail app password, and what to do when emails stop arriving.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#what-it-is-for">What it is for</a></li>
+<li><a href="#before-you-start">Before you start</a></li>
+<li><a href="#make-or-replace-the-app-password">Make or replace the app password</a></li>
+<li><a href="#where-the-settings-live">Where the settings live</a></li>
+<li><a href="#put-the-new-settings-in">Put the new settings in</a></li>
+<li><a href="#test-it">Test it</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#switching-to-another-email-service-later">Switching to another email service later</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="what-it-is-for">What it is for</h2>
+<p>The system sends two kinds of email, both from the mission&#x27;s <strong>Gmail account</strong>:</p>
+<ul><li><strong>Invitations</strong>: a new missionary or staff member gets a link to choose a password (Account Manager, Staff accounts).</li><li><strong>Password emails</strong>: a link to choose a new password (Account Manager, Staff accounts &gt; Manage &gt; <strong>Send password email</strong>).</li></ul>
+<p>The sign-in service (called <code>supabase-auth</code>) sends them. It does <strong>not</strong> log in to Gmail in a browser. It only uses a few mail settings (SMTP settings) in the file <code>~/weekly-planning/supabase/.env</code> on the server. The password in that file is a special <strong>Google App Password</strong>, not the normal Gmail password.</p>
+<p>Good to know:</p>
+<ul><li>Gmail sends about <strong>500 emails a day</strong>. That is plenty for normal weeks; on a day with many invitations, send them in groups.</li><li>The emails always come <strong>from that Gmail address</strong> (Gmail does not allow another sender address). The name people see is <code>Germany Frankfurt Mission</code>.</li><li><strong>DA Management &gt; History &gt; Links to web services &gt; Gmail</strong> opens Google&#x27;s App passwords page. It stores no password.</li></ul>
+<h2 id="before-you-start">Before you start</h2>
+<p>You need:</p>
+<ol><li>The sign-in (address and password) of the mission&#x27;s Gmail account, from the previous data analyst or the mission office.</li><li>A way to type commands on the server (the terminal of the Ubuntu server, or SSH).</li><li>The owner&#x27;s &quot;go&quot; before you change anything on the server.</li></ol>
+<p>Never paste the app password into a chat, a wiki page, an email or the repository. It belongs only in the <code>.env</code> file on the server.</p>
+<h2 id="make-or-replace-the-app-password">Make or replace the app password</h2>
+<p>Do this when you set up email for the first time, when Google shows <em>Username and Password not accepted</em>, or when the password may have been seen by someone else.</p>
+<ol><li>Sign in to the mission&#x27;s Gmail account at https://myaccount.google.com.</li><li>Open <strong>Security</strong>. Make sure <strong>2-Step Verification</strong> is <strong>on</strong>. If it is off, turn it on first (Google asks for a phone). Without it, Google does not offer app passwords.</li><li>Open https://myaccount.google.com/apppasswords (or the <strong>Gmail</strong> card in DA Management &gt; History &gt; Links to web services).</li><li>Type a name you will recognise, for example <code>Mission system server</code>, and press <strong>Create</strong>.</li><li>Google shows a password of <strong>16 letters</strong> in four groups (for example <code>abcd efgh ijkl mnop</code>). It is shown <strong>only once</strong>. Keep the window open until step 6 of the next section is done.</li><li>Replacing an old one? In the same list, press the bin icon next to the old app password to delete it. From then on only the new one works.</li></ol>
+<h2 id="where-the-settings-live">Where the settings live</h2>
+<p>On the server, in the file <code>~/weekly-planning/supabase/.env</code>:</p>
+<table><thead><tr><th>Setting</th><th>Value for Gmail</th></tr></thead><tbody><tr><td><code>SMTP_HOST</code></td><td><code>smtp.gmail.com</code></td></tr><tr><td><code>SMTP_PORT</code></td><td><code>587</code></td></tr><tr><td><code>SMTP_USER</code></td><td>the mission&#x27;s full Gmail address</td></tr><tr><td><code>SMTP_PASS</code></td><td>the 16-letter app password, <strong>without spaces</strong></td></tr><tr><td><code>SMTP_ADMIN_EMAIL</code></td><td>the same Gmail address (the emails come from it)</td></tr><tr><td><code>SMTP_SENDER_NAME</code></td><td><code>Germany Frankfurt Mission</code></td></tr></tbody></table>
+<p>The file <code>supabase/supabase-compose.yml</code> hands these to the sign-in service (as <code>GOTRUE_SMTP_*</code>). You do not change that file.</p>
+<h2 id="put-the-new-settings-in">Put the new settings in</h2>
+<ol><li>On the server, open the file:</li></ol>
+<pre><code class="language-bash">nano ~/weekly-planning/supabase/.env</code></pre>
+<ol><li>Find the lines that start with <code>SMTP_</code> and set them as in the table above. Write the app password without spaces: <code>SMTP_PASS=abcdefghijklmnop</code>.</li><li>Save with <strong>Ctrl+O</strong>, then <strong>Enter</strong>, and close with <strong>Ctrl+X</strong>.</li><li>Make the sign-in service read the new settings:</li></ol>
+<pre><code class="language-bash">cd ~/weekly-planning/supabase &amp;&amp; docker compose -p gfm-beta -f supabase-compose.yml -f beta-override.yml --env-file .env up -d --no-deps --force-recreate supabase-auth</code></pre>
+<ol><li>Wait about 20 seconds. <code>docker ps --filter name=supabase-auth</code> should show the container as <code>Up</code>.</li></ol>
+<p>A plain <code>docker restart</code> is <strong>not</strong> enough: it keeps the old settings. Only the command in step 4 reads the file again. It touches only the sign-in service.</p>
+<h2 id="test-it">Test it</h2>
+<ol><li>In DA Management open <strong>People &gt; Staff accounts</strong>, press <strong>Manage</strong> next to your own account and press <strong>Send password email</strong>.</li><li>Within a minute the email should arrive in your inbox, from the mission&#x27;s Gmail address with the name <em>Germany Frankfurt Mission</em>. Look in the spam folder too.</li><li>You do not have to use the link; an unused link simply expires.</li><li>If nothing arrives, look at the sign-in service&#x27;s log on the server:</li></ol>
+<pre><code class="language-bash">docker logs --since 10m gfm-beta-supabase-auth-1 2&gt;&amp;1 | grep -iE &#x27;mail|smtp&#x27; | tail</code></pre>
+<p>The emails you sent also show in the Gmail account under <strong>Sent</strong>.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table><thead><tr><th>What you see</th><th>What it means</th><th>What to do</th></tr></thead><tbody><tr><td><code>Username and Password not accepted</code> (code 535) in the log</td><td>The app password is wrong, has spaces, or was deleted</td><td>Make a new app password and put it in (the two sections above). Check <code>SMTP_USER</code> is the full address.</td></tr><tr><td>No error in the log, but no email</td><td>It went to spam, or the address is wrong</td><td>Look in the spam folder; check the person&#x27;s email in Account Manager. Look in Gmail&#x27;s <strong>Sent</strong> folder.</td></tr><tr><td><code>Daily user sending limit exceeded</code></td><td>More than about 500 emails today</td><td>Wait until tomorrow and send the rest then.</td></tr><tr><td>Connection refused or timed out</td><td>The server cannot reach smtp.gmail.com</td><td>Check the server&#x27;s internet connection; check <code>SMTP_HOST</code> and <code>SMTP_PORT</code>.</td></tr><tr><td>Google sent a &quot;security alert&quot; email</td><td>Normal the first time the server signs in</td><td>Nothing; the alert only informs you.</td></tr><tr><td>The changes do nothing</td><td>The service still runs with the old settings</td><td>Run the command of &quot;Put the new settings in&quot;, step 4 (not <code>docker restart</code>).</td></tr></tbody></table>
+<p>If the Gmail account&#x27;s normal password was changed, or 2-Step Verification was turned off, Google removes the app passwords: turn 2-Step Verification on again if needed and make a new app password.</p>
+<h2 id="switching-to-another-email-service-later">Switching to another email service later</h2>
+<p>Any email service that offers <strong>SMTP</strong> works the same way (for example a Google Workspace account, Microsoft 365, or a mail service for sending system emails).</p>
+<ol><li>Get the service&#x27;s SMTP details: server name, port (usually <code>587</code>), user name and password or key. Many services call the password an <em>SMTP key</em> or <em>app password</em>.</li><li>If the service needs it, confirm the sender address there (some services only send from a confirmed address).</li><li>Put the details into the same six <code>SMTP_</code> settings, and set <code>SMTP_ADMIN_EMAIL</code> to an address the service may send from.</li><li>Apply and test them exactly as above.</li><li>Update the <strong>Gmail</strong> card in DA Management if you like: set <code>WEB_LINK_GMAIL</code> in <code>roster-importer/.env</code> to the new service&#x27;s settings page (or <code>off</code>), and change this page.</li></ol>
+<h2 id="history">History</h2>
+<table><thead><tr><th>Date</th><th>Note</th></tr></thead><tbody><tr><td>Round 16</td><td>Page added after emails needed a reconnect following the move to the Ubuntu server</td></tr><tr><td>Round 18</td><td>Rewritten for Gmail (smtp.gmail.com with a Google App Password), which now sends the system&#x27;s emails</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="management.html">Management</a></li><li><a href="accounts.html">Accounts</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Email (Gmail)</div>
+<div class="infobox-icon" aria-hidden="true">✉️</div>
+<table>
+<tr><th>Service</th><td>The mission&#x27;s Gmail account</td></tr>
+<tr><th>Server</th><td>smtp.gmail.com</td></tr>
+<tr><th>Password</th><td>A Google App Password (16 letters)</td></tr>
+<tr><th>Settings</th><td>supabase/.env on the server (SMTP_*)</td></tr>
+<tr><th>Limit</th><td>About 500 emails a day</td></tr>
+<tr><th>Test</th><td>DA Management &gt; People &gt; Staff accounts</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <strong>Email (Gmail)</strong> <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <a href="glossary.html">Glossary</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

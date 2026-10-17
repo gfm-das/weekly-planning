@@ -2867,7 +2867,7 @@
  "links.intro": "I servizi web esterni su cui si basa il sistema della missione. Ogni link apre il servizio in una nuova scheda, dove accedi con il tuo account.",
  "links.noSecrets": "Qui non è conservata nessuna password o chiave. Gli indirizzi vengono dalle impostazioni di questo sistema.",
  "links.open": "Apri {name}",
- "links.brevo.about": "Invia le e-mail del sistema: inviti ed e-mail della password a missionari e personale.",
+ "links.gmail.about": "Invia le email del sistema (inviti ed email per la password) dall’account Gmail della missione. Il link apre la pagina «Password per le app» di Google, dove si crea o si sostituisce la password della posta.",
  "links.porkbun.about": "Custodisce il nome di dominio web della missione: i rinnovi e i record DNS che lo indirizzano a questo sistema.",
  "links.cloudflare.about": "Collega in modo sicuro l'indirizzo web della missione a questo sistema (il tunnel Cloudflare) e gestisce il suo DNS e la protezione.",
  "links.notSet": "Non mostrato: l'indirizzo nelle impostazioni manca o non è un indirizzo web sicuro.",

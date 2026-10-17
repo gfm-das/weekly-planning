@@ -24,7 +24,7 @@ tags: [admin, users, ops]
 | --- | --- |
 | Cannot sign in | Account inactive or wrong email — ask Data Analyst |
 | Wrong menu items | Role/stewardship — see [Roles](roles-and-permissions.html) |
-| Invitation or password emails do not arrive | See [Email (Brevo)](email-brevo.html) |
+| Invitation or password emails do not arrive | See [Email (Gmail)](email.html) |
 | Plan read-only | Submitted — ask DL/ZL/manager to unlock |
 | No push reminders on phone | Need https or localhost |
 | Presentations signed out | Slidev restart — wait for portal renew |
@@ -103,5 +103,5 @@ Refresh this list against the latest `docs/handoff/11_KNOWN_ISSUES.md` after eac
 - [Signing in](signing-in.html)
 - [First day as a Data Analyst](first-day-as-da.html)
 - [Updater](updater.html)
-- [Email (Brevo)](email-brevo.html)
+- [Email (Gmail)](email.html)
 - [Nightly backup](nightly-backup.html)

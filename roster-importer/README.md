@@ -136,7 +136,7 @@ database name says it is a throw-away test copy.
    ```
    docker run --rm --network none -v <repo>:/repo -w /repo/roster-importer
      -e DATABASE_URL=postgresql://nobody@127.0.0.1:1/none roster-importer-roster-importer
-     python -m unittest tests.test_rules tests.test_historical_rules tests.test_data_files tests.test_updates_page tests.test_page_words tests.test_roles_in_step tests.test_fc_numbers tests.test_retire_rules tests.test_links tests.test_geo_pages tests.test_menu tests.test_vollzogen tests.test_geo_csv tests.test_ap_rights tests.test_unlock tests.test_wiki_card tests.test_abilities tests.test_file_pick tests.test_migration_057 tests.test_migration_058 tests.test_upload_detect tests.test_upload_check
+     python -m unittest tests.test_rules tests.test_historical_rules tests.test_data_files tests.test_updates_page tests.test_page_words tests.test_roles_in_step tests.test_fc_numbers tests.test_retire_rules tests.test_links tests.test_geo_pages tests.test_menu tests.test_vollzogen tests.test_geo_csv tests.test_ap_rights tests.test_unlock tests.test_wiki_card tests.test_abilities tests.test_file_pick tests.test_migration_057 tests.test_migration_058 tests.test_upload_detect tests.test_upload_check tests.test_name_order
    ```
 2. **DA Management with a database** (`test_management`, `test_accounts`, `test_data_uploads`): a throw-away copy
    whose name starts with `roster_management_test_`, reached under the name `gfm-beta-supabase-db-1`

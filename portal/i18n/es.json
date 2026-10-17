@@ -2864,7 +2864,7 @@
  "links.intro": "Los servicios web externos en los que se apoya el sistema de la misión. Cada enlace abre el servicio en una pestaña nueva, donde inicias sesión con tu propia cuenta.",
  "links.noSecrets": "Aquí no se guarda ninguna contraseña ni clave. Las direcciones vienen de los ajustes de este sistema.",
  "links.open": "Abrir {name}",
- "links.brevo.about": "Envía los correos del sistema: invitaciones y correos de contraseña a misioneros y personal.",
+ "links.gmail.about": "Envía los correos del sistema (invitaciones y correos de contraseña) desde la cuenta de Gmail de la misión. El enlace abre la página «Contraseñas de aplicaciones» de Google, donde se crea o se reemplaza la contraseña del correo.",
  "links.porkbun.about": "Guarda el nombre de dominio web de la misión: las renovaciones y los registros DNS que lo dirigen a este sistema.",
  "links.cloudflare.about": "Conecta de forma segura la dirección web de la misión con este sistema (el túnel de Cloudflare) y gestiona su DNS y protección.",
  "links.notSet": "No se muestra: la dirección en los ajustes falta o no es una dirección web segura.",

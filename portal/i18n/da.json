@@ -2864,7 +2864,7 @@
  "links.intro": "De eksterne webtjenester, som missionssystemet bygger på. Hvert link åbner tjenesten i en ny fane, hvor du logger ind med din egen konto.",
  "links.noSecrets": "Ingen adgangskode eller nøgle gemmes her. Adresserne kommer fra dette systems indstillinger.",
  "links.open": "Åbn {name}",
- "links.brevo.about": "Sender systemets e-mails: invitationer og adgangskodemails til missionærer og personale.",
+ "links.gmail.about": "Sender systemets e-mails (invitationer og adgangskode-e-mails) fra missionens Gmail-konto. Linket åbner Googles side “App-adgangskoder”, hvor mail-adgangskoden oprettes eller udskiftes.",
  "links.porkbun.about": "Rummer missionens webdomænenavn: fornyelser og de DNS-poster, der peger det mod dette system.",
  "links.cloudflare.about": "Forbinder sikkert missionens webadresse til dette system (Cloudflare-tunnelen) og styrer dets DNS og beskyttelse.",
  "links.notSet": "Vises ikke: adressen i indstillingerne mangler eller er ikke en sikker webadresse.",
