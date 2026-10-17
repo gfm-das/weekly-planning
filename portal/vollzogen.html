@@ -5,6 +5,8 @@
   What it is:  a read-only list of the people who were baptized and confirmed (the office's "Vollzogen" list): name, when the
                baptismal date was set, the baptism date, how they were found, the missionaries, unit, stake, zone, confirmed,
                country, gender and preferred language. Newest baptism first. Filters: week, zone and a text search.
+               Round 19: "Group by" year, quarter or month (by baptism date) puts a heading with the period's total over
+               each group; the order choice turns newest-first into oldest-first. Both work on the loaded list only.
                It has no edit buttons and no forms: one search box and two lists to choose from.
   Who uses it: the Office and the managers (AP, President, Data Analyst). Not district leaders, zone leaders, STLs or missionaries,
                because the list holds names. The menu entry (INSIGHTS > Vollzogen) is shown only to those roles; portal-api
@@ -38,6 +40,8 @@
       .filters .field.wide { flex: 1 1 260px; }
       .filters select, .filters input { min-height: 44px; }
       .count { margin: 0 0 10px; }
+      .done-table tr.period th { background: var(--soft); color: var(--text); font-size: 14px; padding: 9px 10px; }
+      .done-table tr.period .total { color: var(--muted); font-weight: 600; margin-inline-start: 8px; }
       .readonly-note { display: inline-block; border-radius: 99px; background: #e7f3f1; color: #13736e; padding: 4px 10px; font-size: 12px; font-weight: 700; }
       [data-theme="dark"] .readonly-note { background: #173d33; color: #9be3c8; }
       @media (max-width: 760px) {
@@ -70,6 +74,22 @@
             <label for="zone">Zone</label>
             <select id="zone"><option value="">All zones</option></select>
           </div>
+          <div class="field">
+            <label for="group">Group by</label>
+            <select id="group">
+              <option value="">No grouping</option>
+              <option value="year">Year</option>
+              <option value="quarter">Quarter</option>
+              <option value="month">Month</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="order">Order</label>
+            <select id="order">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
           <div class="field wide">
             <label for="q">Search</label>
             <input id="q" type="search" maxlength="100" autocomplete="off" />
@@ -91,7 +111,7 @@
         const text = window.MissionI18n && window.MissionI18n.t ? window.MissionI18n.t(key, values) : key;
         return text === key ? "" : text;
       };
-      const state = { filled: false, timer: null, ticket: 0 };
+      const state = { filled: false, timer: null, ticket: 0, data: null, oldestFirst: false };
 
       function setStatus(text, error) {
         $("status").textContent = text || "";
@@ -123,7 +143,36 @@
         ["", "vollzogen.colLanguage", (i) => text(i.preferred_language)],
       ];
 
+      // Group by: the period of a baptism date ("2026-08-09"): its sort key and heading. No date: last, under "No date".
+      function period(iso, by) {
+        if (!iso) return { key: "", label: T("vollzogen.noDate") };
+        const [y, m] = iso.split("-").map(Number);
+        if (by === "year") return { key: String(y), label: String(y) };
+        if (by === "quarter") return { key: `${y}-${Math.ceil(m / 3)}`, label: T("vollzogen.quarterLabel", { q: Math.ceil(m / 3), year: y }) };
+        const name = new Intl.DateTimeFormat(document.documentElement.lang || "en", { month: "long", year: "numeric", timeZone: "UTC" });
+        return { key: iso.slice(0, 7), label: name.format(new Date(Date.UTC(y, m - 1, 1))) };
+      }
+
+      // The rows in date order (newest first unless reversed; no date last), with a heading and total per period.
+      function bodyRows(items, by) {
+        const sign = state.oldestFirst ? 1 : -1;
+        const sorted = items.slice().sort((a, b) => {
+          const x = day(a.baptism_date), y = day(b.baptism_date);
+          return (!x - !y) || sign * x.localeCompare(y) || text(a.full_name).localeCompare(text(b.full_name));
+        });
+        const row = (item) => "<tr>" + COLUMNS.map(([cls, key, get]) => `<td class="${cls}" data-label="${esc(T(key))}">${esc(get(item))}</td>`).join("") + "</tr>";
+        if (!by) return sorted.map(row).join("");
+        const groups = [];
+        for (const item of sorted) {
+          const p = period(day(item.baptism_date), by);
+          if (!groups.length || groups[groups.length - 1].key !== p.key) groups.push({ ...p, items: [] });
+          groups[groups.length - 1].items.push(item);
+        }
+        return groups.map((g) => `<tr class="period"><th colspan="${COLUMNS.length}" scope="rowgroup">${esc(g.label)}<span class="total">${esc(T("vollzogen.periodTotal", { n: g.items.length }))}</span></th></tr>` + g.items.map(row).join("")).join("");
+      }
+
       function draw(data) {
+        state.data = data;
         if (!state.filled) {
           state.filled = true;
           fillSelect($("week"), "vollzogen.allWeeks", data.weeks.map((w) => ({ value: w, label: w })), data.filter.week);
@@ -137,9 +186,7 @@
         $("count").hidden = false;
         $("count").textContent = T("vollzogen.count", { n: data.items.length });
         const head = COLUMNS.map(([, key]) => `<th>${esc(T(key))}</th>`).join("");
-        const rows = data.items
-          .map((item) => "<tr>" + COLUMNS.map(([cls, key, get]) => `<td class="${cls}" data-label="${esc(T(key))}">${esc(get(item))}</td>`).join("") + "</tr>")
-          .join("");
+        const rows = bodyRows(data.items, $("group").value);
         const more = data.truncated ? `<p class="muted">${esc(T("vollzogen.truncated"))}</p>` : "";
         $("list").innerHTML = `<div class="table-scroll"><table class="done-table"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>${more}`;
       }
@@ -166,6 +213,11 @@
 
       $("week").addEventListener("change", load);
       $("zone").addEventListener("change", load);
+      $("group").addEventListener("change", () => state.data && draw(state.data));
+      $("order").addEventListener("change", () => {
+        state.oldestFirst = $("order").value === "oldest";
+        if (state.data) draw(state.data);
+      });
       $("q").addEventListener("input", () => {
         clearTimeout(state.timer);
         state.timer = setTimeout(load, 300);

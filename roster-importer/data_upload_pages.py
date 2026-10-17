@@ -184,8 +184,7 @@ def hub_page(message="", chosen="auto"):
         <details><summary>{t("uploads.hub.more")}</summary>
           <p><label>{t("uploads.hub.transferDate")}<br><input type="date" name="transfer_date" value="{date.today().isoformat()}"></label></p>
           <p><label>{t("uploads.hub.duplicate")}<br><select name="duplicate_policy"><option value="replace">{t("uploads.hub.replace")}</option>
-            <option value="stop">{t("uploads.hub.stop")}</option></select></label></p>
-          <p><label><input type="checkbox" name="combine_mapped" value="yes" checked> {t("uploads.hub.combine")}</label></p></details>
+            <option value="stop">{t("uploads.hub.stop")}</option></select></label></p></details>
         <p><button>{t("uploads.page.check")}</button></p></form>
       <p><a href="/uploads/names">{t("uploads.hub.names")}</a></p></div>
       <div class="grid">{''.join(cards)}</div>"""
@@ -213,8 +212,7 @@ def check_upload_file():
         if chosen == "roster":
             return transfer_pages.start_roster(upload, request.form.get("transfer_date", ""))
         if chosen == "historical":
-            return historical_pages.start_historical(upload, request.form.get("duplicate_policy", "replace"),
-                                                     request.form.get("combine_mapped") == "yes")
+            return historical_pages.start_historical(upload, request.form.get("duplicate_policy", "replace"))
         if chosen == "people":
             parsed = data_types.parse_people(read_table(upload.filename, data))
         elif chosen == "vollzogen":

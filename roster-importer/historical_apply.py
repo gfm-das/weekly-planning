@@ -2,9 +2,11 @@
 
 apply_batch() locks the tables, runs the check (historical_preview.preview) again, and refuses when anything differs
 from what the manager reviewed (the state token and the choices). Then, in one transaction:
-  - the original rows and answers are kept in the staging tables (historical_import.stage_rows);
+  - the original rows and answers are kept in the staging tables (historical_import.stage_rows), also the rows of
+    Closed labels without an area (they go nowhere else);
   - each area/unit/week gets one report in weekly_area_reports (a new one, the existing one replaced, or an earlier
-    import of the label moved here); several old areas combined into one report are added up;
+    import of the label moved here). Numbers of two labels are added up only for a Combined companionship (and for
+    look-alike spellings the manager chose to combine); historical_separate.py takes them apart again;
   - every detail (answers, new members, friends) is kept in historical_planning_details;
   - the people become real records and appear on the weekly plans they were named on, and those who are still
     relevant are loaded into the plans of the current week (write_people);
@@ -29,8 +31,7 @@ DETAIL_TABLES = [("answers", "import_weekly_planning_answers"), ("new_members", 
                  ("high_potential_friends", "import_weekly_high_potential_friends")]
 
 
-def apply_batch(path, filename, replace_existing=True, combine_mapped=True, choices=None, state_token=None,
-                expected_choices=None):
+def apply_batch(path, filename, replace_existing=True, choices=None, state_token=None, expected_choices=None):
     """Applies a checked upload. The page passes the manager's choices and the check's state token; a missing, stale
     or tampered choice raises ValueError before anything is written. Returns the batch id."""
     conn = database.connect()
@@ -38,12 +39,12 @@ def apply_batch(path, filename, replace_existing=True, combine_mapped=True, choi
         with database.cursor(conn) as cur:
             cur.execute("select id from public.missions where id=%s for update", (sign_in.current_mission_id(),))
         batches.lock_tables(conn, batches.HISTORICAL_TABLES)
-        checked = historical_preview.preview(path, conn, replace_existing, combine_mapped, choices)
+        checked = historical_preview.preview(path, conn, replace_existing, choices)
         refuse_if_changed(checked, state_token, expected_choices)
         before = batches.snapshot(conn, batches.HISTORICAL_TABLES)
         batch = batches.create_batch(conn, "HISTORICAL", filename, None,
                                      {"reports": len(checked["rows"]), "duplicates_skipped": checked["duplicates"]})
-        historical.stage_rows(conn, [item["row"] for item in checked["rows"]])
+        historical.stage_rows(conn, [item["row"] for item in checked["rows"]] + checked["closed_only"])
         with database.cursor(conn) as cur:
             moved, removed, written = write_reports(cur, checked, batch)
             people = write_people(cur, checked, written)
@@ -100,7 +101,7 @@ def write_reports(cur, checked, batch):
         # details go with them, and the batch's record lets Undo put both back.
         cur.execute("delete from public.weekly_area_reports where id=any(%s)", (removed,))
     written = {}
-    for item in checked["rows"]:
+    for item in sorted(checked["rows"], key=lambda i: i["combined"]):  # a Combined companionship is added last
         staged = staged_report(cur, item["key"])
         target = (item["area"]["id"], item["sunday"], item["unit_id"])
         if target in written:
@@ -133,8 +134,8 @@ def metrics():
 
 
 def add_to_report(cur, report_id, staged):
-    """Combines another old area into the report already written in this batch: the numbers are added up. The first
-    (alphabetical) label keeps historical_source_area and historical_source_key."""
+    """Adds a Combined companionship (or a combined look-alike spelling) to the report already written in this batch:
+    the numbers are added up. The first label keeps historical_source_area and historical_source_key."""
     columns = metrics()
     sets = [sql.SQL("{}=coalesce({},0)+%s").format(sql.Identifier(m), sql.Identifier(m)) for m in columns]
     sets += [sql.SQL("notes=concat_ws(E'\\n\\n',notes,%s)"),

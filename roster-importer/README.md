@@ -19,7 +19,7 @@ Since round 14 the menu has four tabs (MENU_GROUPS in page.py): **Uploads** (Ros
 | Account Manager | Every missionary serving now and the state of their sign-in; send invitations and password emails. Each missionary has a settings page: role, Account active, area (with a date), languages. |
 | Planning questions | Change the questions of Weekly Planning (sections, questions, answer choices, show/hide rules). A manager (AP, President, Data Analyst) can unlock a locked question on its page, with a reason and the typed key; every unlock and lock is in the change history. |
 | Historical CSV | Import the old Weekly Planning form export (from before the portal) into the reports, and the new members, friends with a baptismal date and high-potential friends named in them. |
-| Area mappings | Say which current area each old area name of the Historical CSV stands for. "Close old area" is written to Import history and can be undone. |
+| Area mappings | Say which current area each old area name of the Historical CSV stands for. "Close old area" is written to Import history and can be undone. An old label is one area, a *Closed area*, or a *Combined companionship* that *Separate* takes apart again. |
 | Places | Close and reopen zones, districts and areas. Closing a zone or district moves what is inside it first (you choose where each goes); every change is in Import history with Undo. A roster upload wins over a change made here. |
 | Delete retired | Opened from Places and Planning questions (`/retire`). Delete a **closed** zone, district or area, or a **retired** Weekly Planning question, for good: an impact preview (what is attached), an optional merge onto the item that replaced it, a typed confirmation (no per-delete dump; the nightly backup is the way back), and one Import history entry with Undo. Managers signed in through the portal only. |
 | Staff accounts | Sign-ins for the President, office staff and Data Analysts who are not missionaries. |
@@ -136,7 +136,7 @@ database name says it is a throw-away test copy.
    ```
    docker run --rm --network none -v <repo>:/repo -w /repo/roster-importer
      -e DATABASE_URL=postgresql://nobody@127.0.0.1:1/none roster-importer-roster-importer
-     python -m unittest tests.test_rules tests.test_historical_rules tests.test_data_files tests.test_updates_page tests.test_page_words tests.test_roles_in_step tests.test_fc_numbers tests.test_retire_rules tests.test_links tests.test_geo_pages tests.test_menu tests.test_vollzogen tests.test_geo_csv tests.test_ap_rights tests.test_unlock tests.test_wiki_card tests.test_abilities tests.test_file_pick tests.test_migration_057 tests.test_migration_058 tests.test_upload_detect tests.test_upload_check tests.test_name_order
+     python -m unittest tests.test_rules tests.test_historical_rules tests.test_data_files tests.test_updates_page tests.test_page_words tests.test_roles_in_step tests.test_fc_numbers tests.test_retire_rules tests.test_links tests.test_geo_pages tests.test_menu tests.test_vollzogen tests.test_geo_csv tests.test_ap_rights tests.test_unlock tests.test_wiki_card tests.test_abilities tests.test_file_pick tests.test_migration_057 tests.test_migration_058 tests.test_upload_detect tests.test_upload_check tests.test_name_order tests.test_mapping_rules
    ```
 2. **DA Management with a database** (`test_management`, `test_accounts`, `test_data_uploads`): a throw-away copy
    whose name starts with `roster_management_test_`, reached under the name `gfm-beta-supabase-db-1`
@@ -189,8 +189,12 @@ The first version reads the original Weekly Planning form export (Timestamp, Ema
 Ward/Branch, reporting Sunday). The latest form per companionship, Sunday and ward/branch counts. Reports are kept
 per area, unit and Sunday, like the portal: a companionship serving two units sent one form per unit, and both are
 imported. The check shows each Ward/Branch answer with the unit it was matched to, and lets you correct it.
-Labels that differ only by punctuation or spacing would share a report key: you keep one or combine them. With
-*Combine*, several old areas of the same current area, unit and week are added up; without it, you choose. With
+Labels that differ only by punctuation or spacing would share a report key: you keep one or combine them. Each
+other old label stands for one area and is never added to another: when two labels reach the same area, unit and
+week, you choose which to keep. The only exception is a label marked *Combined companionship* in Area mappings (one
+companionship served both areas); its numbers are added and *Separate* takes them apart again (one batch in Import
+history, so it can be undone). A label mapped to *Closed area* keeps its rows under the retired area, or only in the
+staging tables when no area record exists. With
 *Replace*, an existing report of that unit and week is replaced (never merged, so importing the same file twice gives
 the same result); with *Stop*, the check waits until you resolve it. A label imported earlier into another area is
 moved in the same batch, so it never counts twice. Apply works the check out again under lock and refuses anything

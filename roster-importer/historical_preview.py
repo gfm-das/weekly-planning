@@ -7,9 +7,11 @@ the import would do, step by step:
   2. Latest only: when a companionship sent the form twice for the same Sunday and unit, the latest counts.
   3. Look-alike labels: labels that differ only by punctuation or spacing ('Frankfurt-Darmstadt S' and 'Frankfurt
      Darmstadt S') would share one report key. The manager keeps one, or combines them.
-  4. Rows: each row's old label must be mapped to a current area (Area mappings), its date must be a Sunday, and its
-     key indicators whole numbers.
-  5. Same unit: without "Combine", old areas that report for the same current area, unit and week need a choice.
+  4. Rows: each row's old label must be mapped (Area mappings) to a current area, or marked Closed (its rows go to the
+     closed area of the same name, or stay in the import tables when there is none); its date must be a Sunday, and
+     its key indicators whole numbers.
+  5. Same unit: old areas that report for the same current area, unit and week are never added together (round 19):
+     the manager keeps one. Only a label mapped as a "Combined companionship" is added to its area's report.
   6. Target reports: the report each area/unit/week writes to (a new one, or the existing one it replaces).
   7. Moved labels: a label imported earlier into another area or unit is moved (or removed) in the same batch, so it
      is never counted twice.
@@ -18,7 +20,7 @@ The manager's choices come back from the page (see historical_pages.py) as `choi
     {"collisions": {report key: "keep:<label>" | "combine"},
      "targets": {"<area_id>|<sunday>": report id},
      "units": {"<ward/branch text>|<area_id>": unit id},
-     "merges": {"<area_id>|<unit_id>": "combine" | "keep:<label>", "<area_id>|<unit_id>|<sunday>": the same}}
+     "merges": {"<area_id>|<unit_id>": "keep:<label>", "<area_id>|<unit_id>|<sunday>": the same}}
 
 The result carries a state token (an HMAC, see state_token): Apply (historical_apply.py) runs the check again under
 lock and refuses anything that changed since the manager looked at it.
@@ -51,17 +53,19 @@ class Check:
     """Everything the steps of one check share: what the database knows, the manager's choices, and what the check
     found so far (errors block Apply; pending are choices still to make; notices are for reading)."""
 
-    def __init__(self, cur, choices, replace_existing, combine_mapped):
+    def __init__(self, cur, choices, replace_existing):
         self.areas = {r["id"]: r for r in places.current_areas(cur)}
+        cur.execute("""select a.id,a.name from public.areas a join public.districts d on d.id=a.district_id
+          join public.zones z on z.id=d.zone_id where z.mission_id=%s""", (sign_in.current_mission_id(),))
+        self.all_areas = {r["id"]: r for r in cur.fetchall()}  # closed ones too, for labels marked Closed
         cur.execute("select * from public.import_weekly_planning_area_map where mission_id=%s or mission_id is null",
                     (sign_in.current_mission_id(),))
         self.mappings = {historical.clean(r["source_companionship"]).casefold(): r for r in cur.fetchall()}
         self.units, self.zones = unit_catalog(cur)
         self.units_by_id = {u["id"]: u for u in self.units}
         self.replace_existing = replace_existing
-        self.combine_mapped = combine_mapped
         self.choices = choices or {}
-        self.errors, self.pending, self.notices = [], [], []
+        self.errors, self.pending, self.notices, self.closed_only = [], [], [], []
         # What the page offers to choose (ui), the choices that are in force (effective), and the upload's facts the
         # choices depend on (state, part of the state token).
         self.ui = {"collisions": [], "targets": [], "units": [], "merges": []}
@@ -73,18 +77,19 @@ class Check:
         return dict(self.choices.get(kind) or {})
 
     def area_of_label(self, label):
-        """The current area an old label is mapped to, or None."""
-        return self.areas.get((self.mappings.get(label.casefold()) or {}).get("target_area_id"))
+        """The current area an old label is mapped to (the closed area for a label marked Closed), or None."""
+        mapping = self.mappings.get(label.casefold()) or {}
+        return (self.all_areas if mapping.get("match_status") == "CLOSED" else self.areas).get(mapping.get("target_area_id"))
 
 
-def preview(path, connection=None, replace_existing=True, combine_mapped=True, choices=None):
+def preview(path, connection=None, replace_existing=True, choices=None):
     """Checks an upload (see the top of this file). connection: Apply passes its own locked connection."""
     rows = historical.read_csv_rows(path)
     conn = connection or database.connect()
     owns = connection is None
     try:
         with database.cursor(conn) as cur:
-            check = Check(cur, choices, replace_existing, combine_mapped)
+            check = Check(cur, choices, replace_existing)
             find_units(check, rows)
             selected, duplicates = historical.deduplicate_rows(
                 rows, unit_of=lambda r: r["_unit_id"] if r["_unit_id"] else historical.clean(r.get(historical.UNIT_COLUMN)).casefold())
@@ -101,11 +106,11 @@ def preview(path, connection=None, replace_existing=True, combine_mapped=True, c
             target_reports, taken, owner = choose_target_reports(check, cur, groups)
             stale = find_moved_labels(check, cur, items, groups, target_reports, taken, owner)
             people = check_people(check, cur, items)
-            token = state_token(path, replace_existing, combine_mapped, check.state, check.effective)
+            token = state_token(path, replace_existing, check.state, check.effective)
             return {"rows": items, "duplicates": len(duplicates), "source_rows": len(rows), "skipped": skipped,
                     "errors": sorted(set(check.errors)), "pending": check.pending, "notices": check.notices,
                     "choices": check.ui, "effective_choices": check.effective, "state_token": token,
-                    "target_reports": target_reports, "stale_reports": stale, "people": people}
+                    "target_reports": target_reports, "stale_reports": stale, "people": people, "closed_only": check.closed_only}
     finally:
         if owns:
             conn.close()
@@ -128,13 +133,13 @@ def check_people(check, cur, items):
     return found
 
 
-def state_token(path, replace_existing, combine_mapped, state, effective):
+def state_token(path, replace_existing, state, effective):
     """An HMAC over the upload, the options, the choice-relevant database state and the effective choices.
 
     Apply recomputes it inside its locked transaction; any difference (another file, changed reports, tampered or
     stale choices) refuses the apply before anything is written."""
     payload = json.dumps({"file": hashlib.sha256(Path(path).read_bytes()).hexdigest(), "replace": bool(replace_existing),
-                          "combine": bool(combine_mapped), "state": state, "choices": effective},
+                          "state": state, "choices": effective},
                          sort_keys=True, default=str)
     secret = str(settings.SECRET_KEY or "").encode("utf-8")
     return hmac.new(secret, payload.encode("utf-8"), hashlib.sha256).hexdigest()
@@ -306,7 +311,11 @@ def report_items(check, selected, dropped, extra_keys, units_of_key):
         if ident in dropped:
             continue
         mapping = check.mappings.get(source.casefold())
-        area = check.areas.get((mapping or {}).get("target_area_id"))
+        area = check.area_of_label(source)
+        if mapping and mapping.get("match_status") == "CLOSED" and not area:
+            check_row(check, row, source, mapping, sunday)  # kept in the import tables only (Apply stages it)
+            check.closed_only.append(row)
+            continue
         if not area:
             if mapping and mapping.get("target_area_id"):
                 check.errors.append(f"The mapping for '{source}' points to '{mapping.get('target_area_name') or mapping['target_area_id']}', "
@@ -320,7 +329,10 @@ def report_items(check, selected, dropped, extra_keys, units_of_key):
         unit = check.units_by_id.get(row["_unit_id"])
         items.append({"source": source, "area": area, "sunday": sunday, "key": key, "row": row, "existing_id": None,
                       "unit_id": row["_unit_id"], "unit_name": unit_label(unit) if unit else None,
-                      "collision_extra": ident in extra_keys})
+                      "collision_extra": ident in extra_keys, "combined": mapping.get("match_status") == "COMBINED"})
+    if check.closed_only:
+        labels = sorted({historical.clean(r[historical.COMPANIONSHIP_COLUMN]) for r in check.closed_only})
+        check.notices.append(f"Closed labels without an area are kept in the import tables only, not in reports: {', '.join(labels)}.")
     return items
 
 
@@ -352,14 +364,12 @@ def check_combined_areas(check, items, combined):
 # ------------------------------------------------------------------------------------------ 5. same area, unit and week
 
 def choose_same_unit_rows(check, items):
-    """Different old areas reporting for the same current area, week AND unit. With "Combine" they are summed into
-    one report; otherwise the manager decides once per area and unit (and may change single weeks). Returns (the rows
-    to import, the rows skipped)."""
-    if check.combine_mapped:
-        return items, []
+    """Different old areas reporting for the same current area, week AND unit. Their numbers are never added together:
+    the manager keeps one, once per area and unit (and may change single weeks). A Combined companionship is not asked
+    about (it is added to its area's report on purpose). Returns (the rows to import, the rows skipped)."""
     same_unit = {}
     for item in items:
-        if not item["collision_extra"]:
+        if not item["collision_extra"] and not item["combined"]:
             same_unit.setdefault((item["area"]["id"], item["unit_id"], item["sunday"]), []).append(item)
     keep_out = set()
     for (area_id, unit_id), weeks in same_unit_scopes(same_unit).items():
@@ -389,7 +399,7 @@ def choose_for_scope(check, items, same_unit, area_id, unit_id, weeks):
     """Applies the manager's choice for one area and unit (and its single weeks). Returns the weeks still waiting."""
     scope_key = f"{area_id}|{unit_id if unit_id is not None else 'none'}"
     labels = sorted({label for _, week_labels in weeks for label in week_labels})
-    options = ["combine"] + [f"keep:{label}" for label in labels]
+    options = [f"keep:{label}" for label in labels]
     chosen = check.chosen("merges")
     scope_choice = chosen.get(scope_key)
     area_name = check.areas[area_id]["name"]
@@ -400,7 +410,7 @@ def choose_for_scope(check, items, same_unit, area_id, unit_id, weeks):
     for sunday, week_labels in weeks:
         week_key = f"{scope_key}|{sunday}"
         check.state["merges"][week_key] = week_labels
-        week_options = ["combine"] + [f"keep:{label}" for label in week_labels]
+        week_options = [f"keep:{label}" for label in week_labels]
         override = chosen.get(week_key)
         if override in ("", None):
             override = None
@@ -411,13 +421,12 @@ def choose_for_scope(check, items, same_unit, area_id, unit_id, weeks):
         missing = choice is not None and choice not in week_options
         week_ui.append({"key": week_key, "sunday": sunday, "labels": week_labels, "override": override, "missing": missing})
         if choice is None or missing:
-            what = (f"'{choice[5:]}' did not report that week" if missing else "choose combine or which old area to keep")
+            what = (f"'{choice[5:]}' did not report that week" if missing else "choose which old area to keep")
             check.pending.append(f"{area_name}, {sunday}: {len(week_labels)} old areas report for the same unit — {what}.")
             waiting.add((area_id, unit_id, sunday))
             continue
         check.effective["merges"][week_key] = choice
-        if choice != "combine":
-            skip_other_labels(items, same_unit[(area_id, unit_id, sunday)], choice[5:])
+        skip_other_labels(items, same_unit[(area_id, unit_id, sunday)], choice[5:])
     unit = check.units_by_id.get(unit_id)
     check.ui["merges"].append({"key": scope_key, "area": area_name, "unit": unit_label(unit) if unit else "no unit",
                                "labels": labels, "weeks": week_ui, "selected": scope_choice})

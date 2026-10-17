@@ -27,6 +27,8 @@ Each kind has a short card under the drop zone with its template download and th
 
 Imports past weekly forms. Can also read people named on each form (new members, baptismal-date friends, high-potential friends) and place them on the matching weekly plans.
 
+In **Places → Area mappings** each old label stands for **one area**; numbers of two areas are never added together. Choose **Closed area** for an area that no longer exists (also when it is already closed): its history stays under the closed area. Only a label marked **Combined companionship** (one companionship served both areas) is added to another area, and **Separate** takes those numbers apart again from the original import rows; Separate is one batch in Import history with Undo.
+
 ### People upload
 
 Spreadsheet upload for **new members** (office templates / “Vollzogen” / New Member Database Raw layouts). Area is resolved from area name or from ward/branch when only one open area serves it. Unclear rows are left out and counted — not guessed.

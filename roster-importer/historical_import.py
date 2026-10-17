@@ -264,8 +264,8 @@ def check_mappings(selected, mappings):
     """Every label must have a mapping with a target area; raises ValueError listing the ones that do not."""
     labels = {clean(row.get(COMPANIONSHIP_COLUMN)) for row in selected}
     missing = sorted(label for label in labels if label.casefold() not in mappings)
-    unresolved = sorted(label for label in labels
-                        if label.casefold() in mappings and not clean(mappings[label.casefold()]["target_area_name"]))
+    unresolved = sorted(label for label in labels if label.casefold() in mappings
+                        and not clean(mappings[label.casefold()]["target_area_name"]) and mappings[label.casefold()]["match_status"] != "CLOSED")
     messages = []
     if missing:
         messages.append("Missing area mappings:\n" + "\n".join(missing))
@@ -283,7 +283,7 @@ def stage_report(cur, row, area_map):
     if not mapping:
         raise ValueError(f"No area mapping exists for '{companionship}'.")
     target_area = clean(mapping["target_area_name"])
-    if not target_area:
+    if not target_area and mapping.get("match_status") != "CLOSED":  # a Closed label without an area keeps none
         raise ValueError(f"Area mapping for '{companionship}' has no target area.")
     sunday = row["_sunday"]
     # The check gives a look-alike label its own key when the manager chose to combine labels whose keys collide.
@@ -294,7 +294,7 @@ def stage_report(cur, row, area_map):
         "source_timestamp": row["_timestamp"],
         "source_email": clean(row.get(EMAIL_COLUMN)) or None,
         "source_companionship": companionship,
-        "target_area_name": target_area,
+        "target_area_name": target_area or None,
         "source_unit": clean(row.get(UNIT_COLUMN)) or None,
         "reporting_sunday": sunday,
         "status": "SUBMITTED",

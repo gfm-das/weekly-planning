@@ -31,6 +31,7 @@ import database
 import historical_apply
 import historical_import as historical
 import historical_preview
+import historical_separate
 import places
 import roles
 import roster_file
@@ -406,11 +407,24 @@ class ManagementIntegrationTests(unittest.TestCase):
                   left join public.historical_planning_details d on d.weekly_area_report_id=r.id where r.id=%s""", (report,))
                 return cur.fetchone()
 
+    def mark(self, label, kind, area_id="keep"):
+        """Gives a label's mapping another kind (round 19: COMBINED or CLOSED), optionally with another area."""
+        with database.connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""update public.import_weekly_planning_area_map set match_status=%s,
+                  target_area_id=case when %s='keep' then target_area_id else %s::bigint end where source_companionship=%s""",
+                            (kind, str(area_id), None if area_id in ("keep", None) else area_id, label))
+
     def test_11_rereplace_is_idempotent_and_combine_keeps_first_key(self):
         area = self.current_areas(1)[0]
         sunday = "2000-01-23"
         path = self.labels_fixture(["Test combine Beta", "Test combine Alpha"], sunday, area)
         alpha_key = historical.make_report_key("Test combine Alpha", date.fromisoformat(sunday))
+        with self.context():
+            session.update(portal_mission_id=2, portal_user="Integration test")
+            preview = historical_preview.preview(path)  # round 19: two labels of one area are never added up by themselves
+            self.assertEqual(len(preview["pending"]), 1)
+        self.mark("Test combine Beta", "COMBINED")  # only a Combined companionship is added to its area's report
         with self.context():
             session.update(portal_mission_id=2, portal_user="Integration test")
             first = historical_apply.apply_batch(path, "combine.csv")
@@ -425,6 +439,61 @@ class ManagementIntegrationTests(unittest.TestCase):
             self.assertEqual(self.details(report), after_first)
             undo.undo_batch(first)
         self.assertEqual(self.scalar("select count(*) from public.weekly_area_reports where id=%s", (report,)), 0)
+
+    def test_11b_separate_takes_a_combined_companionship_apart_and_undo_puts_it_back(self):
+        area, own = self.current_areas(2)
+        sunday = "2000-01-16"
+        path = self.labels_fixture(["Test separate Beta", "Test separate Alpha"], sunday, area)
+        self.mark("Test separate Beta", "COMBINED")
+        day_ = date.fromisoformat(sunday)
+        alpha_key, beta_key = (historical.make_report_key(f"Test separate {x}", day_) for x in ("Alpha", "Beta"))
+        with self.context():
+            session.update(portal_mission_id=2, portal_user="Integration test")
+            first = historical_apply.apply_batch(path, "separate.csv")
+            report = self.scalar("select id from public.weekly_area_reports where historical_source_key=%s", (alpha_key,))
+            self.assertEqual(self.details(report)["friends_found_actual"], 5)
+            with database.connect() as conn:
+                with database.cursor(conn) as cur:
+                    self.assertEqual(historical_separate.summed_labels(cur).get("test separate beta"), 1)
+                with self.assertRaisesRegex(ValueError, "already has a report"):  # its own area must be free that week
+                    historical_separate.separate(database.cursor(conn), "Test separate Beta", area)
+                conn.rollback()
+                separation, count = historical_separate.separate_batch(conn, "Test separate Beta", own)
+                self.assertEqual(count, 1)
+                with self.assertRaisesRegex(ValueError, "not added together"):
+                    historical_separate.separate(database.cursor(conn), "Test separate Beta", own)
+            separated = self.scalar("select id from public.weekly_area_reports where historical_source_key=%s", (beta_key,))
+            got = lambda r: tuple(self.details(r)[k] for k in ("area_id", "friends_found_actual", "source_companionship", "historical_source_key", "answers"))
+            self.assertEqual(got(report), (area["id"], 3, "Test separate Alpha", alpha_key, 1))
+            self.assertEqual(got(separated), (own["id"], 2, "Test separate Beta", beta_key, 1))
+            undo.undo_batch(separation)  # back to the combined report, exactly
+            self.assertEqual(got(report), (area["id"], 5, "Test separate Alpha + Test separate Beta", alpha_key, 2))
+            self.assertEqual(self.scalar("select count(*) from public.weekly_area_reports where id=%s", (separated,)), 0)
+            undo.undo_batch(first)
+        self.assertEqual(self.scalar("select count(*) from public.weekly_area_reports where id=%s", (report,)), 0)
+
+    def test_11c_closed_labels_keep_their_rows_under_the_closed_area_or_in_the_import_tables(self):
+        area, closed = self.current_areas(2)
+        sunday = "2000-01-09"
+        path = self.labels_fixture(["Test closed with area", "Test closed without area"], sunday, area)
+        self.mark("Test closed with area", "CLOSED", closed["id"])
+        self.mark("Test closed without area", "CLOSED", None)
+        with database.connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("update public.areas set active=false where id=%s", (closed["id"],))
+        self.addCleanup(lambda: self.scalar("update public.areas set active=true where id=%s returning id", (closed["id"],)))
+        with self.context():
+            session.update(portal_mission_id=2, portal_user="Integration test")
+            preview = historical_preview.preview(path)
+            self.assertEqual((preview["errors"], preview["pending"]), ([], []))
+            self.assertEqual([(r["source"], r["area"]["id"]) for r in preview["rows"]], [("Test closed with area", closed["id"])])
+            self.assertTrue(any("Test closed without area" in n for n in preview["notices"]))
+            batch = historical_apply.apply_batch(path, "closed.csv")
+            self.assertEqual([r["source_companionship"] for r in self.reports_for(closed["id"], sunday)], ["Test closed with area"])
+            key = historical.make_report_key("Test closed without area", date.fromisoformat(sunday))
+            self.assertEqual(self.scalar("select friends_found_actual from public.import_weekly_planning_reports where source_report_key=%s", (key,)), 3)
+            undo.undo_batch(batch)
+        self.assertEqual(self.reports_for(closed["id"], sunday), [])
 
     def test_12_remapped_label_moves_its_report_and_undo_restores(self):
         old_area, new_area = self.current_areas(2)
@@ -563,10 +632,9 @@ class ManagementIntegrationTests(unittest.TestCase):
         path = self.rows_fixture([("Test two-unit A", unit_names[0], sunday, 2), ("Test two-unit B", unit_names[1], sunday, 3)], area)
         with self.context():
             session.update(portal_mission_id=2, portal_user="Integration test")
-            for combine in (True, False):  # different units never collide, with or without Combine
-                preview = historical_preview.preview(path, combine_mapped=combine)
-                self.assertEqual((preview["errors"], preview["pending"]), ([], []))
-                self.assertEqual(sorted(r["existing_id"] for r in preview["rows"]), sorted(reports))
+            preview = historical_preview.preview(path)  # different units never collide
+            self.assertEqual((preview["errors"], preview["pending"]), ([], []))
+            self.assertEqual(sorted(r["existing_id"] for r in preview["rows"]), sorted(reports))
             batch = historical_apply.apply_batch(path, "two-units.csv", state_token=historical_preview.preview(path)["state_token"])
             rows = self.reports_for(area["id"], sunday)
             self.assertEqual([(r["id"], r["unit_id"], r["status"], r["friends_found_actual"], r["source_companionship"]) for r in rows],
@@ -627,25 +695,27 @@ class ManagementIntegrationTests(unittest.TestCase):
         path = self.rows_fixture(rows, area)
         with self.context():
             session.update(portal_mission_id=2, portal_user="Integration test")
-            preview = historical_preview.preview(path, combine_mapped=False)
+            preview = historical_preview.preview(path)
             self.assertEqual(len(preview["pending"]), 2)
             self.assertEqual(len(preview["choices"]["merges"]), 1)
             scope = preview["choices"]["merges"][0]["key"]
             self.assertEqual([w["sunday"] for w in preview["choices"]["merges"][0]["weeks"]], [date.fromisoformat(w) for w in weeks])
             with self.assertRaisesRegex(ValueError, "not valid"):
-                historical_apply.apply_batch(path, "same-unit.csv", combine_mapped=False, choices={"merges": {scope: "keep:Someone else"}})
+                historical_apply.apply_batch(path, "same-unit.csv", choices={"merges": {scope: "keep:Someone else"}})
+            with self.assertRaisesRegex(ValueError, "not valid"):  # round 19: adding two old areas up is no choice any more
+                historical_apply.apply_batch(path, "same-unit.csv", choices={"merges": {scope: "combine"}})
             with self.assertRaisesRegex(ValueError, "no longer matches"):
-                historical_apply.apply_batch(path, "same-unit.csv", combine_mapped=False, choices={"merges": {scope: "combine", "999|1|2000-01-01": "combine"}})
-            choice = {"merges": {scope: "keep:Test same-unit B", f"{scope}|{weeks[1]}": "combine"}}
-            preview = historical_preview.preview(path, combine_mapped=False, choices=choice)
+                historical_apply.apply_batch(path, "same-unit.csv", choices={"merges": {scope: "keep:Test same-unit A", "999|1|2000-01-01": "keep:Test same-unit A"}})
+            choice = {"merges": {scope: "keep:Test same-unit B", f"{scope}|{weeks[1]}": "keep:Test same-unit A"}}
+            preview = historical_preview.preview(path, choices=choice)
             self.assertEqual((preview["errors"], preview["pending"]), ([], []))
-            self.assertEqual(len(preview["skipped"]), 1)
+            self.assertEqual(len(preview["skipped"]), 2)
             with self.assertRaisesRegex(ValueError, "changed since"):
-                historical_apply.apply_batch(path, "same-unit.csv", combine_mapped=False, choices=choice, state_token="tampered")
-            batch = historical_apply.apply_batch(path, "same-unit.csv", combine_mapped=False, choices=choice, state_token=preview["state_token"],
+                historical_apply.apply_batch(path, "same-unit.csv", choices=choice, state_token="tampered")
+            batch = historical_apply.apply_batch(path, "same-unit.csv", choices=choice, state_token=preview["state_token"],
                                              expected_choices=json.loads(json.dumps(preview["effective_choices"], default=str)))
             got = [[(r["friends_found_actual"], r["source_companionship"]) for r in self.reports_for(area["id"], w)] for w in weeks]
-            self.assertEqual(got, [[(3, "Test same-unit B")], [(5, "Test same-unit A + Test same-unit B")]])
+            self.assertEqual(got, [[(3, "Test same-unit B")], [(2, "Test same-unit A")]])
             undo.undo_batch(batch)
         self.assertEqual([self.reports_for(area["id"], w) for w in weeks], [[], []])
 

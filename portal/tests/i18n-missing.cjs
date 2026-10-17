@@ -25,6 +25,7 @@ const PAGES = [
   'roster-importer/staff_accounts.py', 'roster-importer/planning_questions.py', 'roster-importer/planning_questions_pages.py',
   'roster-importer/historical_import.py', 'roster-importer/historical_units.py', 'roster-importer/historical_preview.py',
   'roster-importer/historical_apply.py', 'roster-importer/historical_pages.py', 'roster-importer/mappings_page.py',
+  'roster-importer/historical_separate.py',
   'roster-importer/import_history.py', 'roster-importer/undo.py', 'roster-importer/docs_page.py',
   'portal-api/charts.py', 'slidev/manager/server.mjs', 'slidev/manager/studio.html', 'slidev/manager/chart-builder.mjs', 'slidev/manager/portal-bridge.js',
   // The presentation manager's server, split out of server.mjs in round 9 (slidev/manager/README.md).

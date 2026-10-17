@@ -31,7 +31,6 @@ TEXT = {
     "uploads.hub.duplicate": "When a report already exists",
     "uploads.hub.replace": "Replace it with the imported report",
     "uploads.hub.stop": "Stop and ask me to resolve it",
-    "uploads.hub.combine": "Combine old areas that report for the same current area, ward/branch and week (untick to choose in the preview)",
     "uploads.kind.roster": "Roster Import",
     "uploads.kind.historical": "Historical CSV",
     "uploads.kind.people": "People upload",

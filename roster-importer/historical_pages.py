@@ -39,7 +39,7 @@ def historical_home():
     return redirect("/uploads")
 
 
-def start_historical(upload, duplicate_policy, combine_mapped):
+def start_historical(upload, duplicate_policy):
     """Keeps the uploaded CSV waiting and shows its check (called from the Uploads page)."""
     try:
         if Path(upload.filename or "").suffix.lower() != ".csv":
@@ -49,7 +49,6 @@ def start_historical(upload, duplicate_policy, combine_mapped):
         session["historical_file"] = str(path)
         session["historical_filename"] = Path(upload.filename).name
         session["historical_duplicate_policy"] = duplicate_policy
-        session["historical_combine_mapped"] = combine_mapped
         session["historical_choices"] = {}
         return check_page(path)
     except Exception as e:
@@ -61,10 +60,9 @@ def start_historical(upload, duplicate_policy, combine_mapped):
 def check_page(path):
     """The check page for the waiting upload, with the choices made so far."""
     checked = historical_preview.preview(path, replace_existing=session.get("historical_duplicate_policy", "replace") == "replace",
-                                         combine_mapped=session.get("historical_combine_mapped", True),
                                          choices=session.get("historical_choices") or {})
     rows = "".join(f"<tr><td>{h(r['source'])}</td><td>{h(r['area']['name'])}</td><td>{h(r['unit_name'] or 'no unit')}</td><td>{r['sunday']}</td><td>{h(a)}</td></tr>"
-                   for r, a in zip(checked["rows"], actions(checked["rows"])))
+                   for r, a in zip(sorted(checked["rows"], key=lambda i: i["combined"]), actions(checked["rows"])))
     rows += "".join(f"<tr class='muted'><td>{h(r['source'])}</td><td>{h(r['area']['name'])}</td><td>{h(r['unit_name'] or 'no unit')}</td><td>{r['sunday']}</td><td>{h(r['skip'])}</td></tr>" for r in checked.get("skipped", []))
     notices = "<div class='card'><b>Please check</b><ul>" + "".join(f"<li>{h(n)}</li>" for n in checked.get("notices", [])) + "</ul></div>" if checked.get("notices") else ""
     blocked = "<div class='error'><b>Resolve these items first</b><ul>" + "".join(f"<li>{h(e)}</li>" for e in checked["errors"]) + "</ul><a href='/mappings'>Manage mappings</a></div>" if checked["errors"] else ""
@@ -97,7 +95,7 @@ def people_questions(checked):
 def actions(items):
     """What happens to each row's report: new, replace #id, combine into the same report, or move an earlier import."""
     seen, result = set(), []
-    for r in items:
+    for r in sorted(items, key=lambda i: i["combined"]):  # the order Apply writes them
         group = (r["area"]["id"], r["sunday"], r["unit_id"])
         if group in seen:
             result.append("Combine into the same report")
@@ -168,10 +166,9 @@ def merges_part(ui):
     parts = []
     for m in ui["merges"]:
         name = "merge::" + m["key"]
-        radios = f"""<label class="choice"><input type="radio" name="{h(name)}" value="combine" {'checked' if m['selected'] in (None, 'combine') else ''}> <b>Combine</b> them into one report each week (numbers are added up)</label>"""
-        radios += "".join(f"""<label class="choice"><input type="radio" name="{h(name)}" value="{h('keep:' + l)}" {'checked' if m['selected'] == 'keep:' + l else ''}> Keep only <b>{h(l)}</b> each week (skip the others)</label>""" for l in m["labels"])
-        weeks = "".join(f"""<tr><td>{w['sunday']}</td><td>{h(', '.join(w['labels']))}</td><td><select name="{h('merge::' + w['key'])}"><option value="">Same as above</option><option value="combine" {'selected' if w['override'] == 'combine' else ''}>Combine</option>{''.join(f"<option value='{h('keep:' + l)}' {'selected' if w['override'] == 'keep:' + l else ''}>Keep only {h(l)}</option>" for l in w['labels'])}</select>{' <span class="warn">choose for this week</span>' if w['missing'] else ''}</td></tr>""" for w in m["weeks"])
-        parts.append(f"""<div class="choice-group" data-merge="{h(m['key'])}"><h4>{h(m['area'])} ({h(m['unit'])}): {len(m['weeks'])} week(s) where {len(m['labels'])} old areas report for the same unit</h4><p class="muted">Old areas: {h(', '.join(m['labels']))}. Reports for <i>different</i> units are always imported separately; this choice is only for rows of the same unit.</p>{radios}<details><summary>Change single weeks</summary><table><thead><tr><th>Sunday</th><th>Old areas</th><th>Choice</th></tr></thead><tbody>{weeks}</tbody></table></details></div>""")
+        radios = "".join(f"""<label class="choice"><input type="radio" name="{h(name)}" value="{h('keep:' + l)}" {'checked' if m['selected'] == 'keep:' + l else ''}> Keep only <b>{h(l)}</b> each week (skip the others)</label>""" for l in m["labels"])
+        weeks = "".join(f"""<tr><td>{w['sunday']}</td><td>{h(', '.join(w['labels']))}</td><td><select name="{h('merge::' + w['key'])}"><option value="">Same as above</option>{''.join(f"<option value='{h('keep:' + l)}' {'selected' if w['override'] == 'keep:' + l else ''}>Keep only {h(l)}</option>" for l in w['labels'])}</select>{' <span class="warn">choose for this week</span>' if w['missing'] else ''}</td></tr>""" for w in m["weeks"])
+        parts.append(f"""<div class="choice-group" data-merge="{h(m['key'])}"><h4>{h(m['area'])} ({h(m['unit'])}): {len(m['weeks'])} week(s) where {len(m['labels'])} old areas report for the same unit</h4><p class="muted">Old areas: {h(', '.join(m['labels']))}. Reports for <i>different</i> units are always imported separately; this choice is only for rows of the same unit.</p><p class="muted">The numbers of two old areas are never added together. If one companionship served both areas, mark the label as a Combined companionship in Area mappings instead.</p>{radios}<details><summary>Change single weeks</summary><table><thead><tr><th>Sunday</th><th>Old areas</th><th>Choice</th></tr></thead><tbody>{weeks}</tbody></table></details></div>""")
     return "".join(parts)
 
 
@@ -261,7 +258,6 @@ def historical_apply_route():
         # worked out again under lock). The session's own choices drive that second check.
         batch = historical_apply.apply_batch(path, session.get("historical_filename") or "historical.csv",
                                              session.get("historical_duplicate_policy", "replace") == "replace",
-                                             session.get("historical_combine_mapped", True),
                                              choices=session.get("historical_choices") or {},
                                              state_token=request.form.get("state_token"), expected_choices=posted)
         Path(path).unlink(missing_ok=True)
