@@ -16,16 +16,25 @@ What a mapping means (round 19), stored in match_status:
   COMBINED   "Combined companionship": one companionship served this area and the chosen one, so its numbers ARE added
              to the chosen area's report. The only way numbers are added; Separate takes them out again.
 
+Suggestions (round 21): a label without a mapping gets the best guess preselected in its list, marked "Suggested"
+with the reason: a match remembered from another upload (public.data_name_matches), the exact area name, the name
+without its zone prefix, or a look-alike spelling. When the best match is an area that is already closed, "Closed area"
+is preselected. No guess leaves "Choose current area". A suggestion is only a preselection: nothing is saved or
+imported until Save is pressed, and "Combined companionship" and "Close old area" are never preselected.
+
 "Close old area" is optional and never ticked for you. It turns off the active area whose name equals the label, or
 the label without its zone prefix ('Frankfurt-Darmstadt S' -> 'Darmstadt S'). The mapped target area is never turned
 off, and turning an area off is not part of Import history's Undo.
 """
+import difflib
+import re
 from functools import lru_cache
 from pathlib import Path
 
 from flask import Blueprint, flash, redirect, request, session
 
 import batches
+import data_names
 import database
 import historical_import as historical
 import historical_separate
@@ -91,6 +100,49 @@ def old_area_match(label, areas, zone_names):
     return matches[0], None
 
 
+SIMILAR = 0.85  # how alike two folded names must be to count as a look-alike spelling (difflib ratio)
+loose = lru_cache(maxsize=8192)(data_names.fold)  # accents, punctuation and case aside
+
+
+def look_alike(label, areas, zone_names):
+    """The one area whose name is spelled like the label (accents, punctuation, a zone prefix or a typo aside), or None."""
+    wanted = {loose(label)}
+    for zone in zone_names:
+        prefix = loose(zone) + " "
+        wanted |= {w[len(prefix):] for w in list(wanted) if prefix.strip() and w.startswith(prefix)}
+    numbers = lambda text: re.findall(r"\d+", text)  # 'Beta 12' is never a look-alike of 'Beta 1'
+    scored = sorted(((max(difflib.SequenceMatcher(None, w, loose(a["name"])).ratio() for w in wanted), a.get("active", True), a["id"])
+                     for a in areas if any(numbers(w) == numbers(loose(a["name"])) for w in wanted)), reverse=True)
+    if not scored or scored[0][0] < SIMILAR or (len(scored) > 1 and scored[1][:2] == scored[0][:2]):
+        return None  # nothing alike enough, or two areas equally alike: no guess
+    return next(a for a in areas if a["id"] == scored[0][2])
+
+
+def suggestion(label, areas, all_areas, zone_names, remembered=None):
+    """The best guess for a label without a mapping: (current area id or "closed", why), or (None, None).
+    Only preselects the row's list; nothing is saved until Save."""
+    current = {a["id"] for a in areas}
+    saved = (remembered or {}).get(loose(label))
+    if saved and (saved["historical"] or saved["area_id"] in current):
+        return ("closed" if saved["historical"] else saved["area_id"]), "Remembered from an earlier upload."
+    area, _ = old_area_match(label, all_areas, zone_names)
+    why = area and ("Same name." if fold(area["name"]) == fold(label) else "Same name without the zone prefix.")
+    if not area:
+        area, why = look_alike(label, all_areas, zone_names), "Similar spelling."
+    if not area:
+        return None, None
+    if not area.get("active", True):
+        return "closed", "Matches an area that is already closed."
+    return (area["id"], why) if area["id"] in current else (None, None)
+
+
+def remembered_names(cur):
+    """The area names other uploads remembered (data_names.py): {folded name: {area_id, historical}}."""
+    cur.execute("select source_key,area_id,historical from public.data_name_matches where mission_id=%s and level='area'",
+                (sign_in.current_mission_id(),))
+    return {r["source_key"]: r for r in cur.fetchall()}
+
+
 # ------------------------------------------------------------------------------------------ the page
 
 @pages.route("/mappings")
@@ -103,6 +155,7 @@ def mappings():
             areas = places.current_areas(cur)
             all_areas, zone_names = mission_areas(cur)
             summed = historical_separate.summed_labels(cur)
+            remembered = remembered_names(cur)
             cur.execute("""select m.*,a.name current_target_name from public.import_weekly_planning_area_map m
               left join public.areas a on a.id=m.target_area_id
               where m.mission_id=%s or m.mission_id is null order by m.source_companionship""", (sign_in.current_mission_id(),))
@@ -110,11 +163,11 @@ def mappings():
     waiting = new_labels_of_waiting_upload(saved)
     saved += waiting or []
     current_ids = {a["id"] for a in areas}
-    rows = "".join(mapping_row(r, areas, current_ids, all_areas, zone_names, summed) for r in saved)
+    rows = "".join(mapping_row(r, areas, current_ids, all_areas, zone_names, summed, remembered) for r in saved)
     # Back to the Historical CSV check, only when an upload is waiting there.
     back = ' <a href="/historical/review">Return to pending import</a>' if waiting is not None else ""
     every_area = "".join(area_option(a) for a in areas)
-    return page.render(f"""<div class="card"><h2>Remembered area mappings</h2><p class="muted">Map historical labels to areas in the newest accepted roster. Historical labels remain unchanged, and future uploads reuse confirmed mappings. Only new or changed rows are saved.</p><p class="muted">Each old label stands for one area, and its numbers are never added to another label's. Choose Closed area for an area that no longer exists. Only a Combined companionship (one companionship serving two areas) adds numbers together, and Separate takes them apart again.</p><p class="muted"><b>Close old area</b> is optional and never preselected. It deactivates the active area whose name equals the label, or the label without its zone prefix (for example <i>Frankfurt-Darmstadt S</i> &rarr; <i>Darmstadt S</i>). The mapped target area is never deactivated, and area deactivation is not part of import undo.</p><label class="form-field">Search mappings<input id="mappingSearch" type="search" placeholder="Old or current area name"></label><form action="/mappings/save" method="post"><div class="scroll"><table id="mappingTable"><thead><tr><th>Original label</th><th>Current area</th><th>Notes</th><th>Close old area (optional)</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table></div><p><button>Save confirmed mappings</button>{back}</p></form></div><div class="card"><h3>Add an old area name</h3><form action="/mappings/save" method="post"><div class="split"><label class="form-field">Original label<input name="source" required></label><label class="form-field">Current area<select name="target" required>{area_options(areas, None)}</select></label></div><input type="hidden" name="notes" value=""><button>Remember mapping</button></form></div><template id="areaOptions">{closed_option(False)}{every_area}</template>{PAGE_SCRIPT}""")
+    return page.render(f"""<div class="card"><h2>Remembered area mappings</h2><p class="muted">Map historical labels to areas in the newest accepted roster. Historical labels remain unchanged, and future uploads reuse confirmed mappings. Only new or changed rows are saved.</p><p class="muted">Each old label stands for one area, and its numbers are never added to another label's. Choose Closed area for an area that no longer exists. Only a Combined companionship (one companionship serving two areas) adds numbers together, and Separate takes them apart again.</p><p class="muted">New labels come with a suggestion (marked Suggested, with the reason). Check each one: nothing is saved or imported until you press Save.</p><p class="muted"><b>Close old area</b> is optional and never preselected. It deactivates the active area whose name equals the label, or the label without its zone prefix (for example <i>Frankfurt-Darmstadt S</i> &rarr; <i>Darmstadt S</i>). The mapped target area is never deactivated, and area deactivation is not part of import undo.</p><label class="form-field">Search mappings<input id="mappingSearch" type="search" placeholder="Old or current area name"></label><form action="/mappings/save" method="post"><div class="scroll"><table id="mappingTable"><thead><tr><th>Original label</th><th>Current area</th><th>Notes</th><th>Close old area (optional)</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table></div><p><button>Save confirmed mappings</button>{back}</p></form></div><div class="card"><h3>Add an old area name</h3><form action="/mappings/save" method="post"><div class="split"><label class="form-field">Original label<input name="source" required></label><label class="form-field">Current area<select name="target" required>{area_options(areas, None)}</select></label></div><input type="hidden" name="notes" value=""><button>Remember mapping</button></form></div><template id="areaOptions">{closed_option(False)}{every_area}</template>{PAGE_SCRIPT}""")
 
 
 def new_labels_of_waiting_upload(saved):
@@ -146,13 +199,17 @@ def area_options(areas, selected):
     return '<option value="">Choose current area</option>' + "".join(area_option(a, selected) for a in areas)
 
 
-def mapping_row(r, areas, current_ids, all_areas, zone_names, summed=None):
-    """One remembered label. Its list holds only the chosen area (and "Closed area") until it is used (see PAGE_SCRIPT)."""
-    label, kind = r["source_companionship"], r.get("match_status")
-    chosen = [] if kind == "CLOSED" else [a for a in areas if a["id"] == r.get("target_area_id")]
-    options = area_options(chosen, r.get("target_area_id")).replace("</option>", "</option>" + closed_option(kind == "CLOSED"), 1)
+def mapping_row(r, areas, current_ids, all_areas, zone_names, summed=None, remembered=None):
+    """One remembered label. Its list holds only the chosen area (and "Closed area") until it is used (see PAGE_SCRIPT).
+    A label without a mapping gets the suggestion preselected (round 21)."""
+    label, kind, target = r["source_companionship"], r.get("match_status"), r.get("target_area_id")
+    guess, why = (None, None) if target or kind else suggestion(label, areas, all_areas, zone_names, remembered)
+    if guess:
+        kind, target = ("CLOSED", None) if guess == "closed" else (None, guess)
+    chosen = [] if kind == "CLOSED" else [a for a in areas if a["id"] == target]
+    options = area_options(chosen, target).replace("</option>", "</option>" + closed_option(kind == "CLOSED"), 1)
     combined = f"""<label class="muted"><input type="checkbox" name="combined" value="{h(label)}" {'checked' if kind == 'COMBINED' else ''}> Combined companionship (one companionship served both areas: its numbers are added to this area and can be separated later)</label>"""
-    return f"""<tr data-mapping-row><td>{h(label)}<input type="hidden" name="source" value="{h(label)}"></td><td><select name="target" data-short="1">{options}</select><br>{combined}</td><td><input name="notes" value="{h(r.get('notes'))}" placeholder="Rename / merge notes"></td><td>{close_cell(r, all_areas, zone_names)}</td><td>{status_cell(r, current_ids, (summed or {}).get(fold(label)))}</td></tr>"""
+    return f"""<tr data-mapping-row><td>{h(label)}<input type="hidden" name="source" value="{h(label)}"></td><td><select name="target" data-short="1">{options}</select><br>{combined}</td><td><input name="notes" value="{h(r.get('notes'))}" placeholder="Rename / merge notes"></td><td>{close_cell({**r, "target_area_id": target}, all_areas, zone_names)}</td><td>{suggested_cell(why) if guess else status_cell(r, current_ids, (summed or {}).get(fold(label)))}</td></tr>"""
 
 
 def close_cell(r, all_areas, zone_names):
@@ -163,6 +220,10 @@ def close_cell(r, all_areas, zone_names):
         return f"<span class='muted'>Already closed: <b>{h(area['zone'])} / {h(area['name'])}</b></span>"
     note = " <span class='muted'>(currently the target: choose another area first)</span>" if area["id"] == r.get("target_area_id") else ""
     return f"""<label><input type="checkbox" name="deactivate" value="{h(r['source_companionship'])}"> Deactivate old area <b>{h(area['zone'])} / {h(area['name'])}</b> on save</label>{note}"""
+
+
+def suggested_cell(why):
+    return f"<b class='warn'>Suggested</b><br><span class='muted'>{h(why)}</span><br><span class='muted'>Check it, then save.</span>"
 
 
 def status_cell(r, current_ids, summed=None):

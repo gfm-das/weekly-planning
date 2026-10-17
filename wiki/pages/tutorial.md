@@ -7,7 +7,7 @@ status: full
 navboxes: [using]
 infobox_title: Tutorial
 icon: "🧭"
-infobox_rows: ["Who|Everyone, steps differ by role", "Time|About one minute", "Where|Tour button in the portal header", "Languages|14 interface languages"]
+infobox_rows: ["Who|Everyone, steps differ by role", "Time|About one minute", "Where|Settings > Tour in the portal header", "Languages|14 interface languages"]
 tags: [users, tutorial, tour]
 ---
 
@@ -17,26 +17,22 @@ The portal offers a **guided tour** once, the first time you sign in on a device
 
 - **Next** and **Back** move through the steps. **Skip tour** closes it. The arrow keys work, and **Esc** closes it.
 - The portal remembers on that device that you have seen it, so it does not come back by itself.
-- To see it again, press **Tour** in the header (on a phone: open the menu with ☰ and press **Tour** above Sign Out).
+- To see it again, open **Settings** (the gear in the header) and press **Tour** (on a phone: open the menu with ☰, then **Settings** above Sign Out).
 - On a phone the menu slides open for the menu steps and closes again at the end. In Arabic and Persian everything is mirrored, from right to left.
 - The tour only points at what you may open. Steps for parts of the portal you do not have are left out.
 
 ## The steps
 
-Everyone gets these. The tour follows the menu, top to bottom.
+Everyone gets these. The tour follows the menu, top to bottom, and ends on Settings.
 
 | Step | What it shows |
 | --- | --- |
 | Welcome | A short hello. The text fits your role |
-| **Weekly** | The section with everything for your working week |
-| **Weekly Planning** | Plan your week. The six key indicators come first, then goals and action plans. Submit when ready; a leader can unlock the plan later |
-| **Overview** | Your week at a glance: key indicators first, then this week's tasks, events and announcements |
-| **Information** | The section with shared information for the mission |
+| **Overview** | Start here: your week at a glance, with the key indicators, the AP Tip of the Week, announcements and your plan |
+| **Weekly Planning** | Plan your week: key indicators first, then goals and action plans. Submit it when it is ready |
 | **Calendar** | Meetings and events for your role and zone |
-| **Announcements** | Updates from the leaders in your stewardship |
-| Language | Where to choose your language (14 are available) |
-| **Customize** | The look of the portal: Mission navy and teal, light or dark |
-| **Tour** | The button that starts the tour again |
+| **Announcements** | News from your leaders |
+| **Settings** | Change your language or theme, or start the tour again |
 
 ## By role
 
@@ -47,8 +43,8 @@ Which extra steps you get follows [Roles and permissions](roles-and-permissions.
 | Missionary | None. The steps above are your tour |
 | DL or ZL | **Call-ins** (report and follow up for the district or zone) and **Insights > Presentations** |
 | STL | **Insights > Presentations** (no Call-ins) |
-| Office (main or additional role) | **Office tools**: add and change calendar events and announcements |
-| Manager (AP, President, Data Analyst) | **Call-ins**, **Whiteboard**, **Insights** with **Dashboards**, **Archetypal Health** and **Presentations**, and **Manager tools** (DA Management) |
+| Office (main or additional role) | **Office tools** (add and edit calendar events and announcements) and **Insights > Vollzogen** |
+| Manager (AP, President, Data Analyst) | **Call-ins**, **Insights** with **Dashboards**, **Archetypal Health**, **Vollzogen**, **Whiteboard** and **Presentations**, then **Wiki**, **Mission drive** (when set up) and **DA Management** |
 
 ## How it works
 
@@ -65,7 +61,7 @@ Everyone with an account sees the tour. The steps follow the role.
 
 | Problem | What to try |
 | --- | --- |
-| The tour did not start | It starts by itself only once per device. Press **Tour** in the header |
+| The tour did not start | It starts by itself only once per device. Open **Settings** and press **Tour** |
 | It starts every time | The browser does not keep site data (private window). Use a normal window |
 | A step is missing | The part is not in your menu. Check your role with a Data Analyst |
 | The card hides the part on a small screen | Press **Next**; the card moves to the other side of the screen for each step |
@@ -75,6 +71,7 @@ Everyone with an account sees the tour. The steps follow the role.
 | Date | Note |
 | --- | --- |
 | Round 13 | Guided tour and this tutorial |
+| Round 21 | The tour follows today's menu from top to bottom (no more jumps between sections), ends on the Settings menu instead of pointing into it while it is closed, scrolls a long phone menu to the part it shows, and has shorter texts. A check (`portal/tests/tour-check.cjs`) makes sure every step points at a part the portal really has |
 
 ## See also
 

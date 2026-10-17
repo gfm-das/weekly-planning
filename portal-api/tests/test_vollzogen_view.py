@@ -65,6 +65,8 @@ class FakeCursor:
         self.conn.log.append((flat, args))
         if 'SELECT DISTINCT (v.baptism_date' in flat:
             self.description, self.result = [('sunday',)], [(date(2026, 9, 20),), (date(2026, 9, 13),)]
+        elif 'SELECT DISTINCT to_char(v.baptism_date' in flat:
+            self.description, self.result = [('month',)], [('2026-09',), ('2025-12',)]
         elif 'SELECT DISTINCT v.zone' in flat:
             self.description, self.result = [('zone',)], [('Zone 5',), ('Zone 6',)]
         elif 'FROM public.vollzogen_records v' in flat:
@@ -178,6 +180,37 @@ def test_the_page_has_no_edit_controls_and_uses_the_list_route():
     assert not re.search(r'fc_number|record_key', page)
     assert page.count('<input') == 1  # only the search box
 
+
+
+def test_the_period_filter_months_years_and_this_week():
+    with patch.object(vollzogen, 'today', lambda: date(2026, 10, 17)):  # a Saturday
+        status, body, _, log = call('office', '/api/vollzogen')
+        assert status == 200 and body['period'] == 'all'
+        assert body['months'] == ['2026-10', '2026-09', '2025-12']  # this month is always offered
+        assert body['years'] == ['2026', '2025']
+        assert body['this_month'] == '2026-10'
+        assert body['this_week'] == {'sunday': '2026-10-11', 'saturday': '2026-10-17'}  # the portal's Sunday-to-Saturday week
+        args = next(a for s, a in log if 'v.full_name,' in s)
+        assert args[-4:-1] == (None, None, None)  # no period: no date limit
+        for asked, period, start, end in (('month', '2026-10', date(2026, 10, 1), date(2026, 11, 1)),
+                                          ('2026-12', '2026-12', date(2026, 12, 1), date(2027, 1, 1)),
+                                          ('2025', '2025', date(2025, 1, 1), date(2026, 1, 1))):
+            status, body, _, log = call('office', '/api/vollzogen?period=' + asked)
+            assert status == 200 and body['period'] == period, (asked, body)
+            args = next(a for s, a in log if 'v.full_name,' in s)
+            assert args[-4:-1] == (start, start, end), (asked, args)
+            weeks = next(a for s, a in log if 'SELECT DISTINCT (v.baptism_date' in s)
+            assert weeks[1:4] == (start, start, end), weeks  # the week list only holds weeks of the period
+        for bad in ('garbage', '2026-13', '2026-1', '26', '2026-10-01'):
+            assert call('office', '/api/vollzogen?period=' + bad)[0] == 400, bad
+    assert vollzogen.this_week(date(2026, 10, 11)) == {'sunday': date(2026, 10, 11), 'saturday': date(2026, 10, 17)}
+    assert vollzogen.this_week(date(2026, 10, 12))['sunday'] == date(2026, 10, 11)
+
+
+def test_the_page_chooses_a_period_and_marks_this_week():
+    page = (Path(__file__).resolve().parents[2] / 'portal' / 'vollzogen.html').read_text(encoding='utf-8')
+    assert re.search(r'<select id="period">\s*<option value="month">', page)  # this month is the default
+    assert 'period=' in page and 'this_week' in page and 'class="this-week-badge"' in page
 
 if __name__ == '__main__':
     tests = [value for name, value in sorted(globals().items()) if name.startswith('test_') and callable(value)]

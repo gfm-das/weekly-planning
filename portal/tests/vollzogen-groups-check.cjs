@@ -1,6 +1,8 @@
 // Round 19: Vollzogen "Group by" year / quarter / month (portal/vollzogen.html). Takes the page's own period() and
 // bodyRows() out of its script and runs them in a Node vm: newest first by default, the order choice reverses it,
 // every period has a heading with its total, and people without a baptism date come last under "No date".
+// Round 21: the Period list (this month first, the other months and the years with baptisms, then All time) and the
+// people baptized this reporting week (a tinted row plus a "This week" badge, so it is not colour only).
 // Run: node portal/tests/vollzogen-groups-check.cjs
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -13,12 +15,12 @@ const grab = (name) => {
   assert.ok(start > 0, name);
   return html.slice(start, html.indexOf('\n      }\n', start) + 8);
 };
-for (const id of ['id="group"', 'value="year"', 'value="quarter"', 'value="month"', 'id="order"', 'value="oldest"']) assert.ok(html.includes(id), id);
+for (const id of ['id="period"', 'value="all"', 'id="group"', 'value="year"', 'value="quarter"', 'value="month"', 'id="order"', 'value="oldest"']) assert.ok(html.includes(id), id);
 assert.match(html, /\[data-theme="dark"\]|var\(--soft\)/); // the period rows use the theme's colours
 
-const texts = { 'vollzogen.noDate': 'No date', 'vollzogen.quarterLabel': 'Q{q} {year}', 'vollzogen.periodTotal': 'Total: {n}' };
+const texts = { 'vollzogen.thisWeek': 'This week', 'vollzogen.thisMonth': 'This month', 'vollzogen.months': 'Months', 'vollzogen.years': 'Years', 'vollzogen.allTime': 'All time', 'vollzogen.noDate': 'No date', 'vollzogen.quarterLabel': 'Q{q} {year}', 'vollzogen.periodTotal': 'Total: {n}' };
 const sandbox = {
-  state: { oldestFirst: false },
+  state: { oldestFirst: false, data: { this_week: { sunday: '2026-08-09', saturday: '2026-08-15' } } },
   document: { documentElement: { lang: 'en' } },
   Intl, Date, Math, Number, String,
   T: (key, values = {}) => (texts[key] || key).replace(/\{(\w+)\}/g, (_, k) => values[k]),
@@ -28,7 +30,7 @@ const sandbox = {
   COLUMNS: [['name', 'name', (i) => i.full_name], ['date', 'date', (i) => i.baptism_date || '']],
 };
 vm.createContext(sandbox);
-vm.runInContext(grab('period') + grab('bodyRows'), sandbox);
+vm.runInContext(grab('monthName') + grab('period') + grab('inThisWeek') + grab('fillPeriods') + grab('bodyRows'), sandbox);
 
 const people = [
   { full_name: 'Anna', baptism_date: '2026-08-09' }, { full_name: 'Ben', baptism_date: '2026-02-01' },
@@ -43,6 +45,24 @@ assert.deepEqual(headings(sandbox.bodyRows(people, '')), []);
 assert.deepEqual(headings(sandbox.bodyRows(people, 'year')), ['2026 (Total: 3)', '2025 (Total: 1)', 'No date (Total: 1)']);
 assert.deepEqual(headings(sandbox.bodyRows(people, 'quarter')), ['Q3 2026 (Total: 2)', 'Q1 2026 (Total: 1)', 'Q4 2025 (Total: 1)', 'No date (Total: 1)']);
 assert.deepEqual(headings(sandbox.bodyRows(people, 'month')), ['August 2026 (Total: 2)', 'February 2026 (Total: 1)', 'December 2025 (Total: 1)', 'No date (Total: 1)']);
+// This week (Sunday 9 to Saturday 15 August): Anna only, with the row class and the badge.
+const flat = sandbox.bodyRows(people, '');
+assert.equal((flat.match(/<tr class="this-week">/g) || []).length, 1);
+assert.match(flat, /<tr class="this-week"><td class="name"[^>]*>Anna<span class="this-week-badge">This week<\/span>/);
+assert.ok(!/Emil<span/.test(flat));
+// The Period list: this month first (named), the other months and the years with data, All time last; a lost choice falls back.
+const select = { value: '', innerHTML: '', get options() { return [...this.innerHTML.matchAll(/value="([^"]*)"/g)].map((m) => ({ value: m[1] })); } };
+sandbox.$ = () => select;
+sandbox.fillPeriods({ this_month: '2026-10', months: ['2026-10', '2026-08', '2025-12'], years: ['2026', '2025'] });
+assert.deepEqual(select.options.map((o) => o.value), ['month', '2026-08', '2025-12', '2026', '2025', 'all']);
+assert.match(select.innerHTML, /^<option value="month">This month \(October 2026\)<\/option><optgroup label="Months">/);
+assert.equal(select.value, 'month');
+select.value = '2025';
+sandbox.fillPeriods({ this_month: '2026-10', months: ['2026-10', '2025-12'], years: ['2026', '2025'] });
+assert.equal(select.value, '2025');
+select.value = '2024';
+sandbox.fillPeriods({ this_month: '2026-10', months: ['2026-10'], years: ['2026'] });
+assert.equal(select.value, 'month');
 sandbox.state.oldestFirst = true; // the order choice
 assert.deepEqual(headings(sandbox.bodyRows(people, 'year')), ['2025 (Total: 1)', '2026 (Total: 3)', 'No date (Total: 1)']);
 assert.deepEqual(names(sandbox.bodyRows(people, 'month')), ['Cara', 'Ben', 'Emil', 'Anna', 'Dora']);

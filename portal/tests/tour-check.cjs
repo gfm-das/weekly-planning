@@ -47,13 +47,13 @@ function page({ menuVisible, rtl = false, phone = false, storage = 'ok', innerWi
   const byId = new Map(), bySelector = new Map(), keyListeners = [];
   const get = id => { if (!byId.has(id)) byId.set(id, fakeElement('div', id)); return byId.get(id); };
   const SELECTORS = {
-    '#groupWeekly': 'groupWeekly', '#navPlanning': 'navPlanning', '#navCallIns': 'navCallIns', '#navOverview': 'navOverview',
-    '#groupInformation': 'groupInformation', '#navCalendar': 'navCalendar', '#navAnnouncements': 'navAnnouncements',
-    '#navWhiteboard': 'navWhiteboard', '#insightsGroupTitle': 'insightsGroupTitle', '#navInsights': 'navInsights',
-    '#navArchetypes': 'navArchetypes', '#navVollzogen': 'navVollzogen', '#navPresentations': 'navPresentations', '#managerGroupTitle': 'managerGroupTitle',
-    '.portal-language': 'portalLanguage', '#portalCustomize': 'portalCustomize', '#portalTourButton': 'portalTourButton',
+    '#navOverview': 'navOverview', '#navPlanning': 'navPlanning', '#navCallIns': 'navCallIns', '#navCalendar': 'navCalendar',
+    '#navAnnouncements': 'navAnnouncements', '#insightsGroupTitle': 'insightsGroupTitle', '#navInsights': 'navInsights',
+    '#navArchetypes': 'navArchetypes', '#navVollzogen': 'navVollzogen', '#navWhiteboard': 'navWhiteboard',
+    '#navPresentations': 'navPresentations', '#navWiki': 'navWiki', '#navDrive': 'navDrive', '#navManagement': 'navManagement',
+    '#portalSettings > summary': 'portalSettings',
   };
-  const always = ['groupWeekly', 'navPlanning', 'navOverview', 'groupInformation', 'navCalendar', 'navAnnouncements', 'portalLanguage', 'portalCustomize', 'portalTourButton'];
+  const always = ['navOverview', 'navPlanning', 'navCalendar', 'navAnnouncements', 'portalSettings'];
   const shown = new Set([...always, ...menuVisible]);
   for (const [selector, id] of Object.entries(SELECTORS)) {
     const element = get(id);
@@ -98,7 +98,7 @@ function page({ menuVisible, rtl = false, phone = false, storage = 'ok', innerWi
 // ---- 1. The steps each role gets ------------------------------------------------------------------------------
 // The menu entries each person sees (portal-menu-check.cjs): Call-ins for managers, DL, ZL; Presentations also for STL;
 // the rest for managers only.
-const MANAGER_ONLY = ['navWhiteboard', 'insightsGroupTitle', 'navInsights', 'navArchetypes', 'navVollzogen', 'navPresentations', 'managerGroupTitle', 'navCallIns'];
+const MANAGER_ONLY = ['navWhiteboard', 'insightsGroupTitle', 'navInsights', 'navArchetypes', 'navVollzogen', 'navPresentations', 'navWiki', 'navManagement', 'navCallIns'];
 const PEOPLE = {
   missionary: { roles: ['MISSIONARY'], menu: [] },
   stl: { roles: ['STL'], menu: ['navPresentations', 'insightsGroupTitle'] },
@@ -113,29 +113,34 @@ const PEOPLE = {
   dlDataAdmin: { roles: ['DL', 'DATA_ADMIN'], menu: MANAGER_ONLY },
 };
 const ids = who => { const p = page({ menuVisible: PEOPLE[who].menu }); return [...p.tour.stepsFor([...PEOPLE[who].roles]).map(s => s.id)]; };
-const BASE = ['welcome', 'weekly', 'planning', 'overview', 'information', 'calendar', 'announcements', 'language', 'customize', 'tour'];
-eq(ids('missionary'), BASE, 'missionary: weekly, information, no call-ins, no insights, no manager tools');
-eq(ids('stl'), ['welcome', 'weekly', 'planning', 'overview', 'information', 'calendar', 'announcements', 'insights', 'presentations', 'language', 'customize', 'tour'], 'STL: presentations, no call-ins');
+// Round 21: the steps follow the menu from top to bottom and end on the Settings menu (no more section headings that
+// jump back and forth, no steps inside the closed Settings menu).
+const BASE = ['welcome', 'overview', 'planning', 'calendar', 'announcements', 'settings'];
+eq(ids('missionary'), BASE, 'missionary: no call-ins, no insights, no manager tools');
+eq(ids('stl'), ['welcome', 'overview', 'planning', 'calendar', 'announcements', 'insights', 'presentations', 'settings'], 'STL: presentations, no call-ins');
 for (const who of ['dl', 'zl']) {
-  eq(ids(who), ['welcome', 'weekly', 'planning', 'callins', 'overview', 'information', 'calendar', 'announcements', 'insights', 'presentations', 'language', 'customize', 'tour'], who + ': call-ins and presentations');
+  eq(ids(who), ['welcome', 'overview', 'planning', 'callins', 'calendar', 'announcements', 'insights', 'presentations', 'settings'], who + ': call-ins and presentations');
 }
 for (const who of ['office', 'missionaryOffice']) {
-  eq(ids(who), ['welcome', 'weekly', 'planning', 'overview', 'information', 'calendar', 'announcements', 'office', 'insights', 'vollzogen', 'language', 'customize', 'tour'], who + ': the Office step after announcements, then Insights with only Vollzogen');
+  eq(ids(who), ['welcome', 'overview', 'planning', 'calendar', 'announcements', 'office', 'insights', 'vollzogen', 'settings'], who + ': the Office step after announcements, then Insights with only Vollzogen');
 }
-const MANAGER_STEPS = ['welcome', 'weekly', 'planning', 'callins', 'overview', 'information', 'calendar', 'announcements', 'whiteboard', 'insights', 'dashboards', 'archetypes', 'vollzogen', 'presentations', 'manager', 'language', 'customize', 'tour'];
-// Dashboards hang on #navInsights; the fake page has no "dashboards" id, so check the manager list below by the menu.
+const MANAGER_STEPS = ['welcome', 'overview', 'planning', 'callins', 'calendar', 'announcements', 'insights', 'dashboards', 'archetypes', 'vollzogen', 'whiteboard', 'presentations', 'wiki', 'manager', 'settings'];
 for (const who of ['ap', 'president', 'dataAdmin', 'dlDataAdmin']) {
   const got = ids(who);
-  ok(got.includes('whiteboard') && got.includes('manager') && got.includes('archetypes') && got.includes('callins'), who + ': manager steps');
   ok(!got.includes('office'), who + ': no Office step');
-  eq(got.filter(id => !['dashboards'].includes(id)), MANAGER_STEPS.filter(id => id !== 'dashboards'), who + ': the manager order');
+  eq(got, MANAGER_STEPS, who + ': the manager order (the menu order)');
+}
+{
+  // A Mission drive link (set up by the owner) gets its own step after the Wiki.
+  const p = page({ menuVisible: [...MANAGER_ONLY, 'navDrive'] });
+  eq([...p.tour.stepsFor(['AP']).map(s => s.id).slice(-4)], ['wiki', 'drive', 'manager', 'settings'], 'the drive step after the wiki');
 }
 {
   // A step whose part is not on screen is left out, whatever the role.
   const p = page({ menuVisible: [] });
-  const withoutLanguage = p.tour.stepsFor(['MISSIONARY']).map(s => s.id);
-  p.get('portalLanguage').hidden = true;
-  ok(withoutLanguage.includes('language') && !p.tour.stepsFor(['MISSIONARY']).some(s => s.id === 'language'), 'the language step goes while the list is hidden');
+  const withSettings = p.tour.stepsFor(['MISSIONARY']).map(s => s.id);
+  p.get('portalSettings').hidden = true;
+  ok(withSettings.includes('settings') && !p.tour.stepsFor(['MISSIONARY']).some(s => s.id === 'settings'), 'the settings step goes while the menu is hidden');
   eq(p.tour.kindOf(['MISSIONARY']), 'missionary', 'kind missionary');
   eq(p.tour.kindOf(['DL']), 'leader', 'kind leader');
   eq(p.tour.kindOf(['MISSIONARY', 'OFFICE']), 'office', 'kind office');
@@ -193,7 +198,7 @@ for (const who of ['ap', 'president', 'dataAdmin', 'dlDataAdmin']) {
   eq(p.find('tour-title').textContent, 'Welcome to the portal', 'welcome title');
   ok(p.find('tour-spot').hidden, 'the welcome step lights nothing and sits in the middle');
   p.find('tour-next').click();
-  eq(p.find('tour-title').textContent, 'WEEKLY', 'step 2 is the Weekly section');
+  eq(p.find('tour-title').textContent, 'Overview', 'step 2 is the Overview, the first menu entry');
   ok(!p.find('tour-back').hidden, 'Back from step 2');
   ok(!p.find('tour-spot').hidden, 'a part is lit');
   eq(p.find('tour-spot').style.top, '94px', 'the spotlight surrounds the part (6px)');
@@ -228,7 +233,7 @@ for (const who of ['ap', 'president', 'dataAdmin', 'dlDataAdmin']) {
   ltr.tour.start(['MISSIONARY'], 'u1'); ltr.find('tour-next').click();
   ok(parseFloat(ltr.find('tour-card').style.left) > 220, 'left to right: the card is to the right of the menu entry');
   const rtl = page({ menuVisible: [], rtl: true });
-  for (const name of ['groupWeekly']) { rtl.get(name).rect = { top: 100, left: 1000, right: 1260, bottom: 140, width: 260, height: 40 }; }
+  for (const name of ['navOverview']) { rtl.get(name).rect = { top: 100, left: 1000, right: 1260, bottom: 140, width: 260, height: 40 }; }
   rtl.tour.start(['MISSIONARY'], 'u1'); rtl.find('tour-next').click();
   ok(parseFloat(rtl.find('tour-card').style.left) + rtl.find('tour-card').offsetWidth <= 1000, 'right to left: the card is to the left of the menu entry');
   rtl.press('ArrowRight');
@@ -260,4 +265,25 @@ for (const who of ['ap', 'president', 'dataAdmin', 'dlDataAdmin']) {
   ok(!/(^|\s)(left|right):\s*-?\d+px/.test(css.replace(/\.tour-card\.tour-center[\s\S]*?\}/, '')), 'tour.css uses logical sides (inset-inline, margin-inline) for text direction');
 }
 
-console.log(`tour: ${passed} checks passed (steps per role, texts in 14 languages, memory, card, right to left, phone, shell)`);
+// ---- 7. Every step points at a part the shell really has (round 21: so the tour cannot rot again) --------------------
+{
+  const template = read('portal/index.template.html'), shell = read('portal/portal-enhancements.js');
+  const { tour } = page({ menuVisible: MANAGER_ONLY });
+  for (const step of tour.STEPS.filter(s => s.target)) {
+    const id = (step.target.match(/^#([\w-]+)/) || [])[1];
+    ok(id, step.id + ': the target starts with an id');
+    const made = new RegExp(`id="${id}"|menu(Button|Link)\\('${id}'|\\.id = '${id}'`).test(template + shell);
+    ok(made, `${step.id}: ${step.target} exists in index.template.html or portal-enhancements.js`);
+    if (/> summary$/.test(step.target)) ok(/createElement\('summary'\)/.test(shell), step.id + ': the Settings menu has its summary');
+  }
+  // The menu steps keep the menu's order (top to bottom), as written in the template's comment and the shell.
+  const order = ['navOverview', 'navPlanning', 'navCallIns', 'navCalendar', 'navAnnouncements', 'insightsGroupTitle', 'navInsights', 'navArchetypes', 'navVollzogen', 'navWhiteboard', 'navPresentations', 'navWiki', 'navDrive', 'navManagement', 'portalSettings'];
+  const at = step => order.indexOf(step.target.slice(1).split(' ')[0]);
+  const menuSteps = tour.STEPS.filter(s => s.target && s.id !== 'office');
+  ok(menuSteps.every(s => at(s) >= 0), 'every menu step is in the menu order list');
+  ok(menuSteps.every((s, i) => !i || at(s) > at(menuSteps[i - 1])), 'the steps follow the menu from top to bottom');
+  ok(/WEEKLY: Overview, Weekly Planning, Call-ins, Calendar,\s+Announcements\. INSIGHTS: Dashboards, Archetypal Health, Vollzogen, Whiteboard, Presentations\. INFORMATION: Wiki,\s+Mission drive\. MANAGER TOOLS: DA Management/.test(template), 'the template still lists the menu in this order');
+  for (const key of new Set(tour.STEPS.map(s => s.title))) ok(key in catalogs.en, 'the title key exists: ' + key);
+}
+
+console.log(`tour: ${passed} checks passed (steps per role, targets in the shell, texts in 14 languages, memory, card, right to left, phone, shell)`);

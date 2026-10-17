@@ -3,9 +3,10 @@
  * up one part of the portal at a time and says in a card what it is for, with Back / Next / Skip.
  *
  * WHO SEES WHAT
- *   The steps follow the person's roles (the same words as portal-enhancements.js and portal-api/roles.py): everyone
- *   gets the sections Weekly and Information; Call-ins only where the menu shows Call-ins (managers, DL, ZL);
- *   Office gets a step about the calendar and announcements; managers get Whiteboard, Insights and Manager tools. A
+ *   The steps follow the menu from top to bottom (round 21: Overview, Weekly Planning, Call-ins, Calendar, Announcements,
+ *   the Insights entries, Wiki, Mission drive, DA Management) and end on the Settings menu (language, theme, this tour).
+ *   Call-ins only where the menu shows Call-ins (managers, DL, ZL); Office gets a step about the calendar and
+ *   announcements; managers get Insights, Wiki and DA Management. A
  *   step whose part is not on screen for this person is left out, so the tour never points at something hidden. The
  *   tour grants no right and hides nothing: it only reads what the menu already shows.
  *
@@ -25,7 +26,8 @@
  *   Every text is a key tour.* (or an existing menu key) in portal/i18n/*.json, read with MissionI18n.t(). EN below
  *   is the English fallback (portal/tests/tour-check.cjs proves it equals en.json).
  *
- * Tests: portal/tests/tour-check.cjs (steps per role, the memory, the catalogs in 14 languages).
+ * Tests: portal/tests/tour-check.cjs (steps per role, every target exists in the shell, the memory, the catalogs in 14
+ * languages).
  */
 (() => {
   'use strict';
@@ -43,48 +45,44 @@
     'tour.done': 'Done',
     'tour.step': 'Step {n} of {total}',
     'tour.welcomeTitle': 'Welcome to the portal',
-    'tour.welcomeMissionary': 'A short tour shows where to plan your week, read announcements and check the calendar. It takes about a minute.',
-    'tour.welcomeLeader': 'A short tour shows where to plan your week, report in Call-ins and follow your district or zone. It takes about a minute.',
-    'tour.welcomeOffice': 'A short tour shows the menu and where Office keeps the calendar and announcements up to date. It takes about a minute.',
-    'tour.welcomeManager': 'A short tour shows the menu, the insights and the manager tools. It takes about a minute.',
-    'tour.weekly': 'Everything for your working week is in this section.',
-    'tour.planning': 'Plan your week here. The key indicators come first, then goals and action plans. Submit when the plan is ready; a leader can unlock it later.',
-    'tour.callins': 'Leaders report and follow up here for their district or zone.',
-    'tour.overview': 'Your week at a glance: key indicators first, then this week\'s tasks, events and announcements.',
-    'tour.information': 'Shared information for the mission is in this section.',
+    'tour.welcomeMissionary': 'A one-minute tour of the menu: where to plan your week, read announcements and check the calendar.',
+    'tour.welcomeLeader': 'A one-minute tour of the menu: where to plan your week, report in Call-ins and follow your district or zone.',
+    'tour.welcomeOffice': 'A one-minute tour of the menu, including where you keep the calendar and announcements up to date.',
+    'tour.welcomeManager': 'A one-minute tour of the menu, the insights and the manager tools.',
+    'tour.overview': 'Start here: your week at a glance, with the key indicators, the AP Tip of the Week, announcements and your plan.',
+    'tour.planning': 'Plan your week here: key indicators first, then goals and action plans. Submit it when it is ready.',
+    'tour.callins': 'Report and follow up on your district or zone here.',
     'tour.calendar': 'Meetings and events for your role and zone.',
-    'tour.announcements': 'Updates from the leaders in your stewardship.',
+    'tour.announcements': 'News from your leaders.',
     'tour.officeTitle': 'Office tools',
-    'tour.office': 'Office adds and changes calendar events and announcements. Open either page to add or edit an entry.',
-    'tour.whiteboard': 'Managers draw, plan and counsel together here, with live mission charts.',
-    'tour.insights': 'Charts, health and presentations for your stewardship.',
+    'tour.office': 'As Office, you add and edit entries on the Calendar and Announcements pages.',
+    'tour.insights': 'Charts and reports about the work in your stewardship.',
     'tour.insightsOffice': 'Lists for the office and mission leaders.',
-    'tour.vollzogen': 'The people who were baptized and confirmed, for the office and mission leaders. You can only read this list.',
     'tour.dashboards': 'Key indicators by mission, zone, district and area, with goals and trend lines.',
     'tour.archetypes': 'How each part of the work is going compared with similar areas.',
-    'tour.presentations': 'Your presentation library and slide workspace.',
-    'tour.manager': 'DA Management has accounts, roster data, imports and documentation. Only managers see this section.',
-    'tour.languageTitle': 'Your language',
-    'tour.language': 'Choose your language here. The portal speaks 14 languages.',
-    'tour.customize': 'Change the look of the portal: Mission navy and teal, light or dark.',
-    'tour.tourTitle': 'Come back any time',
-    'tour.tour': 'Start this tour again from this button whenever you like.',
+    'tour.vollzogen': 'Everyone who was baptized and confirmed. Read only.',
+    'tour.whiteboard': 'Draw, plan and counsel together, with live mission charts.',
+    'tour.presentations': 'Your slide library and presentation workspace.',
+    'tour.wiki': 'How-to guides and help for the portal.',
+    'tour.drive': 'Shared mission files.',
+    'tour.manager': 'Accounts, roster data, imports and documentation. Only managers see this.',
+    'tour.settings': 'Change your language or theme here, or start this tour again.',
     // Existing menu words, used as the titles of the steps.
-    'shell.groupWeekly': 'WEEKLY',
-    'shell.groupInformation': 'INFORMATION',
-    'shell.groupInsights': 'INSIGHTS',
-    'shell.groupManager': 'MANAGER TOOLS',
     'overview.weeklyPlanning': 'Weekly Planning',
     'nav.callins': 'Call-ins',
     'nav.overview': 'Overview',
     'nav.calendar': 'Calendar',
     'announcements.title': 'Announcements',
-    'nav.whiteboard': 'Whiteboard',
+    'shell.groupInsights': 'INSIGHTS',
     'nav.dashboards': 'Dashboards',
-    'uploads.vollzogen.title': 'Vollzogen',
     'archetypes.title': 'Archetypal Health',
+    'uploads.vollzogen.title': 'Vollzogen',
+    'nav.whiteboard': 'Whiteboard',
     'nav.presentations': 'Presentations',
-    'shell.customize': 'Customize',
+    'shell.wiki': 'Wiki',
+    'drive.title': 'Mission drive',
+    'nav.management': 'DA Management',
+    'shell.settings': 'Settings',
   };
 
   // The roles that count as managers (portal-enhancements.js MANAGER_ROLES, portal-api/roles.py).
@@ -104,24 +102,22 @@
   // is left out when its target is not on screen, so the menu itself decides what each role sees.
   const STEPS = [
     { id: 'welcome', title: 'tour.welcomeTitle', text: kind => 'tour.welcome' + kind[0].toUpperCase() + kind.slice(1) },
-    { id: 'weekly', target: '#groupWeekly', title: 'shell.groupWeekly', text: () => 'tour.weekly', menu: true },
+    { id: 'overview', target: '#navOverview', title: 'nav.overview', text: () => 'tour.overview', menu: true },
     { id: 'planning', target: '#navPlanning', title: 'overview.weeklyPlanning', text: () => 'tour.planning', menu: true },
     { id: 'callins', target: '#navCallIns', title: 'nav.callins', text: () => 'tour.callins', menu: true },
-    { id: 'overview', target: '#navOverview', title: 'nav.overview', text: () => 'tour.overview', menu: true },
-    { id: 'information', target: '#groupInformation', title: 'shell.groupInformation', text: () => 'tour.information', menu: true },
     { id: 'calendar', target: '#navCalendar', title: 'nav.calendar', text: () => 'tour.calendar', menu: true },
     { id: 'announcements', target: '#navAnnouncements', title: 'announcements.title', text: () => 'tour.announcements', menu: true },
     { id: 'office', target: '#navAnnouncements', title: 'tour.officeTitle', text: () => 'tour.office', menu: true, only: ['office'] },
-    { id: 'whiteboard', target: '#navWhiteboard', title: 'nav.whiteboard', text: () => 'tour.whiteboard', menu: true },
     { id: 'insights', target: '#insightsGroupTitle', title: 'shell.groupInsights', text: kind => (kind === 'office' ? 'tour.insightsOffice' : 'tour.insights'), menu: true },
     { id: 'dashboards', target: '#navInsights', title: 'nav.dashboards', text: () => 'tour.dashboards', menu: true },
     { id: 'archetypes', target: '#navArchetypes', title: 'archetypes.title', text: () => 'tour.archetypes', menu: true },
     { id: 'vollzogen', target: '#navVollzogen', title: 'uploads.vollzogen.title', text: () => 'tour.vollzogen', menu: true },
+    { id: 'whiteboard', target: '#navWhiteboard', title: 'nav.whiteboard', text: () => 'tour.whiteboard', menu: true },
     { id: 'presentations', target: '#navPresentations', title: 'nav.presentations', text: () => 'tour.presentations', menu: true },
-    { id: 'manager', target: '#managerGroupTitle', title: 'shell.groupManager', text: () => 'tour.manager', menu: true },
-    { id: 'language', target: '.portal-language', title: 'tour.languageTitle', text: () => 'tour.language', menu: true },
-    { id: 'customize', target: '#portalCustomize', title: 'shell.customize', text: () => 'tour.customize', menu: true },
-    { id: 'tour', target: '#portalTourButton', title: 'tour.tourTitle', text: () => 'tour.tour', menu: true },
+    { id: 'wiki', target: '#navWiki', title: 'shell.wiki', text: () => 'tour.wiki', menu: true },
+    { id: 'drive', target: '#navDrive', title: 'drive.title', text: () => 'tour.drive', menu: true },
+    { id: 'manager', target: '#navManagement', title: 'nav.management', text: () => 'tour.manager', menu: true },
+    { id: 'settings', target: '#portalSettings > summary', title: 'shell.settings', text: () => 'tour.settings', menu: true },
   ];
 
   // Is the part on screen? A hidden entry (display none, the hidden attribute) has no size. isVisible is replaceable
@@ -205,7 +201,12 @@
       return;
     }
     card.classList.remove('tour-center');
-    const r = target.getBoundingClientRect();
+    let r = target.getBoundingClientRect();
+    // Round 21: a part below the fold (the Settings menu at the end of a long phone menu) is scrolled into view first.
+    if ((r.top < 0 || r.bottom > vh) && target.scrollIntoView) {
+      try { target.scrollIntoView({ block: 'center' }); } catch { /* old browser */ }
+      r = target.getBoundingClientRect();
+    }
     const pad = 6;
     spot.hidden = false;
     spot.style.top = (r.top - pad) + 'px';

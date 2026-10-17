@@ -29,6 +29,8 @@ Imports past weekly forms. Can also read people named on each form (new members,
 
 In **Places → Area mappings** each old label stands for **one area**; numbers of two areas are never added together. Choose **Closed area** for an area that no longer exists (also when it is already closed): its history stays under the closed area. Only a label marked **Combined companionship** (one companionship served both areas) is added to another area, and **Separate** takes those numbers apart again from the original import rows; Separate is one batch in Import history with Undo.
 
+New labels of an upload come with a **suggestion** already chosen in their list, marked **Suggested** with the reason: remembered from an earlier upload, the same name, the same name without the zone prefix, or a similar spelling (another number is never similar: *Beta 12* is not *Beta 1*). When the match is an area that is already closed, **Closed area** is chosen. Without a good guess the list stays on *Choose current area*. Check each suggestion: nothing is saved or imported until you press **Save**, and *Combined companionship* and *Close old area* are never ticked for you.
+
 ### People upload
 
 Spreadsheet upload for **new members** (office templates / “Vollzogen” / New Member Database Raw layouts). Area is resolved from area name or from ward/branch when only one open area serves it. Unclear rows are left out and counted — not guessed.

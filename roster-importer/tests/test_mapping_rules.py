@@ -165,5 +165,64 @@ class SeparateTests(unittest.TestCase):
         self.assertEqual(len(cur.done), 1)  # only the look-up, no write
 
 
+
+class SuggestionTests(unittest.TestCase):
+    """Round 21: a new label gets the best guess preselected (never saved by itself)."""
+    CURRENT = [{"id": 2, "name": "Mitte", "zone": "Frankfurt"}, {"id": 4, "name": "Darmstadt S", "zone": "Frankfurt"},
+               {"id": 5, "name": "Bad Kreuznach", "zone": "Heidelberg"}]
+    ALL = AREAS + [{"id": 5, "name": "Bad Kreuznach", "zone": "Heidelberg", "active": True}]
+
+    def guess(self, label, remembered=None, areas=None):
+        return mappings_page.suggestion(label, self.CURRENT, areas or self.ALL, ZONES, remembered)
+
+    def test_the_reasons_in_order(self):
+        self.assertEqual(self.guess("Mitte"), (2, "Same name."))
+        self.assertEqual(self.guess("Frankfurt-Darmstadt S"), (4, "Same name without the zone prefix."))
+        self.assertEqual(self.guess("Heidelberg-Idar/Baumholder"), ("closed", "Matches an area that is already closed."))
+        self.assertEqual(self.guess("Bad Kreuznch"), (5, "Similar spelling."))
+        self.assertEqual(self.guess("Heidelberg - Bad-Kreuznach"), (5, "Similar spelling."))
+        self.assertEqual(self.guess("Nowhere"), (None, None))
+
+    def test_a_remembered_match_wins_and_can_mean_closed(self):
+        self.assertEqual(self.guess("Mitte", {"mitte": {"area_id": 4, "historical": False}}), (4, "Remembered from an earlier upload."))
+        self.assertEqual(self.guess("Old North", {"old north": {"area_id": None, "historical": True}}), ("closed", "Remembered from an earlier upload."))
+        self.assertEqual(self.guess("Mitte", {"mitte": {"area_id": 99, "historical": False}}), (2, "Same name."))  # not a current area
+
+    def test_no_guess_when_two_areas_are_equally_alike_or_the_match_is_not_current(self):
+        twins = [{"id": 7, "name": "Alpha 1", "zone": "Frankfurt", "active": True}, {"id": 8, "name": "Alpha 2", "zone": "Frankfurt", "active": True}]
+        self.assertEqual(mappings_page.suggestion("Alpha 3", self.CURRENT, twins, ZONES), (None, None))
+        numbered = [{"id": 10, "name": "Beta 1", "zone": "Frankfurt", "active": True}]
+        self.assertIsNone(mappings_page.look_alike("Beta 12", numbered, ZONES))  # another number is another area
+        self.assertEqual(mappings_page.look_alike("Betta 1", numbered, ZONES)["id"], 10)
+        idle = [{"id": 9, "name": "Quiet Town", "zone": "Frankfurt", "active": True}]  # active, but nobody serves there
+        self.assertEqual(mappings_page.suggestion("Quiet Town", self.CURRENT, idle, ZONES), (None, None))
+
+    def test_the_row_preselects_the_guess_marks_it_and_ticks_nothing(self):
+        row = mappings_page.mapping_row({"source_companionship": "Frankfurt-Darmstadt S", "target_area_id": None, "notes": "", "confirmed_at": None},
+                                        self.CURRENT, {2, 4, 5}, self.ALL, ZONES)
+        self.assertIn('<option value="4" selected>Frankfurt / Darmstadt S</option>', row)
+        self.assertIn("<b class='warn'>Suggested</b>", row)
+        self.assertIn("Same name without the zone prefix.", row)
+        self.assertNotIn(" checked", row)  # neither Combined companionship nor Close old area
+        same = mappings_page.mapping_row({"source_companionship": "Mitte", "target_area_id": None}, self.CURRENT, {2, 4, 5}, self.ALL, ZONES)
+        self.assertIn("currently the target", same)  # closing the suggested area itself is pointed out, not offered blindly
+        closed = mappings_page.mapping_row({"source_companionship": "Idar/Baumholder", "target_area_id": None}, self.CURRENT, {2, 4, 5}, self.ALL, ZONES)
+        self.assertIn('<option value="closed" selected>', closed)
+        self.assertIn("Suggested", closed)
+        none = mappings_page.mapping_row({"source_companionship": "Nowhere", "target_area_id": None}, self.CURRENT, {2, 4, 5}, self.ALL, ZONES)
+        self.assertIn('<option value="">Choose current area</option>', none)
+        self.assertNotIn(" selected", none)
+        self.assertNotIn("Suggested", none)
+
+    def test_a_saved_mapping_is_never_replaced_by_a_guess(self):
+        saved = mappings_page.mapping_row({"source_companionship": "Mitte", "target_area_id": 4, "match_status": "CONFIRMED", "confirmed_at": 1},
+                                          self.CURRENT, {2, 4, 5}, self.ALL, ZONES)
+        self.assertIn('<option value="4" selected>', saved)
+        self.assertNotIn("Suggested", saved)
+        closed = mappings_page.mapping_row({"source_companionship": "Mitte", "target_area_id": None, "match_status": "CLOSED", "confirmed_at": 1},
+                                           self.CURRENT, {2, 4, 5}, self.ALL, ZONES)
+        self.assertNotIn("Suggested", closed)
+        self.assertNotIn('value="2" selected', closed)
+
 if __name__ == "__main__":
     unittest.main()
