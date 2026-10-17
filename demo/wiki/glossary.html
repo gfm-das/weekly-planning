@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <script>/* Theme before paint (round 14): the portal's choice first, then the wiki's own. */(function(){try{var p=(JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"null")||{}).theme,w=localStorage.getItem("gfm-wiki-theme"),q=/[?&]theme=(dark|light)/.exec(location.search),t=q?q[1]:(p==="dark"?"dark":p?"light":(w||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")));document.documentElement.setAttribute("data-theme",t);if(window.top!==window)document.documentElement.classList.add("wiki-embedded");}catch(e){}})();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glossary — Weekly Planning Wiki</title>
+  <meta name="description" content="Plain-English glossary.">
+  <link rel="stylesheet" href="assets/wiki.css">
+  <script src="assets/wiki.js" defer></script>
+</head>
+<body data-wiki-base="." data-page="glossary">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="wiki-shell">
+    <aside class="wiki-sidebar" id="wikiSidebar">
+<div class="brand"><a href="index.html"><span class="brand-title">Weekly Planning Wiki</span><span class="brand-sub">Germany Frankfurt Mission</span></a></div>
+<div class="flag-accent" aria-hidden="true"><span class="fk-black"></span><span class="fk-red"></span><span class="fk-gold"></span></div>
+<div class="search-wrap"><input type="search" id="wikiSearch" placeholder="Search wiki…" aria-label="Search wiki" autocomplete="off"><ul class="search-results" id="wikiSearchResults"></ul></div>
+<nav>
+<h2>Start</h2><ul>
+<li><a href="index.html"><span class="nav-icon" aria-hidden="true">🏠</span><span>Main page</span></a></li>
+<li><a href="first-day-as-da.html"><span class="nav-icon" aria-hidden="true">✅</span><span>First day as a DA</span></a></li>
+<li><a href="analyst-onboarding.html"><span class="nav-icon" aria-hidden="true">🧭</span><span>Data analyst onboarding</span></a></li>
+<li class="current"><a href="glossary.html"><span class="nav-icon" aria-hidden="true">📖</span><span>Glossary</span></a></li>
+</ul>
+<h2>Using the portal</h2><ul>
+<li><a href="signing-in.html"><span class="nav-icon" aria-hidden="true">🔑</span><span>Signing in</span></a></li>
+<li><a href="weekly-planning.html"><span class="nav-icon" aria-hidden="true">📅</span><span>Weekly Planning</span></a></li>
+<li><a href="overview.html"><span class="nav-icon" aria-hidden="true">📋</span><span>Overview</span></a></li>
+<li><a href="dashboards.html"><span class="nav-icon" aria-hidden="true">📊</span><span>Dashboards</span></a></li>
+<li><a href="presentation-library.html"><span class="nav-icon" aria-hidden="true">🎬</span><span>Presentations</span></a></li>
+<li><a href="roles-and-permissions.html"><span class="nav-icon" aria-hidden="true">👔</span><span>Roles and permissions</span></a></li>
+</ul>
+<h2>For data analysts</h2><ul>
+<li><a href="uploads-importer.html"><span class="nav-icon" aria-hidden="true">⬆️</span><span>Uploads</span></a></li>
+<li><a href="management.html"><span class="nav-icon" aria-hidden="true">🗺️</span><span>Places and questions</span></a></li>
+<li><a href="accounts.html"><span class="nav-icon" aria-hidden="true">🪪</span><span>Accounts</span></a></li>
+<li><a href="releases-and-updates.html"><span class="nav-icon" aria-hidden="true">📦</span><span>Releases and updates</span></a></li>
+<li><a href="troubleshooting.html"><span class="nav-icon" aria-hidden="true">🔧</span><span>Troubleshooting</span></a></li>
+<li><a href="dev-overview.html"><span class="nav-icon" aria-hidden="true">🧰</span><span>Server and developer docs</span></a></li>
+</ul>
+</nav></aside>
+    <div class="wiki-main">
+      <div class="wiki-topbar">
+        <a class="back-to-portal" href="../index.html" target="_top">&larr; Mission portal</a><span class="topbar-tagline">Suit up. Plan the week. Serve.</span>
+        <div class="topbar-actions">
+          <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="wikiSidebar">☰ Menu</button>
+          <button type="button" class="theme-toggle" id="themeToggle">Dark mode</button>
+        </div>
+      </div>
+      <article class="wiki-article">
+        <!--wiki-article-start-->
+        <nav class="wiki-page-tabs is-hidden" aria-label="Page actions" data-page-tabs data-slug="glossary">
+          <a class="tab is-active" href="glossary.html" data-tab="read">Read</a>
+          <a class="tab tab-edit is-hidden" href="#" tabindex="-1" data-tab="edit">Edit</a>
+          <a class="tab tab-history is-hidden" href="#" tabindex="-1" data-tab="history">History</a>
+          <a class="tab tab-create is-hidden" href="#" tabindex="-1" data-tab="create">Create new page</a>
+        </nav>
+        <h1>Glossary</h1>
+        <div class="wiki-layout"><div class="wiki-body"><p class="wiki-lead"><strong class="subject">Glossary</strong> explains short technical words used in this wiki in plain English.</p><nav class="toc" aria-label="Contents"><div class="toc-title">Contents</div><ol>
+<li><a href="#terms">Terms</a></li>
+<li><a href="#see-also">See also</a></li>
+</ol></nav><h2 id="terms">Terms</h2>
+<table><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>AP</strong></td><td>Assistant to the President — a manager role for the whole mission</td></tr><tr><td><strong>Area</strong></td><td>Smallest place unit where a companionship serves</td></tr><tr><td><strong>Baseline</strong></td><td>Starting database schema file for a fresh install (<code>000_baseline.sql</code>), then newer migrations</td></tr><tr><td><strong>Beta database</strong></td><td>Name of the main Supabase/PostgreSQL stack — it <strong>is</strong> the real data</td></tr><tr><td><strong>Call-ins</strong></td><td>Leadership review of weekly plans (mission → zone → district → area)</td></tr><tr><td><strong>Cloudflare tunnel</strong></td><td>Safe way to publish localhost ports under public hostnames without opening the router</td></tr><tr><td><strong>Companionship</strong></td><td>Two missionaries who share one weekly plan</td></tr><tr><td><strong>Container</strong></td><td>A sealed box Docker runs with one program inside</td></tr><tr><td><strong>DA Management</strong></td><td>Data-analyst admin site (roster, accounts, uploads, places, updates) on port 8090</td></tr><tr><td><strong>DataEase</strong></td><td>The product behind the Dashboards tab</td></tr><tr><td><strong>District / Zone</strong></td><td>Leadership layers above areas</td></tr><tr><td><strong>Docker</strong></td><td>Tool that runs containers on the server</td></tr><tr><td><strong>DL / ZL / STL</strong></td><td>District Leader / Zone Leader / Sister Training Leader</td></tr><tr><td><strong>DBeaver</strong></td><td>Desktop app to look at the PostgreSQL database</td></tr><tr><td><strong>GEMIKO</strong></td><td>Call-ins related view/tooling on the Call-ins page (mission acronym usage)</td></tr><tr><td><strong>Glimpse</strong></td><td>Manager-only mission summary on Overview</td></tr><tr><td><strong>health.ps1</strong></td><td>Script that checks every part is OK</td></tr><tr><td><strong>Key indicators</strong></td><td>The six main weekly numbers (Preach My Gospel)</td></tr><tr><td><strong>Migration</strong></td><td>Numbered SQL change to the database (with a rollback partner when provided)</td></tr><tr><td><strong>portal-api</strong></td><td>Python/Flask backend behind <code>/api/</code></td></tr><tr><td><strong>PR</strong></td><td>Pull request — a proposed code change on GitHub for review before merge</td></tr><tr><td><strong>Reporting Sunday</strong></td><td>The week key for plans and numbers</td></tr><tr><td><strong>RLS</strong></td><td>Row-level security — database rules that limit which rows a role can see</td></tr><tr><td><strong>Roster</strong></td><td>Transfer file that says who serves where</td></tr><tr><td><strong>Slidev</strong></td><td>Slide engine used for Presentations</td></tr><tr><td><strong>Stewardship</strong></td><td>The slice of the mission (area/district/zone/mission) a person may see</td></tr><tr><td><strong>Stub</strong></td><td>Wiki page that is incomplete on purpose</td></tr><tr><td><strong>Supabase</strong></td><td>Auth + PostgreSQL stack used by the portal</td></tr><tr><td><strong>Updater</strong></td><td>Windows task that applies GitHub updates when someone presses Update in DA Management</td></tr><tr><td><strong>Worktree</strong></td><td>Extra Git checkout folder so you never edit the live folder directly</td></tr></tbody></table>
+<h2 id="see-also">See also</h2>
+<ul><li><a href="index.html">Main page</a></li><li><a href="roles-and-permissions.html">Roles and permissions</a></li><li><a href="server-overview.html">Server overview</a></li></ul></div><aside class="infobox">
+<div class="infobox-title">Glossary</div>
+<div class="infobox-icon" aria-hidden="true">📖</div>
+<table>
+<tr><th>Language</th><td>English</td></tr>
+<tr><th>Audience</th><td>Everyone</td></tr>
+</table></aside></div>
+        <div class="navboxes-wrap">
+<details class="navbox" open>
+<summary class="navbox-title"><span aria-hidden="true">🚲</span> Using the portal</summary>
+<div class="navbox-group">
+<div class="navbox-label">Get started</div>
+<div class="navbox-list">
+<a href="signing-in.html">Signing in</a> · <a href="tutorial.html">Tutorial</a> · <a href="overview.html">Overview</a> · <a href="roles-and-permissions.html">Roles and permissions</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Planning</div>
+<div class="navbox-list">
+<a href="weekly-planning.html">Weekly Planning</a> · <a href="glimpse.html">Glimpse</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Insights</div>
+<div class="navbox-list">
+<a href="dashboards.html">Dashboards</a> · <a href="presentation-library.html">Presentation Library</a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🗂️</span> Data and admin</summary>
+<div class="navbox-group">
+<div class="navbox-label">People &amp; places</div>
+<div class="navbox-list">
+<a href="uploads-importer.html">Uploads / Importer <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="management.html">Management <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="roster.html">Roster <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="accounts.html">Accounts <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Server</div>
+<div class="navbox-list">
+<a href="dbeaver-access.html">DBeaver access <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="backups-and-restore.html">Backups and restore <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="health-check.html">Health check <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="server-overview.html">Server overview <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="troubleshooting.html">Troubleshooting <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="email.html">Email (Gmail) <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="editing-the-wiki.html">Editing the wiki <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Operations</div>
+<div class="navbox-list">
+<a href="releases-and-updates.html">Releases and updates <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="updater.html">Updater <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="nightly-backup.html">Nightly backup <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="dashboards-ops.html">Dashboards operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a> · <a href="presentations-ops.html">Presentations operations <span class="nav-lock" title="Portal sign-in required" aria-label="Portal sign-in required">&#128274;</span></a>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🛠️</span> Installing</summary>
+<div class="navbox-group">
+<div class="navbox-label">Setup</div>
+<div class="navbox-list">
+<a href="first-day-as-da.html">First day as a DA</a> · <a href="installer-overview.html">Installer overview</a> · <a href="requirements.html">Requirements</a> · <strong>Glossary</strong>
+</div></div>
+</details>
+<details class="navbox">
+<summary class="navbox-title"><span aria-hidden="true">🧰</span> Developer docs</summary>
+<div class="navbox-group">
+<div class="navbox-label">Understand</div>
+<div class="navbox-list">
+<a href="dev-overview.html">Developer docs</a> · <a href="dev-architecture.html">Architecture</a> · <a href="dev-folders.html">Folders and services</a>
+</div></div>
+<div class="navbox-group">
+<div class="navbox-label">Work</div>
+<div class="navbox-list">
+<a href="dev-database.html">Database and migrations</a> · <a href="dev-testing.html">Testing</a> · <a href="dev-deploy-ubuntu.html">Deploy on Ubuntu</a>
+</div></div>
+</details>
+</div>
+        <p class="wiki-footer">
+          Plain-language docs for the Germany Frankfurt Mission portal.
+          No church logos or trademarked imagery.
+          <span class="footer-tag">Built for companions who plan on phones between appointments.</span>
+        </p>
+        <!--wiki-article-end-->
+      </article>
+    </div>
+  </div>
+</body>
+</html>

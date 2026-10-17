@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Presentation</title>
+<script>
+// The portal's theme before the first paint (gfm_portal_layout_v1), then every change the shell sends.
+(function () {
+  var set = function (t) { document.documentElement.dataset.theme = t === 'dark' || t === 'light' ? t : 'mission'; };
+  try { set((JSON.parse(localStorage.getItem('gfm_portal_layout_v1') || 'null') || {}).theme); } catch (e) { set('mission'); }
+  addEventListener('message', function (e) { if (e.data && e.data.type === 'portal-theme') set(e.data.theme); });
+  try { parent.postMessage({ type: 'portal-theme-request' }, '*'); } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="mmm.css">
+<link rel="stylesheet" href="page.css">
+</head>
+<body class="viewer">
+<div class="vbar">
+  <a class="back" href="index.html">&larr; Library</a>
+  <span class="title" id="title"></span>
+  <button class="btn" type="button" id="prev" aria-label="Previous slide">&#9664;</button>
+  <span class="count" id="count" aria-live="polite"></span>
+  <button class="btn" type="button" id="next" aria-label="Next slide">&#9654;</button>
+  <button class="btn" type="button" id="fs">Full screen</button>
+</div>
+<div class="stagewrap" id="wrap"><div class="stage" id="stage"><div class="slide-host" id="host"></div></div></div>
+<div class="dots" id="dots" role="group" aria-label="Slides"></div>
+<div class="hint">Arrow keys or swipe to change slides, F for full screen. Demo: invented numbers.</div>
+<script src="echarts.min.js"></script>
+<script type="module" src="view.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+ "roles": ["MISSIONARY", "DL", "ZL", "STL", "AP"],
+ "role_labels": {"MISSIONARY": "Missionaries", "DL": "District leaders", "ZL": "Zone leaders", "STL": "Sister training leaders", "AP": "Assistants"},
+ "zones": [{"id": 11, "name": "Zone Alpha"}, {"id": 12, "name": "Zone Beta"}, {"id": 13, "name": "Zone Gamma"}],
+ "districts": [{"id": 111, "name": "Alpha 1"}, {"id": 112, "name": "Alpha 2"}, {"id": 121, "name": "Beta 1"}, {"id": 131, "name": "Gamma 1"}, {"id": 132, "name": "Gamma 2"}],
+ "areas": [{"id": 1111, "name": "Alpha 1 North"}, {"id": 1112, "name": "Alpha 1 South"}, {"id": 1121, "name": "Alpha 2 East"}, {"id": 1211, "name": "Beta 1 West"}, {"id": 1212, "name": "Beta 1 Centre"}, {"id": 1311, "name": "Gamma 1 Hill"}, {"id": 1321, "name": "Gamma 2 Lake"}, {"id": 1322, "name": "Gamma 2 Park"}],
+ "users": []
+}

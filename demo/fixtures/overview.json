@@ -1,0 +1,51 @@
+{
+ "assignment": {"display_name": "Elder Sample", "role": "AP", "role_label": "AP", "missionary_type": "Elder", "mission": "Demo Mission", "area": "Mission office", "district": "Demo", "zone": "All zones", "companions": [{"display_name": "Elder Example"}], "units": [{"unit": "Demo Ward"}]},
+ "planning": {
+  "status": "DRAFT", "complete": false, "unit_count": 2, "completed_units": 1,
+  "week": {"sunday": "@week-0", "planning_due_at": null},
+  "recent_weeks": [
+   {"sunday": "@week-0", "scope_plans": 2, "report_count": 2, "submitted_count": 1, "is_closed": false},
+   {"sunday": "@week-1", "scope_plans": 2, "report_count": 2, "submitted_count": 2, "is_closed": true},
+   {"sunday": "@week-2", "scope_plans": 2, "report_count": 2, "submitted_count": 2, "is_closed": true},
+   {"sunday": "@week-3", "scope_plans": 2, "report_count": 2, "submitted_count": 2, "is_closed": true}
+  ],
+  "key_indicators": [
+   {"label": "New member sacrament attendance", "goal": 4, "actual": 3, "previous_goal": 4, "units": []},
+   {"label": "Baptisms and confirmations", "goal": 2, "actual": 1, "previous_goal": 2, "units": []},
+   {"label": "Baptismal dates", "goal": 3, "actual": 3, "previous_goal": 2, "units": []},
+   {"label": "Sacrament attendance", "goal": 6, "actual": 5, "previous_goal": 5, "units": []},
+   {"label": "Members at lessons", "goal": 8, "actual": 7, "previous_goal": 8, "units": []},
+   {"label": "New people being taught", "goal": 10, "actual": 9, "previous_goal": 9, "units": []}
+  ],
+  "other_goals": [
+   {"label": "Member visits", "section": "Members", "unit": "Demo Ward", "goal": 6, "actual": 5, "units": []},
+   {"label": "Service hours", "section": "Service", "unit": "Demo Ward", "goal": 4, "actual": 4, "units": []}
+  ],
+  "weekly_action_plans": [{"unit": "Demo Ward", "text": "Invite three people to the ward activity and follow up with each of them by Wednesday."}],
+  "action_plans": []
+ },
+ "events": [
+  {"id": 1, "title": "Monday Morning Meeting", "description": "Weekly meeting for the whole mission. Fake demo event.", "location": "Demo Mission Office", "starts_at": "@dt+1@09:00"},
+  {"id": 2, "title": "Zone conference Alpha", "description": "A fake zone conference for the demo.", "location": "Demo Chapel", "starts_at": "@dt+4@10:00"}
+ ],
+ "announcements": [
+  {"id": 1, "title": "Welcome to the demo", "body": "This is a demo with fake data. Click around: nothing you do is saved.", "created_at": "@dt-1@08:00", "pinned": true, "urgent": false, "attachments": []},
+  {"id": 2, "title": "Transfer day reminder", "body": "A fake reminder: write your handover notes.", "created_at": "@dt-3@12:00", "pinned": false, "urgent": true, "attachments": []}
+ ],
+ "inspiration": {"text": "Little things done with care add up to big changes in a mission.", "source": "AP Tip of the Week (fake demo text)", "reference": ""},
+ "mission_focus": {"can_edit": false},
+ "glimpse": false,
+ "stewardship": {
+  "label": "Mission planning", "complete_areas": 5, "incomplete_areas": 3, "total_areas": 8,
+  "areas": [
+   {"area_id": 1111, "area": "Alpha 1 North", "district": "Alpha 1", "zone": "Zone Alpha", "complete": true, "unit_count": 2, "completed_units": 2, "reports": [{"report_id": 9001, "unit": "Demo Ward", "status": "SUBMITTED"}, {"report_id": 9002, "unit": "Demo Branch", "status": "SUBMITTED"}]},
+   {"area_id": 1112, "area": "Alpha 1 South", "district": "Alpha 1", "zone": "Zone Alpha", "complete": false, "unit_count": 1, "completed_units": 0, "reports": [{"report_id": 9003, "unit": "Demo Ward", "status": "DRAFT"}]},
+   {"area_id": 1121, "area": "Alpha 2 East", "district": "Alpha 2", "zone": "Zone Alpha", "complete": true, "unit_count": 1, "completed_units": 1, "reports": [{"report_id": 9004, "unit": "Demo Ward", "status": "SUBMITTED"}]},
+   {"area_id": 1211, "area": "Beta 1 West", "district": "Beta 1", "zone": "Zone Beta", "complete": true, "unit_count": 1, "completed_units": 1, "reports": [{"report_id": 9005, "unit": "Demo Ward", "status": "LOCKED"}]},
+   {"area_id": 1212, "area": "Beta 1 Centre", "district": "Beta 1", "zone": "Zone Beta", "complete": false, "unit_count": 1, "completed_units": 0, "reports": [{"report_id": null, "unit": "Demo Ward", "status": "NOT_STARTED"}]},
+   {"area_id": 1311, "area": "Gamma 1 Hill", "district": "Gamma 1", "zone": "Zone Gamma", "complete": true, "unit_count": 1, "completed_units": 1, "reports": [{"report_id": 9006, "unit": "Demo Ward", "status": "SUBMITTED"}]},
+   {"area_id": 1321, "area": "Gamma 2 Lake", "district": "Gamma 2", "zone": "Zone Gamma", "complete": true, "unit_count": 1, "completed_units": 1, "reports": [{"report_id": 9007, "unit": "Demo Ward", "status": "SUBMITTED"}]},
+   {"area_id": 1322, "area": "Gamma 2 Park", "district": "Gamma 2", "zone": "Zone Gamma", "complete": false, "unit_count": 1, "completed_units": 0, "reports": [{"report_id": 9008, "unit": "Demo Ward", "status": "DRAFT"}]}
+  ]
+ }
+}

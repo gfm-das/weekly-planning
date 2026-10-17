@@ -1,0 +1,71 @@
+/* The pages around the slides (library and viewer) and the demo's stand-ins for pictures and videos. The slides themselves
+   look like the real deck pages (mmm.css) and keep their own light or dark page, in every portal theme. */
+:root { --page: #f5f7fa; --panel: #fff; --text: #17394b; --muted: #546a76; --line: #dce3ea; --soft: #eef2f6; --accent: #087f8c; --accent-text: #fff; color-scheme: light; }
+:root[data-theme="light"] { --page: #fafbfc; }
+:root[data-theme="dark"] { --page: #101a21; --panel: #18262f; --text: #edf7f8; --muted: #a9bdc3; --line: #2d414b; --soft: #21343d; --accent: #4fd1c5; --accent-text: #0b1a20; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--page); color: var(--text); font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+button, a.btn { font: inherit; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* The library */
+header.top { position: sticky; top: 0; z-index: 20; background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+header.top h1 { font-size: 26px; margin: 0; }
+.sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.primary { border: 0; background: var(--accent); color: var(--accent-text); border-radius: 12px; padding: 11px 16px; font-weight: 700; cursor: pointer; }
+main.lib { padding: 22px; max-width: 1200px; margin: 0 auto; }
+.toolbar { margin-bottom: 16px; color: var(--muted); font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.card:hover { border-color: var(--muted); }
+.thumb { position: relative; aspect-ratio: 1152 / 648; background: #2d505e; overflow: hidden; pointer-events: none; }
+.card .body { padding: 14px 18px 18px; }
+.card h2 { font-size: 19px; margin: 0 0 6px; }
+.card h2 a { color: inherit; text-decoration: none; }
+.card h2 a::after { content: ""; position: absolute; inset: 0; }
+.card { position: relative; }
+.card p { margin: 0 0 8px; font-size: 13px; color: var(--muted); }
+.meta { font-size: 12px; color: var(--muted); }
+.toast { position: fixed; right: 12px; bottom: 12px; background: var(--text); color: var(--page); padding: 8px 14px; border-radius: 8px; font-size: 13px; z-index: 50; max-width: calc(100vw - 24px); }
+
+/* The viewer */
+body.viewer { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+.vbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.vbar .title { font-weight: 700; flex: 1 1 140px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vbar a.back { text-decoration: none; font-weight: 600; }
+.btn { border: 1px solid var(--line); background: var(--soft); color: var(--text); border-radius: 10px; padding: 7px 12px; cursor: pointer; min-height: 38px; }
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn:disabled { opacity: .45; cursor: default; }
+.count { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 56px; text-align: center; }
+.stagewrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 12px; background: var(--page); }
+.stagewrap:fullscreen, .stagewrap.pseudo-fs { background: #000; padding: 0; }
+.stagewrap.pseudo-fs { position: fixed; inset: 0; z-index: 100; }
+.stage { position: relative; aspect-ratio: 1152 / 648; width: min(100%, calc((100dvh - 140px) * 1152 / 648)); background: #fff; box-shadow: 0 6px 28px rgba(0, 0, 0, .25); touch-action: pan-y; }
+.stagewrap:fullscreen .stage, .stagewrap.pseudo-fs .stage { width: min(100vw, calc(100vh * 1152 / 648)); box-shadow: none; }
+.slide-host { position: absolute; inset: 0; }
+.dots { display: flex; gap: 6px; justify-content: center; padding: 8px 12px 12px; flex-wrap: wrap; background: var(--page); }
+.dots button { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--muted); background: transparent; padding: 0; cursor: pointer; }
+.dots button[aria-current="true"] { background: var(--accent); border-color: var(--accent); }
+.hint { text-align: center; font-size: 12px; color: var(--muted); padding: 0 12px 8px; background: var(--page); }
+body.fs .dots, body.fs .hint { display: none; }
+body.fs .vbar { position: fixed; top: 8px; right: 8px; z-index: 101; background: none; border: 0; padding: 0; }
+body.fs .vbar > :not(#fs) { display: none; }
+body.fs #fs { opacity: .75; }
+
+/* Stand-ins for the videos and pictures a leader adds in the real decks */
+.demo-poster { background: linear-gradient(135deg, #3a6a7a, #1d3640 60%, #5b8f86); color: #e8f3f5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(10 * var(--u)); font-size: calc(18 * var(--u)); text-align: center; }
+.demo-poster.is-video { background: linear-gradient(135deg, #243b47, #101d24 70%, #35566a); }
+.demo-poster svg { width: calc(72 * var(--u)); height: calc(72 * var(--u)); fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.demo-poster svg path { fill: currentColor; }
+.mmm-cover__picture.demo-poster { position: absolute; border: 0; font-size: calc(22 * var(--u)); padding: 0; }
+.mmm-slot__frame.demo-poster { position: absolute; inset: 0; border-color: #000; }
+
+@media (max-width: 600px) {
+  header.top { padding: 12px 14px; } header.top h1 { font-size: 22px; }
+  main.lib { padding: 14px; }
+  .stagewrap { padding: 6px; }
+  .stage { width: 100%; }
+  .vbar .title { flex-basis: 100%; order: -1; }
+}

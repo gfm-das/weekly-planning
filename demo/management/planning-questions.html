@@ -1,0 +1,245 @@
+
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="mission">
+<head><script>/* demo: the theme from the portal (same place the portal keeps it), before the first paint */(function(){var t="mission";try{var s=JSON.parse(localStorage.getItem("gfm_portal_layout_v1")||"{}");if(s&&/^(mission|light|dark)$/.test(s.theme))t=s.theme}catch(e){}document.documentElement.setAttribute("data-theme",t)})()</script>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<script src="../i18n.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mission Admin</title>
+<style>
+/* The look of every page */
+:root{color-scheme:light;background:#f4f7f8;--navy:#153441;--teal:#087f8c;--line:#dce7ea}*{box-sizing:border-box}
+body{font-family:Inter,system-ui,sans-serif;max-width:1220px;margin:0 auto;padding:26px 24px;background:#f4f7f8;color:#183240}
+.scroll{overflow:auto;border:1px solid var(--line);border-radius:10px}/* before .card: a card that scrolls keeps its round corners */
+a{color:var(--teal);text-decoration:none}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px 0;box-shadow:0 2px 8px #17394704}
+h1{font-size:25px;letter-spacing:-.035em}h2{font-size:19px}h3{font-size:15px}h1,h2,h3{margin-top:0}.muted{color:#687d88}.good{color:#087f5b}.warn{color:#b26a00}.bad{color:#c92a2a}
+input,select,button{font:inherit;padding:10px 12px;border-radius:9px;border:1px solid #bccbd1}input,select{border-color:#c6d7dc;background:#fff;max-width:100%}input:focus,select:focus{outline:0;border-color:var(--teal);box-shadow:0 0 0 3px #087f8c16}
+button{background:var(--teal);border-color:var(--teal);color:#fff;cursor:pointer;font-weight:650}.secondary{background:#fff;color:#23434f;border-color:#c9d9de}.danger{background:#b42318;border-color:#b42318}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px;border-bottom:1px solid #e9eff1;text-align:left;vertical-align:top}th{position:sticky;top:0;background:#f7fafb}
+code{background:#edf2f3;padding:2px 5px;border-radius:4px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.metric{padding:14px;background:#eef5f5;border-radius:10px}.metric b{font-size:23px;color:#153441}
+.error{background:#fff0f0;border:1px solid #f4bcbc;padding:12px;border-radius:10px;white-space:pre-wrap;line-height:1.6}.flash{background:#fff8df;padding:12px;border-radius:10px;margin:10px 0}
+ul{line-height:1.5}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 20px}.nav a{padding:9px 12px;border:1px solid var(--line);background:#fff;border-radius:9px;color:var(--navy);font-size:12px;font-weight:700}.nav a:hover{background:#eaf4f3;border-color:#acd0cd}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}.filters label{font-size:12px;font-weight:700;color:#526975}.filters select,.filters input{width:100%;margin-top:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.status{font-weight:700}
+label{font-size:12px;font-weight:650}.form-field{display:grid;gap:6px;margin:15px 0}.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.step{font-size:11px;font-weight:800;color:#087f8c;letter-spacing:.09em;text-transform:uppercase}
+.badge{display:inline-block;border-radius:30px;background:#e8f3f2;color:#17716f;padding:4px 8px;font-size:11px;font-weight:750}
+.choice{display:block;margin:6px 0;font-size:13px;font-weight:500}.choice-group{border-top:1px solid #e9eff1;padding-top:10px;margin-top:10px}
+.plan{background:#eef5f5;border-radius:10px;padding:12px 14px;margin:14px 0}.plan ul{margin:6px 0 0;padding-left:20px}
+
+/* Dark theme (the portal says which theme it shows) */
+[data-theme="dark"]{color-scheme:dark;background:#101a21}[data-theme="dark"] body{background:#101a21;color:#f2f8f9}[data-theme="dark"] .card{background:#1e303a;border-color:#4c6875}[data-theme="dark"] input,[data-theme="dark"] select{background:#101a21;color:#f2f8f9;border-color:#6a8794}[data-theme="dark"] .muted{color:#c0d0d5}[data-theme="dark"] .metric{background:#2a414d}[data-theme="dark"] .plan{background:#2a414d}[data-theme="dark"] .metric b{color:#f2f8f9}
+[data-theme="dark"] a,[data-theme="dark"] .step{color:#6fd3d6}[data-theme="dark"] label,[data-theme="dark"] .filters label{color:#d7e6ea}[data-theme="dark"] th{background:#2a414d;color:#f2f8f9}[data-theme="dark"] th,[data-theme="dark"] td{border-bottom-color:#4c6875}[data-theme="dark"] .scroll,[data-theme="dark"] .choice-group{border-color:#4c6875}[data-theme="dark"] code{background:#2a414d;color:#f2f8f9}
+[data-theme="dark"] .error{background:#3a1f23;border-color:#8a3b40;color:#ffd9d5}[data-theme="dark"] .flash{background:#3a3219;color:#fbe7b0}[data-theme="dark"] .good{color:#62d6ab}[data-theme="dark"] .warn{color:#f5bd62}[data-theme="dark"] .bad{color:#ff9b91}[data-theme="dark"] .badge{background:#173d3f;color:#9fe3dc}
+[data-theme="dark"] .nav a,[data-theme="dark"] .secondary{background:#1e303a;border-color:#6a8794;color:#f2f8f9}[data-theme="dark"] .nav a:hover{background:#2a414d;border-color:#7f9ba7}
+
+/* A missionary's account page: tick boxes for roles, and boxes big enough for a finger on a phone */
+.role-choice{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px 0;font-size:14px;font-weight:600}
+.role-choice input{width:22px;height:22px;margin:1px 0 0;flex:none}.role-choice span{display:block;font-weight:400;font-size:13px;color:#687d88}.role-choice[hidden]{display:none}
+.role-group{border:0;border-top:1px solid #e9eff1;margin:12px 0 0;padding:10px 0 0}.role-group legend{font-size:12px;font-weight:650;padding:0}
+#accountForm input,#accountForm select{font-size:16px;min-height:44px}#accountForm input[type=checkbox]{min-height:0}
+#accountForm .split>*,#accountForm .form-field{min-width:0}#accountForm select{width:100%}
+[data-theme="dark"] .role-choice span{color:#c0d0d5}[data-theme="dark"] .role-group{border-color:#4c6875}
+
+/* The menu: tabs (groups) with the pages of the open group under them (round 13) */
+.nav.tabs{margin-bottom:6px}.nav.tabs a{font-size:13px;font-weight:700}.nav.sub{margin-top:0;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.nav.sub a{background:transparent;border-color:transparent;font-weight:600;color:#3d5966}
+.nav a.on{background:var(--teal);border-color:var(--teal);color:#fff}.nav.sub a.on{background:#e3f1f2;border-color:#bfdfe2;color:var(--navy)}
+[data-theme="dark"] .nav a.on{background:#087f8c;border-color:#087f8c;color:#fff}[data-theme="dark"] .nav.sub a{background:transparent;border-color:transparent;color:#d7e6ea}
+[data-theme="dark"] .nav.sub a.on{background:#2a414d;border-color:#7f9ba7;color:#f2f8f9}[data-theme="dark"] .nav.sub{border-color:#4c6875}
+
+/* Round 14: a styled file picker (not the browser's default) and a red danger button for deletes. */
+.file-pick{position:relative;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 14px;border:1px dashed #9db5bc;border-radius:10px;background:#f7fbfb;cursor:pointer;font-weight:650;color:#173644}
+.file-pick input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-pick:hover{border-color:var(--teal);background:#eef6f6}
+.file-pick .name{font-weight:500;color:#687d88;font-size:13px;overflow-wrap:anywhere;min-width:0}
+.file-pick.has-file .name{color:var(--navy);font-weight:650}
+.card.drag-over,.file-pick.drag-over{border-color:var(--teal);outline:2px dashed var(--teal);outline-offset:-2px;background:#eef6f6}
+@media(max-width:700px){.file-pick{display:flex;flex-wrap:wrap;width:100%;box-sizing:border-box}}
+button.danger,.danger{background:#b42318;border-color:#b42318;color:#fff}
+[data-theme="dark"] .file-pick{background:#101a21;border-color:#6a8794;color:#f2f8f9}[data-theme="dark"] .file-pick .name{color:#c0d0d5}[data-theme="dark"] .file-pick.has-file .name{color:#f2f8f9}
+[data-theme="dark"] .card.drag-over,[data-theme="dark"] .file-pick.drag-over{background:#243943}
+[data-theme="dark"] button.danger,[data-theme="dark"] .danger{background:#b42318;border-color:#b42318;color:#fff}
+@media(max-width:700px){.nav.tabs a,.nav.sub a{min-height:44px;padding:10px 12px}.nav.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+
+/* Sortable tables (table.sortable): the heading is a button with an arrow for the column and direction in use */
+th .sort-head{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:700;text-align:inherit;cursor:pointer}
+th .sort-head:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:4px}.sort-arrow:after{content:"\2195";opacity:.45}
+th[aria-sort=ascending] .sort-arrow:after{content:"\25B2";opacity:1;font-size:.8em}th[aria-sort=descending] .sort-arrow:after{content:"\25BC";opacity:1;font-size:.8em}
+[data-theme="dark"] th .sort-head:focus-visible{outline-color:#6fd3d6}
+
+/* Phones */
+@media(max-width:700px){body{padding:16px 12px}.split{grid-template-columns:1fr}.card{padding:17px}.nav{gap:6px}.nav a{padding:8px}}
+
+/* Planning questions (inside <div class="pq">) */
+.pq input:not([type=checkbox]):not([type=radio]),.pq select,.pq textarea{font-size:16px;width:100%;max-width:100%}
+.pq textarea{min-height:88px;border:1px solid #c6d7dc;border-radius:9px;padding:10px 12px;font-family:inherit}
+.pq button,.pq .button{min-height:44px;font-size:14px}.pq .button{display:inline-flex;align-items:center;padding:0 14px;border-radius:9px;background:#087f8c;color:#fff;font-weight:650}
+.pq .inline{display:inline}.pq .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pq .grow{flex:1 1 220px;min-width:0}
+.pq .item{border-top:1px solid #e9eff1;padding:12px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.pq .item:first-child{border-top:0}.pq .item .what{flex:1 1 260px;min-width:0;overflow-wrap:anywhere}.pq .retired{opacity:.62}
+.pq .tools{display:flex;flex-wrap:wrap;gap:6px}.pq .tools button{padding:0 12px}.pq details{margin-top:12px}.pq summary{cursor:pointer;font-weight:700;display:list-item;padding:12px 0;min-height:44px}
+.pq .lock{background:#fff5dc;border:1px solid #f0d58a;border-radius:10px;padding:10px 12px;margin:10px 0}.pq .lock b{color:#7a5300}
+.pq .note{font-size:13px;color:#647985}.pq .check{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600;min-height:44px}.pq .check input{width:22px;height:22px}
+.pq .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pq code{overflow-wrap:anywhere}
+.pq .preview .question{margin:14px 0}.pq .preview .q-label{font-weight:650;font-size:14px;margin-bottom:6px;display:block}.pq .req{color:#b74c42}
+.pq .pills{display:flex;flex-wrap:wrap;gap:8px}.pq .pills label{display:inline-flex;gap:8px;align-items:center;min-height:44px;padding:0 14px;border:1px solid #c6d7dc;border-radius:999px;font-size:14px;font-weight:600}
+.pq .gridq{width:100%;border-collapse:collapse}.pq .gridq th,.pq .gridq td{padding:6px;border-bottom:1px solid #e9eff1;text-align:center}.pq .gridq th[scope=row]{text-align:left}
+.pq .history .item{display:block}.pq .change{margin:4px 0 0;padding-left:18px}
+[data-theme="dark"] .pq .lock{background:#3a3219;border-color:#6b5a26}[data-theme="dark"] .pq .lock b{color:#fbe7b0}[data-theme="dark"] .pq textarea{background:#101a21;color:#f2f8f9;border-color:#6a8794}[data-theme="dark"] .pq .item{border-color:#4c6875}[data-theme="dark"] .pq .pills label{border-color:#6a8794}[data-theme="dark"] .pq .note{color:#c0d0d5}[data-theme="dark"] .pq .req{color:#ff9b91}[data-theme="dark"] .pq .gridq th,[data-theme="dark"] .pq .gridq td{border-color:#4c6875}
+@media(max-width:700px){.pq .two{grid-template-columns:1fr}.pq .gridq thead{display:none}.pq .gridq,.pq .gridq tbody,.pq .gridq tr,.pq .gridq th{display:block}.pq .gridq tr{border:1px solid #dce7ea;border-radius:10px;padding:8px;margin-bottom:8px}.pq .gridq td{display:inline-block;border:0}.pq .gridq th{border:0}}
+
+/* Staff accounts (inside <div class="staff">) */
+.staff input,.staff select{font-size:16px;min-height:44px;width:100%}.staff input[type=checkbox]{width:22px;height:22px;min-height:0;flex:none;margin:1px 0 0}
+.staff .form-field{min-width:0}.staff button{min-height:44px}.staff .check{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px 0;font-size:14px;font-weight:600}
+.staff .check span{font-weight:400;font-size:13px;display:block}.staff td:nth-child(2){overflow-wrap:anywhere}
+#accountForm button{min-height:44px}
+
+/* Role abilities: a switch in every cell, big enough for a finger */
+.abil th,.abil td{vertical-align:middle}.abil td.cell{text-align:center;min-width:76px}.abil input[type=checkbox]{width:26px;height:26px;margin:0}.abil .muted{font-weight:400}
+.abil-card .actions button{min-height:44px}
+
+/* Area mappings: each row's list is as wide as the whole list, also before the page's script fills it in */
+#mappingTable select{width:27em}
+</style>
+</head>
+<body>
+<h1>Mission Admin</h1>
+<div class="menu"><nav class="nav tabs" aria-label="Sections"><a href="index.html">Uploads</a><a href="people.html">People</a><a href="places.html" class="on" aria-current="page">Places</a><a href="history.html">History</a></nav><nav class="nav sub" aria-label="Pages in this section"><a href="places.html">Places</a><a href="mappings.html">Area mappings</a><a href="planning-questions.html" class="on" aria-current="page">Planning questions</a><a href="retire.html">Delete retired</a></nav></div>
+
+
+
+<div class='pq'><div class="card"><div class="step">Weekly Planning</div><h2>Planning questions</h2><p class="muted">Missionaries answer these questions every week in Weekly Planning. Ask only what helps companionships plan and leaders help. Every question adds time to someone's Sunday.</p>
+          <p class="muted">Wording changes show at once on plans that are still drafts. Submitted plans never change. The questions about new members, friends with a baptismal date and high-potential friends are fixed in the portal and cannot be changed here.</p>
+          <p class="row"><a class="button" href="#" data-demo="1">Preview the form</a> <a class="button secondary" href="#" data-demo="1">Change history</a>
+          <a class="button secondary" href="retire.html">Delete a retired question for good</a></p>
+          <p class="note">Locked questions are read by Dashboards, Call-ins, Presentations or Archetypal Health. You can change their wording, help text, order and number limits. Their key, type, Required setting, answer choices and show/hide rules stay the same, and they cannot be retired. Nothing is ever deleted: a retired question or section leaves the form, and saved answers stay.</p><p class="note">A manager can unlock a locked question on its page. Every unlock and lock is in the change history with who did it and why.</p></div>
+          <div class="card " id="section-key_indicators_conversion">
+              <div class="row"><div class="grow"><div class="step">Section 1</div><h3>Key indicators</h3><p class="muted">The six numbers that come first every week.</p></div><div class="tools"><form method="post" action="/planning-questions/sections/1" class="inline"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+              <button class="secondary" name="action" value="up" aria-label="Move section up"  hidden>↑</button><button class="secondary" name="action" value="down" aria-label="Move section down"  >↓</button>
+              <span class='badge' title='It holds locked questions, so it stays on the form.'>Locked</span></form></div></div>
+              <details><summary>Rename or describe this section</summary><form method="post" action="/planning-questions/sections/1"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+                <label class="form-field">Title<input name="section_title" value="Key indicators" maxlength="120" required ></label>
+                <label class="form-field">Description<textarea name="description" maxlength="500" >The six numbers that come first every week.</textarea></label>
+                <p class="note">Key: <code>key_indicators_conversion</code> (never changes)</p><button name="action" value="save" >Save section</button></form></details>
+              <div><div class="item "><div class="what"><a href="#" data-demo="1"><b>New people to find this week</b></a>
+                  <span class='badge'>Locked</span>
+                  <div class="note"><code>new_people_goal</code> · Number · required · 312 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/1" class="inline"><input type="hidden" name="back" value="/planning-questions#section-key_indicators_conversion"><button class="secondary" name="action" value="up" aria-label="Move up"  hidden>↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  >↓</button></form></div></div><div class="item "><div class="what"><a href="#" data-demo="1"><b>Lessons to teach this week</b></a>
+                  <span class='badge'>Locked</span>
+                  <div class="note"><code>lessons_goal</code> · Number · required · 312 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/2" class="inline"><input type="hidden" name="back" value="/planning-questions#section-key_indicators_conversion"><button class="secondary" name="action" value="up" aria-label="Move up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  >↓</button></form></div></div><div class="item "><div class="what"><a href="#" data-demo="1"><b>People to set a baptismal date with</b></a>
+                  <span class='badge'>Locked</span>
+                  <div class="note"><code>baptismal_date_goal</code> · Number · required · 298 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/3" class="inline"><input type="hidden" name="back" value="/planning-questions#section-key_indicators_conversion"><button class="secondary" name="action" value="up" aria-label="Move up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  hidden>↓</button></form></div></div></div><details><summary>+ Add a question to this section</summary>
+              <form method="post" action="/planning-questions/questions/new"><input type="hidden" name="section_id" value="1">
+              <label class="form-field">Question (what missionaries read)<input name="question_label" maxlength="300" required ></label>
+              <div class="two"><label class="form-field">Type<select name='question_type' ><option value='NUMBER' selected>Number</option><option value='TEXT' >Short text</option><option value='LONG_TEXT' >Long text</option><option value='BOOLEAN' >Yes / No</option><option value='DATE' >Date</option><option value='SELECT' >Drop-down list</option><option value='RADIO' >Choose one (buttons)</option><option value='CHECKBOX' >Choose any (tick boxes)</option><option value='GRID' >Grid (rows and choices)</option></select></label>
+              <label class="form-field">Key (optional; made from the question if empty)<input name="question_key" maxlength="63" pattern="[a-z][a-z0-9_]{2,62}" placeholder="for example service_projects_goal" ></label></div>
+              <label class="check"><input type="checkbox" name="required" value="yes" > Required</label>
+              <p class="note">The key never changes after this and is how reports find the answers. Keys ending in <code>_goal</code> or <code>_plan</code> appear in Call-ins automatically (as a goal or an action plan).</p>
+              <button >Add question</button></form></details></div><div class="card " id="section-other_goals">
+              <div class="row"><div class="grow"><div class="step">Section 2</div><h3>Other goals</h3><p class="muted">Goals the area may add for the week.</p></div><div class="tools"><form method="post" action="/planning-questions/sections/2" class="inline"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+              <button class="secondary" name="action" value="up" aria-label="Move section up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move section down"  >↓</button>
+              <button class="secondary" name="action" value="retire" >Retire section</button></form></div></div>
+              <details><summary>Rename or describe this section</summary><form method="post" action="/planning-questions/sections/2"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+                <label class="form-field">Title<input name="section_title" value="Other goals" maxlength="120" required ></label>
+                <label class="form-field">Description<textarea name="description" maxlength="500" >Goals the area may add for the week.</textarea></label>
+                <p class="note">Key: <code>other_goals</code> (never changes)</p><button name="action" value="save" >Save section</button></form></details>
+              <div><div class="item "><div class="what"><a href="#" data-demo="1"><b>Service projects to hold</b></a>
+                  
+                  <div class="note"><code>service_projects_goal</code> · Number · optional · 120 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/4" class="inline"><input type="hidden" name="back" value="/planning-questions#section-other_goals"><button class="secondary" name="action" value="up" aria-label="Move up"  hidden>↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  >↓</button></form></div></div><div class="item "><div class="what"><a href="#" data-demo="1"><b>Plan for visiting members</b></a>
+                  
+                  <div class="note"><code>member_visits_plan</code> · Long text · optional · 96 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/5" class="inline"><input type="hidden" name="back" value="/planning-questions#section-other_goals"><button class="secondary" name="action" value="up" aria-label="Move up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  hidden>↓</button></form></div></div></div><details><summary>+ Add a question to this section</summary>
+              <form method="post" action="/planning-questions/questions/new"><input type="hidden" name="section_id" value="2">
+              <label class="form-field">Question (what missionaries read)<input name="question_label" maxlength="300" required ></label>
+              <div class="two"><label class="form-field">Type<select name='question_type' ><option value='NUMBER' selected>Number</option><option value='TEXT' >Short text</option><option value='LONG_TEXT' >Long text</option><option value='BOOLEAN' >Yes / No</option><option value='DATE' >Date</option><option value='SELECT' >Drop-down list</option><option value='RADIO' >Choose one (buttons)</option><option value='CHECKBOX' >Choose any (tick boxes)</option><option value='GRID' >Grid (rows and choices)</option></select></label>
+              <label class="form-field">Key (optional; made from the question if empty)<input name="question_key" maxlength="63" pattern="[a-z][a-z0-9_]{2,62}" placeholder="for example service_projects_goal" ></label></div>
+              <label class="check"><input type="checkbox" name="required" value="yes" > Required</label>
+              <p class="note">The key never changes after this and is how reports find the answers. Keys ending in <code>_goal</code> or <code>_plan</code> appear in Call-ins automatically (as a goal or an action plan).</p>
+              <button >Add question</button></form></details></div><div class="card " id="section-reflection">
+              <div class="row"><div class="grow"><div class="step">Section 3</div><h3>Reflection</h3><p class="muted">Short answers for the week.</p></div><div class="tools"><form method="post" action="/planning-questions/sections/3" class="inline"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+              <button class="secondary" name="action" value="up" aria-label="Move section up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move section down"  >↓</button>
+              <button class="secondary" name="action" value="retire" >Retire section</button></form></div></div>
+              <details><summary>Rename or describe this section</summary><form method="post" action="/planning-questions/sections/3"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+                <label class="form-field">Title<input name="section_title" value="Reflection" maxlength="120" required ></label>
+                <label class="form-field">Description<textarea name="description" maxlength="500" >Short answers for the week.</textarea></label>
+                <p class="note">Key: <code>reflection</code> (never changes)</p><button name="action" value="save" >Save section</button></form></details>
+              <div><div class="item "><div class="what"><a href="#" data-demo="1"><b>Best moment of the week</b></a>
+                  
+                  <div class="note"><code>week_highlight</code> · Short text · optional · 210 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/6" class="inline"><input type="hidden" name="back" value="/planning-questions#section-reflection"><button class="secondary" name="action" value="up" aria-label="Move up"  hidden>↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  >↓</button></form></div></div><div class="item "><div class="what"><a href="#" data-demo="1"><b>Does the area need help from the district?</b></a>
+                  
+                  <div class="note"><code>need_help</code> · Yes / No · required · 205 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/7" class="inline"><input type="hidden" name="back" value="/planning-questions#section-reflection"><button class="secondary" name="action" value="up" aria-label="Move up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  hidden>↓</button></form></div></div></div><details><summary>+ Add a question to this section</summary>
+              <form method="post" action="/planning-questions/questions/new"><input type="hidden" name="section_id" value="3">
+              <label class="form-field">Question (what missionaries read)<input name="question_label" maxlength="300" required ></label>
+              <div class="two"><label class="form-field">Type<select name='question_type' ><option value='NUMBER' selected>Number</option><option value='TEXT' >Short text</option><option value='LONG_TEXT' >Long text</option><option value='BOOLEAN' >Yes / No</option><option value='DATE' >Date</option><option value='SELECT' >Drop-down list</option><option value='RADIO' >Choose one (buttons)</option><option value='CHECKBOX' >Choose any (tick boxes)</option><option value='GRID' >Grid (rows and choices)</option></select></label>
+              <label class="form-field">Key (optional; made from the question if empty)<input name="question_key" maxlength="63" pattern="[a-z][a-z0-9_]{2,62}" placeholder="for example service_projects_goal" ></label></div>
+              <label class="check"><input type="checkbox" name="required" value="yes" > Required</label>
+              <p class="note">The key never changes after this and is how reports find the answers. Keys ending in <code>_goal</code> or <code>_plan</code> appear in Call-ins automatically (as a goal or an action plan).</p>
+              <button >Add question</button></form></details></div><div class="card retired" id="section-old_section">
+              <div class="row"><div class="grow"><div class="step">Section 4 · retired</div><h3>Old section (retired)</h3><p class="muted">No longer on the form.</p></div><div class="tools"><form method="post" action="/planning-questions/sections/4" class="inline"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+              <button class="secondary" name="action" value="up" aria-label="Move section up"  >↑</button><button class="secondary" name="action" value="down" aria-label="Move section down"  hidden>↓</button>
+              <button class="secondary" name="action" value="restore" >Restore section</button></form></div></div>
+              <details><summary>Rename or describe this section</summary><form method="post" action="/planning-questions/sections/4"><input type="hidden" name="state" value="2026-09-28 09:30:00+00:00">
+                <label class="form-field">Title<input name="section_title" value="Old section (retired)" maxlength="120" required ></label>
+                <label class="form-field">Description<textarea name="description" maxlength="500" >No longer on the form.</textarea></label>
+                <p class="note">Key: <code>old_section</code> (never changes)</p><button name="action" value="save" >Save section</button></form></details>
+              <div><div class="item retired"><div class="what"><a href="#" data-demo="1"><b>A question that is retired</b></a>
+                   <span class='badge'>Retired</span>
+                  <div class="note"><code>old_question</code> · Short text · optional · 14 saved answers</div></div>
+                  <div class="tools"><form method="post" action="/planning-questions/questions/8" class="inline"><input type="hidden" name="back" value="/planning-questions#section-old_section"><button class="secondary" name="action" value="up" aria-label="Move up"  hidden>↑</button><button class="secondary" name="action" value="down" aria-label="Move down"  hidden>↓</button></form></div></div></div></div><div class="card"><details><summary>+ Add a section</summary><form method="post" action="/planning-questions/sections/new">
+          <label class="form-field">Title<input name="section_title" maxlength="120" required ></label>
+          <label class="form-field">Description (optional)<textarea name="description" maxlength="500" ></textarea></label>
+          <button >Add section</button></form></details></div></div>
+<script>/* Round 16: a file picker shows the chosen file's name and size, highlights while a file is dragged over, and takes a dropped file. */(function(){
+function tr(k,f){try{var v=window.MissionI18n&&MissionI18n.t&&MissionI18n.t(k);return v&&v!==k?v:f}catch(e){return f}}
+function size(n){return n<1024?n+" B":n<1048576?(n/1024).toFixed(1)+" KB":(n/1048576).toFixed(1)+" MB"}
+document.querySelectorAll(".file-pick").forEach(function(pick){
+var input=pick.querySelector("input[type=file]"),name=pick.querySelector(".name");if(!input||!name)return;
+var card=pick.closest(".card");var zone=card&&card.querySelectorAll(".file-pick").length===1?card:pick;
+function show(){var f=input.files&&input.files[0];pick.classList.toggle("has-file",!!f);
+name.textContent=f?f.name+" · "+size(f.size):tr("uploads.page.noneChosen",name.getAttribute("data-empty")||"No file chosen")}
+input.addEventListener("change",show);document.addEventListener("mission-i18n-change",function(){if(!(input.files&&input.files[0]))show()});
+function over(e){e.preventDefault();zone.classList.add("drag-over")}
+zone.addEventListener("dragenter",over);zone.addEventListener("dragover",over);
+zone.addEventListener("dragleave",function(e){if(!e.relatedTarget||!zone.contains(e.relatedTarget))zone.classList.remove("drag-over")});
+zone.addEventListener("drop",function(e){e.preventDefault();zone.classList.remove("drag-over");
+var files=e.dataTransfer&&e.dataTransfer.files;if(files&&files.length){try{input.files=files}catch(x){return}show()}});
+});
+addEventListener("dragover",function(e){if(e.target.closest&&e.target.closest(".file-pick,.card"))return;e.preventDefault()});
+addEventListener("drop",function(e){if(!(e.target.closest&&e.target.closest(".file-pick,.card")))e.preventDefault()});
+})()</script>
+<script>/* Round 18: a table.sortable sorts by a column when its heading (a button) is clicked, again reverses; the arrow and aria-sort show how.
+A cell's data-sort (else its text) is compared case- and accent-blind, numbers as numbers; empty cells last. th[data-sort-default]: A to Z at the start. */(function(){
+var compare=new Intl.Collator(document.documentElement.lang||undefined,{sensitivity:"base",numeric:true}).compare;
+document.querySelectorAll("table.sortable").forEach(function(table){
+var heads=[].slice.call(table.tHead.rows[0].cells),body=table.tBodies[0];
+function key(row,i){var c=row.cells[i];return (c.hasAttribute("data-sort")?c.getAttribute("data-sort"):c.textContent).trim()}
+function sort(i,dir){
+[].slice.call(body.rows).filter(function(r){return r.cells.length===heads.length})
+.sort(function(a,b){var x=key(a,i),y=key(b,i);return (!x-!y)||dir*compare(x,y)}).forEach(function(r){body.appendChild(r)});
+heads.forEach(function(th,j){if(th.hasAttribute("aria-sort"))th.setAttribute("aria-sort",j===i?(dir>0?"ascending":"descending"):"none")})}
+heads.forEach(function(th,i){if(!th.textContent.trim())return;
+var b=document.createElement("button");b.type="button";b.className="sort-head";
+while(th.firstChild)b.appendChild(th.firstChild);b.insertAdjacentHTML("beforeend",'<span class="sort-arrow" aria-hidden="true"></span>');
+th.appendChild(b);th.setAttribute("aria-sort","none");
+b.addEventListener("click",function(){sort(i,th.getAttribute("aria-sort")==="ascending"?-1:1)})});
+var first=heads.findIndex(function(th){return th.hasAttribute("data-sort-default")});if(first>=0)sort(first,1);
+});})()</script>
+<script>addEventListener("message",e=>{if(e.data?.type!=="portal-theme")return;var t=e.data.theme||"mission";document.documentElement.dataset.theme=t;document.cookie=["gfm_theme="+t,"path=/","max-age=31536000"].join(";")})</script><script>/* demo: nothing is saved */(function(){
+var box;function say(){if(!box){box=document.createElement("div");box.setAttribute("role","status");
+box.setAttribute("style","position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:99;max-width:90vw;background:#b45309;color:#fff;padding:10px 16px;border-radius:12px;font:700 13px system-ui,sans-serif;box-shadow:0 4px 16px #0005;display:none");
+box.textContent="This is a demo with fake data. Nothing is saved.";document.body.appendChild(box)}
+box.style.display="block";clearTimeout(box.t);box.t=setTimeout(function(){box.style.display="none"},3500)}
+document.addEventListener("submit",function(e){e.preventDefault();say()},true);
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button,input[type=submit],a[data-demo]");if(!b||b.type==="button"&&!b.closest("form")&&!b.hasAttribute("data-demo"))return;
+if(b.tagName==="A"||b.closest("form")&&b.type!=="button"){e.preventDefault();e.stopImmediatePropagation();say()}},true);
+document.addEventListener("change",function(e){if(e.target.type==="file"){e.target.value="";say()}},true);
+addEventListener("message",function(e){if(e.data&&e.data.type==="portal-theme"&&/^(mission|light|dark)$/.test(e.data.theme)){try{document.documentElement.setAttribute("data-theme",e.data.theme)}catch(x){}}});
+})()</script></body>
+</html>

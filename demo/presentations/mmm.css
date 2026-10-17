@@ -1,0 +1,223 @@
+/* Made by build.mjs from the <style> blocks of slidev/manager/gfm-addon/components/Mmm*.vue. Do not edit. */
+
+/* MmmCard.vue */
+.mmm-card { --c: var(--mmm-green); --t: var(--mmm-green-tint); }
+.mmm-card--green { --c: var(--mmm-green); --t: var(--mmm-green-tint); }
+.mmm-card--amber { --c: var(--mmm-amber); --t: var(--mmm-amber-tint); }
+.mmm-card--red { --c: var(--mmm-red); --t: var(--mmm-red-tint); }
+.mmm-card--cyan { --c: var(--mmm-cyan); --t: var(--mmm-cyan-tint); }
+.mmm-card__body { position: absolute; inset: 0; text-align: center; overflow: visible; }
+.mmm-card__title { position: absolute; left: 4%; right: 4%; top: calc(24 * var(--u)); font-weight: 700; font-size: calc(17 * var(--u)); line-height: 1.15; }
+.mmm-card__big { position: absolute; left: 0; right: 0; top: calc(50 * var(--u)); font-size: calc(48 * var(--u)); font-weight: 300; line-height: 1.1; }
+.mmm-card__pct { position: absolute; left: 0; right: 0; top: calc(106 * var(--u)); font-size: calc(21 * var(--u)); font-weight: 400; color: var(--c); }
+.mmm-card__bar { position: absolute; left: 13%; right: 13%; top: calc(137 * var(--u)); height: calc(14 * var(--u)); background: #ececec; border-radius: 99px; overflow: hidden; }
+.mmm-dark .mmm-card__bar { background: #4a4a4a; }
+.mmm-card__bar i { display: block; height: 100%; background: var(--c); border-radius: 99px; min-width: calc(8 * var(--u)); }
+.mmm-card__barlabel { position: absolute; left: 0; right: 0; top: calc(154 * var(--u)); font-size: calc(10 * var(--u)); font-weight: 700; }
+.mmm-card__foot { position: absolute; left: 0; right: 0; bottom: calc(8 * var(--u)); font-size: calc(14 * var(--u)); font-weight: 700; }
+.mmm-card__note { position: absolute; left: 6%; right: 6%; bottom: calc(6 * var(--u)); font-size: calc(10 * var(--u)); color: var(--mmm-muted); }
+.mmm-badge {
+  position: absolute; z-index: 4; width: calc(56 * var(--u)); text-align: center; line-height: 1; padding-top: calc(4 * var(--u));
+  background: var(--t); border: calc(2 * var(--u)) solid #000; border-radius: calc(7 * var(--u)); color: var(--mmm-ink);
+}
+.mmm-dark .mmm-badge { border-color: #000; color: #1b2a31; }
+.mmm-badge b { display: block; font-size: calc(14 * var(--u)); font-weight: 700; }
+.mmm-badge span { display: block; font-size: calc(20 * var(--u)); font-weight: 300; margin-top: calc(1 * var(--u)); }
+.mmm-badge--last { left: calc(-17 * var(--u)); top: calc(-21 * var(--u)); height: calc(44 * var(--u)); }
+.mmm-badge--last.mmm-badge--right { left: auto; right: calc(-17 * var(--u)); }
+.mmm-card .mmm-manual-tag { top: auto; right: auto; left: 50%; bottom: calc(-12 * var(--u)); transform: translateX(-50%); }
+.mmm-card.is-compact .mmm-card__title { top: calc(16 * var(--u)); }
+.mmm-card.is-compact .mmm-card__big { top: calc(60 * var(--u)); font-size: calc(42 * var(--u)); }
+.mmm-card.is-compact .mmm-card__pct { top: calc(109 * var(--u)); }
+.mmm-card.is-compact .mmm-card__bar { top: calc(140 * var(--u)); }
+.mmm-badge--goal { right: calc(-28 * var(--u)); bottom: calc(-27 * var(--u)); height: calc(50 * var(--u)); padding-top: calc(7 * var(--u)); }
+.mmm-badge--goal.mmm-badge--top { bottom: auto; top: calc(-21 * var(--u)); right: calc(-17 * var(--u)); height: calc(44 * var(--u)); padding-top: calc(4 * var(--u)); }
+
+/* MmmChips.vue */
+.mmm-chip { background: var(--mmm-cyan-tint); border: calc(2 * var(--u)) solid #000; border-radius: calc(7 * var(--u)); padding: calc(5 * var(--u)) calc(10 * var(--u)); margin-bottom: calc(10 * var(--u)); text-align: center; font-weight: 700; font-size: calc(15 * var(--u)); color: #2d505e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mmm-chip.is-start { text-align: start; }
+
+/* MmmCover.vue */
+.mmm-frame.mmm-cover { background: #2d505e; color: #fff; border: 0; display: flex; align-items: center; justify-content: center; }
+.mmm-cover__text { text-align: center; padding: 0 calc(60 * var(--u)); width: 100%; }
+.mmm-cover.has-picture .mmm-cover__text { width: 60.5%; margin-left: auto; padding: 0 calc(30 * var(--u)); }
+.mmm-cover__big { font-size: calc(62 * var(--u)); font-weight: 700; font-style: italic; line-height: 1.12; }
+.mmm-cover.has-picture .mmm-cover__big { font-size: calc(56 * var(--u)); }
+.mmm-cover hr { border: 0; border-top: calc(2 * var(--u)) solid #fff; margin: calc(22 * var(--u)) auto; width: 100%; opacity: 1; }
+.mmm-cover__picture { position: absolute; left: 0; top: 0; bottom: 0; width: 39.5%; background: #1d3640; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.mmm-cover__picture img { width: 100%; height: 100%; object-fit: cover; }
+.mmm-cover__picture.is-empty { border: calc(2 * var(--u)) dashed #8fb0bd; font-size: calc(22 * var(--u)); color: #b9ccd4; text-align: center; padding: calc(20 * var(--u)); }
+
+/* MmmFrame.vue */
+/* The palette of the reference presentations. */
+.mmm-frame {
+  --u: calc(100cqw / 1152);
+  --mmm-ink: #2d505e;
+  --mmm-page: #f6f7f9;
+  --mmm-card: #ffffff;
+  --mmm-line: #000000;
+  --mmm-green: #4da580;
+  --mmm-green-tint: #c5e3d1;
+  --mmm-amber: #ffa90a;
+  --mmm-amber-tint: #fff0b8;
+  --mmm-red: #b71c1c;
+  --mmm-red-tint: #f5c6c1;
+  --mmm-cyan: #4dd0e1;
+  --mmm-cyan-tint: #b2ebf2;
+  --mmm-yellow: #ffe600;
+  --mmm-blue: #1f6fd1;
+  --mmm-grid: #d9dde2;
+  --mmm-muted: #8a9aa3;
+  --mmm-shape-green: #b7d9cc;
+  --mmm-shape-blue: #d9eaf8;
+  --mmm-shape-pink: #ffa5a2;
+  position: absolute;
+  inset: 0;
+  container-type: inline-size;
+  overflow: hidden;
+  background: var(--mmm-page);
+  color: var(--mmm-ink);
+  font-family: Montserrat, "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+  font-size: calc(16 * var(--u));
+  line-height: 1.25;
+  box-sizing: border-box;
+  border: 1px solid #555;
+}
+.mmm-frame *, .mmm-frame *::before, .mmm-frame *::after { box-sizing: border-box; }
+.mmm-frame.mmm-dark {
+  --mmm-ink: #f1f3f5;
+  --mmm-page: #2b2b2b;
+  --mmm-card: #333333;
+  --mmm-line: #8c8c8c;
+  --mmm-grid: #4a4a4a;
+  --mmm-muted: #b7b7b7;
+  border-color: #111;
+}
+.mmm-tone-green { --mmm-accent: var(--mmm-green); --mmm-accent-tint: var(--mmm-green-tint); }
+.mmm-tone-cyan { --mmm-accent: var(--mmm-cyan); --mmm-accent-tint: var(--mmm-cyan-tint); }
+.mmm-tone-red { --mmm-accent: var(--mmm-red); --mmm-accent-tint: var(--mmm-red-tint); }
+.mmm-tone-amber { --mmm-accent: var(--mmm-amber); --mmm-accent-tint: var(--mmm-amber-tint); }
+
+/* The two soft round shapes in the corners (a different pair for each variant, like the reference slides). */
+.mmm-shape { position: absolute; border-radius: 50%; pointer-events: none; }
+.mmm-corners-a .mmm-shape--one { right: calc(-130 * var(--u)); top: calc(-215 * var(--u)); width: calc(480 * var(--u)); height: calc(480 * var(--u)); background: var(--mmm-shape-green); }
+.mmm-corners-a .mmm-shape--two { left: calc(-180 * var(--u)); bottom: calc(-150 * var(--u)); width: calc(330 * var(--u)); height: calc(330 * var(--u)); background: var(--mmm-shape-green); }
+.mmm-corners-b .mmm-shape--one { right: calc(-130 * var(--u)); top: calc(-215 * var(--u)); width: calc(480 * var(--u)); height: calc(480 * var(--u)); background: var(--mmm-shape-blue); }
+.mmm-corners-b .mmm-shape--two { left: calc(-180 * var(--u)); bottom: calc(-150 * var(--u)); width: calc(330 * var(--u)); height: calc(330 * var(--u)); background: var(--mmm-shape-blue); }
+.mmm-corners-c .mmm-shape--one { right: calc(-130 * var(--u)); top: calc(-215 * var(--u)); width: calc(480 * var(--u)); height: calc(480 * var(--u)); background: var(--mmm-shape-pink); }
+.mmm-corners-c .mmm-shape--two { left: calc(-180 * var(--u)); bottom: calc(-150 * var(--u)); width: calc(330 * var(--u)); height: calc(330 * var(--u)); background: var(--mmm-shape-pink); }
+.mmm-dark .mmm-shape { display: none; }
+
+.mmm-heading {
+  position: absolute;
+  top: calc(36 * var(--u));
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Black", sans-serif;
+  font-size: calc(30 * var(--u));
+  line-height: 1.1;
+  text-decoration: underline;
+  text-decoration-thickness: calc(2.5 * var(--u));
+  text-underline-offset: calc(2 * var(--u));
+  color: var(--mmm-accent);
+  white-space: nowrap;
+  z-index: 3;
+}
+
+.mmm-footer {
+  position: absolute;
+  left: calc(35 * var(--u));
+  right: calc(35 * var(--u));
+  bottom: calc(10 * var(--u));
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: calc(20 * var(--u));
+  font-size: calc(17 * var(--u));
+  font-weight: 700;
+  color: var(--mmm-ink);
+  z-index: 3;
+}
+.mmm-c-green { color: var(--mmm-green); }
+.mmm-c-red { color: var(--mmm-red); }
+.mmm-c-cyan { color: var(--mmm-cyan); }
+.mmm-dark .mmm-c-red { color: #ff6b6b; }
+
+/* Every placed piece: a box at x, y, w, h (u). */
+.mmm-box { position: absolute; z-index: 2; }
+.mmm-panel {
+  background: var(--mmm-card);
+  border: calc(2 * var(--u)) solid var(--mmm-line);
+  border-radius: calc(9 * var(--u));
+}
+.mmm-hint { color: var(--mmm-muted); }
+.mmm-message { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: calc(12 * var(--u)); color: var(--mmm-muted); font-size: calc(14 * var(--u)); }
+/* A hand-typed place, so nobody mistakes it for a live number: a small dashed tag. */
+.mmm-manual-tag {
+  position: absolute; right: calc(6 * var(--u)); top: calc(4 * var(--u)); z-index: 5;
+  font-size: calc(10 * var(--u)); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #8a5a00; background: #fff3cd; border: calc(1.2 * var(--u)) dashed #c9a227; border-radius: calc(4 * var(--u)); padding: calc(1 * var(--u)) calc(5 * var(--u));
+}
+@media print { .mmm-manual-tag { display: none; } }
+[dir="rtl"] .mmm-footer { flex-direction: row-reverse; }
+/* Numbers and references keep their own left-to-right order inside a right-to-left slide (Arabic, Persian). */
+.mmm-footer__verse, .mmm-card__big, .mmm-card__pct, .mmm-badge span, .mmm-gauge__num, .mmm-gauge__change, .mmm-gauge__end, .mmm-pair__box, .mmm-table__row span, .mmm-chip { unicode-bidi: isolate; direction: ltr; }
+
+/* MmmGauge.vue */
+.mmm-gauge { --g: var(--mmm-cyan); --gt: var(--mmm-cyan-tint); }
+.mmm-gauge--green { --g: var(--mmm-green); --gt: #c8e6d3; }
+.mmm-gauge--yellow { --g: var(--mmm-yellow); --gt: #fff7d1; }
+.mmm-gauge__svg { position: absolute; left: 4%; right: 4%; top: 6%; width: 92%; height: 76%; }
+.mmm-gauge__fill { fill: var(--g); }
+.mmm-gauge__rest { fill: var(--gt); }
+.mmm-gauge__tick { stroke: #000; stroke-width: 5; stroke-linecap: butt; }
+.mmm-dark .mmm-gauge__tick { stroke: #fff; }
+.mmm-gauge__num { position: absolute; left: 0; right: 0; top: 47%; text-align: center; font-size: calc(46 * var(--u)); font-weight: 300; line-height: 1; }
+.mmm-gauge__change { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font-size: calc(21 * var(--u)); font-weight: 400; }
+.mmm-gauge__change.is-up { color: var(--mmm-green); }
+.mmm-gauge__change.is-down { color: #f26d6d; }
+.mmm-gauge__end { position: absolute; top: 79%; font-size: calc(13 * var(--u)); font-weight: 400; }
+.mmm-gauge__end--min { left: 6%; }
+.mmm-gauge__end--max { right: 6%; }
+.mmm-gauge__title { position: absolute; left: 0; right: 0; bottom: calc(10 * var(--u)); text-align: center; font-weight: 700; font-size: calc(18 * var(--u)); }
+
+/* MmmManual.vue */
+.mmm-manual { display: grid; gap: calc(10 * var(--u)); }
+.mmm-manual__col { min-width: 0; overflow: hidden; text-align: center; }
+.mmm-manual__head { font-weight: 700; font-size: calc(17 * var(--u)); min-height: calc(26 * var(--u)); padding: calc(4 * var(--u)) calc(4 * var(--u)) 0; line-height: 1.15; }
+.mmm-manual__head i { font-style: normal; font-size: calc(8 * var(--u)); vertical-align: middle; }
+.mmm-manual__cell { font-size: calc(26 * var(--u)); font-weight: 300; height: calc(40.5 * var(--u)); padding: calc(4 * var(--u)) calc(4 * var(--u)) 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mmm-manual__goal { right: calc(-6 * var(--u)); top: calc(-24 * var(--u)); }
+
+/* MmmPair.vue */
+.mmm-pair__label { text-align: center; font-size: calc(13 * var(--u)); font-weight: 700; margin-bottom: calc(3 * var(--u)); }
+.mmm-pair__box { text-align: center; font-size: calc(36 * var(--u)); font-weight: 700; line-height: 1; color: #fff; padding: calc(9 * var(--u)) 0; border-radius: calc(8 * var(--u)); border: calc(2 * var(--u)) solid #fff; margin-bottom: calc(14 * var(--u)); }
+.mmm-pair__box--actual { background: #1f78d8; }
+.mmm-pair__box--goal { background: #c4171f; }
+.mmm-pair__note { font-size: calc(10 * var(--u)); color: var(--mmm-muted); }
+
+/* MmmSlot.vue */
+.mmm-slot { margin: 0; }
+.mmm-slot__frame { position: absolute; inset: 0; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
+.mmm-slot.is-empty .mmm-slot__frame { background: var(--mmm-card); border-style: dashed; border-color: var(--mmm-muted); }
+.mmm-slot__frame iframe, .mmm-slot__frame video, .mmm-slot__frame img { width: 100%; height: 100%; border: 0; display: block; }
+.mmm-slot__empty { display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); color: var(--mmm-muted); font-size: calc(18 * var(--u)); text-align: center; padding: calc(16 * var(--u)); }
+.mmm-slot__empty svg { width: calc(56 * var(--u)); height: calc(56 * var(--u)); fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.mmm-slot__empty svg path { fill: currentColor; }
+.mmm-slot__caption { position: absolute; left: 0; right: 0; top: 100%; margin-top: calc(6 * var(--u)); text-align: center; font-weight: 700; font-size: calc(18 * var(--u)); }
+
+/* MmmTable.vue */
+.mmm-table { overflow: hidden; padding: calc(6 * var(--u)) calc(8 * var(--u)); }
+.mmm-table__head, .mmm-table__row { display: grid; grid-template-columns: var(--mmm-cols); align-items: center; text-align: center; }
+.mmm-table__head { background: #e8f0fb; font-weight: 700; font-size: calc(17 * var(--u)); height: calc(32 * var(--u)); border-radius: calc(3 * var(--u)); white-space: nowrap; }
+.mmm-dark .mmm-table__head { background: #3e4650; }
+.mmm-table__head i { font-style: normal; font-size: calc(10 * var(--u)); }
+.mmm-table__row { height: calc(34 * var(--u)); font-size: calc(22 * var(--u)); font-weight: 300; }
+.mmm-table__row.is-odd { background: #f3f4f6; }
+.mmm-dark .mmm-table__row.is-odd { background: #3a3a3a; }
+.mmm-table__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 calc(4 * var(--u)); }
+.mmm-table.is-dense .mmm-table__head { font-size: calc(12 * var(--u)); height: calc(36 * var(--u)); white-space: normal; line-height: 1.05; }
+.mmm-table.is-dense .mmm-table__row { height: calc(21 * var(--u)); font-size: calc(14 * var(--u)); }
+
+/* MmmTrend.vue */
+.mmm-trend { overflow: hidden; }
+.mmm-trend__title { position: absolute; left: calc(5 * var(--u)); top: calc(5 * var(--u)); z-index: 2; font-weight: 700; font-size: calc(17 * var(--u)); }
+.mmm-trend__plot { position: absolute; inset: calc(24 * var(--u)) calc(4 * var(--u)) calc(2 * var(--u)) calc(4 * var(--u)); }

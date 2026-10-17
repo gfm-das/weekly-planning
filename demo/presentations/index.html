@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Presentations</title>
+<script>
+// The portal's theme before the first paint (gfm_portal_layout_v1), then every change the shell sends.
+(function () {
+  var set = function (t) { document.documentElement.dataset.theme = t === 'dark' || t === 'light' ? t : 'mission'; };
+  try { set((JSON.parse(localStorage.getItem('gfm_portal_layout_v1') || 'null') || {}).theme); } catch (e) { set('mission'); }
+  addEventListener('message', function (e) { if (e.data && e.data.type === 'portal-theme') set(e.data.theme); });
+  try { parent.postMessage({ type: 'portal-theme-request' }, '*'); } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="mmm.css">
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<header class="top">
+  <div><h1>Presentations</h1><div class="sub">Five templates of the Monday Morning Meeting, zone conference and Stake coordination. Demo: invented numbers and names.</div></div>
+  <button class="primary" type="button" id="new">+ New Presentation</button>
+</header>
+<main class="lib">
+  <div class="toolbar" id="count"></div>
+  <div class="grid" id="grid"></div>
+</main>
+<script type="module">
+import decks from './decks.js';
+import { slideHtml } from './render.js';
+const grid = document.getElementById('grid'), ids = Object.keys(decks);
+document.getElementById('count').textContent = ids.length + ' presentations';
+for (const id of ids) {
+  const d = decks[id], card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = '<div class="thumb"><div class="slide-host" style="position:absolute;inset:0"></div></div><div class="body"><h2><a href="view.html?deck=' + id + '"></a></h2><p></p><div class="meta"></div></div>';
+  card.querySelector('.slide-host').innerHTML = slideHtml(d.slides[0]);
+  card.querySelector('h2 a').textContent = d.name;
+  card.querySelector('p').textContent = d.description;
+  card.querySelector('.meta').textContent = d.slides.length + ' slides · demo deck, fake numbers';
+  grid.append(card);
+}
+document.getElementById('new').addEventListener('click', () => {
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = 'Making and editing presentations needs the full system.';
+  document.body.append(t); setTimeout(() => t.remove(), 3500);
+});
+</script>
+</body>
+</html>

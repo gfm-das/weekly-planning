@@ -1,0 +1,634 @@
+{
+ "settings": {
+  "weights": {
+   "finding": {
+    "friends_found": 45,
+    "lessons_with_friends": 20,
+    "follow_up_lessons": 10,
+    "sacrament_attendance": 5,
+    "first_time_first_week_sacrament": 20
+   },
+   "teaching": {
+    "lessons_with_friends": 30,
+    "follow_up_lessons": 35,
+    "members_at_lessons": 25,
+    "baptismal_dates": 10
+   },
+   "bringing": {
+    "sacrament_attendance": 20,
+    "first_time_first_week_sacrament": 50,
+    "first_time_sacrament": 30
+   },
+   "baptizing": {
+    "baptismal_dates": 45,
+    "baptisms_confirmations": 55
+   },
+   "fellowshipping": {
+    "new_member_sacrament_share": 55,
+    "new_member_lessons_per_member": 45
+   },
+   "reactivating": {
+    "members_at_lessons": 5,
+    "new_member_lessons_per_member": 5,
+    "member_meals_active": 5,
+    "member_meals_less_active": 25,
+    "member_meals_part_member": 25,
+    "member_visits_active": 5,
+    "member_visits_less_active": 15,
+    "member_visits_part_member": 15
+   }
+  },
+  "peer_group": {
+   "attributes": [
+    "urban_type",
+    "assignment_type",
+    "density"
+   ],
+   "density_bins": [
+    200,
+    500,
+    700,
+    1200
+   ],
+   "minimum_size": 5,
+   "fallback": true
+  },
+  "bands": [
+   {
+    "from": 120,
+    "name": "Outstanding",
+    "color": "#34b36a"
+   },
+   {
+    "from": 110,
+    "name": "Strong",
+    "color": "#a3e39a"
+   },
+   {
+    "from": 90,
+    "name": "Average",
+    "color": "#fff1c1"
+   },
+   {
+    "from": 80,
+    "name": "Needs attention",
+    "color": "#ffc49e"
+   },
+   {
+    "from": null,
+    "name": "High priority",
+    "color": "#ff9f9f"
+   }
+  ],
+  "balance_threshold": 0.2,
+  "weeks_to_average": 1,
+  "diagnoses": {
+   "strengths": {
+    "finding": "Creates and replenishes teaching opportunities.",
+    "teaching": "Strong, consistent teaching, and people are progressing.",
+    "bringing": "Brings friends and new members to church consistently.",
+    "baptizing": "Turns teaching into commitments and ordinances.",
+    "fellowshipping": "Strengthens and keeps new members close.",
+    "reactivating": "Helps less-active members come back and feel welcome."
+   },
+   "patterns": {
+    "stalled": {
+     "title": "A season to regroup",
+     "meaning": "This week every part of the work is below what similar areas usually see. It often means the companions are tired, discouraged or facing something new, not that they are not trying.",
+     "steps": [
+      "Start by listening: ask the companions how they are doing and how you can help.",
+      "Plan together one simple goal for each day of the coming week.",
+      "Invite a member or the ward mission leader to join a lesson or a finding activity."
+     ]
+    },
+    "finding_low_teaching_strong": {
+     "title": "Teaching well, few new people",
+     "meaning": "The companions teach well, but few new people are coming in. Without new people to teach, strong teaching slows down within a few weeks.",
+     "steps": [
+      "Thank them for their teaching, then plan daily finding time together.",
+      "Ask everyone they teach and every member they visit whom they know who would like to hear the message."
+     ]
+    },
+    "finding_strong_bringing_low": {
+     "title": "Finding many, few at church",
+     "meaning": "Many new people are found, but few come to sacrament meeting. Coming to church early helps people feel the Spirit and meet members.",
+     "steps": [
+      "Invite each new person to sacrament meeting in the first or second lesson.",
+      "Ask members to sit with them or bring them along.",
+      "Remind them kindly on Saturday and offer to meet them at the door."
+     ]
+    },
+    "teaching_strong_baptizing_low": {
+     "title": "Teaching well, few commitments",
+     "meaning": "Lessons are going well, but few people set or keep a baptismal date. People may need a clear invitation and help to keep commitments.",
+     "steps": [
+      "Invite people to be baptized early, with a specific date.",
+      "Help each person keep one commitment at a time, and follow up soon.",
+      "Pray with the companions about each person's next step."
+     ]
+    },
+    "baptizing_strong_fellowshipping_low": {
+     "title": "New members need friends",
+     "meaning": "People are being baptized, but new members are not yet well connected. The first months after baptism are when friends and teaching matter most.",
+     "steps": [
+      "Celebrate each baptism, then counsel with the ward council about every new member.",
+      "Keep teaching new members, with a member present.",
+      "Make sure each new member has ministering brothers or sisters."
+     ]
+    },
+    "finding_low": {
+     "title": "Help with finding",
+     "meaning": "Fewer new people are found than in similar areas. Finding is often easiest together with members.",
+     "steps": [
+      "Plan daily finding time and try one new way to find this week.",
+      "Ask members whom they could invite to meet the missionaries."
+     ]
+    },
+    "teaching_low": {
+     "title": "Help with teaching",
+     "meaning": "Fewer lessons than in similar areas. People progress when they are taught regularly, with members.",
+     "steps": [
+      "Set the next appointment at the end of every lesson.",
+      "Invite a member to join lessons this week."
+     ]
+    },
+    "bringing_low": {
+     "title": "Help with coming to church",
+     "meaning": "Fewer friends and new members at sacrament meeting than in similar areas.",
+     "steps": [
+      "Invite every person you teach to sacrament meeting and offer to go with them.",
+      "Ask members to sit with them and introduce them to others."
+     ]
+    },
+    "baptizing_low": {
+     "title": "Help with commitments",
+     "meaning": "Fewer baptismal dates and baptisms than in similar areas. Clear invitations and loving follow-up help people move forward.",
+     "steps": [
+      "Invite people to be baptized, with a specific date.",
+      "Talk with the companions about what each person needs to keep their date."
+     ]
+    },
+    "fellowshipping_low": {
+     "title": "Help for new members",
+     "meaning": "New members are less connected than in similar areas: fewer lessons or fewer at church.",
+     "steps": [
+      "Keep teaching each new member, with a member present.",
+      "Counsel with the ward about a friend and a calling for each new member."
+     ]
+    },
+    "reactivating_low": {
+     "title": "Help with less-active members",
+     "meaning": "Fewer visits and meals with less-active members and part-member families than in similar areas.",
+     "steps": [
+      "Ask the ward council which less-active members and part-member families to visit.",
+      "Plan visits and meals together with members."
+     ]
+    },
+    "balanced": {
+     "title": "An even balance",
+     "meaning": "No single strength stands out: the work is even across all its parts.",
+     "steps": [
+      "Thank the companions for their steady work.",
+      "Choose together one part of the work to grow in this month."
+     ]
+    },
+    "steady": {
+     "title": "Steady work",
+     "meaning": "Nothing is far below what similar areas usually see.",
+     "steps": [
+      "Thank the companions and ask what is going well.",
+      "Ask how you can help them keep going."
+     ]
+    }
+   }
+  }
+ },
+ "version": 3,
+ "defaults": {
+  "weights": {
+   "finding": {
+    "friends_found": 45,
+    "lessons_with_friends": 20,
+    "follow_up_lessons": 10,
+    "sacrament_attendance": 5,
+    "first_time_first_week_sacrament": 20
+   },
+   "teaching": {
+    "lessons_with_friends": 30,
+    "follow_up_lessons": 35,
+    "members_at_lessons": 25,
+    "baptismal_dates": 10
+   },
+   "bringing": {
+    "sacrament_attendance": 20,
+    "first_time_first_week_sacrament": 50,
+    "first_time_sacrament": 30
+   },
+   "baptizing": {
+    "baptismal_dates": 45,
+    "baptisms_confirmations": 55
+   },
+   "fellowshipping": {
+    "new_member_sacrament_share": 55,
+    "new_member_lessons_per_member": 45
+   },
+   "reactivating": {
+    "members_at_lessons": 5,
+    "new_member_lessons_per_member": 5,
+    "member_meals_active": 5,
+    "member_meals_less_active": 25,
+    "member_meals_part_member": 25,
+    "member_visits_active": 5,
+    "member_visits_less_active": 15,
+    "member_visits_part_member": 15
+   }
+  },
+  "peer_group": {
+   "attributes": [
+    "urban_type",
+    "assignment_type",
+    "density"
+   ],
+   "density_bins": [
+    200,
+    500,
+    700,
+    1200
+   ],
+   "minimum_size": 5,
+   "fallback": true
+  },
+  "bands": [
+   {
+    "from": 120,
+    "name": "Outstanding",
+    "color": "#34b36a"
+   },
+   {
+    "from": 110,
+    "name": "Strong",
+    "color": "#a3e39a"
+   },
+   {
+    "from": 90,
+    "name": "Average",
+    "color": "#fff1c1"
+   },
+   {
+    "from": 80,
+    "name": "Needs attention",
+    "color": "#ffc49e"
+   },
+   {
+    "from": null,
+    "name": "High priority",
+    "color": "#ff9f9f"
+   }
+  ],
+  "balance_threshold": 0.2,
+  "weeks_to_average": 1,
+  "diagnoses": {
+   "strengths": {
+    "finding": "Creates and replenishes teaching opportunities.",
+    "teaching": "Strong, consistent teaching, and people are progressing.",
+    "bringing": "Brings friends and new members to church consistently.",
+    "baptizing": "Turns teaching into commitments and ordinances.",
+    "fellowshipping": "Strengthens and keeps new members close.",
+    "reactivating": "Helps less-active members come back and feel welcome."
+   },
+   "patterns": {
+    "stalled": {
+     "title": "A season to regroup",
+     "meaning": "This week every part of the work is below what similar areas usually see. It often means the companions are tired, discouraged or facing something new, not that they are not trying.",
+     "steps": [
+      "Start by listening: ask the companions how they are doing and how you can help.",
+      "Plan together one simple goal for each day of the coming week.",
+      "Invite a member or the ward mission leader to join a lesson or a finding activity."
+     ]
+    },
+    "finding_low_teaching_strong": {
+     "title": "Teaching well, few new people",
+     "meaning": "The companions teach well, but few new people are coming in. Without new people to teach, strong teaching slows down within a few weeks.",
+     "steps": [
+      "Thank them for their teaching, then plan daily finding time together.",
+      "Ask everyone they teach and every member they visit whom they know who would like to hear the message."
+     ]
+    },
+    "finding_strong_bringing_low": {
+     "title": "Finding many, few at church",
+     "meaning": "Many new people are found, but few come to sacrament meeting. Coming to church early helps people feel the Spirit and meet members.",
+     "steps": [
+      "Invite each new person to sacrament meeting in the first or second lesson.",
+      "Ask members to sit with them or bring them along.",
+      "Remind them kindly on Saturday and offer to meet them at the door."
+     ]
+    },
+    "teaching_strong_baptizing_low": {
+     "title": "Teaching well, few commitments",
+     "meaning": "Lessons are going well, but few people set or keep a baptismal date. People may need a clear invitation and help to keep commitments.",
+     "steps": [
+      "Invite people to be baptized early, with a specific date.",
+      "Help each person keep one commitment at a time, and follow up soon.",
+      "Pray with the companions about each person's next step."
+     ]
+    },
+    "baptizing_strong_fellowshipping_low": {
+     "title": "New members need friends",
+     "meaning": "People are being baptized, but new members are not yet well connected. The first months after baptism are when friends and teaching matter most.",
+     "steps": [
+      "Celebrate each baptism, then counsel with the ward council about every new member.",
+      "Keep teaching new members, with a member present.",
+      "Make sure each new member has ministering brothers or sisters."
+     ]
+    },
+    "finding_low": {
+     "title": "Help with finding",
+     "meaning": "Fewer new people are found than in similar areas. Finding is often easiest together with members.",
+     "steps": [
+      "Plan daily finding time and try one new way to find this week.",
+      "Ask members whom they could invite to meet the missionaries."
+     ]
+    },
+    "teaching_low": {
+     "title": "Help with teaching",
+     "meaning": "Fewer lessons than in similar areas. People progress when they are taught regularly, with members.",
+     "steps": [
+      "Set the next appointment at the end of every lesson.",
+      "Invite a member to join lessons this week."
+     ]
+    },
+    "bringing_low": {
+     "title": "Help with coming to church",
+     "meaning": "Fewer friends and new members at sacrament meeting than in similar areas.",
+     "steps": [
+      "Invite every person you teach to sacrament meeting and offer to go with them.",
+      "Ask members to sit with them and introduce them to others."
+     ]
+    },
+    "baptizing_low": {
+     "title": "Help with commitments",
+     "meaning": "Fewer baptismal dates and baptisms than in similar areas. Clear invitations and loving follow-up help people move forward.",
+     "steps": [
+      "Invite people to be baptized, with a specific date.",
+      "Talk with the companions about what each person needs to keep their date."
+     ]
+    },
+    "fellowshipping_low": {
+     "title": "Help for new members",
+     "meaning": "New members are less connected than in similar areas: fewer lessons or fewer at church.",
+     "steps": [
+      "Keep teaching each new member, with a member present.",
+      "Counsel with the ward about a friend and a calling for each new member."
+     ]
+    },
+    "reactivating_low": {
+     "title": "Help with less-active members",
+     "meaning": "Fewer visits and meals with less-active members and part-member families than in similar areas.",
+     "steps": [
+      "Ask the ward council which less-active members and part-member families to visit.",
+      "Plan visits and meals together with members."
+     ]
+    },
+    "balanced": {
+     "title": "An even balance",
+     "meaning": "No single strength stands out: the work is even across all its parts.",
+     "steps": [
+      "Thank the companions for their steady work.",
+      "Choose together one part of the work to grow in this month."
+     ]
+    },
+    "steady": {
+     "title": "Steady work",
+     "meaning": "Nothing is far below what similar areas usually see.",
+     "steps": [
+      "Thank the companions and ask what is going well.",
+      "Ask how you can help them keep going."
+     ]
+    }
+   }
+  }
+ },
+ "sources": [
+  {
+   "key": "friends_found",
+   "label": "New People Being Taught",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "lessons_with_friends",
+   "label": "Lessons with friends",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "follow_up_lessons",
+   "label": "Follow-up lessons",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "members_at_lessons",
+   "label": "Lessons with a Member Participating",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "baptismal_dates",
+   "label": "People with a Baptismal Date",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "baptisms_confirmations",
+   "label": "People Who Are Baptized and Confirmed",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "sacrament_attendance",
+   "label": "People Being Taught Who Attend Sacrament Meeting",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "first_time_sacrament",
+   "label": "First time at sacrament meeting",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "first_time_first_week_sacrament",
+   "label": "At sacrament meeting the week they were found",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "new_member_sacrament",
+   "label": "New Members Attending Sacrament Meeting",
+   "group": "plans",
+   "has_data": true
+  },
+  {
+   "key": "new_member_sacrament_share",
+   "label": "Share of new members at sacrament meeting",
+   "group": "new_members",
+   "has_data": true
+  },
+  {
+   "key": "new_member_lessons_per_member",
+   "label": "Lessons per new member",
+   "group": "new_members",
+   "has_data": true
+  },
+  {
+   "key": "member_meals_active",
+   "label": "Member meals with active members",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "member_meals_less_active",
+   "label": "Member meals with less-active members",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "member_meals_part_member",
+   "label": "Member meals with part-member families",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "member_visits_active",
+   "label": "Member visits with active members",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "member_visits_less_active",
+   "label": "Member visits with less-active members",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "member_visits_part_member",
+   "label": "Member visits with part-member families",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "member_referral_asks",
+   "label": "Referral requests at member meals and visits",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "lessons_asked_referral",
+   "label": "Lessons where you asked for a referral",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "youth_activities",
+   "label": "Youth activities",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "service_hours",
+   "label": "Service hours",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "less_active_sacrament",
+   "label": "Less-active members at sacrament meeting",
+   "group": "answers",
+   "has_data": true
+  },
+  {
+   "key": "finding_people_found",
+   "label": "People found (Church finding report)",
+   "group": "uploads",
+   "has_data": false
+  },
+  {
+   "key": "finding_people_reached",
+   "label": "People reached (Church finding report)",
+   "group": "uploads",
+   "has_data": false
+  },
+  {
+   "key": "finding_first_lessons",
+   "label": "First lessons (Church finding report)",
+   "group": "uploads",
+   "has_data": false
+  },
+  {
+   "key": "baptism_records",
+   "label": "Baptisms (baptism records)",
+   "group": "uploads",
+   "has_data": false
+  }
+ ],
+ "archetypes": [
+  "finding",
+  "teaching",
+  "bringing",
+  "baptizing",
+  "fellowshipping",
+  "reactivating"
+ ],
+ "patterns": [
+  "stalled",
+  "finding_low_teaching_strong",
+  "finding_strong_bringing_low",
+  "teaching_strong_baptizing_low",
+  "baptizing_strong_fellowshipping_low",
+  "finding_low",
+  "teaching_low",
+  "bringing_low",
+  "baptizing_low",
+  "fellowshipping_low",
+  "reactivating_low",
+  "balanced",
+  "steady"
+ ],
+ "attributes": [
+  "urban_type",
+  "assignment_type",
+  "density"
+ ],
+ "week_choices": [
+  1,
+  4,
+  8,
+  12
+ ],
+ "history": [
+  {
+   "version": 3,
+   "action": "save",
+   "summary": "Changed the weeks to average from 4 to 8.",
+   "changed_at": "2026-10-05T10:15:00+02:00",
+   "changed_by_name": "Elder Sample"
+  },
+  {
+   "version": 2,
+   "action": "save",
+   "summary": "Changed one weight in the Finding archetype.",
+   "changed_at": "2026-09-14T09:00:00+02:00",
+   "changed_by_name": "Sister Demo"
+  },
+  {
+   "version": 1,
+   "action": "restore",
+   "summary": "Restored the sheet defaults.",
+   "changed_at": "2026-08-15T09:00:00+02:00",
+   "changed_by_name": "Elder Sample"
+  }
+ ],
+ "updated_at": "2026-10-05T10:15:00+02:00",
+ "updated_by": "Elder Sample"
+}
