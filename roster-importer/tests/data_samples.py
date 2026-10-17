@@ -85,21 +85,6 @@ def zone_history_file(rows):
                                              for s, z, g, a in rows])
 
 
-def vollzogen_file(zone):
-    """The office's Vollzogen sheet: a title row first, then the headings, then rows with names (never read)."""
-    return xlsx_bytes([
-        ["Taufen", None, None, None, None, None, None, None, None, None, "Mission Office Info", None],
-        ["Wie gefunden", "Name", "Wann gesetzt", "Taufdatum", "Mitarbeiter", "Gemeinde", "Pfahl", "Zone",
-         "Konfirmiert (Datum)", "Country", "Gender", "Preferred Language"],
-        ["Contacting in Public", MADE_UP_NAMES[0], "8/30/2026", "9/20/2026", MADE_UP_NAMES[3], "Frankfurt 1st",
-         "Frankfurt", zone, "9/27/2026", "Testland", "F", "German"],
-        ["Contacting in Public", MADE_UP_NAMES[1], "8/30/2026", "9/19/2026", MADE_UP_NAMES[4], "Frankfurt 1st",
-         "Frankfurt", zone, "", "Testland", "M", "German"],
-        [None] * 12,
-        ["Member", MADE_UP_NAMES[2], "", "", "", "", "", zone, "", "", "", ""],  # no baptism date: a problem
-    ])
-
-
 VOLLZOGEN_HEADINGS = ["Wie gefunden", "Name", "Wann gesetzt", "Taufdatum", "Mitarbeiter", "Gemeinde", "Pfahl", "Zone",
                       "Konfirmiert", "Country", "Gender", "Preferred Language"]
 # Made-up people for the Vollzogen list. Every one of them is invented; none is a real person.

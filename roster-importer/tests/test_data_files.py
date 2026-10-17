@@ -22,9 +22,6 @@ def fake_key(person_id):
 
 class ReadingTests(unittest.TestCase):
     def test_weeks_run_monday_to_sunday(self):
-        self.assertEqual(data_files.week_of(date(2026, 9, 21)), date(2026, 9, 27))  # Monday
-        self.assertEqual(data_files.week_of(date(2026, 9, 27)), date(2026, 9, 27))  # Sunday
-        self.assertEqual(data_files.week_of(date(2026, 9, 28)), date(2026, 10, 4))
         self.assertEqual(data_files.week_before(date(2026, 9, 28)), date(2026, 9, 27))  # a Monday report
         self.assertEqual(data_files.week_before(date(2026, 9, 27)), date(2026, 9, 27))
 
@@ -96,18 +93,6 @@ class HistoryTests(unittest.TestCase):
                          ("2024-08-04", "Frankfurt", 22, 18))
         self.assertEqual((first["companionships"], first["first_time_sacrament_actual"]), (12, 2))
         self.assertIsNone(parsed.records[1]["friends_found_actual"])
-
-    def test_vollzogen_and_new_member_sheets(self):
-        parsed = data_types.parse_baptisms(data_files.read_table("Vollzogen 2026.xlsx", s.vollzogen_file("Frankfurt")))
-        self.assertEqual(parsed.problem_count, 1)  # the row without a baptism date
-        weeks = {(r["sunday"], r["baptisms"], r["confirmations"]) for r in parsed.records}
-        self.assertEqual(weeks, {("2026-09-20", 2, 0), ("2026-09-27", 0, 1)})
-        other = data_types.parse_baptisms(data_files.read_table("nm.xlsx", s.new_member_file("Bockenheim")))
-        self.assertEqual([(r["area"], r["sunday"], r["baptisms"]) for r in other.records if r["baptisms"]],
-                         [("Bockenheim", "2026-09-27", 1)])
-        text = json.dumps(parsed.as_dict()) + json.dumps(other.as_dict())
-        for secret in s.MADE_UP_NAMES + ["made-up@example.invalid", "Testa", "1990"]:
-            self.assertNotIn(secret, text)
 
     def test_flat_geo_file_with_peer_types_and_extra_attribute(self):
         data = s.geo_flat_file([("Frankfurt", "Frankfurt 1", "Bockenheim", "34000", "2,5", "Big city", "Elders", "yes"),
@@ -217,8 +202,10 @@ class TextTests(unittest.TestCase):
         self.assertTrue(used)
         self.assertEqual(sorted(used - set(TEXT)), [])
         for part in ("title", "about", "columns", "merge"):
-            for name in ("geo", "finding", "zoneHistory", "baptisms"):
+            for name in ("geo", "finding", "zoneHistory"):
                 self.assertIn(f"uploads.{name}.{part}", TEXT)
+            self.assertNotIn(f"uploads.baptisms.{part}", TEXT)  # the Baptism history upload is gone (October 2026)
+        self.assertIn("uploads.kind.baptisms", TEXT)  # its old batches are still named in Import history
         for key in ("uploads.names.zone", "uploads.names.area"):
             self.assertIn(key, TEXT)
         self.assertEqual(plain("uploads.hub.last", date="1 Jan", file="a.csv"), "Last upload: 1 Jan · a.csv")

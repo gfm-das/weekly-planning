@@ -1,7 +1,7 @@
 """The Data uploads pages (/uploads/...): upload a file, check it, match names, apply. The rules are in data_uploads.py.
 
 Pages:
-  /uploads                      the six uploads, with the date of the last one
+  /uploads                      every kind of upload, with the date of the last one
   /uploads                      1. the one drop zone for every kind of file (/uploads/check finds the kind: upload_detect.py)
   /uploads/<kind>/template      the template as a CSV file
   /uploads/<kind>/review        2. the check, with the names to match (3.) and the Apply form (4.)
@@ -11,7 +11,7 @@ Pages:
   /uploads/geo/table            the Geo data of every area as a table to edit (zones and districts: to read)
   /uploads/names                the remembered names, each can be forgotten
 
-<kind> is one of data_uploads.UPLOADS: geo, finding, zone-history, baptisms.
+<kind> is one of data_uploads.UPLOADS: geo, finding, zone-history.
 Every text is from data_text.py (the portal translates it).
 """
 import re
@@ -67,9 +67,6 @@ SAMPLE_COLUMNS = {  # the columns of "First rows to store" on the check page: (t
                      ("uploads.col.newPeopleGoal", "friends_found_goal"), ("uploads.col.newPeople", "friends_found_actual"),
                      ("uploads.col.sacrament", "sacrament_attendance_actual"),
                      ("uploads.col.baptized", "baptisms_confirmations_actual")],
-    "baptisms": [("uploads.col.week", "sunday"), ("uploads.col.zone", "zone"), ("uploads.col.area", "area"),
-                 ("uploads.col.ward", "ward"), ("uploads.col.source", "finding_source"),
-                 ("uploads.col.baptisms", "baptisms"), ("uploads.col.confirmations", "confirmations")],
 }
 
 

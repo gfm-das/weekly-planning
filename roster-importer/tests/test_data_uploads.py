@@ -123,7 +123,16 @@ class DataUploadTests(unittest.TestCase):
         self.assertNotIn("Referral archive", hub)
         self.assertNotIn("Teaching and contact rates", hub)
         self.assertIn("Finding export", hub)
-        self.assertIn("Baptism history", hub)
+        # October 2026: the Baptism history upload is gone too (its stored rows stay, see test_05).
+        self.assertNotIn("Baptism history", hub)
+        self.assertNotIn('value="baptisms"', hub)
+        self.assertEqual(self.client.get("/uploads/baptisms").status_code, 302)  # old address: leads to /uploads
+        self.assertEqual(self.client.get("/uploads/baptisms/template").status_code, 404)
+        self.assertEqual(self.client.get("/uploads/baptisms/review").status_code, 302)  # nothing can wait there
+        refused = self.client.post("/uploads/check", content_type="multipart/form-data",
+                                   data={"csrf_token": "test-csrf", "kind": "baptisms",
+                                         "file": (io.BytesIO(b"Baptism date,Zone\n9/20/2026,X\n"), "b.csv")})
+        self.assertEqual(refused.status_code, 404)
 
     def test_02_geo_data_flat_file_with_peer_types_table_and_undo(self):
         """Round 16: Area data is part of Geo data. A flat file with Urban type and Assignment type is read, a re-upload
@@ -282,18 +291,29 @@ class DataUploadTests(unittest.TestCase):
             self.assertEqual(self.undo(batch).status_code, 302)
         self.assertEqual(self.scalar("select count(*) from dashboards.zone_history_week where data_source='upload'"), 0)
 
-    def test_05_baptisms(self):
+    def test_05_old_baptism_history_batches_still_count_show_and_undo(self):
+        """The Baptism history upload is gone (October 2026), but a batch uploaded before still counts in the dashboards,
+        is listed in Import history and can be undone there."""
         (zone, district, area), = self.portal_areas(1)
-        self.upload("baptisms", s.vollzogen_file(zone), "Vollzogen 2026.xlsx")
-        baptisms = self.apply("baptisms")
+        zone_id = self.scalar("select id from public.zones where name=%s and mission_id=2", (zone,))
+        area_id = self.scalar("select id from public.areas where name=%s", (area,))
+        with database.connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""insert into public.roster_import_batches (id,mission_id,kind,filename,actor,summary)
+                  values (gen_random_uuid(),2,'BAPTISMS','Vollzogen 2025.xlsx','Elder Test','{}') returning id""")
+                batch = str(cur.fetchone()[0])
+                cur.execute("""insert into public.baptism_history_weeks
+                  (batch_id,mission_id,sunday,zone_id,area_id,zone_name,area_name,ward,finding_source,baptisms,confirmations)
+                  values (%s,2,'2025-09-21',%s,%s,%s,%s,'','',2,0),(%s,2,'2025-09-28',%s,%s,%s,%s,'','',0,1)""",
+                            (batch, zone_id, area_id, zone, area) * 2)
         counted = self.rows("select sum(baptisms) b,sum(confirmations) c from dashboards.baptism_history_week where mission_id=2")[0]
         self.assertEqual((counted["b"], counted["c"]), (2, 1))
-        stored = json.dumps([dict(r) for r in self.rows("select * from public.baptism_history_weeks")], default=str)
-        for secret in s.MADE_UP_NAMES:
-            self.assertNotIn(secret, stored)
         history = self.client.get("/imports").get_data(as_text=True)
+        self.assertIn("Vollzogen 2025.xlsx", history)
         self.assertIn("Baptism history", history)
-        self.assertEqual(self.undo(baptisms).status_code, 302)
+        self.assertEqual(self.client.get(f"/imports/{batch}").status_code, 200)
+        self.assertEqual(self.undo(batch).status_code, 302)
+        self.assertEqual(self.scalar("select count(*) from public.baptism_history_weeks where batch_id=%s", (batch,)), 0)
 
     def test_06_dashboards_reader_sees_views_not_tables(self):
         with database.connect() as conn:

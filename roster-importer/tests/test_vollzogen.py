@@ -155,13 +155,6 @@ class SheetTests(unittest.TestCase):
         self.assertEqual((len(parsed.records), parsed.problem_count), (1, 0))
         self.assertEqual(parsed.records[0]["fc_number"], "1234567")
 
-    def test_no_made_up_name_leaks_where_it_should_not(self):
-        # Names are read on purpose here (that is the point of the upload), but only the Vollzogen reader reads them:
-        # the baptism history upload on the same sheet still keeps counts only.
-        counts = data_types.parse_baptisms(data_files.read_table("v.xlsx", s.vollzogen_file("Frankfurt")))
-        for name in s.VOLLZOGEN_PEOPLE + s.MADE_UP_NAMES:
-            self.assertNotIn(name, json.dumps(counts.as_dict()))
-
 
 def stored(member_id, name, zone="Frankfurt", day=None, fc=None):
     return {"id": member_id, "label": name, "folded": match.fold(name), "baptism_date": day, "fc": fc, "zone": zone,

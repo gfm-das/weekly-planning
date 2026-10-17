@@ -10,7 +10,7 @@ import roster_file
 from data_files import FileProblem, find_heading_row, heading_key
 
 # Kinds in the order the page lists them (the drop-down); the value is the one the readers use.
-KINDS = ["roster", "historical", "people", "vollzogen", "baptisms", "geo", "finding", "zone-history"]
+KINDS = ["roster", "historical", "people", "vollzogen", "geo", "finding", "zone-history"]
 CHECKED_KINDS = [kind for kind in KINDS if kind not in ("roster", "historical")]  # kept waiting as rows (the other two as files)
 
 HISTORICAL_COLUMNS = [historical_import.TIMESTAMP_COLUMN, historical_import.EMAIL_COLUMN,
@@ -52,10 +52,6 @@ def is_vollzogen(rows):
     return any(has(rows, name, date) for name in data_types.VOLLZOGEN_COLUMNS["name"] for date in data_types.VOLLZOGEN_COLUMNS["baptism_date"])
 
 
-def is_baptisms(rows):
-    return any(has(rows, layout["date"][0]) for layout in data_types.BAPTISM_LAYOUTS)
-
-
 def detect(filename, data):
     """The possible kinds of a file, as a list of KINDS (empty: not recognised). Raises FileProblem for a file that cannot
     be read (wrong type, empty)."""
@@ -66,9 +62,11 @@ def detect(filename, data):
         return strong
     if data_types.geo_table_starts(rows):
         return ["geo"]
-    found = [kind for kind, test in (("people", is_people), ("vollzogen", is_vollzogen), ("baptisms", is_baptisms)) if test(rows)]
+    found = [kind for kind, test in (("people", is_people), ("vollzogen", is_vollzogen)) if test(rows)]
     if found:
         return found
+    if has_any(rows, data_types.PEOPLE_COLUMNS["baptism_date"]):
+        return []  # a sheet of baptisms without names (the old Baptism history upload, removed): not Geo data
     if has(rows, "Area"):  # the flat Geo data file (one row per area)
         return ["geo"]
     return []

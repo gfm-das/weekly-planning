@@ -39,7 +39,7 @@ TEXT = {
     "uploads.people.fcAbout": "The FC number (the FindeChristus number, column FC number) is the first and exact way to recognise a person: the same number is always the same person, whatever the name or area. A number is saved only where there was none; a saved number is never overwritten. The same number for different names is flagged.",
     "uploads.kind.peopleAbout": "New members with their details from a spreadsheet. People already stored are recognised and only get their blanks filled.",
 
-    # The six uploads
+    # The data uploads
     "uploads.geo.title": "Geo data",
     "uploads.geo.about": "Population, size in km2, density and households of each area, with the source and the date the figures are from. Dashboards use them to compare areas fairly, for example baptisms per 10,000 residents.",
     "uploads.geo.columns": "Columns: Zone, District, Area, Population, Size (km2), Density (people per km2), Households, Source, Data date. Every other column becomes an extra attribute. The template lists every area with what is saved today.",
@@ -55,17 +55,13 @@ TEXT = {
     "uploads.zoneHistory.about": "Goals and results of each zone per week, going back as far as your sheets go (the Data for Data Studio sheet).",
     "uploads.zoneHistory.columns": "Columns: Sunday, Zone, then a Goal and an Actual column for each key indicator, Follow-up lessons Actual, First Time Attendance and Companionships. Rows for the whole mission are left out: the mission is added up from the zones. A Goal is the goal set that Sunday for the next week, as in the sheet; each week is measured against the goal set the week before.",
     "uploads.zoneHistory.merge": "For a zone and week the portal already has weekly plans for, the portal's own numbers are used and the uploaded row is not counted. A newer upload of the same weeks replaces the older one.",
-    "uploads.baptisms.title": "Baptism history",
-    "uploads.baptisms.about": "Baptisms and confirmations per week, zone or area, ward and finding source, from the Vollzogen sheets or the New Member Database. Only the counts are kept.",
-    "uploads.baptisms.columns": "Columns: Baptism date, Confirmation date, Zone, Area, Ward or branch, Finding source. The Vollzogen sheet (Taufdatum, Zone, Gemeinde, Wie gefunden) and the New Member Database Raw sheet are read as they are. Names and other personal columns are not read.",
-    "uploads.baptisms.merge": "A newer upload of the same weeks replaces the older one, so upload one sheet for a stretch of weeks, not two.",
 
     # Import history names of the uploads
     "uploads.kind.geo": "Geo data",
     "uploads.kind.retire": "Deleted place or question",
     "uploads.kind.finding": "Finding export",
     "uploads.kind.zoneHistory": "Zone history",
-    "uploads.kind.baptisms": "Baptism history",
+    "uploads.kind.baptisms": "Baptism history",  # the removed upload: its old batches are still listed
 
     # Step 1: upload
     "uploads.page.template": "Download the template",
@@ -169,9 +165,6 @@ TEXT = {
     "uploads.col.newPeople": "New People Being Taught",
     "uploads.col.sacrament": "People Being Taught Who Attend Sacrament Meeting",
     "uploads.col.baptized": "People Who Are Baptized and Confirmed",
-    "uploads.col.ward": "Ward or branch",
-    "uploads.col.baptisms": "Baptisms",
-    "uploads.col.confirmations": "Confirmations",
     "uploads.col.file": "File",
     "uploads.col.when": f"When ({settings.TIME_ZONE_NAME})",
     "uploads.col.by": "By",
@@ -212,7 +205,6 @@ TEXT = {
     "uploads.problem.sizeZero": "the size must be more than 0 km2",
     "uploads.problem.noArea": "No area name.",
     "uploads.problem.noDate": "No date.",
-    "uploads.problem.noZoneOrArea": "No zone or area.",
     "uploads.problem.noPerson": "No person id: this row is left out.",
     "uploads.problem.personTwice": "This person is in the file twice: the first row is used.",
     "uploads.problem.noSource": "No finding category or source: this row is left out.",

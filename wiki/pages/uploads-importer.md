@@ -13,7 +13,7 @@ tags: [admin, uploads]
 
 ## Usage
 
-Open **DA Management → Uploads** (portal menu or port 8090). There is **one page and one drop zone** for every file: roster, historical CSV, people, Vollzogen, baptism history, geo data, the Church finding export and zone history.
+Open **DA Management → Uploads** (portal menu or port 8090). There is **one page and one drop zone** for every file: roster, historical CSV, people, Vollzogen, geo data, the Church finding export and zone history. (The Baptism history upload was removed in October 2026; the baptisms uploaded before stay in the dashboards, and their old entries stay in Import history, where they can still be undone.)
 
 1. Drop the file (CSV or XLSX). Leave **What is in the file?** on *Find out from the file*, or choose the kind yourself.
 2. The page reads only the heading row. If it clearly is one kind, you go straight to that kind's check page.

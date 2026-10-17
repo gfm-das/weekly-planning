@@ -290,12 +290,6 @@ def read_decimal(value):
     return number
 
 
-def week_of(day):
-    """The Sunday that ends the Monday-Sunday week this day is in (for event dates: a lesson on Monday 21 Sep
-    counts for the week that ends on Sunday 27 Sep)."""
-    return day + timedelta(days=6 - day.weekday())
-
-
 def week_before(day):
     """The Sunday on or before this day (a Sunday stays itself). The zone history sheet names each week by its
     Sunday, so its dates are read with this."""

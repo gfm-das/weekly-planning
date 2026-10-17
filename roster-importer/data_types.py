@@ -3,13 +3,13 @@
 Every kind turns the rows of a file into `records` (plain dicts) and a list of problems. Nothing here reads the
 database: matching zone and area names to the portal happens afterwards (data_names.py), and saving happens in
 data_uploads.py. Names of people are not read from a file, only the columns listed here are looked at. The one
-exception is the People upload (parse_people, section 5, saved by people_upload.py): it exists to read names.
+exception is the People upload (parse_people, section 4, saved by people_upload.py): it exists to read names.
 """
 import re
 from datetime import date, timedelta
 
 from data_files import (FileProblem, cell, clean, find_heading_row, heading_key, read_big_count, read_confirmed, read_count,
-                        read_date, read_decimal, read_fc_number, read_loose_date, week_before, week_of)
+                        read_date, read_decimal, read_fc_number, read_loose_date, week_before)
 from data_names import fold
 from data_text import plain
 
@@ -481,73 +481,7 @@ def parse_zone_history(rows):
     return parsed
 
 
-# --------------------------------------------------------------------------------------------- 4. baptism history
-
-# Three layouts are read: our template, the office's "Vollzogen" sheets and the "New Member Database Raw" form.
-BAPTISM_LAYOUTS = [
-    {"date": ["Baptism date"], "confirmed": ["Confirmation date"], "zone": ["Zone"], "area": ["Area"],
-     "ward": ["Ward or branch"], "source": ["Finding source"]},
-    {"date": ["Taufdatum"], "confirmed": ["Konfirmiert (Datum)", "Konfirmiert"], "zone": ["Zone"], "area": [],
-     "ward": ["Gemeinde"], "source": ["Wie gefunden"]},
-    {"date": ["Date of Baptism"], "confirmed": ["Date of Confirmation"], "zone": [],
-     "area": ["Which companionship is filling out the form?"], "ward": ["Which Ward/Branch Are They in?"],
-     "source": ["Finding Source, of friend baptized"]},
-]
-
-
-def baptism_template():
-    return (["Baptism date", "Confirmation date", "Zone", "Area", "Ward or branch", "Finding source"],
-            [["9/20/2026", "9/27/2026", "Frankfurt", "Bockenheim", "Frankfurt 1st", "Contacting in Public"]])
-
-
-def baptism_layout(rows):
-    for layout in BAPTISM_LAYOUTS:
-        try:
-            start, columns = find_heading_row(rows, layout["date"][:1])
-        except FileProblem:
-            continue
-        return layout, start, columns
-    raise FileProblem(plain("uploads.problem.missingColumns", columns="Baptism date / Taufdatum / Date of Baptism"))
-
-
-def parse_baptisms(rows):
-    """Counts only: one baptism per row in the week of the baptism, one confirmation in the week of the
-    confirmation. Name, missionaries, birth date and the other personal columns are never read."""
-    parsed = Parsed()
-    layout, start, columns = baptism_layout(rows)
-    totals = {}
-    for number, row in enumerate(rows[start + 1:], start=start + 2):
-        where = {part: clean(cell(row, columns, *layout[part]))[:120] if layout[part] else ""
-                 for part in ("zone", "area", "ward", "source")}
-        raw_date = cell(row, columns, *layout["date"])
-        if not clean(raw_date) and not where["zone"] and not where["area"]:
-            continue  # an empty row of the sheet
-        parsed.rows_read += 1
-        try:
-            baptized = read_date(raw_date)
-            confirmed = read_date(cell(row, columns, *layout["confirmed"])) if layout["confirmed"] else None
-        except ValueError as error:
-            parsed.problem(number, str(error))
-            continue
-        if not baptized:
-            parsed.problem(number, plain("uploads.problem.noBaptismDate"))
-            continue
-        if not where["zone"] and not where["area"]:
-            parsed.problem(number, plain("uploads.problem.noZoneOrArea"))
-            continue
-        for day, field in ((baptized, "baptisms"), (confirmed, "confirmations")):
-            if not day:
-                continue
-            key = (week_of(day).isoformat(), where["zone"], where["area"], where["ward"], where["source"])
-            total = totals.setdefault(key, {"sunday": key[0], "zone": where["zone"], "area": where["area"],
-                                            "ward": where["ward"], "finding_source": where["source"],
-                                            "baptisms": 0, "confirmations": 0})
-            total[field] += 1
-    parsed.records = list(totals.values())
-    return parsed
-
-
-# --------------------------------------------------------------------------------------------- 5. people (names read!)
+# --------------------------------------------------------------------------------------------- 4. people (names read!)
 
 # The headings of the People upload, by what they fill. The first heading of each is the template's; the others are
 # the office's "Vollzogen" sheets and the "New Member Database Raw" form, which are read as they are.
@@ -642,7 +576,7 @@ def parse_people(rows):
     return parsed
 
 
-# --------------------------------------------------------------------------------------------- 6. vollzogen (names read!)
+# --------------------------------------------------------------------------------------------- 5. vollzogen (names read!)
 
 # The office's Vollzogen list ("Taufen", sheet "Vollzogen 2026"): who was baptized and confirmed, filled in by hand, so the
 # dates come in many writings and some cells hold only an X. The headings are in the owner's order; the title row above

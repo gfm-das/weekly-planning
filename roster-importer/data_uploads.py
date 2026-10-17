@@ -1,7 +1,6 @@
 """Data uploads: the numbers the portal does not collect itself (the rules; the pages are data_upload_pages.py).
 
-Four uploads (geo data, finding export, zone history, baptism history), each with
-the same four steps:
+Three uploads (geo data, finding export, zone history), each with the same four steps:
   1. Upload: download the template, pick a CSV or XLSX file. The file is read in memory and never saved.
   2. Check: row counts, problems, and how the data joins what is already stored (check_upload).
   3. Match names: zone and area names that are not portal names are matched once (or kept as historical names)
@@ -42,6 +41,8 @@ from data_text import plain, t
 
 # Batches whose rows live in their own table (each row carries its batch id; Undo removes them). Geo data instead
 # records its changed rows like every other batch (batches.py).
+# BAPTISMS is the Baptism history upload, removed in October 2026: its page is gone, but its stored rows
+# (public.baptism_history_weeks) stay for the dashboards, and its old batches can still be shown and undone in Import history.
 ROW_KINDS = {"FINDING", "ZONE_HISTORY", "BAPTISMS"}
 # How Import history names each kind (text keys of data_text.py).
 KIND_LABELS = {"FINDING": "uploads.kind.finding",
@@ -55,17 +56,14 @@ UPLOADS = {
     "finding": {"kind": "FINDING", "text": "finding", "level": "area", "historical": True, "table": "finding_people"},
     "zone-history": {"kind": "ZONE_HISTORY", "text": "zoneHistory", "level": "zone", "historical": True,
                      "table": "zone_history_weeks"},
-    "baptisms": {"kind": "BAPTISMS", "text": "baptisms", "level": "area", "historical": True,
-                 "table": "baptism_history_weeks"},
 }
-TABLE_OF_KIND = {spec["kind"]: spec["table"] for spec in UPLOADS.values() if "table" in spec}
+# Where Undo finds the rows of each kind of batch (the Baptism history upload is gone, its old batches can still be undone).
+TABLE_OF_KIND = {**{spec["kind"]: spec["table"] for spec in UPLOADS.values() if "table" in spec},
+                 "BAPTISMS": "baptism_history_weeks"}
 # The columns of each weekly table and the record field that fills each one.
 WEEKLY_COLUMNS = {
     "zone-history": [("sunday", "sunday"), ("zone_id", "zone_id"), ("zone_name", "zone")]
                     + [(f, f) for f in data_types.ZONE_HISTORY_FIELDS],
-    "baptisms": [("sunday", "sunday"), ("zone_id", "zone_id"), ("area_id", "area_id"), ("zone_name", "zone"),
-                 ("area_name", "area"), ("ward", "ward"), ("finding_source", "finding_source"),
-                 ("baptisms", "baptisms"), ("confirmations", "confirmations")],
 }
 FINDING_FIELDS = ["zone_id", "area_id", "zone_name", "district_name", "area_name", "finding_category", "finding_source",
                   *data_types.FINDING_DATES]
@@ -198,9 +196,7 @@ def read_upload(slug, filename, data):
         if not person_secret():
             raise FileProblem(plain("uploads.finding.noSecret"))
         return data_types.parse_finding(rows, person_key)
-    if slug == "zone-history":
-        return data_types.parse_zone_history(rows)
-    return data_types.parse_baptisms(rows)
+    return data_types.parse_zone_history(rows)
 
 
 def template_file(slug, cur):
@@ -209,10 +205,8 @@ def template_file(slug, cur):
         headings, rows = data_types.geo_template_tables(geo_zone_rows(cur), geo_district_rows(cur), geo_rows(cur))
     elif slug == "finding":
         headings, rows = data_types.finding_template()
-    elif slug == "zone-history":
-        headings, rows = data_types.zone_history_template()
     else:
-        headings, rows = data_types.baptism_template()
+        headings, rows = data_types.zone_history_template()
     return f"template-{slug}.csv", headings, rows
 
 
@@ -594,7 +588,6 @@ def check_upload(cur, slug, pending):
 # Where a stored row of each weekly table is, in the same shape as a record of the file (see place_key).
 PLACE_COLUMNS = {
     "zone-history": "t.zone_id, t.zone_name zone, null::bigint area_id, '' area",
-    "baptisms": "t.zone_id, t.zone_name zone, t.area_id, t.area_name area",
 }
 
 

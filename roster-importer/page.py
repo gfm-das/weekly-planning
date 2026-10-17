@@ -39,8 +39,7 @@ MENU_GROUPS = [
     ("uploads", "Uploads", [
         ("/uploads", "Uploads", ["/", "/preview", "/apply", "/historical", "/people-upload", "/people/",
                                  "/uploads/geo", "/uploads/vollzogen", "/uploads/finding",
-                                 "/uploads/zone-history",
-                                 "/uploads/baptisms", "/uploads/names"]),
+                                 "/uploads/zone-history", "/uploads/names"]),
     ]),
     ("people", "People", [
         ("/accounts", "Account Manager", []),

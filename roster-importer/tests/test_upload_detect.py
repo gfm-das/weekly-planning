@@ -31,8 +31,16 @@ class Detect(unittest.TestCase):
         self.assertEqual(self.kinds("h.csv", old), ["historical"])
 
     def test_look_alikes_are_asked(self):
-        self.assertEqual(self.kinds("v.xlsx", s.vollzogen_sheet()), ["people", "vollzogen", "baptisms"])
-        self.assertEqual(self.kinds("n.xlsx", s.new_member_file("Bockenheim")), ["people", "baptisms"])
+        self.assertEqual(self.kinds("v.xlsx", s.vollzogen_sheet()), ["people", "vollzogen"])
+
+    def test_the_baptism_history_upload_is_gone(self):
+        # Removed in October 2026: a New Member Database sheet is a people list only, and the old Baptism history
+        # template is no longer recognised (and not taken for a flat Geo data file because it has an Area column).
+        self.assertEqual(self.kinds("n.xlsx", s.new_member_file("Bockenheim")), ["people"])
+        self.assertEqual(self.kinds("b.csv", s.csv_bytes(["Baptism date", "Confirmation date", "Zone", "Area",
+                                                          "Ward or branch", "Finding source"],
+                                                         [["9/20/2026", "9/27/2026", "Frankfurt", "Bockenheim", "", ""]])), [])
+        self.assertNotIn("baptisms", upload_detect.KINDS)
 
 
     def test_a_flat_area_file_is_geo_data_without_a_question(self):
