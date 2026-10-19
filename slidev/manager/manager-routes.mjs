@@ -21,7 +21,6 @@ import { assertDeckCreator, assertDeckEditor, assertPresentationManager, askPort
 import { CHART_BODY_LIMIT, FileCache } from './chart-access.mjs';
 import { ADDON_FINGERPRINT, buildCounts, buildDeck, buildReport, ensureDeckBuildWatcher, lastBuildInfo, publishErrorMessage, refreshBuildInBackground } from './builds.mjs';
 import { acceptedEncoding, COMPRESSIBLE } from './delivery.mjs';
-import { templateList } from './templates/index.mjs';
 import { createDeck, deckStatus, deleteDeck, duplicateDeck, renameDeck } from './deck-actions.mjs';
 import { deckDir, deckExists, deckFile, deckTitle, listDecks, notFound, presentationSlugFromPath, safeSlug, sourceVersion, writeDeckSource } from './deck-files.mjs';
 import { addressOf, doorwayFromOtherPage, managerRefusal, passCookie, passDomainFor } from './deck-origin.mjs';
@@ -253,7 +252,6 @@ const DECK = '([a-z0-9-]+)';
 const API_ROUTES = [
   ['GET', /^\/api\/presentations$/, listLibrary],
   ['POST', /^\/api\/presentations$/, createPresentation],
-  ['GET', /^\/api\/presentation-templates$/, listTemplates],
   ['POST', /^\/api\/charts\/data$/, answerChartData],
   ['GET', /^\/api\/charts\/catalog$/, answerChartCatalog],
   ['POST', new RegExp(`^/api/presentations/${DECK}/duplicate$`), duplicatePresentation],
@@ -307,17 +305,11 @@ async function listLibrary({ res, context }) {
   return sendJson(res, 200, { role: access.role || roleOf(context), can_manage: !!access.can_manage, ...libraryView(decks, access) });
 }
 
-/** GET /api/presentation-templates?lang=de: the templates and the 14 languages the new presentation dialog offers, in the person's language (names only, no data). */
-async function listTemplates({ res, url, context }) {
-  await assertDeckCreator(context);
-  return sendJson(res, 200, templateList(url.searchParams.get('lang') || ''));
-}
-
-/** POST /api/presentations { title, template?, lang? }: a new deck (blank, or from a template in a language), owned by the mission (a manager) or by the person's zone (ZL, STL). */
+/** POST /api/presentations { title }: a new blank deck (one title slide with its name), owned by the mission (a manager) or by the person's zone (ZL, STL). */
 async function createPresentation({ req, res, context }) {
   await assertDeckCreator(context);
-  const { title, template, lang } = await readBody(req);
-  const slug = await createDeck(title, { template, lang });
+  const { title } = await readBody(req);
+  const slug = await createDeck(title);
   // portal-api records the owner. Without that record a ZL could not open their new deck, so the folder is removed
   // again when it fails.
   try {

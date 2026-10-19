@@ -1900,7 +1900,7 @@
  "pres.duplicate": "Çoğalt",
  "pres.download": "İndir",
  "pres.rename": "Yeniden adlandır",
- "pres.noPresentationsYet": "Henüz sunum yok.",
+ "pres.noPresentationsYet": "Henüz sunum yok. Bir tane başlatmak için “+ Yeni sunum”a tıkla.",
  "pres.noPresentationsAreAssignedTo": "Size henüz atanmış sunum yok.",
  "pres.tapOrClickToOpen": "Açmak için dokunun veya tıklayın",
  "pres.presentationActions": "Sunum işlemleri",

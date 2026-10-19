@@ -10,14 +10,25 @@
 //     page code. Only a deck pass for that one deck works here, never the sign-in. -> deck-routes.mjs
 //     (deck-origin.mjs explains why there are two addresses.)
 // Who uses it: the Slidev container (slidev-compose.yml); the tests start a copy of it.
-// How it fits: this file only starts the two listeners and two jobs that run after the start. The README next to
+// How it fits: this file only adds the shipped decks, starts the two listeners and two jobs that run after the start. The README next to
 // it (manager/README.md) is a map of every file.
 import http from 'node:http';
 import { ADDON_FINGERPRINT, rebuildDecksWithOldAddon } from './builds.mjs';
 import { handleDeckRequest, handleDeckSocket } from './deck-routes.mjs';
 import { prestartRecentDeck } from './editors.mjs';
 import { handleManagerRequest } from './manager-routes.mjs';
+import { offerShippedDecks } from './shipped-decks.mjs';
 import { ADDON_REBUILD, ADDON_REBUILD_DELAY_MS, BIND_ADDRESS, BUILD_CONCURRENCY, DECK_PUBLIC_PORT, DECK_SERVER_PORT, MANAGER_PORT, NICE_BIN } from './settings.mjs';
+
+// ---- the decks that ship with the product (shipped-decks.mjs: copied once, never over a person's deck) ----
+
+if (process.env.SLIDEV_SHIPPED_DECKS !== '0') {
+  try {
+    const { added, kept } = await offerShippedDecks();
+    if (added.length) console.log(`[shipped] added ${added.join(', ')} to the library`);
+    if (kept.length) console.log(`[shipped] ${kept.join(', ')} already exists: left as it is`);
+  } catch (error) { console.error('[shipped] could not add the shipped decks:', error.message); }
+}
 
 // ---- the manager address ----
 

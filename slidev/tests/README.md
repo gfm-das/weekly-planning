@@ -55,9 +55,8 @@ On Windows without Docker, `node --test tests/` runs the plain tests; the ones t
 | `chart-builder.test.mjs`, `chart-edit.test.mjs` | The chart builder's non-visual part: reading and writing chart tags, chart-ids, the type picker. |
 | `chart-spec.test.mjs` | Chart queries: the same canonical form and hash as portal-api (`fixtures/chart-spec-vectors.json`). |
 | `transformers.test.mjs` | The ```` ```chart ```` block in a slide. |
-| `mission-dashboard.test.mjs` | The Mission Dashboard showcase deck's charts. |
-| `mmm-core.test.mjs` | The arithmetic of the MMM, ZOKO and Stake pieces (goal cards, shares, periods, gauges, tables). |
-| `mmm-templates.test.mjs` | The five presentation templates: words in 14 languages, slides, live queries (valid, pinned, known measures), typed places, the pieces, the showcase decks, the library dialog, the routes (the real manager: POSIX only). |
+| `shipped-decks.test.mjs` | The showcase deck (every chart type and feature, finished weeks only, made-up names) and how it reaches the library: once, never over a person's deck, never back after a delete. |
+| `new-deck.test.mjs` | + New Presentation: no templates or example decks ship, the dialog asks only for a name, the real manager writes one title slide. |
 | `rename-friends-found.test.mjs` | The one-off script that renamed "Friends found" in existing decks. |
 
 ### Helpers (not tests themselves)
@@ -74,8 +73,7 @@ On Windows without Docker, `node --test tests/` runs the plain tests; the ones t
 |---|---|
 | `deck-origin/edge_deck_origin.ps1` | The real manager, real Slidev builds and the real editor with this branch's portal-api on a **throw-away** database copy: the two addresses, passes, zone decks, the chart builder under the page's security policy. Uses `deck-origin/serve-deck-origin.mjs`. |
 | `edge_chart_builder.ps1` | The chart builder dialog in a computer and a phone width (`builder-harness/`: made-up numbers, no manager). |
-| `present/edge_present.ps1` | Download PDF and screen mirroring on a really built deck (`present/serve-built-deck.mjs`). |
-| `dashboard-deck/edge_dashboard_deck.ps1`, `dashboard-deck/chain-check.mjs` | The Mission Dashboard deck through the manager and portal-api on a throw-away database copy. |
+| `present/edge_present.ps1` | Download PDF and screen mirroring on a really built deck (made by `present/make-test-deck.mjs`, served by `present/serve-built-deck.mjs`). |
 | `speed/edge_speed.ps1` | Speed, not right or wrong: builds, the editor's start, the manager's routes, and the library, two decks, `/studio` (with Add chart and Source) and a Whiteboard chart frame at phone and computer width, on the local network and on a slowed "4G" line. Writes `report.json` and screenshots. Uses `speed/serve-speed.mjs` and a **throw-away** database copy; round 9's numbers are in `docs/handoff/round9/slidev.md`. |
 
 Never point a test at the live system: the live containers, the live database or the live decks.

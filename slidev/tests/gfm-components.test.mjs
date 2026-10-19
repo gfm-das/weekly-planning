@@ -13,7 +13,7 @@ const read = (...parts) => fs.readFileSync(path.join(ADDON, ...parts), 'utf8').r
 const layouts = fs.readdirSync(path.join(ADDON, 'layouts')).filter(f => f.endsWith('.vue')).map(f => f.replace(/\.vue$/, ''));
 const components = fs.readdirSync(path.join(ADDON, 'components')).filter(f => /^Gfm.*\.vue$/.test(f)).map(f => f.replace(/\.vue$/, ''));
 
-const WANTED_LAYOUTS = ['gfm-cover', 'gfm-section', 'gfm-hero', 'gfm-full-chart', 'gfm-chart-insight', 'gfm-two-chart', 'gfm-kpi-grid', 'gfm-three-column', 'gfm-comparison', 'gfm-image-message', 'gfm-freeform'];
+const WANTED_LAYOUTS = ['gfm-cover', 'gfm-section', 'gfm-hero', 'gfm-full-chart', 'gfm-chart-insight', 'gfm-two-chart', 'gfm-kpi-grid', 'gfm-three-column', 'gfm-comparison', 'gfm-image-message'];
 const WANTED_COMPONENTS = ['GfmBigNumber', 'GfmCallout', 'GfmComparison', 'GfmInsight', 'GfmKpi', 'GfmKpiGrid', 'GfmProgress', 'GfmQuote'];
 
 // The template's root elements, counted the way Studio's catalog does (a component with several roots gets no source

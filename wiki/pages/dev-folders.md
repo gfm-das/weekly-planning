@@ -21,7 +21,7 @@ Find the folder for a task, then read that folder's own `README.md`.
 | `portal/` | The portal's pages (one `.html` per page), the shell (`index.template.html`, `portal-enhancements.js`), styles, the 14 catalogs (`i18n/`), the Whiteboard (`whiteboard/`, built from `whiteboard-build/`), nginx settings, `deploy.sh` |
 | `portal-api/` | The API: `app.py`, `roles.py` (every role decision), `planning.py`, `callins.py`, `charts.py`, `dashboard.py`, `archetypes.py`, `whiteboards.py`, `reminders.py`; `migrations/` (numbered, with `_rollback.sql` partners; `history/` holds 010 to 040); `baseline/` (the schema of a fresh install); `tests/` |
 | `roster-importer/` | DA Management: imports, accounts, planning questions, data uploads, Places, Import history with Undo, Updates; its own `migrations/` and `tests/` |
-| `slidev/` | Presentations: `manager/` (server, library, Studio, `gfm-addon`), `showcase/` (ready-made decks), `package.json` (pinned versions), `tests/` |
+| `slidev/` | Presentations: `manager/` (server, library, Studio, `gfm-addon`), `package.json` (pinned versions), `tests/` |
 | `dataease/` | Dashboards: compose file, sign-in gate, nginx front, dashboard descriptions, `seed-dashboards.sh`, `translate-dashboards.sh`, `i18n/`, `tests/` |
 | `supabase/` | The Supabase stack: compose files, database start-up SQL, Kong settings, edge functions |
 | `nightly-backup/` | The nightly database backup container (`nightly.sh`, tests) |

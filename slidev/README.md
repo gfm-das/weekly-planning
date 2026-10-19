@@ -273,8 +273,6 @@ each step, cache state, the lazy Studio modules the browser loaded, chart query 
 - `boxplot`: one box per column, the spread of its rows (quartiles as spreadsheets' QUARTILE.INC; points beyond 1.5 box lengths are drawn as unusual values).
 - `waterfall`: the first row is where it starts (for example last month's number), every other row a change (+ or −) from the running total; a last "Total" bar shows where it ends. Rises use the first colour, falls the second, the start and the total the third.
 
-`slidev/showcase/chart-gallery` shows every type and most settings with sample figures (see "Chart gallery deck" below).
-
 **The table.** The first row holds the headings, the first column holds the labels (x axis, or slices), and every other column is one series. There are three ways to give it:
 
 - **`csv`, in Source.** Copy the cells from a spreadsheet and paste them over several lines. Columns may be separated by tabs, commas or semicolons, or by two or more spaces when you type the table yourself. On one line, put `;` between rows.
@@ -438,108 +436,24 @@ While the numbers load, the chart area says "Loading mission numbers…". If the
 
 `goal` is `null` when the week before has no row. The mission totals count a goal nobody set as `0`, so the chart leaves weeks with a goal of `0` out of the goal line. Every live chart in a page asks once for 104 weeks (the most any chart shows) and keeps the most recent `weeks` of the answer, so a deck with charts of 12, 16 and 26 weeks makes one request instead of three; the page keeps the answer for a minute. The manager shares answers for 60 seconds per mission and week count, and a failure is not remembered. Errors: 400 for a bad `weeks`, 401 without a session, 403 for other roles and for leaders with no deck, and 503 with "The numbers could not load. Try again in a minute." when portal-api fails. A deck downloaded and opened elsewhere shows that message instead of numbers.
 
-# Showcase deck
+# New presentations and the showcase deck (round 22)
 
-`showcase/mission-charts/` is a finished 17-slide deck, "Mission charts", that shows what the chart components can do. It is meant for the President, the APs and the data office, and doubles as a template.
+The product ships no templates and one deck: **Everything a deck can do** (`manager/shipped-decks/gfm-showcase/`), a
+37-slide tour of every chart type, chart kind, calculated field, data story (one chart morphing into another with clicks),
+reveal, animation, layout and building block, with made-up numbers and names. When the manager starts,
+`manager/shipped-decks.mjs` copies it into `/slidev/decks/gfm-showcase` once: on a fresh install, and on an existing one
+after the update that brings it. It never overwrites anything (a folder `gfm-showcase` that already exists is left as it
+is), and what was offered is written down in `/slidev/decks/.gfm-shipped.json`, so a deck deleted in the library stays
+deleted. Like any new deck it has no access rule, so only managers see it until they share it. `SLIDEV_SHIPPED_DECKS=0`
+turns this off (the tests' manager copies do).
 
-- **Slides:** a cover, the six key indicators at a glance, one live slide each for sacrament attendance, new people being taught, baptismal dates, members at lessons and new members at sacrament meeting, a part-two divider, a pasted-table chart, a donut and a gauge, a part-three divider "Straight from our plans", four slides of charts from the database (zones side by side with % of goal; a heat map of every zone and week and a key number; new members and friends with a baptismal date with a three-week average; new people being taught per area for each leader's own stewardship), "Make your own chart" with Add chart, and a closing slide. Every slide has speaker notes; the presenter view (`/p/mission-charts/presenter/1`, or the presenter button in the slide controls) shows them.
-- **Live and sample numbers:** slides 2–7 use `<MissionKpiChart>`, so they need migration 018 and portal-api's `/internal/presentations/kpis` (otherwise they say "The numbers could not load. Try again in a minute."). Slides 12–15 use `<MissionChart :query>`, so they need migration 025 and portal-api's `charts.py`. Slides 9–10 use made-up figures and say "sample figures" on the slide.
-- **Files:** `slides.md` and `public/cover.svg`. The deck uses Slidev's own layouts, UnoCSS classes and system fonts (`fonts.provider: none`), so it loads nothing from the internet. It follows light and dark mode.
+**+ New Presentation** asks only for a name and makes a blank deck: one title slide with that name, in the default theme
+(`deck-actions.mjs` `createDeck`), then opens it in the editor. With no decks the library says "No presentations yet.
+Click + New Presentation to start one."
 
-The repository copy is not mounted. Install it once into the decks volume; after that it is an ordinary deck, and changes made in Studio are not copied back to the repository.
-
-**Install (PowerShell, from the repository root):**
-
-1. Check that the name is free. `mission-charts` must not be listed:
-   ```powershell
-   docker exec slidev-j5iyrpjbsssqlilqhw9axugx ls /slidev/decks
-   ```
-   If it is listed, stop: `docker cp` would put the copy inside the existing folder.
-2. Copy the folder. The folder name is the deck's address, `/p/mission-charts/`:
-   ```powershell
-   docker cp slidev/showcase/mission-charts slidev-j5iyrpjbsssqlilqhw9axugx:/slidev/decks/mission-charts
-   ```
-3. Publish it through the manager, signed in to the portal as an AP, the President or a Data Admin. Either open **Presentations** and click **Mission charts** (the first visit builds it and waits about 20 seconds), or choose **⋮ → Edit → Publish now**. Both build into a temporary folder and only then replace `dist/`. **Publish now** also shows Slidev's messages if the build fails.
-4. Only if the manager cannot be used, build it the same way from the command line:
-   ```powershell
-   docker exec slidev-j5iyrpjbsssqlilqhw9axugx sh -ec 'cd /slidev; d=/slidev/decks/mission-charts; rm -rf $d/.dist-building-manual; node_modules/.bin/slidev build $d/slides.md --out $d/.dist-building-manual --base /p/mission-charts/; if [ -d $d/dist ]; then mv $d/dist $d/.dist-old-manual; fi; mv $d/.dist-building-manual $d/dist; rm -rf $d/.dist-old-manual'
-   ```
-5. Check: `docker exec slidev-j5iyrpjbsssqlilqhw9axugx ls /slidev/decks/mission-charts/dist` lists `index.html`, and the deck opens in Presentations.
-
-**Who sees it:** a deck copied in this way has no access rule, so it is visible to managers only (AP, President, Data Analyst). To show it to DLs, ZLs or STLs, use **⋮ → Manage access**. Anyone who may open it sees the live mission-wide totals on slides 2–7 and 12–14; slide 15 shows each leader only their own stewardship.
-
-**Updating it from the repository later** overwrites changes made in Studio. Copy the folder's contents (note the `/.`), then choose **Publish now**. `docker cp` keeps the files' modification times from Windows, so the manager may not notice the change on its own:
-```powershell
-docker cp slidev/showcase/mission-charts/. slidev-j5iyrpjbsssqlilqhw9axugx:/slidev/decks/mission-charts/
-```
-
-**Removing it:** **⋮ → Delete** in the library (asks first and removes the folder), or `docker exec slidev-j5iyrpjbsssqlilqhw9axugx rm -rf /slidev/decks/mission-charts`.
-
-## Chart gallery deck
-
-`showcase/chart-gallery/` is an 11-slide deck, "Chart gallery", with sample figures only (no live numbers, so it works without portal-api): trend colour, style, name and forecast with a target line; stacked and horizontal bars; bars and a line together with the goal and average lines; three key numbers; heat map and radar; funnel and waterfall; tree map and sunburst; box plot and small charts; percentages, axis titles, a zoom slider and a moving average; and the chart block in Source. Each slide names the settings it uses, so it doubles as a copy-and-paste reference.
-
-Install it like the showcase deck, under its own name (`chart-gallery` must not be listed first):
-
-```powershell
-docker exec slidev-j5iyrpjbsssqlilqhw9axugx ls /slidev/decks
-docker cp slidev/showcase/chart-gallery slidev-j5iyrpjbsssqlilqhw9axugx:/slidev/decks/chart-gallery
-```
-
-Then open it in Presentations (the first visit builds it). It is visible to managers only until **⋮ → Manage access** says otherwise.
-
-## Mission Dashboard deck (the portal's Dashboards button)
-
-`showcase/mission-dashboard/` is the deck the portal's **Dashboards** button opens (round 4; it replaced Grafana there). It is installed once as the live deck folder `mission-dashboard`, so its address is `/p/mission-dashboard/`, and the portal shows it inside the Dashboards tab after signing the frame in to Presentations, like the Presentations page. Every chart is a `<MissionChart :query>` (charts from the database) and loads the latest numbers when its slide is shown.
-
-- **Slides (13):** this week at a glance (six key number tiles with a line of 12 weeks, New people being taught first, each against the goal set the week before); one slide per key indicator (26 weeks, the goal line, a straight or curved trend and one sentence of what to look at); zones against their own goals (last week, % of goal) and a heat map of zones by week; new members on the covenant path and friends preparing for baptism (count-only tiles); districts to help first (the 8 lowest by % of goal over 4 weeks, each leader sees only their own stewardship); and how to change the dashboard.
-- **Finished weeks only** (`"includeCurrent": false`): the week still being reported would pull every trend line down at the start of the week. "This week" on the first slide is the last finished week.
-- **Files:** `slides.md`; `style.css` (tiles, the calm colour around the slide, and on a phone held upright a note: tap full screen, then turn the phone sideways, or on an iPhone, which cannot go full screen, use a computer or tablet); `global-bottom.vue` (the slide number); `setup/main.ts` (inside the portal it follows the portal's light or dark theme: the shell sends `portal-theme` when the frame loads and when the theme changes, and answers `portal-theme-request`).
-- **Who sees it:** managers only (AP, President, Data Analyst), because it has **no access rule**. Leave it that way: do not use **Manage access** on it. The Dashboards button is shown to managers only as well. It keeps its name too: the button opens the folder `mission-dashboard` by name, so the manager refuses **Rename** and **Delete** for it (`manager/protected-decks.mjs`; the library shows why in the ⋮ menu). Use **Duplicate** to experiment.
-- **Editing:** like any deck (`/studio/mission-dashboard`, or **E** / ✎ in the deck). Click a chart and choose **Edit chart**; the charts are written so the builder opens them with nothing lost (`tests/mission-dashboard.test.mjs`). The repository copy is not mounted: changes made in Studio stay in the live deck.
-- **Checks:** `tests/mission-dashboard.test.mjs` and `tests/protected-decks.test.mjs` (node), `portal-api/tests/dashboard_deck_db.py` (every chart through `charts.py` on a database copy: answers for an AP, refused for DL/ZL/STL), `tests/dashboard-deck/chain-check.mjs` (the same through a throw-away manager and portal-api) and `tests/dashboard-deck/edge_dashboard_deck.ps1` (headless Edge, every slide at 1366×768 and 390×844, light and dark).
-
-**Install (PowerShell, from the repository root):** check that `mission-dashboard` is not listed and has no access rule, copy the folder, then publish it:
-```powershell
-docker exec slidev-j5iyrpjbsssqlilqhw9axugx ls /slidev/decks
-docker exec gfm-beta-supabase-db-1 psql -U postgres -d postgres -At -c "BEGIN READ ONLY; SELECT count(*) FROM portal.presentation_access WHERE deck_slug='mission-dashboard'; ROLLBACK;"
-docker cp slidev/showcase/mission-dashboard slidev-j5iyrpjbsssqlilqhw9axugx:/slidev/decks/mission-dashboard
-```
-Publish it as a manager: open **Presentations** and click **Mission Dashboard** (the first view builds it, about 15 seconds), or **⋮ → Edit → Publish now**. Updating it from the repository later works like the showcase deck (`docker cp slidev/showcase/mission-dashboard/. …:/slidev/decks/mission-dashboard/`, then **Publish now**) and overwrites changes made in Studio.
-
-# Presentation templates (round 13)
-
-**+ New Presentation** in the library asks for a **template** and the **language of the slides** (the portal's language is
-the default). The templates are written by `manager/templates/` (`index.mjs` the slides, `texts.mjs` every word in the
-14 languages) and made of the `Mmm*` pieces of the GFM add-on (`manager/gfm-addon/components/Mmm*.vue`, arithmetic in
-`lib/mmm-core.mjs`, the data reader `lib/mmm.ts`). The pieces share one look (the reference PDFs of the mission): a page
-with soft corner shapes, underlined heading, white framed cards, the footer "Supporting Missionaries in Faith, Hope, &
-Charity:". They are placed in units of 1/1152 of the slide width (`x`, `y`, `w`, `h`), so the same file looks the same
-on screen, in the presenter view and in the PDF.
-
-| Template | Slides | Live from the weekly plans | Typed by hand (marked **Manual**) |
-|---|---|---|---|
-| `mmm-main` MMM MAIN | 7: cover, Key Indicators of Conversion, Baptismal Goal, Coming This Week, Member Present, New Member Activity, Temple and Baptisms | the six key indicators, the 90-day lines, First Time First Week, year-to-date baptisms, zones, new members | names of friends and temple visits, the goals the portal does not store, % Active |
-| `mmm-media` MMM Media | 4: cover, Video of the Week, Videos, Pictures | none | the videos and pictures (`MmmSlot`) |
-| `mmm-breakout` MMM Breakout rooms | 6: cover, overview, four room slides | none | topic, leader, notes, action items, report back |
-| `zoko` ZOKO zone conference | 8 (as the zone presentation) | the same numbers for the zone that owns the deck; the zone's own areas in the table | referral rates, the mission quarter, names, the referral picture |
-| `stake` Stake coordination | 9: cover, Baptisms, Follow-up lessons, Lessons with a member, summary, dinner/youth/mini missions, Church visitors, totals by area, new members | actual and goal lines for the key numbers, totals by area | dinner appointments, youth activities, mini missions, notes on new members |
-
-- **Live numbers** are `:query='{...}'` charts written in the slide as plain JSON, exactly like `<MissionChart :query>`
-  ("Charts from mission numbers"): a leader sees them because the query is written in the deck, and a zone's deck
-  shows only that zone's numbers (the portal decides by the deck's owner). The pieces ask for the last *finished* weeks
-  (`includeCurrent: false`).
-- **Typed places** carry `placeholder` and show a small **Manual** tag on screen (not in the PDF). Type the names or
-  numbers, then delete the word `placeholder` from the piece. Nothing real is in a template: the cells say "Type here".
-- **Languages:** the slides are written once, when the deck is made. The 14 languages are `en de es fr pt uk ru it tr fa ro
-  sv da ar`; Persian and Arabic get `dir: rtl` and Western digits. The names inside a live chart come from portal-api
-  in English, so the templates draw their own legends and labels. Every language except English needs review by a
-  native speaker (`texts.mjs`).
-- **Speaker notes** (presenter view) say what is live and what is typed. **Download PDF** (`/p/<deck>/export`) prints
-  everything (a video prints as an empty frame: add a picture slide for the PDF).
-- **Change a template:** edit `manager/templates/index.mjs` (or a piece), then `node slidev/tools/make-mmm-showcase.mjs`
-  writes the five showcase decks `slidev/showcase/{mmm-main,mmm-media,mmm-breakout,zoko,stake}/slides.md` again (the test
-  checks that they match). To install a showcase deck by hand: `docker cp slidev/showcase/mmm-main <container>:/slidev/decks/mmm-main`.
-- Tests: `tests/mmm-core.test.mjs` (the arithmetic), `tests/mmm-templates.test.mjs` (words, slides, queries, pieces,
-  showcase, library dialog, routes). Details and the page-by-page comparison with the reference PDFs:
-  `docs/handoff/round13/presentations.md`.
+Removed in round 22: the old example decks (`showcase/`), the five templates (MMM MAIN, MMM Media, MMM Breakout rooms,
+ZOKO, Stake coordination: `manager/templates/`), the template and language choice in the dialog,
+`GET /api/presentation-templates`, and the templates' building blocks (the `Mmm*` components, `lib/mmm-core.mjs`,
+`lib/mmm.ts`, the `gfm-freeform` layout). Decks already on an install keep their files; one made from a template shows
+those pieces as unknown elements until they are replaced with the generic charts (`<MissionChart>`,
+`<MissionKpiChart>`, `Gfm*`). Tests: `tests/new-deck.test.mjs`, `tests/shipped-decks.test.mjs`.

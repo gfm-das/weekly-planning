@@ -1902,7 +1902,7 @@
  "pres.duplicate": "Dupliquer",
  "pres.download": "Télécharger",
  "pres.rename": "Renommer",
- "pres.noPresentationsYet": "Pas encore de présentations.",
+ "pres.noPresentationsYet": "Pas encore de présentations. Clique sur « + Nouvelle présentation » pour en commencer une.",
  "pres.noPresentationsAreAssignedTo": "Aucune présentation ne vous est encore attribuée.",
  "pres.tapOrClickToOpen": "Touchez ou cliquez pour ouvrir",
  "pres.presentationActions": "Actions de la présentation",

@@ -13,7 +13,7 @@ The slide tool itself is [Slidev](https://sli.dev), installed from npm (the vers
 `slidev/package.json`). Its code is never changed: `gfm-addon/` is the small Slidev add-on that brings the mission's
 charts, and a few fixes, into every deck.
 
-Everything else about Presentations (how to write charts, the showcase decks, how it is deployed) is in
+Everything else about Presentations (how to write charts, new decks, how it is deployed) is in
 [`slidev/README.md`](../README.md). How the tests work is in [`slidev/tests/README.md`](../tests/README.md).
 
 ## The big picture
@@ -81,9 +81,8 @@ Every file starts with a few lines saying **what it is**, **who uses it** and **
 | File | What it does |
 |---|---|
 | `deck-files.mjs` | Where a deck's files are, its name ("slug") and its title (read with Slidev's own parser). |
-| `deck-actions.mjs` | New (blank or from a template), Duplicate, Rename and Delete; the editor page's status line. |
-| `templates/index.mjs` | The presentation templates (MMM MAIN, Media, Breakout rooms, ZOKO, Stake coordination) as Markdown, and the list the new presentation dialog shows. |
-| `templates/texts.mjs` | Every word of the templates and of that dialog in the 14 languages. |
+| `shipped-decks.mjs`, `shipped-decks/` | The deck that ships with the product (the showcase), copied into the library once at start, never over a person's deck. |
+| `deck-actions.mjs` | New (a blank deck: one title slide), Duplicate, Rename and Delete; the editor page's status line. |
 | `builds.mjs` | Publishing (`slidev build`): one build at a time, a new copy swapped in only when it worked, publishing by itself. |
 | `source-upload.mjs` | Upload source: reads a deck's .zip (slides.md and public/ only, safe paths) and writes it into the deck. |
 | `editors.mjs` | The visual editors: start one per deck, warm it up, pack its files on the way to the browser, stop it when nobody used it for 40 minutes (10 when it was only started ahead of time). |
@@ -120,8 +119,6 @@ Every file starts with a few lines saying **what it is**, **who uses it** and **
 |---|---|
 | `components/MissionChart.vue` | `<MissionChart>`: a chart from your own numbers or from mission numbers. |
 | `components/MissionKpiChart.vue` | `<MissionKpiChart>`: one key indicator, week by week. |
-| `components/Mmm*.vue` | The pieces of the MMM, ZOKO and Stake templates: `MmmFrame` (page and footer), `MmmCover`, `MmmCard` (key number), `MmmGauge`, `MmmTrend` (last 90 days), `MmmTable`, `MmmPair` (actual and goal), `MmmManual` and `MmmChips` (typed by hand), `MmmSlot` (video or picture). |
-| `lib/mmm-core.mjs`, `lib/mmm.ts` | Their arithmetic (plain Node, tested) and the shared reader of a `:query` (the same endpoint and pinning as `<MissionChart>`). |
 | `presenter/ScreenMirror.vue` | The presenter view's Screen Mirror panel (says why mirroring cannot start on plain http). |
 | `lib/chart-engine.mjs` | Draws a chart from its numbers plus an ECharts option (one binder and one look per series type). |
 | `lib/chart-core.mjs` | Tables, number formats and trend lines; draws charts written with the older settings exactly as before. |

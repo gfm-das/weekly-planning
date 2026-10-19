@@ -15,9 +15,9 @@
 // the id friends_found) mean the same indicator in <MissionKpiChart>, before
 // and after the round-3 addon.
 //
-// Decks copied from the showcase (Chart gallery, Mission charts) get the
-// showcase's own new sentences first: a line that is exactly as the round-2
-// showcase had it (SHOWCASE_LINES) becomes the line the showcase has now. So
+// Decks copied from the old example decks (Chart gallery, Mission charts;
+// removed from the product in round 22) get their round-3 sentences first: a
+// line exactly as the round-2 example had it (SHOWCASE_LINES) becomes the round-3 line. So
 // the sample funnel reads "New people being taught, Came to church, …" (not
 // "…, Taught"), the notes read "Every conversion story begins with a new person
 // being taught.", and the text about the old Chart button says Add chart.
@@ -44,8 +44,8 @@ const PATTERN = /\b(friends)([ \t]+)(found)\b/gi;
 /**
  * [the line as the round-2 showcase had it (git 9114ffe), the line in the
  * round-3 showcase, showcase deck, its line number there]. Made from the git
- * diff of slidev/showcase/<deck>/slides.md (one line for one line);
- * tests/rename-friends-found.test.mjs checks each pair against the showcase.
+ * diff of the old slidev/showcase/<deck>/slides.md (one line for one line);
+ * tests/rename-friends-found.test.mjs checks each pair.
  */
 export const SHOWCASE_LINES = [
   ["<MissionChart type=\"bar\" title=\"Friends found per week (sample)\" trend=\"polynomial\" :degree=\"2\" trend-color=\"#d96b2b\" trend-style=\"solid\" :trend-width=\"3\" trend-label=\"Direction\" :forecast=\"3\" :target=\"30\" target-label=\"Zone goal\" :height=\"380\" csv=\"Week,Friends found; Aug 2,14; Aug 9,17; Aug 16,16; Aug 23,21; Aug 30,20; Sep 6,24; Sep 13,23; Sep 20,27\" />",
@@ -190,7 +190,7 @@ function showcaseLines(text, changes) {
     const cr = line.endsWith('\r') ? '\r' : '';
     const known = showcaseMap().get(cr ? line.slice(0, -1) : line);
     if (!known || code.some(([from, to]) => start >= from && start < to)) return line;
-    changes.push({ line: i + 1, kind: 'showcase text', showcase: `slidev/showcase/${known.deck}/slides.md line ${known.line}` });
+    changes.push({ line: i + 1, kind: 'showcase text', showcase: `the old ${known.deck} example deck, line ${known.line}` });
     return known.to + cr;
   }).join('\n');
 }

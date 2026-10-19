@@ -1900,7 +1900,7 @@
  "pres.duplicate": "تکثیر",
  "pres.download": "بارگیری",
  "pres.rename": "تغییر نام",
- "pres.noPresentationsYet": "هنوز ارائه‌ای نیست.",
+ "pres.noPresentationsYet": "هنوز ارائه‌ای نیست. برای شروع یک ارائه، روی «+ ارائهٔ تازه» کلیک کن.",
  "pres.noPresentationsAreAssignedTo": "هنوز ارائه‌ای به شما تعیین نشده است.",
  "pres.tapOrClickToOpen": "برای باز کردن لمس یا کلیک کنید",
  "pres.presentationActions": "کارهای ارائه",

@@ -49,7 +49,7 @@ main { padding: 22px; max-width: 1200px; margin: 0 auto }
 .menu button:hover { background: #f1f4f7 }
 .menu .danger { color: #b42318; border-top: 1px solid #e5e9ee; border-radius: 0; margin-top: 5px; padding-top: 12px }
 .menu-note { max-width: 240px; margin: 5px 0 0; padding: 10px 12px 6px; border-top: 1px solid #e5e9ee; font-size: 13px; line-height: 1.45; color: #64707d; cursor: default }
-.empty { background: white; border: 1px dashed #cbd5df; border-radius: 16px; padding: 45px; text-align: center; color: #6b7280 }
+.empty { grid-column: 1 / -1; background: white; border: 1px dashed #cbd5df; border-radius: 16px; padding: 45px; text-align: center; color: #6b7280 }
 .hidden { display: none !important }
 
 /* The dialogs (name, delete, access) */
@@ -60,7 +60,6 @@ dialog::backdrop { background: rgba(10,20,30,.45) }
 .modal p { color: #64707d; line-height: 1.45 }
 .modal input, .modal select { width: 100%; border: 1px solid #cfd7df; border-radius: 10px; padding: 11px 12px; margin: 8px 0 14px; background: white }
 .modal .field-label { display: block; font-size: 14px; font-weight: 650; color: #17394b; margin-top: 2px }
-.modal .tpl-note { margin: -6px 0 14px; font-size: 13px; line-height: 1.45; color: #64707d }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px }
 .btn { border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 650; cursor: pointer }
 .btn-secondary { background: #edf1f5; color: #243140 }
@@ -138,16 +137,6 @@ html[data-theme="dark"] .spinner { border-color: #39515d; border-top-color: #edf
   <h3 id="nameTitle">New presentation</h3>
   <p id="nameText">Choose a name.</p>
   <input id="nameInput" autocomplete="off" />
-  <div id="templateBox" class="hidden">
-    <label class="field-label" for="templateSelect" id="templateLabel"></label>
-    <select id="templateSelect"></select>
-    <p id="templateNote" class="tpl-note"></p>
-    <div id="langRow">
-      <label class="field-label" for="langSelect" id="langLabel"></label>
-      <select id="langSelect" translate="no"></select>
-      <p class="tpl-note" id="langNote"></p>
-    </div>
-  </div>
   <div class="modal-actions"><button class="btn btn-secondary" id="nameCancel">Cancel</button><button class="btn primary" id="nameConfirm">Save</button></div>
 </div></dialog>
 
@@ -184,7 +173,7 @@ html[data-theme="dark"] .spinner { border-color: #39515d; border-top-color: #edf
 
 <script>
 // What the page knows: the library answer (data), the deck a dialog is for, and which name dialog is open.
-const state = { data: null, selected: null, nameMode: null, accessDeck: null, templates: null };
+const state = { data: null, selected: null, nameMode: null, accessDeck: null };
 const byId = id => document.getElementById(id);
 // Every call goes through portal-bridge.js, which renews the sign-in through the portal when it has ended.
 const api = (url, options = {}) => PresentationSession.api(url, options);
@@ -251,7 +240,7 @@ function render() {
   const list = state.data.presentations;
   s.textContent = (list.length === 1 ? '{count} presentation' : '{count} presentations').replace('{count}', list.length);
   if (!list.length) {
-    g.innerHTML = '<div class="empty">' + (state.data.can_create ? 'No presentations yet.' : 'No presentations are assigned to you yet.') + '</div>';
+    g.innerHTML = '<div class="empty">' + (state.data.can_create ? 'No presentations yet. Click + New Presentation to start one.' : 'No presentations are assigned to you yet.') + '</div>';
     return;
   }
   for (const p of list) {
@@ -360,65 +349,6 @@ byId('accessSave').onclick = async () => {
   }
 };
 
-// ---- the new presentation dialog: a template and the language of its words ----
-// The language the portal is shown in (the gfm_lang cookie or ?lang=, ISO or the Church's code), as one of the 14.
-const CHURCH_CODES = { eng: 'en', deu: 'de', spa: 'es', fra: 'fr', por: 'pt', ukr: 'uk', rus: 'ru', ita: 'it', tur: 'tr', pes: 'fa', ron: 'ro', swe: 'sv', dan: 'da', ara: 'ar' };
-function portalLanguage() {
-  const raw = ((/(?:^|;\s*)gfm_lang=([^;]+)/.exec(document.cookie) || [])[1] || new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  const code = decodeURIComponent(raw).split(/[-_]/)[0];
-  return CHURCH_CODES[code] || code;
-}
-// The names and descriptions come from the manager, already in the person's language (templates/texts.mjs).
-function templateWords(id) {
-  const t = state.templates?.templates.find(x => x.id === id);
-  return { name: t?.name || id, text: t?.description || '' };
-}
-let autoName = '';
-function showTemplateNote() {
-  const id = byId('templateSelect').value;
-  byId('templateNote').textContent = templateWords(id).text;
-  byId('langRow').classList.toggle('hidden', id === 'blank');
-  // The suggested name follows the template until the person types their own.
-  const input = byId('nameInput');
-  if (input.value.trim() === '' || input.value === autoName) {
-    autoName = id === 'blank' ? '' : templateWords(id).name;
-    input.value = autoName;
-  }
-}
-async function prepareTemplates() {
-  const box = byId('templateBox');
-  try {
-    if (!state.templates) state.templates = await api('/api/presentation-templates?lang=' + encodeURIComponent(portalLanguage()));
-  } catch {
-    // Without the list the dialog still makes a blank presentation.
-    box.classList.add('hidden');
-    return;
-  }
-  const select = byId('templateSelect'), lang = byId('langSelect');
-  if (!select.options.length) {
-    for (const t of state.templates.templates) {
-      const option = document.createElement('option');
-      option.value = t.id;
-      option.textContent = templateWords(t.id).name;
-      select.appendChild(option);
-    }
-    for (const l of state.templates.languages) {
-      const option = document.createElement('option');
-      option.value = l.code;
-      option.textContent = l.name;
-      lang.appendChild(option);
-    }
-    select.onchange = showTemplateNote;
-  }
-  byId('templateLabel').textContent = state.templates.labels.startFrom;
-  byId('langLabel').textContent = state.templates.labels.language;
-  byId('langNote').textContent = state.templates.labels.languageNote;
-  select.value = 'blank';
-  lang.value = state.templates.languages.some(l => l.code === portalLanguage()) ? portalLanguage() : 'en';
-  autoName = '';
-  showTemplateNote();
-  box.classList.remove('hidden');
-}
 // ---- new, rename, copy, delete ----
 function showName(mode, p = null) {
   if (mode === 'rename' && p?.protected) return alert(p.protected_reason);
@@ -427,9 +357,7 @@ function showName(mode, p = null) {
   byId('nameTitle').textContent = mode === 'create' ? 'New presentation' : 'Rename presentation';
   byId('nameText').textContent = mode === 'create' ? 'Choose a name for the deck.' : 'Enter the new presentation name.';
   byId('nameInput').value = p?.title || '';
-  byId('templateBox').classList.add('hidden');
   byId('nameDialog').showModal();
-  if (mode === 'create') prepareTemplates();
   setTimeout(() => byId('nameInput').focus(), 50);
 }
 
@@ -467,8 +395,7 @@ byId('nameConfirm').onclick = async () => {
     message.textContent = state.nameMode === 'create' ? 'Creating presentation…' : 'Renaming presentation…';
     overlay.classList.remove('hidden');
     if (state.nameMode === 'create') {
-      const template = byId('templateBox').classList.contains('hidden') ? 'blank' : byId('templateSelect').value;
-      const created = await api('/api/presentations', { method: 'POST', body: JSON.stringify({ title, template, lang: byId('langSelect').value || 'en' }) });
+      const created = await api('/api/presentations', { method: 'POST', body: JSON.stringify({ title }) });
       message.textContent = 'Opening the editor…';
       location.href = '/studio/' + encodeURIComponent(created.slug);
       return;

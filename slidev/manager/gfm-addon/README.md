@@ -6,7 +6,7 @@ folders by itself; Studio's palette and layout picker read the `<studio>` block 
 | Folder | What |
 |---|---|
 | `styles/index.css` | The shared look: colours (`--gfm-*`, light and dark), type sizes for a call, cards, motion. Every GFM layout and component uses it. |
-| `layouts/gfm-*.vue` | The layouts: `gfm-cover`, `gfm-section`, `gfm-hero`, `gfm-full-chart`, `gfm-chart-insight`, `gfm-two-chart`, `gfm-kpi-grid`, `gfm-three-column`, `gfm-comparison`, `gfm-image-message`, `gfm-freeform`. |
+| `layouts/gfm-*.vue` | The layouts: `gfm-cover`, `gfm-section`, `gfm-hero`, `gfm-full-chart`, `gfm-chart-insight`, `gfm-two-chart`, `gfm-kpi-grid`, `gfm-three-column`, `gfm-comparison`, `gfm-image-message`. |
 | `components/Gfm*.vue` | Content and data parts: `GfmBigNumber`, `GfmCallout`, `GfmComparison`, `GfmInsight`, `GfmKpi`, `GfmKpiGrid`, `GfmProgress`, `GfmQuote`. |
 | `components/Mission*.vue`, `lib/` | The charts (`MissionChart`, `MissionKpiChart`), drawn with the vendored ECharts. How to write them: `slidev/README.md`. |
 

@@ -1,4 +1,5 @@
-"""TEST ONLY: a stand-in for Supabase Auth and PostgREST, for the manager chain check of the Mission Dashboard deck.
+"""TEST ONLY: a stand-in for Supabase Auth and PostgREST, for manager checks on a throwaway database
+(portal-api/tests/whiteboard_env.sh).
 
 The presentation manager signs people in with GET /auth/v1/user (the bearer token) and GET
 /rest/v1/current_user_context?user_id=eq.<id>. This answers both from a THROWAWAY database copy, with ids only:
@@ -10,7 +11,7 @@ The presentation manager signs people in with GET /auth/v1/user (the bearer toke
 Refuses unless DATABASE_URL names a database containing "test" and DASHDECK_TEST_THROWAWAY=yes.
 
   docker run --rm -d --name gfm-test-dash-auth --network gfm-test-r2-net --memory 256m -e DASHDECK_TEST_THROWAWAY=yes \
-      -e DATABASE_URL=... -v <repo>/slidev/tests/dashboard-deck:/stub:ro gfm-portal-portal-api python /stub/supabase_stub.py
+      -e DATABASE_URL=... -v <repo>/slidev/tests/helpers:/stub:ro gfm-portal-portal-api python /stub/supabase_stub.py
 """
 import base64
 import json

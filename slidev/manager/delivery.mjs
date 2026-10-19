@@ -223,7 +223,7 @@ const RE_DYNAMIC = /import\(\s*["']([^"'\n]+)["']\s*\)/g;
 // page, the slides, layouts, global layers, Studio's panels. Those are
 // followed. These are not: code editors, highlighters and diagram tools,
 // and the pages the editor does not open (presenter, overview, export …).
-// Measured on the showcase deck: this covers all but 8 of the ~470 modules
+// Measured on a large chart deck: this covers all but 8 of the ~470 modules
 // the browser loads when the editor opens.
 const RE_SKIP_DYNAMIC = /monaco|shiki|twoslash|mermaid|plantuml|katex|prettier|typescript|pages\/(?:presenter|overview|notes|export|print|entry)|RecordingDialog|mcp/i;
 // `?url` modules (the chart libraries) answer with the file's address.

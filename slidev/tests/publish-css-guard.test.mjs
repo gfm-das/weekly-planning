@@ -1,15 +1,13 @@
 // Round 16 (item 6): one bad style must not stop a publish.
 //   Slidev 52.19's CSS minifier (lightningcss) refuses a selector like `::after:1.5rem` ("Invalid token in pseudo
 //   element") and ended the whole build, so the owner could not publish. Checked here without Slidev:
-//   1. no template (all languages) writes a utility class or style that makes such a selector;
-//   2. the addon's Vite hook switches the CSS minifier off for builds;
-//   3. a failed publish answers 422 with Slidev's log lines and the dialog has a translated "Copy details" button.
+//   1. the addon's Vite hook switches the CSS minifier off for builds;
+//   2. a failed publish answers 422 with Slidev's log lines and the dialog has a translated "Copy details" button.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { buildTemplate, LANGUAGES, TEMPLATE_IDS } from '../manager/templates/index.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const MANAGER = path.join(HERE, '..', 'manager');
@@ -17,15 +15,6 @@ const read = file => fs.readFileSync(path.join(MANAGER, file), 'utf8');
 
 // A pseudo-element followed by a colon and a number with a unit, written in a style or in an arbitrary variant.
 const BAD_SELECTOR = /::[a-zA-Z-]+(\([^)]*\))?:-?\.?\d/;
-
-test('no template writes a pseudo-element selector with a number after it (all templates, all languages)', () => {
-  for (const id of TEMPLATE_IDS) {
-    for (const lang of LANGUAGES) {
-      const slides = buildTemplate(id, { title: 'howdy', lang, now: new Date('2026-10-14T12:00:00Z') });
-      assert.doesNotMatch(slides, BAD_SELECTOR, `${id}/${lang}`);
-    }
-  }
-});
 
 test('the addon\'s styles and components have no such selector either', () => {
   const roots = ['gfm-addon/styles', 'gfm-addon/components', 'gfm-addon/layouts', 'gfm-addon/presenter'];

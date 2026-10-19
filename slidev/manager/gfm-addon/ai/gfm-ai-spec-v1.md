@@ -68,10 +68,6 @@ Opening slide. A big title (a # heading), a line under it, a small label above a
 
 Settings: `kicker`, `footer`.
 
-### `gfm-freeform`
-
-A blank slide for placing things freely - drag, resize and rotate anything. Use it when no other layout fits.
-
 ### `gfm-full-chart`
 
 One chart, as large as the slide allows, with a title and an optional source line. Put a chart (height about 360) in the slide.

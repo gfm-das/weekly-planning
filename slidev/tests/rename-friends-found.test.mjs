@@ -135,13 +135,11 @@ test('a dry run writes nothing; --apply keeps a .bak copy and changes only slide
 });
 
 const queriesOf = line => [...line.matchAll(QUERY)].map(m => m[0]);
-const showcaseFile = deck => readFile(new URL(`../showcase/${deck}/slides.md`, import.meta.url), 'utf8');
 
 test("a deck copied from the showcase gets the showcase's new sentences, with every query as it was", async () => {
   const special = [];
   for (const [from, to, deck, line] of SHOWCASE_LINES) {
-    // Each pair is the round-2 line and the line the showcase has now.
-    assert.equal((await showcaseFile(deck)).split(/\r?\n/)[line - 1], to, `${deck} line ${line}`);
+    // Each pair is the round-2 line and the line the old example deck had when it was removed (round 22).
     assert.notEqual(from, to);
     assert.deepEqual(queriesOf(to), queriesOf(from), `${deck} line ${line} keeps its query`);
     assert.doesNotMatch(to, /friends\s+found/i);
@@ -168,14 +166,6 @@ test("a deck copied from the showcase gets the showcase's new sentences, with ev
 // The showcase lines that are more than the plain rename (the funnel, better sentences, the old Chart button).
 const SPECIAL_LINES = ['chart-gallery 154', 'mission-charts 7', 'mission-charts 140', 'mission-charts 329', 'mission-charts 342', 'mission-charts 349', 'mission-charts 400', 'mission-charts 481', 'mission-charts 508'];
 
-test('the showcase decks as they are now have nothing left to change', async () => {
-  for (const deck of ['chart-gallery', 'mission-charts']) {
-    const { changes, kept } = renameText(await showcaseFile(deck));
-    assert.equal(changes.length, 0, deck);
-    assert.equal(kept.length, 0, deck);
-  }
-});
-
 test('the dry run names the showcase line it takes the wording from', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'rename-ff-'));
   const funnel = SHOWCASE_LINES.find(([from]) => from.includes('Taught,74'))[0];
@@ -186,6 +176,6 @@ test('the dry run names the showcase line it takes the wording from', async () =
   console.log = (...a) => lines.push(a.join(' '));
   try { assert.equal(await main([root]), 0); }
   finally { console.log = log; }
-  assert.ok(lines.includes("  line 3, showcase text: the showcase's new wording (slidev/showcase/chart-gallery/slides.md line 154)"), lines.join('\n'));
+  assert.ok(lines.includes("  line 3, showcase text: the showcase's new wording (the old chart-gallery example deck, line 154)"), lines.join('\n'));
   assert.equal(await readFile(path.join(root, 'gallery', 'slides.md'), 'utf8'), `# Funnel\n\n${funnel}\n`, 'dry run');
 });

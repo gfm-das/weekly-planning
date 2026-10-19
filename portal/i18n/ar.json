@@ -1940,7 +1940,7 @@
  "pres.duplicate": "تكرار",
  "pres.download": "تنزيل",
  "pres.rename": "إعادة التسمية",
- "pres.noPresentationsYet": "لا توجد عروض تقديمية بعد.",
+ "pres.noPresentationsYet": "لا توجد عروض تقديمية بعد. انقر على «+ عرض تقديمي جديد» لبدء عرض.",
  "pres.noPresentationsAreAssignedTo": "لم يُعيَّن لك أي عرض تقديمي بعد.",
  "pres.tapOrClickToOpen": "المس أو انقر للفتح",
  "pres.presentationActions": "إجراءات العرض التقديمي",

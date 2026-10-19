@@ -122,12 +122,6 @@ title: Two charts
 <MissionChart :rows="['Zone, Value', 'A, 3', 'B, 5', 'C, 4']" :option='{"series":[{"type":"bar"}]}' :height="300" />
 
 ---
-layout: gfm-freeform
----
-
-<div class="p-10 text-2xl">A blank slide: drag things where you want them.</div>
-
----
 layout: gfm-full-chart
 title: A data story (click to advance)
 caption: One chart, four steps - the same chart moves from step to step

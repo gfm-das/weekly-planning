@@ -1900,7 +1900,7 @@
  "pres.duplicate": "Duplicera",
  "pres.download": "Ladda ned",
  "pres.rename": "Byt namn",
- "pres.noPresentationsYet": "Inga presentationer än.",
+ "pres.noPresentationsYet": "Inga presentationer än. Klicka på ”+ Ny presentation” för att börja på en.",
  "pres.noPresentationsAreAssignedTo": "Du har inte tilldelats några presentationer än.",
  "pres.tapOrClickToOpen": "Tryck eller klicka för att öppna",
  "pres.presentationActions": "Åtgärder för presentationen",

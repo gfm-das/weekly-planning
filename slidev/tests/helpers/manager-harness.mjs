@@ -162,7 +162,7 @@ export async function startManager({ decks = {}, env = {}, port = 0, deckPort = 
       PRESENTATION_DECK_SERVER_PORT: String(deckAddressPort), PRESENTATIONS_DECK_PORT: String(deckAddressPort),
       PRESENTATIONS_PUBLIC_PORT: String(managerPort), PRESENTATION_BIND_ADDRESS: bind,
       ...(real ? {} : { PRESENTATION_SLIDEV_HOME: tmp }),
-      PORTAL_SERVICE_KEY: 'stub', SLIDEV_PRESTART: '0', SLIDEV_ADDON_REBUILD: '0', ...env,
+      PORTAL_SERVICE_KEY: 'stub', SLIDEV_PRESTART: '0', SLIDEV_ADDON_REBUILD: '0', SLIDEV_SHIPPED_DECKS: '0', ...env,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });

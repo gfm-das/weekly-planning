@@ -12,7 +12,6 @@ import { buildStatus, closeDeckWatcher, forgetBuild } from './builds.mjs';
 import { builtDir, deckDir, deckExists, deckFile, getTitle, headingText, latestDeckSourceMtime, notFound, safeSlug, safeTitle, setTitle, newDeckSlug, slugify, sourceVersion, writeDeckSource } from './deck-files.mjs';
 import { editorStage, stopEditor } from './editors.mjs';
 import { refuseIfProtected } from './protected-decks.mjs';
-import { buildTemplate, isTemplate } from './templates/index.mjs';
 import { DECKS_DIR } from './settings.mjs';
 
 // Files a copy leaves out: the published copy, Slidev's cache and half-finished saves and builds.
@@ -41,18 +40,11 @@ async function claimDeck(title, markdown) {
   throw new Error('Choose a different presentation name.');
 }
 
-/**
- * A new deck: the blank one (a title slide and one empty slide) or one made from a template (templates/index.mjs: MMM
- * MAIN, Media, Breakout rooms, ZOKO, Stake coordination) in one of the 14 languages. Returns its slug. A template that is not on
- * the list is a 404, never a guess; a language that is not one of the 14 gives English.
- */
-export async function createDeck(title, { template = 'blank', lang = 'en' } = {}) {
+/** A new deck: one title slide with its name, in the default theme (the product ships no templates). Returns its slug. */
+export async function createDeck(title) {
   const clean = safeTitle(title);
   if (!slugify(clean)) throw new Error('Presentation name is required.');
-  const id = template || 'blank';
-  if (!isTemplate(id)) throw notFound();
-  const markdown = buildTemplate(id, { title: clean, heading: headingText(clean), lang: lang || 'en' });
-  return claimDeck(clean, setTitle(markdown, clean));
+  return claimDeck(clean, setTitle(`---\ntheme: default\n---\n\n# ${headingText(clean)}\n`, clean));
 }
 
 /** A copy of a deck named "<title> Copy" (its own files, not its published copy). Returns the copy's slug. */

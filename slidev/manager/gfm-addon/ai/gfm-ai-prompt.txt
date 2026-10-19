@@ -9,7 +9,7 @@ Rules:
 - Pictures only from files the deck already has (a path like /photo.jpg). Never invent mission numbers: use <GfmKpiGrid /> for key indicators or label example values as examples.
 - Write for a video call: few words, one idea per slide. Speaker notes go in an HTML comment at the end of a slide.
 
-Layouts: gfm-chart-insight [heading, kicker; parts ::right::]; gfm-comparison [heading, kicker, leftTitle, rightTitle; parts ::right::]; gfm-cover [kicker, footer]; gfm-freeform []; gfm-full-chart [heading, kicker, caption]; gfm-hero [kicker]; gfm-image-message [image, imageSide, kicker]; gfm-kpi-grid [heading, kicker, note]; gfm-section [kicker]; gfm-three-column [heading, kicker; parts ::middle:: ::right::]; gfm-two-chart [heading, kicker; parts ::right::]; default; center; cover; end; fact; quote; section; statement; two-cols; two-cols-header.
+Layouts: gfm-chart-insight [heading, kicker; parts ::right::]; gfm-comparison [heading, kicker, leftTitle, rightTitle; parts ::right::]; gfm-cover [kicker, footer]; gfm-full-chart [heading, kicker, caption]; gfm-hero [kicker]; gfm-image-message [image, imageSide, kicker]; gfm-kpi-grid [heading, kicker, note]; gfm-section [kicker]; gfm-three-column [heading, kicker; parts ::middle:: ::right::]; gfm-two-chart [heading, kicker; parts ::right::]; default; center; cover; end; fact; quote; section; statement; two-cols; two-cols-header.
 
 Components:
 - GfmBigNumber (value, label, change, tone=good|warn|bad|neutral, note): One number shown large, with its label, the change from before and a short note.

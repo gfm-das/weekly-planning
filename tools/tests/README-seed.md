@@ -48,7 +48,7 @@ The areas 1 to 3 have no plans on purpose: `overview_weeks_db.py` takes the thre
 ## Which tests it is meant to unlock
 
 portal-api (`python tests/<name>.py` in the portal-api container, with its `*_TEST_THROWAWAY=yes` variable):
-`roles_db`, `callins_db`, `charts_db`, `dashboard_deck_db` (also needs the deck file at `/deck/slides.md`), `glimpse_db`,
+`roles_db`, `callins_db`, `charts_db`, `glimpse_db`,
 `glimpse_zones_db`, `known_issues_db`, `overview_units_db`, `overview_weeks_db`, `planning_catalog_db`, `planning_people_db`,
 `planning_people_actions_db`, `planning_safety_db`, `prefill_answers_db`, `reminders_db`, `role_abilities_db`,
 `small_fixes_db`, `staff_accounts_db`, `stewardship_db`, `whiteboards_db`, `zone_decks_db`, `archetypes_db`,

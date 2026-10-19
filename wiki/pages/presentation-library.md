@@ -14,10 +14,11 @@ tags: [users, presentations]
 ## Usage
 
 1. Open **Presentations** in the portal (people with presentation rights).
-2. In the **library**, open a deck from its card, or use the menu for Edit, Rename, Duplicate, Delete, Manage access, **Download PDF**, Download source.
-3. **Edit** opens Studio (`/studio/<deck>`): slides, layout, components (including charts), Publish now, Source (Markdown).
-4. **Publish now** rebuilds the live deck. A failed build leaves the last good publish live.
-5. Open a published deck to present to an audience.
+2. **+ New Presentation** (managers, ZL, STL) asks only for a name and makes a blank deck: one title slide with that name. It opens in the editor. Every install also gets the showcase deck **Everything a deck can do** once (managers see it first): every chart type and trick, with made-up numbers. Duplicate it to experiment; delete it if you don't need it, and it won't come back.
+3. In the **library**, open a deck from its card, or use the menu for Edit, Rename, Duplicate, Delete, Manage access, **Download PDF**, Download source.
+4. **Edit** opens Studio (`/studio/<deck>`): slides, layout, components (including charts), Publish now, Source (Markdown).
+5. **Publish now** rebuilds the live deck. A failed build leaves the last good publish live.
+6. Open a published deck to present to an audience.
 
 ### Present on a second screen
 

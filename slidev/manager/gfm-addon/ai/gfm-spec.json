@@ -112,14 +112,6 @@
    ]
   },
   {
-   "name": "gfm-freeform",
-   "description": "A blank slide for placing things freely - drag, resize and rotate anything. Use it when no other layout fits.",
-   "slots": [
-    "default"
-   ],
-   "props": []
-  },
-  {
    "name": "gfm-full-chart",
    "description": "One chart, as large as the slide allows, with a title and an optional source line. Put a chart (height about 360) in the slide.",
    "slots": [

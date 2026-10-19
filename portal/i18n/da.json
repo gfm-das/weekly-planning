@@ -1900,7 +1900,7 @@
  "pres.duplicate": "Duplikér",
  "pres.download": "Download",
  "pres.rename": "Omdøb",
- "pres.noPresentationsYet": "Ingen præsentationer endnu.",
+ "pres.noPresentationsYet": "Ingen præsentationer endnu. Klik på “+ Ny præsentation” for at starte en.",
  "pres.noPresentationsAreAssignedTo": "Du har ikke fået tildelt nogen præsentationer endnu.",
  "pres.tapOrClickToOpen": "Tryk eller klik for at åbne",
  "pres.presentationActions": "Handlinger for præsentationen",

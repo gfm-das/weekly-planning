@@ -4,7 +4,7 @@
 #           -> a THROWAWAY database copy (migration 031 applied)
 #   browser -> Presentation Manager (this checkout's slidev/manager; node_modules copied from the live Slidev volume)
 #           -> the same portal-api (chart numbers, manager check)
-#   both sign in through slidev/tests/dashboard-deck/supabase_stub.py (ids only; stands in for Supabase Auth).
+#   both sign in through slidev/tests/helpers/supabase_stub.py (ids only; stands in for Supabase Auth).
 # Nothing live is changed: the live Slidev volume is only read (mounted read-only, once, to copy its node_modules into
 # the test volume gfm-test-whiteboard2-nm). Every container is named gfm-test-whiteboard2-*, has a memory limit and is
 # removed by "whiteboard_env.sh down" ("down all" also removes the node_modules volume). Run from Git Bash:
@@ -39,7 +39,7 @@ if ! docker volume inspect gfm-test-whiteboard2-nm >/dev/null 2>&1; then
 fi
 
 docker run -d --name gfm-test-whiteboard2-auth --network gfm-test-r2-net --memory 256m -e DASHDECK_TEST_THROWAWAY=yes \
-  -e DATABASE_URL="$URL" -v "$REPO/slidev/tests/dashboard-deck:/stub:ro" gfm-portal-portal-api python /stub/supabase_stub.py >/dev/null
+  -e DATABASE_URL="$URL" -v "$REPO/slidev/tests/helpers:/stub:ro" gfm-portal-portal-api python /stub/supabase_stub.py >/dev/null
 
 docker run -d --name gfm-test-whiteboard2-api --network gfm-test-r2-net --memory 384m \
   -e DATABASE_URL="$URL" -e SUPABASE_URL=http://gfm-test-whiteboard2-auth:8000 -e SUPABASE_SERVICE_ROLE_KEY=test-only \

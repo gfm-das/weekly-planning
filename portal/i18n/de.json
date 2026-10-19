@@ -1900,7 +1900,7 @@
  "pres.duplicate": "Duplizieren",
  "pres.download": "Herunterladen",
  "pres.rename": "Umbenennen",
- "pres.noPresentationsYet": "Noch keine Präsentationen.",
+ "pres.noPresentationsYet": "Noch keine Präsentationen. Klicke auf „+ Neue Präsentation“, um eine zu beginnen.",
  "pres.noPresentationsAreAssignedTo": "Dir sind noch keine Präsentationen zugewiesen.",
  "pres.tapOrClickToOpen": "Tippen oder klicken zum Öffnen",
  "pres.presentationActions": "Aktionen für die Präsentation",
