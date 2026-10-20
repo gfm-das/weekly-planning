@@ -3554,5 +3554,11 @@
  "dam.matchesAnAreaThatIs": "Matches an area that is already closed.",
  "dam.newLabelsComeWithA": "New labels come with a suggestion (marked Suggested, with the reason). Check each one: nothing is saved or imported until you press Save.",
  "dam.suggested": "Suggested",
- "dam.checkItThenSave": "Check it, then save."
+ "dam.checkItThenSave": "Check it, then save.",
+ "pres.missionNumbersTimedOut": "The mission numbers did not answer in time. Try again in a minute, or paste a table instead.",
+ "pres.chartLibraryNotStarted": "The chart library could not be started. Reload the page and try again.",
+ "pres.slideNotReadLost": "Slide {a} could not be read: the connection to the editor was lost. Wait until the slides show, then try again.",
+ "pres.slideNotReadError": "Slide {a} could not be read from the editor (error {b}). Wait until the slides show, then try again.",
+ "pres.chartNotSavedLost": "The chart could not be saved on slide {a}: the connection to the editor was lost. Wait until the slides show, then try again.",
+ "pres.chartNotSavedError": "The chart could not be saved on slide {a} (error {b}). Wait until the slides show, then try again."
 }

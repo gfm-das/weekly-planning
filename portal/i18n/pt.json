@@ -3557,5 +3557,11 @@
  "dam.matchesAnAreaThatIs": "Corresponde a uma área que já está fechada.",
  "dam.newLabelsComeWithA": "Os novos rótulos vêm com uma sugestão (marcada Sugerido, com o motivo). Confira cada uma: nada é salvo ou importado até você clicar em Salvar.",
  "dam.suggested": "Sugerido",
- "dam.checkItThenSave": "Confira e salve."
+ "dam.checkItThenSave": "Confira e salve.",
+ "pres.missionNumbersTimedOut": "Os números da missão não responderam a tempo. Tente novamente em um minuto ou cole uma tabela.",
+ "pres.chartLibraryNotStarted": "Não foi possível iniciar a biblioteca de gráficos. Recarregue a página e tente novamente.",
+ "pres.slideNotReadLost": "Não foi possível ler o slide {a}: a conexão com o editor foi perdida. Aguarde até os slides aparecerem e tente novamente.",
+ "pres.slideNotReadError": "Não foi possível ler o slide {a} do editor (erro {b}). Aguarde até os slides aparecerem e tente novamente.",
+ "pres.chartNotSavedLost": "Não foi possível salvar o gráfico no slide {a}: a conexão com o editor foi perdida. Aguarde até os slides aparecerem e tente novamente.",
+ "pres.chartNotSavedError": "Não foi possível salvar o gráfico no slide {a} (erro {b}). Aguarde até os slides aparecerem e tente novamente."
 }

@@ -3557,5 +3557,11 @@
  "dam.matchesAnAreaThatIs": "Correspond à un secteur déjà fermé.",
  "dam.newLabelsComeWithA": "Les nouveaux libellés arrivent avec une suggestion (marquée Suggéré, avec la raison). Vérifiez chacune : rien n’est enregistré ni importé avant que vous appuyiez sur Enregistrer.",
  "dam.suggested": "Suggéré",
- "dam.checkItThenSave": "Vérifiez, puis enregistrez."
+ "dam.checkItThenSave": "Vérifiez, puis enregistrez.",
+ "pres.missionNumbersTimedOut": "Les chiffres de la mission n’ont pas répondu à temps. Réessayez dans une minute ou collez plutôt un tableau.",
+ "pres.chartLibraryNotStarted": "La bibliothèque de graphiques n’a pas pu démarrer. Rechargez la page et réessayez.",
+ "pres.slideNotReadLost": "La diapositive {a} n’a pas pu être lue : la connexion à l’éditeur a été perdue. Attendez que les diapositives s’affichent, puis réessayez.",
+ "pres.slideNotReadError": "La diapositive {a} n’a pas pu être lue depuis l’éditeur (erreur {b}). Attendez que les diapositives s’affichent, puis réessayez.",
+ "pres.chartNotSavedLost": "Le graphique n’a pas pu être enregistré sur la diapositive {a} : la connexion à l’éditeur a été perdue. Attendez que les diapositives s’affichent, puis réessayez.",
+ "pres.chartNotSavedError": "Le graphique n’a pas pu être enregistré sur la diapositive {a} (erreur {b}). Attendez que les diapositives s’affichent, puis réessayez."
 }

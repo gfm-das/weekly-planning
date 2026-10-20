@@ -3557,5 +3557,11 @@
  "dam.matchesAnAreaThatIs": "Corrisponde a un’area già chiusa.",
  "dam.newLabelsComeWithA": "Le nuove etichette arrivano con un suggerimento (segnato Suggerito, con il motivo). Controllale una per una: nulla viene salvato o importato finché non premi Salva.",
  "dam.suggested": "Suggerito",
- "dam.checkItThenSave": "Controlla, poi salva."
+ "dam.checkItThenSave": "Controlla, poi salva.",
+ "pres.missionNumbersTimedOut": "I numeri della missione non hanno risposto in tempo. Riprova tra un minuto oppure incolla una tabella.",
+ "pres.chartLibraryNotStarted": "Non è stato possibile avviare la libreria dei grafici. Ricarica la pagina e riprova.",
+ "pres.slideNotReadLost": "Impossibile leggere la diapositiva {a}: la connessione all’editor è stata persa. Attendi che le diapositive siano visibili, poi riprova.",
+ "pres.slideNotReadError": "Impossibile leggere la diapositiva {a} dall’editor (errore {b}). Attendi che le diapositive siano visibili, poi riprova.",
+ "pres.chartNotSavedLost": "Impossibile salvare il grafico nella diapositiva {a}: la connessione all’editor è stata persa. Attendi che le diapositive siano visibili, poi riprova.",
+ "pres.chartNotSavedError": "Impossibile salvare il grafico nella diapositiva {a} (errore {b}). Attendi che le diapositive siano visibili, poi riprova."
 }

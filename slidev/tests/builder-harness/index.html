@@ -74,7 +74,13 @@ async function api(url, options = {}) {
   await new Promise(r => setTimeout(r, 60));
   window.__requests.push(options.body ? `${url} ${options.body}` : url);
   if (url === '/api/charts/catalog') return catalog;
-  if (url === '/api/charts/data') return answer(JSON.parse(options.body).spec);
+  // window.__dataMode: 'hang' (mission numbers never answer), 'fail' (portal-api down), otherwise made-up numbers.
+  if (url === '/api/charts/data') {
+    if (window.__dataMode === 'hang') return new Promise(() => {});
+    if (window.__dataMode === 'fail') { const e = new Error('Something went wrong. Please try again.'); e.status = 502; throw e; }
+    return answer(JSON.parse(options.body).spec);
+  }
+  if (url === '/api/charts/catalog' && window.__dataMode === 'hang') return new Promise(() => {});
   if (/^\/__slidev\/slides\/\d+\.json$/.test(url)) {
     if (options.method === 'POST') { slide = JSON.parse(options.body).content; window.__writes.push({ url, content: slide }); return {}; }
     return { content: slide };

@@ -3554,5 +3554,11 @@
  "dam.matchesAnAreaThatIs": "Coincide con un área que ya está cerrada.",
  "dam.newLabelsComeWithA": "Las etiquetas nuevas llegan con una sugerencia (marcada Sugerido, con el motivo). Revisa cada una: nada se guarda ni se importa hasta que pulses Guardar.",
  "dam.suggested": "Sugerido",
- "dam.checkItThenSave": "Revísalo y guarda."
+ "dam.checkItThenSave": "Revísalo y guarda.",
+ "pres.missionNumbersTimedOut": "Los números de la misión no respondieron a tiempo. Inténtalo de nuevo en un minuto o pega una tabla en su lugar.",
+ "pres.chartLibraryNotStarted": "No se pudo iniciar la biblioteca de gráficos. Recarga la página e inténtalo de nuevo.",
+ "pres.slideNotReadLost": "No se pudo leer la diapositiva {a}: se perdió la conexión con el editor. Espera a que se muestren las diapositivas y vuelve a intentarlo.",
+ "pres.slideNotReadError": "No se pudo leer la diapositiva {a} desde el editor (error {b}). Espera a que se muestren las diapositivas y vuelve a intentarlo.",
+ "pres.chartNotSavedLost": "No se pudo guardar el gráfico en la diapositiva {a}: se perdió la conexión con el editor. Espera a que se muestren las diapositivas y vuelve a intentarlo.",
+ "pres.chartNotSavedError": "No se pudo guardar el gráfico en la diapositiva {a} (error {b}). Espera a que se muestren las diapositivas y vuelve a intentarlo."
 }

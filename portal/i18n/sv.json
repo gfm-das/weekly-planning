@@ -3554,5 +3554,11 @@
  "dam.matchesAnAreaThatIs": "Matchar ett område som redan är stängt.",
  "dam.newLabelsComeWithA": "Nya etiketter får ett förslag (markerat Föreslaget, med skälet). Kontrollera varje: inget sparas eller importeras förrän du trycker på Spara.",
  "dam.suggested": "Föreslaget",
- "dam.checkItThenSave": "Kontrollera och spara."
+ "dam.checkItThenSave": "Kontrollera och spara.",
+ "pres.missionNumbersTimedOut": "Missionens siffror svarade inte i tid. Försök igen om en minut eller klistra in en tabell i stället.",
+ "pres.chartLibraryNotStarted": "Diagrambiblioteket kunde inte startas. Ladda om sidan och försök igen.",
+ "pres.slideNotReadLost": "Bild {a} kunde inte läsas: anslutningen till redigeraren bröts. Vänta tills bilderna visas och försök sedan igen.",
+ "pres.slideNotReadError": "Bild {a} kunde inte läsas från redigeraren (fel {b}). Vänta tills bilderna visas och försök sedan igen.",
+ "pres.chartNotSavedLost": "Diagrammet kunde inte sparas på bild {a}: anslutningen till redigeraren bröts. Vänta tills bilderna visas och försök sedan igen.",
+ "pres.chartNotSavedError": "Diagrammet kunde inte sparas på bild {a} (fel {b}). Vänta tills bilderna visas och försök sedan igen."
 }

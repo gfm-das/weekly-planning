@@ -3554,5 +3554,11 @@
  "dam.matchesAnAreaThatIs": "Zaten kapatılmış bir bölgeyle eşleşiyor.",
  "dam.newLabelsComeWithA": "Yeni etiketler bir öneriyle gelir (Önerildi olarak, nedeniyle işaretli). Her birini kontrol edin: Kaydet'e basana kadar hiçbir şey kaydedilmez veya içe aktarılmaz.",
  "dam.suggested": "Önerildi",
- "dam.checkItThenSave": "Kontrol edin, sonra kaydedin."
+ "dam.checkItThenSave": "Kontrol edin, sonra kaydedin.",
+ "pres.missionNumbersTimedOut": "Misyon rakamları zamanında yanıt vermedi. Bir dakika sonra tekrar deneyin veya bunun yerine bir tablo yapıştırın.",
+ "pres.chartLibraryNotStarted": "Grafik kitaplığı başlatılamadı. Sayfayı yeniden yükleyip tekrar deneyin.",
+ "pres.slideNotReadLost": "Slayt {a} okunamadı: düzenleyiciyle bağlantı koptu. Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
+ "pres.slideNotReadError": "Slayt {a} düzenleyiciden okunamadı (hata {b}). Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
+ "pres.chartNotSavedLost": "Grafik slayt {a} üzerine kaydedilemedi: düzenleyiciyle bağlantı koptu. Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
+ "pres.chartNotSavedError": "Grafik slayt {a} üzerine kaydedilemedi (hata {b}). Slaytlar görünene kadar bekleyin, sonra tekrar deneyin."
 }

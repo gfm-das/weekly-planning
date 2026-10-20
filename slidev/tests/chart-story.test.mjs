@@ -124,3 +124,15 @@ test('a whole story on one chart instance: every step draws, the instance lives,
   }
   finally { chart.dispose(); }
 });
+
+test('a step that turns lines into bars puts the bars inside the chart (boundaryGap true)', async () => {
+  const { stabilize, fitBars } = await import('../manager/gfm-addon/lib/chart-story.mjs')
+  const motion = { kind: 'morph', duration: 700, easing: 'cubicInOut' }
+  const line = stabilize({ xAxis: { type: 'category', boundaryGap: false }, yAxis: { type: 'value' }, series: [{ type: 'line', name: 'A' }] }, motion)
+  assert.equal(line.xAxis[0].boundaryGap, false)
+  const bar = stabilize({ xAxis: { type: 'category', boundaryGap: false }, yAxis: { type: 'value' }, series: [{ type: 'bar', name: 'A' }] }, motion, line)
+  assert.equal(bar.xAxis[0].boundaryGap, true)
+  assert.equal(bar.yAxis[0].boundaryGap, undefined)
+  const horizontal = fitBars({ yAxis: { type: 'category', boundaryGap: false }, xAxis: { type: 'value' }, series: [{ type: 'bar' }] })
+  assert.equal(horizontal.yAxis.boundaryGap, true)
+})

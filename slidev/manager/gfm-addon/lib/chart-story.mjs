@@ -104,6 +104,7 @@ export function stabilize(option, motion, previous = null) {
   if (motion.kind === 'morph') series = morphKeys(series, plain(previous) ? previous.series : null)
   if (series.length) out.series = series
   for (const axis of ['xAxis', 'yAxis']) if (out[axis] !== undefined) out[axis] = named(out[axis], `${axis}:`)
+  fitBars(out)
   if (motion.kind === 'none') {
     out.animation = false
   }
@@ -114,6 +115,30 @@ export function stabilize(option, motion, previous = null) {
     out.animationDuration = motion.duration
   }
   return out
+}
+
+/** Series that sit on a category axis as points (they may touch the edges); everything else there is a band (bars). */
+const POINT_TYPES = ['line', 'scatter', 'effectScatter']
+
+/**
+ * A step that turns lines into bars keeps the line step's `boundaryGap: false` (the trend kind writes it), and then the
+ * first and last bars hang over the chart's edges. Every category axis that carries a bar (or any other non-line
+ * series) gets `boundaryGap: true`, so each bar sits in its own band; an axis with lines only keeps its setting.
+ * Changes `option` in place (stabilize's own copy). Exported for the tests.
+ */
+export function fitBars(option) {
+  const series = asList(option.series).filter(plain)
+  for (const [axis, indexKey] of [['xAxis', 'xAxisIndex'], ['yAxis', 'yAxisIndex']]) {
+    if (option[axis] === undefined) continue
+    const wasList = Array.isArray(option[axis])
+    const axes = asList(option[axis]).map((a, i) => {
+      if (!plain(a) || (a.type ?? (axis === 'xAxis' ? 'category' : 'value')) !== 'category') return a
+      const banded = series.some(s => !POINT_TYPES.includes(s.type ?? 'line') && (s[indexKey] ?? 0) === i)
+      return banded && a.boundaryGap !== true ? { ...a, boundaryGap: true } : a
+    })
+    option[axis] = wasList ? axes : axes[0]
+  }
+  return option
 }
 
 /** Series types whose single series lists named parts (a slice, a funnel step, a tile) that a morph can grow from. */

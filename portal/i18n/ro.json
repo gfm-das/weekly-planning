@@ -3567,5 +3567,11 @@
  "dam.matchesAnAreaThatIs": "Se potrivește cu o zonă deja închisă.",
  "dam.newLabelsComeWithA": "Etichetele noi vin cu o sugestie (marcată Sugerat, cu motivul). Verificați fiecare: nimic nu se salvează sau importă până nu apăsați Salvare.",
  "dam.suggested": "Sugerat",
- "dam.checkItThenSave": "Verificați, apoi salvați."
+ "dam.checkItThenSave": "Verificați, apoi salvați.",
+ "pres.missionNumbersTimedOut": "Cifrele misiunii nu au răspuns la timp. Încearcă din nou peste un minut sau lipește un tabel.",
+ "pres.chartLibraryNotStarted": "Biblioteca de grafice nu a putut porni. Reîncarcă pagina și încearcă din nou.",
+ "pres.slideNotReadLost": "Diapozitivul {a} nu a putut fi citit: conexiunea cu editorul s-a pierdut. Așteaptă să apară diapozitivele, apoi încearcă din nou.",
+ "pres.slideNotReadError": "Diapozitivul {a} nu a putut fi citit din editor (eroare {b}). Așteaptă să apară diapozitivele, apoi încearcă din nou.",
+ "pres.chartNotSavedLost": "Graficul nu a putut fi salvat pe diapozitivul {a}: conexiunea cu editorul s-a pierdut. Așteaptă să apară diapozitivele, apoi încearcă din nou.",
+ "pres.chartNotSavedError": "Graficul nu a putut fi salvat pe diapozitivul {a} (eroare {b}). Așteaptă să apară diapozitivele, apoi încearcă din nou."
 }

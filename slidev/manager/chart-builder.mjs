@@ -35,6 +35,15 @@ const TRANSFORM_NAMES = { none: 'The numbers', pct_of_goal: '% of goal', cumulat
 const COMPARE_NAMES = { previous_goal: 'Goal set the week before', goal: "Next week's goal", none: 'Nothing' }
 const PRIVACY = 'Charts show totals only, never names or notes.'
 const NOT_LOADED = 'The numbers could not load. Try again in a minute.'
+// Mission numbers that do not answer in this time are reported (they used to keep the preview on "Loading…").
+export const DATA_TIMEOUT_MS = 20000
+const DATA_TIMEOUT = 'The mission numbers did not answer in time. Try again in a minute, or paste a table instead.'
+/** `promise`, or an error with `message` (and .timeout) when it takes longer than `ms`. */
+export function withTimeout(promise, ms, message) {
+  let timer
+  const late = new Promise((_, reject) => { timer = setTimeout(() => reject(Object.assign(new Error(message), { timeout: true })), ms) })
+  return Promise.race([promise, late]).finally(() => clearTimeout(timer))
+}
 const NO_TABLE = 'Add a row of headings and at least one row of numbers.'
 const AXIS_KINDS = new Set(['bar', 'line', 'area', 'stacked', 'sideways', 'combo', 'pictorial', 'scatter', 'ripple', 'multiples'])
 const PALETTES = {
@@ -91,19 +100,41 @@ const typing = el => !!el && ((el.tagName === 'INPUT' && !['checkbox', 'radio', 
 // ---- the chart libraries (the same vendored files the slides use) ----------------
 
 let libraries = null
-function loadScript(src) {
+// The ECharts and ecStat files are UMD bundles: on a page that has an AMD loader (/studio loads Monaco's loader.js,
+// since v1.0.19 already while the slides open, preloadTools), they register as anonymous AMD modules instead of
+// setting window.echarts / window.ecStat, and the builder had no chart library (the preview stayed on its last
+// message). While one of them runs, define.amd is hidden, so they set their globals; Monaco's own define() calls
+// still work (they do not look at define.amd). `hiding` counts the files loading at once.
+let hiding = 0
+let hiddenAmd
+function hideAmd() {
+  const define = globalThis.define
+  if (hiding++ === 0) {
+    hiddenAmd = typeof define === 'function' && define.amd ? define.amd : undefined
+    if (hiddenAmd !== undefined) define.amd = undefined
+  }
+}
+function showAmd() {
+  if (--hiding > 0) return
+  const define = globalThis.define
+  if (hiddenAmd !== undefined && typeof define === 'function' && define.amd === undefined) define.amd = hiddenAmd
+  hiddenAmd = undefined
+}
+export function loadScript(src) {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script')
     script.src = src
-    script.onload = () => resolve()
-    script.onerror = () => { script.remove(); reject(new Error('The chart library could not be loaded.')) }
+    hideAmd()
+    script.onload = () => { showAmd(); resolve() }
+    script.onerror = () => { showAmd(); script.remove(); reject(new Error('The chart library could not be loaded.')) }
     document.head.appendChild(script)
   })
 }
-function loadLibraries() {
+export function loadLibraries() {
   const g = globalThis
   libraries ||= Promise.all([g.echarts?.init ? null : loadScript('/_manager/chart/echarts.min.js'), g.ecStat?.regression ? null : loadScript('/_manager/chart/ecStat.min.js')])
     .then(() => {
+      if (!g.echarts?.init) throw new Error('The chart library could not be started. Reload the page and try again.')
       if (!g.__gfmTransforms && g.ecStat?.transform) {
         for (const t of Object.values(g.ecStat.transform)) { try { g.echarts.registerTransform(t) } catch {} }
         g.__gfmTransforms = true
@@ -276,6 +307,21 @@ function newState() {
   }
 }
 
+/**
+ * An error from reading or writing a slide through the deck's editor, said so that the person knows what failed: the
+ * editor's own answers (Slidev's, not JSON) used to come out as "Something went wrong. Please try again."
+ */
+export function slideError(error, what, no) {
+  const status = Number(error?.status) || 0
+  const own = String(error?.data?.error || '').trim()
+  if (own) return error
+  const lost = !status
+  const message = what === 'read'
+    ? (lost ? `Slide ${no} could not be read: the connection to the editor was lost. Wait until the slides show, then try again.` : `Slide ${no} could not be read from the editor (error ${status}). Wait until the slides show, then try again.`)
+    : (lost ? `The chart could not be saved on slide ${no}: the connection to the editor was lost. Wait until the slides show, then try again.` : `The chart could not be saved on slide ${no} (error ${status}). Wait until the slides show, then try again.`)
+  return Object.assign(new Error(message), { status, cause: error })
+}
+
 class Builder {
   constructor(options) {
     this.o = options
@@ -298,8 +344,8 @@ class Builder {
   // ---- slides (the same API Studio uses, routed by the Referer to this deck's editor) ----
   slideUrl(no) { return `/__slidev/slides/${no}.json` }
   referrer(no) { return `${location.origin}/edit/${encodeURIComponent(this.slug)}/${no}` }
-  readSlide(no) { return this.o.api(this.slideUrl(no), { referrer: this.referrer(no), cache: 'no-store' }) }
-  writeSlide(no, content) { return this.o.api(this.slideUrl(no), { method: 'POST', referrer: this.referrer(no), body: JSON.stringify({ content }) }) }
+  readSlide(no) { return this.o.api(this.slideUrl(no), { referrer: this.referrer(no), cache: 'no-store' }).catch(error => { throw slideError(error, 'read', no) }) }
+  writeSlide(no, content) { return this.o.api(this.slideUrl(no), { method: 'POST', referrer: this.referrer(no), body: JSON.stringify({ content }) }).catch(error => { throw slideError(error, 'write', no) }) }
 
   currentSlideNo() {
     // Round 8: the editor runs on the deck address, so /studio cannot read the frame's address; it passes the
@@ -1519,15 +1565,16 @@ class Builder {
     S.loading = true
     this.draw()
     try {
-      const answer = await this.o.api('/api/charts/data', { method: 'POST', body: JSON.stringify({ deck: this.slug, spec }) })
+      const answer = await withTimeout(this.o.api('/api/charts/data', { method: 'POST', body: JSON.stringify({ deck: this.slug, spec }) }), DATA_TIMEOUT_MS, DATA_TIMEOUT)
       this.answers.set(key, answer)
       if (canonicalJson(this.checkedSpec().spec || {}) !== key) return
       S.answer = answer
       S.dataError = ''
     }
     catch (error) {
+      if (canonicalJson(this.checkedSpec().spec || {}) !== key) return
       S.answer = null
-      S.dataError = error.status && error.message ? error.message : NOT_LOADED
+      S.dataError = (error.status || error.timeout) && error.message ? error.message : NOT_LOADED
     }
     finally { S.loading = false }
     this.afterAnswer()
@@ -1583,8 +1630,10 @@ class Builder {
     const status = this.$('#cbStatus'), msg = this.$('#cbMsg')
     this.$('#cbStagebox').classList.toggle('dark', this.dark())
     this.fitStage()
-    const view = this.view()
-    let problem = view.problem || ''
+    let view, problem
+    // A mistake while working out the chart is shown in the preview (it used to leave the last message there).
+    try { view = this.view(); problem = view.problem || '' }
+    catch (error) { view = null; problem = `This chart cannot be drawn with these settings (${error?.message || error}).` }
     if (S.source === 'mission' && S.loading && !S.answer) problem = 'Loading mission numbers…'
     let lib
     try { lib = await loadLibraries() }
@@ -1592,9 +1641,9 @@ class Builder {
     if (!this.dialog?.open) return
     if (!problem && lib) {
       const height = Math.max(120, Math.min(2000, Number(S.height) || 360))
-      if (!this.chart) this.chart = lib.echarts.init(this.$('#cbChart'), null, { renderer: 'svg', width: 980, height })
       const style = getComputedStyle(document.body)
       try {
+        if (!this.chart) this.chart = lib.echarts.init(this.$('#cbChart'), null, { renderer: 'svg', width: 980, height })
         // This page is on the manager address and the chart may come from a zone's slide: nothing in its settings
         // is drawn as HTML (safe-chart-option.mjs, round 8 review).
         const option = safeChartOption(viewOption(view, { dark: this.dark(), font: style.fontFamily || 'system-ui, sans-serif', animate: true, ecStat: lib.ecStat, width: 980, height }))

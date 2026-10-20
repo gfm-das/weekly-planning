@@ -3554,5 +3554,11 @@
  "dam.matchesAnAreaThatIs": "Passer med et område, der allerede er lukket.",
  "dam.newLabelsComeWithA": "Nye etiketter får et forslag (markeret Foreslået, med årsagen). Kontrollér hvert: intet gemmes eller importeres, før du trykker Gem.",
  "dam.suggested": "Foreslået",
- "dam.checkItThenSave": "Kontrollér, og gem."
+ "dam.checkItThenSave": "Kontrollér, og gem.",
+ "pres.missionNumbersTimedOut": "Missionens tal svarede ikke i tide. Prøv igen om et minut, eller indsæt en tabel i stedet.",
+ "pres.chartLibraryNotStarted": "Diagrambiblioteket kunne ikke startes. Genindlæs siden, og prøv igen.",
+ "pres.slideNotReadLost": "Dias {a} kunne ikke læses: forbindelsen til editoren blev afbrudt. Vent, til diasene vises, og prøv så igen.",
+ "pres.slideNotReadError": "Dias {a} kunne ikke læses fra editoren (fejl {b}). Vent, til diasene vises, og prøv så igen.",
+ "pres.chartNotSavedLost": "Diagrammet kunne ikke gemmes på dias {a}: forbindelsen til editoren blev afbrudt. Vent, til diasene vises, og prøv så igen.",
+ "pres.chartNotSavedError": "Diagrammet kunne ikke gemmes på dias {a} (fejl {b}). Vent, til diasene vises, og prøv så igen."
 }

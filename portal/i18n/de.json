@@ -3554,5 +3554,11 @@
  "dam.matchesAnAreaThatIs": "Passt zu einem Gebiet, das schon geschlossen ist.",
  "dam.newLabelsComeWithA": "Neue Bezeichnungen kommen mit einem Vorschlag (markiert als Vorgeschlagen, mit dem Grund). Prüfe jeden: Nichts wird gespeichert oder importiert, bevor du auf Speichern drückst.",
  "dam.suggested": "Vorgeschlagen",
- "dam.checkItThenSave": "Prüfen, dann speichern."
+ "dam.checkItThenSave": "Prüfen, dann speichern.",
+ "pres.missionNumbersTimedOut": "Die Missionszahlen haben nicht rechtzeitig geantwortet. Versuche es in einer Minute noch einmal oder füge stattdessen eine Tabelle ein.",
+ "pres.chartLibraryNotStarted": "Die Diagrammbibliothek konnte nicht gestartet werden. Lade die Seite neu und versuche es noch einmal.",
+ "pres.slideNotReadLost": "Folie {a} konnte nicht gelesen werden: Die Verbindung zum Editor ist abgebrochen. Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
+ "pres.slideNotReadError": "Folie {a} konnte nicht aus dem Editor gelesen werden (Fehler {b}). Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
+ "pres.chartNotSavedLost": "Das Diagramm konnte auf Folie {a} nicht gespeichert werden: Die Verbindung zum Editor ist abgebrochen. Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
+ "pres.chartNotSavedError": "Das Diagramm konnte auf Folie {a} nicht gespeichert werden (Fehler {b}). Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal."
 }
