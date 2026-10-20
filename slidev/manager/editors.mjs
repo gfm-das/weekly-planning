@@ -7,8 +7,8 @@
 //   - before it counts as ready, the manager loads the editor page's code once itself ("warm-up"), so the browser's
 //     first visit is quick and does not reload halfway;
 //   - its code goes packed (gzip) to the browser: a quarter of the size (answerFromEditor);
-//   - the most recently changed deck's editor is started ahead of time (prestartRecentDeck);
-//   - an editor nobody has used for 40 minutes is stopped, and what it saved is published.
+//   - the editors of the most recently changed decks (up to 4) are started ahead of time (prestartRecentDeck);
+//   - an editor nobody has used for 1 hour is stopped, and what it saved is published.
 // Only the /studio page starts an editor; the deck address never does (runningEditor), so a deck's code cannot wake
 // up another deck's editor. When an editor stops, its edit passes end with it.
 // Who uses it: the route files and deck-actions.mjs (a renamed or deleted deck's editor is stopped).
@@ -337,17 +337,22 @@ setInterval(() => {
 let lastPrestart = 0;
 
 /**
- * Starts the editor of the deck changed most recently, so the next person to edit it finds it ready. Only when few
- * editors run, and at most once a minute.
+ * Starts the editors of the decks changed most recently, so the next person to edit one finds it ready. Only as many
+ * as PRESTART_MAX_RUNNING allows at once, and at most once a minute. `editable`: the slugs this person may change (the
+ * library knows them); without it every deck counts (the manager's own start).
  */
-export async function prestartRecentDeck(why) {
+export async function prestartRecentDeck(why, editable = null) {
   if (!PRESTART || Date.now() - lastPrestart < 60000) return;
-  if (editors.size >= Math.min(PRESTART_MAX_RUNNING, MAX_RUNNING_EDITORS - 1)) return;
+  const room = Math.min(PRESTART_MAX_RUNNING, MAX_RUNNING_EDITORS - 1) - editors.size;
+  if (room <= 0) return;
   lastPrestart = Date.now();
-  const decks = await listDecks();
-  const recent = decks.sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))[0];
-  if (!recent || editors.has(recent.slug)) return;
-  ensureEditor(recent.slug, why, { prestart: true }).catch(error => console.error(`[${label(recent.slug)}] start ahead failed`, error.message));
+  const recent = (await listDecks())
+    .filter(deck => !editors.has(deck.slug) && (!editable || editable.has(deck.slug)))
+    .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
+    .slice(0, room);
+  for (const deck of recent) {
+    ensureEditor(deck.slug, why, { prestart: true }).catch(error => console.error(`[${label(deck.slug)}] start ahead failed`, error.message));
+  }
 }
 
 // A person showed they are about to edit this deck (the library's menu is open on it): start its editor now. Never

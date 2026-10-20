@@ -37,6 +37,8 @@ On Windows without Docker, `node --test tests/` runs the plain tests; the ones t
 | `deck-files.test.mjs` | Deck names, titles (only the title changes in `slides.md`), the decks folder, New / Duplicate / Rename / Delete. Live layout. |
 | `delivery.test.mjs` | Compression (and a rebuild taking over unchanged packed copies), which editor answers are packed, cache headers, the add-on fingerprint, the build queue, the editor warm-up. |
 | `packing.test.mjs` | What the manager address sends packed: the library, `portal-bridge.js` (and "not changed" for a browser that has it), Monaco (packed only for a GET that takes gzip; a HEAD or a browser without gzip gets the plain file). |
+| `page-scripts.test.mjs` | Every script the manager sends to a browser (the two pages' inline scripts, the two bridge scripts) is valid JavaScript. A broken line in `studio.html` once left the editor on "Step 1 of 3" for ever. |
+| `editor-open.test.mjs` | Editors start ahead of time: the library starts the four most recently changed decks the person may change, Edit on a running editor answers in under 1 s, the card's three dots start it too. |
 | `deck-origin.test.mjs` | The two addresses: what 3030 refuses, what 8089 accepts, deck passes; then the real manager's routes. |
 | `zone-decks.test.mjs` | Zone presentations: who sees and changes which deck; a deck includes only its own files (also in a real build). |
 | `protected-decks.test.mjs` | Protected decks cannot be renamed or deleted; the library shows why. |

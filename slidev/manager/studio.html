@@ -219,9 +219,12 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
         await new Promise(resolve => setTimeout(resolve, 700));
       }
     })();
+    const asked = performance.now();
     try { await P.api(deckApi('/editor'), { method: 'POST', body: JSON.stringify({ page: PAGE_ID }) }); }
     catch (e) { starting = false; overlay('error', 'The editor could not start', e.message, e.data?.log); return; }
     starting = false;
+    // An editor that was already running (started ahead of time) needs no waiting for the page to settle.
+    state.settleMs = performance.now() - asked > 1500 ? 400 : 0;
     mark('editor_post_done');
     showStage('loading');
     const frame = $('studio');
@@ -243,10 +246,22 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
     if (state.stageShown) return;
     const started = Date.now();
     (function check() {
-      if (frameState.ready && frameState.readySince && Date.now() - frameState.readySince >= 400) { state.stageShown = true; mark('overlay_hidden'); endPreview(); reportPerf(); return overlay(null); }
+      if (frameState.ready && frameState.readySince && Date.now() - frameState.readySince >= state.settleMs) { state.stageShown = true; mark('overlay_hidden'); endPreview(); reportPerf(); preloadTools(); return overlay(null); }
       if (Date.now() - started > 60000) { state.stageShown = true; mark('overlay_hidden_timeout'); endPreview(); reportPerf(); return overlay(null); }
       setTimeout(check, 100);
     })();
+  }
+
+  // Once the slides are on screen, the Source text editor and the chart builder are fetched in the browser's idle time, so
+  // Source and Add chart open at once instead of loading on the first click. A failure here is not shown: the click loads it again.
+  function preloadTools() {
+    const later = window.requestIdleCallback || (fn => setTimeout(fn, 300));
+    later(() => {
+      loadMonaco().catch(() => {});
+      state.builder = state.builder || import('/_manager/chart/chart-builder.mjs');
+      state.builder.catch(() => { state.builder = null; });
+      mark('tools_preloading');
+    });
   }
 
   // The startup timeline, printed once the editor is open (and kept in window.GFM_PERF). The editor's own marks
@@ -373,7 +388,7 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
       const s = await P.api(deckApi('/status'));
       state.status = s;
       // The editor was stopped while this page was in the background (after
-      // about 40 minutes without use): start it again.
+      // about 1 hour without use): start it again.
       if (s.editor === 'stopped' && state.stageShown && !state.leaving && document.visibilityState === 'visible') { toast('Starting the editor again…'); startStudio(); }
       if (s.title && s.title !== state.title && !$('titleButton').hidden) setTitle(s.title);
       // A later change reached the file, so the failed one no longer matters.
@@ -507,9 +522,7 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
       $('publishMessage').textContent = e.message;
       $('publishLog').textContent = e.data?.log || '';
       $('publishDetails').hidden = !e.data?.log;
-      $('publishCopy').hidden = false; $('publishCopy').dataset.text = [e.message, e.data?.log].filter(Boolean).join('
-
-');
+      $('publishCopy').hidden = false; $('publishCopy').dataset.text = [e.message, e.data?.log].filter(Boolean).join('\n\n');
       $('publishViewOld').hidden = !forView || !state.status?.published_at;
       $('publishDialog').showModal();
       return false;

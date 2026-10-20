@@ -37,8 +37,8 @@ const managerServer = http.createServer(handleManagerRequest);
 managerServer.on('upgrade', (req, socket) => socket.destroy());
 managerServer.listen(MANAGER_PORT, BIND_ADDRESS, () => {
   console.log(`Presentation Manager listening on port ${MANAGER_PORT} (chart addon ${ADDON_FINGERPRINT}, ${BUILD_CONCURRENCY} build${BUILD_CONCURRENCY > 1 ? 's' : ''} at a time${NICE_BIN ? '' : ', builds without nice'})`);
-  // The next editor to open is most likely the deck changed last.
-  prestartRecentDeck('the manager started').catch(error => console.error('[prestart]', error.message));
+  // The next editors to open are most likely the decks changed last. (SLIDEV_BOOT_PRESTART=0: not at the start; the tests.)
+  if (process.env.SLIDEV_BOOT_PRESTART !== '0') prestartRecentDeck('the manager started').catch(error => console.error('[prestart]', error.message));
   // After a deploy of a new chart addon, published decks get the new chart code by themselves.
   if (ADDON_REBUILD) setTimeout(() => rebuildDecksWithOldAddon().catch(error => console.error('[addon] rebuild check failed', error.message)), ADDON_REBUILD_DELAY_MS).unref();
 });

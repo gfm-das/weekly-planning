@@ -180,6 +180,13 @@ const api = (url, options = {}) => PresentationSession.api(url, options);
 
 // ---- opening ----
 const deckAddress = p => '/p/' + encodeURIComponent(p.slug) + '/';
+// Gets a deck's editor started ahead of time (the server decides whether there is room). Once per deck every 30 s.
+const prestarted = new Map();
+function prestartEditor(p) {
+  if (!p.can_edit || Date.now() - (prestarted.get(p.slug) || 0) < 30000) return;
+  prestarted.set(p.slug, Date.now());
+  api('/api/presentations/' + encodeURIComponent(p.slug) + '/prestart', { method: 'POST', body: '{}' }).catch(() => {});
+}
 function openEditor(p) { location.href = '/studio/' + encodeURIComponent(p.slug); }
 function openDeck(p) { location.href = deckAddress(p); }
 
@@ -210,7 +217,7 @@ function menuFor(p, anchor) {
   if (p.can_edit) {
     add('Edit', () => openEditor(p));
     // The menu is open on a deck the person may change: get its editor started now, so Edit finds it ready sooner.
-    api('/api/presentations/' + encodeURIComponent(p.slug) + '/prestart', { method: 'POST', body: '{}' }).catch(() => {});
+    prestartEditor(p);
     if (state.data.can_manage) add('Manage access', () => showAccess(p));
     add('Duplicate', () => duplicateDeck(p));
     add('Download source (.zip)', () => location.href = '/api/presentations/' + p.slug + '/download');
@@ -254,7 +261,10 @@ function render() {
     c.querySelector('.meta').textContent = (p.zone_name ? p.zone_name + ' · ' : '') + fmt(p.updated_at);
     c.onclick = e => { if (!e.target.closest('a')) openDeck(p); };
     const k = c.querySelector('.kebab');
+    c.addEventListener('pointerenter', () => prestartEditor(p), { passive: true });
     k.onclick = e => { e.stopPropagation(); menuFor(p, k); };
+    // Reaching for the three dots (pointer, touch or keyboard) is the first sign of an edit: start the editor then, not at the click.
+    for (const type of ['pointerenter', 'focus', 'touchstart']) k.addEventListener(type, () => prestartEditor(p), { passive: true });
     g.appendChild(c);
   }
 }

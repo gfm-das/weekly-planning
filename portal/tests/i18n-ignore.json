@@ -679,7 +679,6 @@
   "^/api/presentations/{}/source$",
   "^/api/presentations/{}/status$",
   "^/api/presentations/{}/upload$",
-  "a manager opened the library",
   "attachment; filename=\"{}.zip\"",
   "default-src 'none'; script-src 'self' 'unsafe-eval'; connect-src 'none'; frame-ancestors 'none'",
   "public, max-age=3600",
@@ -687,6 +686,7 @@
   "text/html; charset=utf-8",
   "text/javascript; charset=utf-8",
   "the library menu was opened",
+  "the library was opened",
   "{}/edit/{}/"
  ],
  "slidev/manager/numbers.mjs": [

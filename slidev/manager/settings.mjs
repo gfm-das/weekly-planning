@@ -147,8 +147,8 @@ export const FIRST_EDITOR_PORT = Number(env.SLIDEV_INTERNAL_PORT_START || 3100);
 /** At most this many editors run; starting one more stops the one used longest ago. */
 export const MAX_RUNNING_EDITORS = Number(env.SLIDEV_MAX_RUNNING || 10);
 
-/** An editor nobody has used for this long is stopped (each uses about 540 MB). */
-export const IDLE_STOP_MS = Math.max(5, Number(env.SLIDEV_IDLE_MINUTES) || 40) * 60 * 1000;
+/** An editor nobody has used for this long is stopped (each uses about 540 MB). One hour: a cold start takes 7 to 12 s, so an editor stays ready through a working session. */
+export const IDLE_STOP_MS = Math.max(5, Number(env.SLIDEV_IDLE_MINUTES) || 60) * 60 * 1000;
 
 /** Start the most recently changed deck's editor ahead of time. SLIDEV_PRESTART=0 turns this off. */
 export const PRESTART = env.SLIDEV_PRESTART !== '0';
@@ -161,7 +161,7 @@ export const PRESTART = env.SLIDEV_PRESTART !== '0';
 export const WARMUP = env.SLIDEV_WARMUP !== '0';
 
 /** ... but not when this many editors already run. */
-export const PRESTART_MAX_RUNNING = 2;
+export const PRESTART_MAX_RUNNING = 4;
 
 /** An editor started ahead of time that nobody opened stops after this long (10 minutes). */
 export const PRESTART_IDLE_MS = 10 * 60 * 1000;

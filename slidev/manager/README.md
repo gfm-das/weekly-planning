@@ -85,7 +85,7 @@ Every file starts with a few lines saying **what it is**, **who uses it** and **
 | `deck-actions.mjs` | New (a blank deck: one title slide), Duplicate, Rename and Delete; the editor page's status line. |
 | `builds.mjs` | Publishing (`slidev build`): one build at a time, a new copy swapped in only when it worked, publishing by itself. |
 | `source-upload.mjs` | Upload source: reads a deck's .zip (slides.md and public/ only, safe paths) and writes it into the deck. |
-| `editors.mjs` | The visual editors: start one per deck, warm it up, pack its files on the way to the browser, stop it when nobody used it for 40 minutes (10 when it was only started ahead of time). |
+| `editors.mjs` | The visual editors: start one per deck, warm it up, pack its files on the way to the browser, stop it when nobody used it for 1 hour (10 when it was only started ahead of time). |
 | `delivery.mjs` | Faster decks: compressed copies (a rebuild reuses the unchanged ones), which editor answers are packed, cache headers, the build queue, the chart add-on's fingerprint. |
 
 ### Numbers and charts
@@ -180,7 +180,7 @@ The container's environment (`slidev-compose.yml`) sets them; each has a default
 | `PRESENTATIONS_PORTAL_ORIGINS` | the portal on 8070 | The portal's addresses (only they may sign in and frame the pages). |
 | `PRESENTATION_ACL_API_URL`, `PORTAL_SERVICE_KEY` | `http://portal-api:8091` | portal-api and the key that proves it is the manager. |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | | Supabase, which checks a portal sign-in. |
-| `SLIDEV_MAX_RUNNING`, `SLIDEV_IDLE_MINUTES` | 10, 40 | How many editors may run; when an unused one stops. |
+| `SLIDEV_MAX_RUNNING`, `SLIDEV_IDLE_MINUTES` | 10, 60 | How many editors may run; when an unused one stops. |
 | `SLIDEV_PRESTART`, `SLIDEV_ADDON_REBUILD` | on, on | `0` turns off starting an editor ahead of time / rebuilding decks after a new chart add-on. |
 | `SLIDEV_BUILD_DEBOUNCE_MS`, `SLIDEV_BUILD_CONCURRENCY` | 10000, 1 | The quiet time before publishing; builds at once (at most 2). |
 | `PRESENTATION_SLIDEV_HOME`, `PRESENTATION_BIND_ADDRESS` | `/slidev`, `0.0.0.0` | For the tests only: a temporary Slidev folder, and 127.0.0.1. |

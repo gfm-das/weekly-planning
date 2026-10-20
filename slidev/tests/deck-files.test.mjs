@@ -137,12 +137,13 @@ test('latestDeckSourceMtime: the newest of the deck\'s own files (not its publis
 
 // ---- making, copying, renaming, deleting ----
 
-test('createDeck: a title slide and one empty slide, in the first free folder', { skip }, async () => {
+test('createDeck: one title slide (a blank deck), in the first free folder', { skip }, async () => {
   const slug = await actions.createDeck('Zone conference');
   assert.equal(slug, 'zone-conference');
   const markdown = await fs.readFile(files.deckFile(slug), 'utf8');
   assert.equal(files.getTitle(markdown, null), 'Zone conference');
-  assert.match(markdown, /# Zone conference\n\n---\n\n# New Slide\n/);
+  assert.match(markdown, /# Zone conference\n$/);
+  assert.doesNotMatch(markdown, /# New Slide/);
   assert.equal(await actions.createDeck('Zone conference'), 'zone-conference-2');
   await assert.rejects(actions.createDeck('!!!'), /name is required/);
 });

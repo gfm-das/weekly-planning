@@ -300,9 +300,11 @@ async function existingDeck(slug) {
 async function listLibrary({ res, context }) {
   const decks = await listDecks();
   const access = await checkPresentationAccess(context, decks.map(deck => deck.slug));
-  // A manager in the library is likely to edit soon: have the most recently changed deck's editor ready.
-  if (access.can_manage) prestartRecentDeck('a manager opened the library').catch(() => {});
-  return sendJson(res, 200, { role: access.role || roleOf(context), can_manage: !!access.can_manage, ...libraryView(decks, access) });
+  const view = libraryView(decks, access);
+  // Someone who may change decks is likely to edit soon: have the most recently changed decks' editors ready.
+  const editable = new Set(view.presentations.filter(deck => deck.can_edit).map(deck => deck.slug));
+  if (editable.size) prestartRecentDeck('the library was opened', editable).catch(() => {});
+  return sendJson(res, 200, { role: access.role || roleOf(context), can_manage: !!access.can_manage, ...view });
 }
 
 /** POST /api/presentations { title }: a new blank deck (one title slide with its name), owned by the mission (a manager) or by the person's zone (ZL, STL). */

@@ -193,7 +193,7 @@ test('settings: the defaults, with GFM_PUBLIC_DOMAIN set to the Frankfurt domain
   assert.equal(s.SESSION_TTL_MS, 12 * 60 * 60 * 1000);
   assert.equal(s.FIRST_EDITOR_PORT, 3100);
   assert.equal(s.MAX_RUNNING_EDITORS, 10);
-  assert.equal(s.IDLE_STOP_MS, 40 * 60 * 1000);
+  assert.equal(s.IDLE_STOP_MS, 60 * 60 * 1000);
   assert.equal(s.PRESTART, true);
   assert.equal(s.BUILD_DEBOUNCE_MS, 10000);
   assert.equal(s.BUILD_CONCURRENCY, 1);
