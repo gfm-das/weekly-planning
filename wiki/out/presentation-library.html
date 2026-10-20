@@ -63,6 +63,7 @@
 <li><a href="#usage">Usage</a></li>
 <li style="margin-left:1rem"><a href="#present-on-a-second-screen">Present on a second screen</a></li>
 <li style="margin-left:1rem"><a href="#screen-mirroring-optional">Screen mirroring (optional)</a></li>
+<li style="margin-left:1rem"><a href="#morphing-charts-and-lists-in-a-deck">Morphing charts and lists in a deck</a></li>
 <li><a href="#how-it-works">How it works</a></li>
 <li><a href="#permissions">Permissions</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -77,6 +78,10 @@
 <div class="needs-checking"><strong>Needs checking:</strong> Confirm the exact presenter URL shape on the live deck address (8089) for a published deck (for example <code>/p/&lt;deck&gt;/presenter/…</code>) during a dry run, and whether Slidev’s built-in slide sync is enabled for your browser pair.</div>
 <h3 id="screen-mirroring-optional">Screen mirroring (optional)</h3>
 <p>The presenter view can also <strong>mirror</strong> another monitor (live picture of the projector) when the browser treats the address as secure (<code>http://localhost</code> on the server, https, or a special browser policy on LAN http). On plain office LAN http, the panel explains why mirroring is unavailable and how to present without it (use the Slides tab).</p>
+<h3 id="morphing-charts-and-lists-in-a-deck">Morphing charts and lists in a deck</h3>
+<ul><li><strong>One chart that morphs, click by click.</strong> Give a <code>&lt;MissionChart&gt;</code> a <code>steps</code> list; each click is the next step, and the shapes really change into each other (lines → bars → funnel → pie), back again when you click back. The showcase deck&#x27;s &quot;A data story&quot; slide shows it; copy it from there.</li><li><strong>Lists.</strong> <code>&lt;MissionList&gt;</code> shows a table: rows you type (names of people are always typed, never loaded) or live numbers per zone, district, area or week, with the same permissions as live charts. It can sort, group, limit, page through long lists (by click or automatically) and bring rows in one click at a time. Example:</li></ul>
+<p><code>&lt;MissionList :rows=&quot;[&#x27;Name, Zone&#x27;, &#x27;Anna Beispiel, Frankfurt&#x27;]&quot; group-by=&quot;Zone&quot; reveal /&gt;</code></p>
+<ul><li>Live charts and lists can carry <code>sample</code> rows that are shown, with a note, when the live numbers cannot load.</li></ul>
 <h2 id="how-it-works">How it works</h2>
 <ul><li>Manager address <strong>3030</strong>: library, Studio, APIs, sign-in cookie.</li><li>Deck address <strong>8089</strong>: published decks and deck editor; uses a <strong>deck pass</strong>, not the manager cookie.</li><li>Charts pull stewardship-scoped numbers from portal-api. Zone decks show that zone’s numbers even to managers.</li><li>PDF download uses the browser print dialog on the deck’s export page.</li></ul>
 <h2 id="permissions">Permissions</h2>

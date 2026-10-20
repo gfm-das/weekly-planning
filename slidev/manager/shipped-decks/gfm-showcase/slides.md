@@ -369,15 +369,34 @@ Click steps, morphing charts, reveals and motion.
 layout: gfm-full-chart
 title: "A data story: one chart morphs into another"
 kicker: "Click steps"
-caption: "Click: Received → + Attempted → + Successful → the same numbers become a funnel → then a pie."
+caption: "Click: Received → + Attempted → + Successful → the lines become bars → the bars melt into a funnel → the funnel bends into a pie. Click back and it morphs back."
 ---
 
 <MissionChart chart-id="story" preset="trend" :height="330" :rows="['Week, Received, Attempted, Successful', 'W1, 12, 9, 6', 'W2, 15, 11, 7', 'W3, 14, 12, 9', 'W4, 19, 14, 10']"
-  :story='[{"label":"Received","shape":{"only":["Received"]}},{"label":"+ Attempted","shape":{"only":["Received","Attempted"]}},{"label":"+ Successful","shape":{"only":["Received","Attempted","Successful"]}},{"label":"As a funnel","preset":"funnel","shape":{}},{"label":"As a pie","option":{"series":[{"type":"pie"}]}}]'
-  storyTransition="morph" :storyDuration="800" storyEasing="cubicInOut" />
+  :steps='[{"label":"Received","shape":{"only":["Received"]}},{"label":"+ Attempted","shape":{"only":["Received","Attempted"]}},{"label":"+ Successful","shape":{}},{"label":"As bars","option":{"series":[{"type":"bar"},{"type":"bar"},{"type":"bar"}]}},{"label":"As a funnel","preset":"funnel","presetAggregate":"sum"},{"label":"As a pie","preset":"funnel","presetAggregate":"sum","option":{"series":[{"type":"pie","radius":["30%","70%"]}]}}]'
+  :storyDuration="1000" />
 
 <!--
-Each click is one step of the story. It is one chart the whole time: the lines glide into the funnel and then the pie (universal transition). storyTransition can also be fade or none.
+One chart the whole time (ECharts universal transition): the points glide into bars, all the bars of "Received" melt into the
+"Received" step of the funnel, and the funnel's steps bend into slices. Each click is one step; going back morphs back, and the
+audience screen follows the presenter's clicks. Write it with :steps (a list of chart settings, one per click).
+-->
+
+---
+layout: gfm-full-chart
+title: "The same morph with live numbers"
+kicker: "Click steps · live"
+caption: "Live mission numbers for the last 6 finished weeks. Without a connection the sample numbers below are used (and the chart says so)."
+---
+
+<MissionChart chart-id="story-live" :height="330"
+  :query='{"measures":["friends_found.actual","baptismal_dates.actual","baptisms_confirmations.actual"],"level":"mission","by":"week","weeks":{"last":6},"includeCurrent":false}'
+  :sample="['Week, New people being taught, Baptismal dates, Baptisms and confirmations', 'W1, 41, 9, 4', 'W2, 38, 11, 5', 'W3, 45, 10, 3', 'W4, 52, 13, 6', 'W5, 47, 12, 5', 'W6, 55, 14, 7']"
+  preset="trend"
+  :steps='[{"label":"Lines"},{"label":"Bars","option":{"series":[{"type":"bar"},{"type":"bar"},{"type":"bar"}]}},{"label":"Funnel","preset":"funnel","presetAggregate":"sum"},{"label":"Pie","preset":"funnel","presetAggregate":"sum","option":{"series":[{"type":"pie","radius":["30%","70%"]}]}}]' />
+
+<!--
+A live query plus :sample. Leaders see their own stewardship, like every live chart.
 -->
 
 ---
@@ -409,29 +428,44 @@ kicker: "Lists of names"
 
 # This week's baptisms
 
-<v-clicks>
-
-1. **Anna Beispiel** – Frankfurt 1 · Elder Sample & Elder Demo
-2. **Jonas Muster** – Mannheim · Sister Example & Sister Test
-3. **Lea Probe** – Offenbach · Elder Placeholder & Elder Mock
-4. **Noah Vorlage** – Heidelberg · Sister Draft & Sister Trial
-
-</v-clicks>
+<MissionList :rows="['Name, Zone, Area, Missionaries', 'Anna Beispiel, Frankfurt, Frankfurt 1, Elder Sample & Elder Demo', 'Jonas Muster, Mannheim, Mannheim, Sister Example & Sister Test', 'Lea Probe, Frankfurt, Offenbach, Elder Placeholder & Elder Mock', 'Noah Vorlage, Mannheim, Heidelberg, Sister Draft & Sister Trial']"
+  columns="Name, Area, Missionaries" group-by="Zone" sort="Zone" reveal />
 
 ::right::
 
 # Transfers
 
-| Missionary | From | To |
-|---|---|---|
-| Elder Sample | Frankfurt 1 | Mannheim |
-| Sister Example | Mainz | Wiesbaden |
-| Elder Demo | Darmstadt | Frankfurt 2 |
+<MissionList :rows="['Missionary, From, To', 'Elder Sample, Frankfurt 1, Mannheim', 'Sister Example, Mainz, Wiesbaden', 'Elder Demo, Darmstadt, Frankfurt 2', 'Sister Test, Heidelberg, Mainz']" sort="Missionary" numbered />
 
-<p class="text-sm opacity-70 mt-6">Names are typed into the slide. Live charts count by place, never by name, so names never come from the database.</p>
+<p class="text-sm opacity-70 mt-6">Names are typed into the slide (MissionList with rows). Live lists count by place, never by name.</p>
 
 <!--
-All names here are made up. Type the real ones before the meeting and delete them after.
+Each baptism appears with a click (reveal), grouped by zone. All names here are made up. Type the real ones before the meeting and delete them after.
+-->
+
+---
+layout: two-cols
+kicker: "Live lists"
+---
+
+# Friends found by zone
+
+<MissionList :query='{"measures":["friends_found.actual","friends_found.previous_goal"],"level":"zone","by":"unit","weeks":{"last":4},"includeCurrent":false}'
+  sort="New people being taught:desc" :limit="8" numbered
+  :sample="['Zone, New people being taught, Goal', 'Frankfurt, 31, 28', 'Mannheim, 24, 26', 'Mainz, 22, 20', 'Darmstadt, 19, 22', 'Heidelberg, 17, 15', 'Wiesbaden, 15, 18']" />
+
+::right::
+
+# Every area, page by page
+
+<MissionList :query='{"measures":["baptismal_dates.actual"],"level":"area","by":"unit","weeks":{"last":4},"includeCurrent":false}'
+  sort="Baptismal dates:desc" :page-size="6" paging="auto" :auto-seconds="5"
+  :sample="['Area, Baptismal dates', 'Frankfurt 1, 4', 'Frankfurt 2, 3', 'Mannheim, 3', 'Offenbach, 2', 'Mainz, 2', 'Wiesbaden, 2', 'Darmstadt, 1', 'Heidelberg, 1', 'Hanau, 1', 'Worms, 1', 'Bad Homburg, 0', 'Rüsselsheim, 0', 'Gießen, 0', 'Fulda, 0']" />
+
+<!--
+Live lists use the same safe path as live charts: a row per zone, district, area or week, a column per number, and only the
+viewer's own stewardship. The right list turns its pages every 5 seconds (paging="click" turns them with clicks instead).
+Without a connection both show their :sample rows and say so.
 -->
 
 ---

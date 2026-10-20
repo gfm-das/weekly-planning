@@ -117,6 +117,8 @@ export function useMissionChart(el: Ref<HTMLElement | undefined>, build: (ctx: C
   let drawnSig = ''
   let timer: ReturnType<typeof setTimeout> | null = null
   let first = true
+  // The option the last story step was drawn with (stabilize reads it to find what morphs into what).
+  let lastStory: any = null
 
   const sized = (node?: HTMLElement) => !!node && node.clientWidth > 0 && node.clientHeight > 0
 
@@ -143,11 +145,18 @@ export function useMissionChart(el: Ref<HTMLElement | undefined>, build: (ctx: C
         const drawStart = performance.now()
         const story = motion?.()
         if (story && !first && !isPrintMode.value) {
-          // A step of a data story: the same chart instance moves to the next state (stable series ids, ECharts'
-          // universal transition for a series that changes kind) instead of being drawn from nothing.
-          chart.setOption(stabilize(option, story), { notMerge: false, replaceMerge: REPLACE_MERGE })
+          // A step of a data story: the same chart instance moves to the next state instead of being drawn from
+          // nothing. ECharts' universal transition morphs the old shapes into the new ones (stabilize/morphKeys
+          // give it the keys); notMerge lets a step change the kind of a series and drop axes (line -> funnel).
+          const next = stabilize(option, story, lastStory)
+          chart.setOption(next, story.kind === 'morph' ? { notMerge: true } : { notMerge: false, replaceMerge: REPLACE_MERGE })
+          lastStory = next
         }
-        else chart.setOption(story ? stabilize(option, story) : option, { notMerge: true })
+        else {
+          const next = story ? stabilize(option, story, null) : option
+          chart.setOption(next, { notMerge: true })
+          lastStory = story ? next : null
+        }
         notePerf('draws', performance.now() - drawStart)
         if (name) {
           lastDrawn.set(name, { option, at: Date.now() })

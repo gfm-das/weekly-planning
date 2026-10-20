@@ -51,7 +51,7 @@ test('the showcase shows every chart type, every kind and every way to bring a s
   for (const type of ['line', 'bar', 'scatter', 'effectScatter', 'pictorialBar', 'pie', 'funnel', 'gauge', 'radar', 'heatmap', 'tree', 'treemap', 'sunburst', 'boxplot', 'candlestick', 'graph', 'sankey', 'chord', 'themeRiver', 'parallel', 'custom'])
     assert.match(deck, new RegExp(`"type":"${type}"`), type);
   for (const bit of ['"areaStyle"', '"stack":"all"', '"radius":["45%"', '"coordinateSystem":"calendar"', '"coordinateSystem":"polar"', '"renderItem":"waterfall"', '"renderItem":"errorbar"', 'multiples', '"forecast":3',
-    'preset="ranked-bar"', 'preset="goal-vs-actual"', 'preset="cumulative-goal"', 'preset="leaderboard"', ':calc=', ':shape=', ':story=', 'storyTransition="morph"',
+    'preset="ranked-bar"', 'preset="goal-vs-actual"', 'preset="cumulative-goal"', 'preset="leaderboard"', ':calc=', ':shape=', ':steps=', '<MissionList', ' reveal ', 'group-by=', 'paging="auto"', ':sample=',
     '<v-clicks>', 'v-click', 'v-mark', 'v-motion', '<LightOrDark>', '```js {1|2-3|all}', '<MissionKpiChart', '<GfmKpiGrid', ':query=',
     'GfmBigNumber', 'GfmProgress', 'GfmComparison', 'GfmCallout', 'GfmInsight', 'GfmQuote',
     'layout: gfm-cover', 'layout: gfm-section', 'layout: gfm-full-chart', 'layout: gfm-two-chart', 'layout: gfm-chart-insight', 'layout: gfm-three-column', 'layout: gfm-comparison', 'layout: gfm-image-message', 'layout: gfm-hero', 'layout: two-cols', 'layout: quote', 'layout: end',

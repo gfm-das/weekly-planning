@@ -85,22 +85,23 @@ export function storyMotion(props = {}) {
 }
 
 /**
- * An option made ready to be applied on top of the previous step's: every series and axis gets a stable id (so
- * ECharts matches the old series with the new one and moves it), a series that changes kind morphs
- * (universalTransition) and the animation is the story's.
+ * An option made ready to be applied on top of the previous step's (`previous`: the option this function returned for
+ * the step before, or null): every series and axis gets a stable id, the animation is the story's, and with a morph
+ * the series carry the keys ECharts' universal transition matches old and new shapes by (see morphKeys).
  */
-export function stabilize(option, motion) {
+export function stabilize(option, motion, previous = null) {
   if (!plain(option)) return option
   const out = { ...option }
   const named = (list, prefix) => (Array.isArray(list) ? list : list === undefined ? [] : [list]).map((item, i) => (plain(item) ? { ...item, id: item.id ?? `${prefix}${i}` } : item))
   const used = new Set()
-  const series = (Array.isArray(out.series) ? out.series : out.series === undefined ? [] : [out.series]).map((s, i) => {
+  let series = (Array.isArray(out.series) ? out.series : out.series === undefined ? [] : [out.series]).map((s, i) => {
     if (!plain(s)) return s
     let id = s.id ?? (s.name !== undefined && s.name !== '' ? `series:${s.name}` : `series:${i}`)
     while (used.has(id)) id += '_'
     used.add(id)
-    return { ...s, id, ...(motion.kind === 'morph' ? { universalTransition: { enabled: true, divideShape: 'clone' } } : {}) }
+    return { ...s, id }
   })
+  if (motion.kind === 'morph') series = morphKeys(series, plain(previous) ? previous.series : null)
   if (series.length) out.series = series
   for (const axis of ['xAxis', 'yAxis']) if (out[axis] !== undefined) out[axis] = named(out[axis], `${axis}:`)
   if (motion.kind === 'none') {
@@ -112,6 +113,60 @@ export function stabilize(option, motion) {
     out.animationEasingUpdate = motion.easing
     out.animationDuration = motion.duration
   }
+  return out
+}
+
+/** Series types whose single series lists named parts (a slice, a funnel step, a tile) that a morph can grow from. */
+export const PART_TYPES = ['pie', 'funnel', 'treemap', 'sunburst']
+
+const asList = v => (Array.isArray(v) ? v : v === undefined || v === null ? [] : [v])
+const itemName = item => (plain(item) ? item.name : undefined)
+
+/**
+ * The keys of a real morph (ECharts universal transition), worked out from the step before:
+ * - Same series ids before and after (line -> bar, bar -> line, more or fewer series): ECharts moves each series' shapes
+ *   into the new ones by itself.
+ * - Several series -> one series of named parts (lines or bars -> funnel, pie): the new series' `seriesKey` lists the
+ *   old series' ids and each part's `groupId` is the series name, so all the points or bars of "Received" melt into
+ *   the "Received" step of the funnel.
+ * - One series of parts -> another (funnel -> pie): it keeps the same `seriesKey`, so the trapezoids bend into slices.
+ * - One series of parts -> several series (back again): each new series is found under the old `seriesKey` and its
+ *   `dataGroupId`, so the part splits back into that series' points or bars.
+ * Every series that is not made of parts carries `dataGroupId` (its name) so the next step can find it. A step that matches none of these
+ * cross-fades (ECharts adds the new shapes and removes the old). Exported for the tests.
+ */
+export function morphKeys(series, previousSeries) {
+  const before = asList(previousSeries).filter(plain)
+  const morph = { enabled: true, divideShape: 'clone' }
+  let out = series.map((s) => {
+    if (!plain(s)) return s
+    const ut = plain(s.universalTransition) ? { ...morph, ...s.universalTransition } : morph
+    const next = { ...s, universalTransition: ut }
+    // A series of parts is matched part by part (groupId); any other series as a whole (dataGroupId).
+    if (!PART_TYPES.includes(next.type) && next.dataGroupId === undefined && next.name !== undefined && next.name !== '') next.dataGroupId = String(next.name)
+    if (PART_TYPES.includes(next.type) && Array.isArray(next.data))
+      next.data = next.data.map(item => (plain(item) && item.name !== undefined && item.groupId === undefined ? { ...item, groupId: String(item.name) } : item))
+    return next
+  })
+  const real = out.filter(plain)
+  if (!before.length || real.length !== 1 || real[0].universalTransition.seriesKey !== undefined) return out
+  const only = real[0]
+  // ECharts finds the old series under its seriesKey (or its id when it has none), so a key is passed on even when the
+  // id stays the same (funnel -> pie).
+  const priorKey = before.length === 1 ? before[0].universalTransition?.seriesKey : undefined
+  let key
+  if (priorKey !== undefined) key = Array.isArray(priorKey) ? [...priorKey] : priorKey
+  else if (before.some(s => s.id === only.id)) return out
+  else if (before.length === 1) key = before[0].id
+  else if (PART_TYPES.includes(only.type)) {
+    // Only old series whose name is one of the new parts: ECharts needs every id in the list to exist before.
+    const parts = new Set(asList(only.data).map(itemName).filter(n => n !== undefined).map(String))
+    const matched = before.filter(s => s.name !== undefined && parts.has(String(s.name))).map(s => s.id)
+    if (matched.length) key = matched
+  }
+  if (key === undefined) return out
+  // ECharts matches a string key with the old series' id, so one -> one keeps the old id instead of naming a key.
+  out = out.map(s => (s === only ? (typeof key === 'string' && priorKey === undefined ? { ...s, id: key } : { ...s, universalTransition: { ...s.universalTransition, seriesKey: key } }) : s))
   return out
 }
 

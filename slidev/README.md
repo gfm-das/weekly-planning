@@ -174,13 +174,38 @@ out; the chart is still drawn and the editor shows the sentence.
 
 **`shape`: which numbers are shown.** `{ "only": [names], "hide": [names], "sort": "desc"|"asc", "top": n }`.
 
-**`story`, `storyTransition`, `storyDuration`, `storyEasing`: a data story.** A list of steps, each a small change to the
-chart (`preset`, `shape`, `calc`, `title`, `colors`, `option`, and a `label`). Step 1 is the chart with the first step on
-it and every Slidev click goes to the next; the chart reserves one click per step after the first. It is one ECharts
-instance for the whole story: each step is applied with `setOption`, series keep stable ids and a series that changes
-kind morphs (universal transition). `storyTransition` is `morph` (default), `fade` or `none`; `storyDuration` 0 to 3000
-ms (default 700); `storyEasing` one of `cubicInOut`, `cubicOut`, `linear`, `elasticOut`, `backOut` (`lib/chart-story.mjs`).
-A step can never change the chart's `query`, so what a viewer is allowed to see does not change with the story.
+**`steps` (or `story`), `storyTransition`, `storyDuration`, `storyEasing`: one chart that morphs, click by click.** A
+list of steps, each a small change to the chart (`preset`, `presetAggregate`, `shape`, `calc`, `title`, `colors`,
+`option`, and a `label`). Step 1 is the chart with the first step on it and every Slidev click goes to the next; the chart
+reserves one click per step after the first. Clicking back goes back the same way, and the audience window follows the
+presenter's clicks (Slidev syncs the click, the chart follows it).
+
+```md
+<MissionChart preset="trend" :rows="['Week, Received, Attempted, Successful', 'W1, 12, 9, 6', 'W2, 15, 11, 7']"
+  :steps='[{"label":"Lines"},
+           {"label":"Bars","option":{"series":[{"type":"bar"},{"type":"bar"},{"type":"bar"}]}},
+           {"label":"Funnel","preset":"funnel","presetAggregate":"sum"},
+           {"label":"Pie","preset":"funnel","presetAggregate":"sum","option":{"series":[{"type":"pie"}]}}]' />
+```
+
+It is one ECharts instance for the whole story, and the shapes really morph (ECharts' universal transition, as in its
+"bar to pie" examples): each step is applied with `setOption(…, { notMerge: true })` and `lib/chart-story.mjs`
+(`stabilize`, `morphKeys`) gives the series the keys the transition matches old and new shapes by:
+
+| From → to | How it morphs |
+|---|---|
+| line ↔ bar ↔ scatter (same series) | each series keeps its id; points grow into bars and back |
+| several series → funnel, pie, treemap or sunburst whose parts are named like the series | the new series' `seriesKey` lists the old series, each part's `groupId` is a series name: all the points or bars of "Received" melt into the "Received" step or slice |
+| funnel ↔ pie (and the other part charts) | the same `seriesKey` is passed on: trapezoids bend into slices |
+| back from a part chart to several series | each series' `dataGroupId` (its name) finds its part, which splits back into points or bars |
+| anything else | a cross-fade (ECharts adds the new shapes and removes the old) |
+
+A line and a funnel morph directly too (the line's points melt into the steps), but through bars it reads best, so the
+showcase deck goes lines → bars → funnel → pie. `storyTransition` is `morph` (default), `fade` or `none`;
+`storyDuration` 0 to 3000 ms (default 700); `storyEasing` one of `cubicInOut`, `cubicOut`, `linear`, `elasticOut`,
+`backOut`. A step can never change the chart's `query`, so what a viewer is allowed to see does not change with the
+story. With a `query`, `sample` (rows like `rows`) is drawn instead when the live numbers cannot load (no database, the
+demo, a viewer without access), with a small "Sample numbers" note.
 
 `calc`, `preset`, `shape` and `story` are kept as they are when **Edit chart** saves the chart; Edit chart's own preview
 does not draw them.
@@ -351,6 +376,38 @@ Aug 16,97
 ````
 
 The block understands every setting above, written with dashes or in camelCase (`trend-color=#d96b2b` or `trendColor=#d96b2b`). Switches (`show-values`, `stack`, `horizontal`, `smooth`, `average`, `multiples`, `data-zoom`) are on when written alone or as `=true`. Lists have commas between the entries (`colors=#00869e,#d96b2b`, `series-types=bar,line`). `option` is JSON in single quotes: `option='{"yAxis":{"min":0}}'`. A number setting that is not a number is left out. Values containing spaces need quotes. Studio shows the block as one chart that can be moved and resized. To change the numbers, use **Source**, or the raw Markdown in the Element panel.
+
+## `<MissionList>`: lists in slides
+
+A table of rows that can be typed into the slide or come from live mission numbers (`components/MissionList.vue`,
+`lib/list-core.mjs`):
+
+```md
+<!-- typed rows (names are always typed: the live path never gives names) -->
+<MissionList :rows="['Name, Zone, Area', 'Anna Beispiel, Frankfurt, Frankfurt 1', 'Jonas Muster, Mannheim, Mannheim']"
+  group-by="Zone" reveal />
+
+<!-- live: one row per zone, one column per number, largest first, at most 8 rows -->
+<MissionList :query='{"measures":["friends_found.actual","friends_found.previous_goal"],"level":"zone","by":"unit","weeks":{"last":4},"includeCurrent":false}'
+  sort="New people being taught:desc" :limit="8" numbered
+  :sample="['Zone, New people being taught, Goal', 'Frankfurt, 31, 28', 'Mannheim, 24, 26']" />
+```
+
+| Setting | What it does |
+|---|---|
+| `rows` / `csv` | typed rows; the first row holds the headings (commas, semicolons or tabs between cells) |
+| `query` | live mission numbers, exactly like a chart's `query`: the same `/api/charts/data` path, read-only reader, the viewer's own stewardship, and for leaders only when it is written in the deck (pinned). `by:"unit"` gives a row per zone, district or area; `by:"week"` a row per week |
+| `sample` | rows shown (with a "Sample numbers" note) when the live numbers cannot load |
+| `columns` | which columns, in which order (their headings) |
+| `sort` | a heading, `:desc` for largest first (numbers sort as numbers) |
+| `limit` | show at most this many rows (the footer says how many more there are) |
+| `group-by` | group by a column (that column becomes the group heading) |
+| `page-size`, `paging`, `auto-seconds` | long lists in pages: turned by clicks (`paging="click"`, one click per page) or every few seconds (`paging="auto"`) |
+| `reveal` | each row appears with its own click |
+| `numbered`, `title`, `height` | row numbers, a title, a maximum height |
+
+The words it shows (loading, sample note, page x of y, "n more") are in the 14 portal languages (`lib/deck-words.mjs`),
+picked by the deck's `lang` headmatter, else the browser's language. A PDF shows every row and every page.
 
 ## Charts from mission numbers (the database)
 

@@ -38,6 +38,13 @@ Confirm the exact presenter URL shape on the live deck address (8089) for a publ
 
 The presenter view can also **mirror** another monitor (live picture of the projector) when the browser treats the address as secure (`http://localhost` on the server, https, or a special browser policy on LAN http). On plain office LAN http, the panel explains why mirroring is unavailable and how to present without it (use the Slides tab).
 
+### Morphing charts and lists in a deck
+
+- **One chart that morphs, click by click.** Give a `<MissionChart>` a `steps` list; each click is the next step, and the shapes really change into each other (lines → bars → funnel → pie), back again when you click back. The showcase deck's "A data story" slide shows it; copy it from there.
+- **Lists.** `<MissionList>` shows a table: rows you type (names of people are always typed, never loaded) or live numbers per zone, district, area or week, with the same permissions as live charts. It can sort, group, limit, page through long lists (by click or automatically) and bring rows in one click at a time. Example:
+  `<MissionList :rows="['Name, Zone', 'Anna Beispiel, Frankfurt']" group-by="Zone" reveal />`
+- Live charts and lists can carry `sample` rows that are shown, with a note, when the live numbers cannot load.
+
 ## How it works
 
 - Manager address **3030**: library, Studio, APIs, sign-in cookie.

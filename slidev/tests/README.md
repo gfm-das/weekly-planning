@@ -55,6 +55,8 @@ On Windows without Docker, `node --test tests/` runs the plain tests; the ones t
 | `chart-builder.test.mjs`, `chart-edit.test.mjs` | The chart builder's non-visual part: reading and writing chart tags, chart-ids, the type picker. |
 | `chart-spec.test.mjs` | Chart queries: the same canonical form and hash as portal-api (`fixtures/chart-spec-vectors.json`). |
 | `transformers.test.mjs` | The ```` ```chart ```` block in a slide. |
+| `morph-steps.test.mjs` | Real morphs (`chart-story.mjs` morphKeys): the universal-transition keys for line ↔ bar ↔ funnel ↔ pie, `steps`/`sample` on MissionChart, and both showcase morph slides run forwards and back on one ECharts instance. |
+| `mission-list.test.mjs` | `<MissionList>` (`list-core.mjs`): typed and live rows, columns, sort, limit, groups, pages, clicks, the 14-language words, pinning of its query. |
 | `shipped-decks.test.mjs` | The showcase deck (every chart type and feature, finished weeks only, made-up names) and how it reaches the library: once, never over a person's deck, never back after a delete. |
 | `new-deck.test.mjs` | + New Presentation: no templates or example decks ship, the dialog asks only for a name, the real manager writes one title slide. |
 | `rename-friends-found.test.mjs` | The one-off script that renamed "Friends found" in existing decks. |

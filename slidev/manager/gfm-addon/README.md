@@ -8,7 +8,7 @@ folders by itself; Studio's palette and layout picker read the `<studio>` block 
 | `styles/index.css` | The shared look: colours (`--gfm-*`, light and dark), type sizes for a call, cards, motion. Every GFM layout and component uses it. |
 | `layouts/gfm-*.vue` | The layouts: `gfm-cover`, `gfm-section`, `gfm-hero`, `gfm-full-chart`, `gfm-chart-insight`, `gfm-two-chart`, `gfm-kpi-grid`, `gfm-three-column`, `gfm-comparison`, `gfm-image-message`. |
 | `components/Gfm*.vue` | Content and data parts: `GfmBigNumber`, `GfmCallout`, `GfmComparison`, `GfmInsight`, `GfmKpi`, `GfmKpiGrid`, `GfmProgress`, `GfmQuote`. |
-| `components/Mission*.vue`, `lib/` | The charts (`MissionChart`, `MissionKpiChart`), drawn with the vendored ECharts. How to write them: `slidev/README.md`. |
+| `components/Mission*.vue`, `lib/` | The charts (`MissionChart`, `MissionKpiChart`), drawn with the vendored ECharts, and lists (`MissionList`, `lib/list-core.mjs`). How to write them: `slidev/README.md`. |
 
 ## Rules for a layout or component
 
@@ -22,7 +22,8 @@ folders by itself; Studio's palette and layout picker read the `<studio>` block 
 - **Numbers on a published deck are only answered for charts written in the deck's slides** (`chart-access.mjs`). A
   component that builds a chart query from its props would be refused. `GfmKpi` and `GfmKpiGrid` therefore draw
   `MissionKpiChart` (key numbers), and `chart-access.mjs` counts them like one. A new data component needs the same
-  thought: either draw an existing chart tag, or teach `chart-spec.mjs` `pinnedKeys` to read its attributes.
+  thought: either draw an existing chart tag, or teach `chart-spec.mjs` `pinnedKeys` to read its attributes. `MissionList`
+  writes its query as `:query='…'` like a chart, so `pinnedKeys` already reads it.
 - Anything loaded only when used (a panel, the formula editor, Monaco) is a dynamic `import()` / `defineAsyncComponent`.
 
 ## Looking at them

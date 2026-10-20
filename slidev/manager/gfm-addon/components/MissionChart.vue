@@ -31,6 +31,7 @@ import type { ChartAnswer } from '../lib/charts'
 import { ChartDataError, chartType, chartView, fetchChartData, isOptionChart, peekChartData, readOverride, useMissionChart, viewOption } from '../lib/charts'
 import { canonicalJson, deckOfPath, normalizeSpec } from '../lib/chart-spec.mjs'
 import { parseStory, stepSettings, storyMotion } from '../lib/chart-story.mjs'
+import { pageLanguage, word } from '../lib/deck-words.mjs'
 
 const props = withDefaults(defineProps<{
   type?: 'line' | 'bar' | 'area' | 'scatter' | 'pie' | 'donut' | 'gauge' | 'tile' | 'heatmap' | 'radar' | 'funnel' | 'treemap' | 'sunburst' | 'boxplot' | 'waterfall'
@@ -85,6 +86,9 @@ const props = withDefaults(defineProps<{
   presetTarget?: number
   shape?: Record<string, any>
   story?: Record<string, any>[] | string
+  // `steps` is the same as `story` (a list of steps, one per click); `sample` is drawn when the live numbers cannot load.
+  steps?: Record<string, any>[] | string
+  sample?: string[] | string
   storyTransition?: 'morph' | 'fade' | 'none'
   storyDuration?: number
   storyEasing?: string
@@ -137,7 +141,7 @@ const root = ref<HTMLElement>()
 const box = computed(() => ({ height: `${Math.max(120, Math.min(2000, Number(props.height) || 360))}px` }))
 
 // ---- a data story (`story`): the chart changes step by step, one Slidev click per step (lib/chart-story.mjs) ----
-const story = computed(() => parseStory(props.story))
+const story = computed(() => parseStory(props.steps ?? props.story))
 const clicks: any = (() => { try { return (useSlideContext() as any)?.$clicksContext ?? null } catch { return null } })()
 const storyId = `gfm-story-${Math.random().toString(36).slice(2)}`
 const storyStart = ref(0)
@@ -235,7 +239,13 @@ watch(() => spec.value.key, (now, before) => {
 })
 
 // What to draw: the older settings (drawn exactly as before) or the option.
-const view = computed(() => chartView(settings.value, hasQuery.value ? answer.value : null))
+// Live numbers that cannot load (no database, the demo, a viewer without access) fall back to `sample` when the chart
+// has one: the same chart (story, kind, option) drawn from those rows, with a note.
+const hasSample = computed(() => (Array.isArray(props.sample) ? props.sample.length > 0 : !!String(props.sample ?? '').trim()))
+const usingSample = computed(() => hasQuery.value && hasSample.value && (state.value === 'error' || !!spec.value.problem))
+const view = computed(() => (usingSample.value
+  ? chartView({ ...settings.value, query: undefined, rows: Array.isArray(props.sample) ? props.sample : undefined, csv: Array.isArray(props.sample) ? '' : String(props.sample) }, null)
+  : chartView(settings.value, hasQuery.value ? answer.value : null)))
 const suppressed = computed(() => !!(hasQuery.value && answer.value?.meta?.suppressed))
 // Everything the drawing depends on: a render that would draw the same chart draws nothing.
 function signature() {
@@ -264,19 +274,20 @@ watch(() => props.option, (option) => {
 }, { immediate: true })
 
 const problem = computed(() => {
-  if (!hasQuery.value) return view.value.problem
+  if (!hasQuery.value || usingSample.value) return view.value.problem
   if (spec.value.problem) return spec.value.problem
   if (state.value === 'error') return loadError.value
   if (state.value !== 'ready') return ''
   return view.value.problem
 })
-const loading = computed(() => !failed.value && !problem.value && (!ready.value || (hasQuery.value && state.value === 'loading')))
+const loading = computed(() => !failed.value && !problem.value && (!ready.value || (hasQuery.value && !usingSample.value && state.value === 'loading')))
 const message = computed(() => failed.value
   ? 'The chart could not be loaded. Reload the page to try again.'
   : problem.value || (loading.value ? (hasQuery.value ? 'Loading mission numbers…' : 'Loading chart…') : ''))
 
 // A mistake in a calculated field: the chart is drawn without that field, and the editor says why (a published deck
 // stays quiet: viewers cannot fix it).
+const sampleNote = word(pageLanguage(), 'sample')
 const calcNote = computed(() => {
   const first = (view.value as any).calc?.problems?.[0]
   return first ? `Calculated field${first.name ? ` “${first.name}”` : ''}: ${first.message}` : ''
@@ -296,11 +307,12 @@ onMounted(keepForEditor)
 <template>
   <div ref="root" class="gfm-chart" :style="box" role="figure" :aria-label="label" :data-chart-id="chartId || undefined">
     <!-- ECharts writes the chart's spoken description on this element. -->
-    <div ref="el" class="gfm-chart__plot" :class="{ 'gfm-chart__plot--noted': suppressed && !message }" :role="message ? undefined : 'img'" />
+    <div ref="el" class="gfm-chart__plot" :class="{ 'gfm-chart__plot--noted': (suppressed || usingSample) && !message }" :role="message ? undefined : 'img'" />
     <div v-if="message" class="gfm-chart__message" :class="{ 'gfm-chart__message--loading': loading }">
       <strong v-if="optionMode ? label !== 'Chart' : title">{{ optionMode ? label : title }}</strong>
       <span>{{ message }}</span>
     </div>
+    <div v-else-if="usingSample" class="gfm-chart__note">{{ sampleNote }}</div>
     <div v-else-if="suppressed" class="gfm-chart__note">Numbers below 3 are hidden to protect privacy.</div>
     <div v-if="editing && calcNote" class="gfm-chart__calc">{{ calcNote }}</div>
   </div>
@@ -481,6 +493,10 @@ props:
   shape:
     hidden: true
   story:
+    hidden: true
+  steps:
+    hidden: true
+  sample:
     hidden: true
   storyTransition:
     hidden: true
