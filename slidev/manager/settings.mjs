@@ -89,6 +89,19 @@ export const PUBLIC_HOST = env.PRESENTATIONS_HOST && env.PRESENTATIONS_HOST !== 
   ? env.PRESENTATIONS_HOST
   : (PUBLIC_NAMES.deck ? new URL(PUBLIC_NAMES.deck).hostname : 'localhost');
 
+/**
+ * Every host name the editors (Vite) must accept, for __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: PUBLIC_HOST (the deck
+ * address, where the editor page runs) and the manager address's public name. v1.0.20: the chart builder of /studio
+ * reads and writes slides through the manager address (presentations.<domain>/__slidev/…); with only the deck name
+ * allowed, Vite answered those with 403 "Blocked request. This host is not allowed." (IP addresses always pass, so it
+ * showed only on the public names).
+ */
+export function editorAllowedHosts(publicHost = PUBLIC_HOST, names = PUBLIC_NAMES) {
+  const hosts = [publicHost]
+  for (const origin of [names.manager, names.deck]) { try { if (origin) hosts.push(new URL(origin).hostname) } catch {} }
+  return [...new Set(hosts.filter(h => h && h !== 'localhost'))].join(',')
+}
+
 // The portal's office addresses, as configured (slidev-compose.yml).
 const OFFICE_PORTAL_ORIGINS = (env.PRESENTATIONS_PORTAL_ORIGINS || `http://localhost:8070,http://127.0.0.1:8070,http://${env.GFM_HOST_IP || '192.168.1.20'}:8070`)
   .split(',').map(origin => origin.trim()).filter(Boolean);

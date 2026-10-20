@@ -56,6 +56,7 @@ On Windows without Docker, `node --test tests/` runs the plain tests; the ones t
 | `chart-golden.test.mjs` | Charts written with the older settings draw exactly as before (fingerprints in `fixtures/chart-golden.json`). |
 | `chart-builder.test.mjs`, `chart-edit.test.mjs` | The chart builder's non-visual part: reading and writing chart tags, chart-ids, the type picker. |
 | `chart-builder-page.test.mjs` | The chart builder in its page: ECharts and ecStat load on a page with Monaco's AMD loader (v1.0.19 preview hang), mission numbers that never answer end in a message, slide read/save errors say what failed. |
+| `editor-hosts.test.mjs` | The editors accept the manager address's public name too, and the chart builder's slide requests reach the editor as requests for its own address (v1.0.20 "error 403"). |
 | `chart-spec.test.mjs` | Chart queries: the same canonical form and hash as portal-api (`fixtures/chart-spec-vectors.json`). |
 | `transformers.test.mjs` | The ```` ```chart ```` block in a slide. |
 | `morph-steps.test.mjs` | Real morphs (`chart-story.mjs` morphKeys): the universal-transition keys for line ↔ bar ↔ funnel ↔ pie, `steps`/`sample` on MissionChart, and both showcase morph slides run forwards and back on one ECharts instance. |

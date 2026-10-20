@@ -23,7 +23,7 @@ import { assertDeckEditor } from './access.mjs';
 import { outputLines, refreshBuildInBackground, seconds, setDraftCheck } from './builds.mjs';
 import { packableAnswer, warmModuleGraph } from './delivery.mjs';
 import { deckDir, deckExists, deckFile, listDecks, safeSlug } from './deck-files.mjs';
-import { FIRST_EDITOR_PORT, IDLE_STOP_MS, MAX_RUNNING_EDITORS, PRESTART, PRESTART_IDLE_MS, PRESTART_MAX_RUNNING, COMPILE_CACHE_DIR, PUBLIC_HOST, SLIDEV_BIN, SLIDEV_DIR, WARMUP } from './settings.mjs';
+import { FIRST_EDITOR_PORT, IDLE_STOP_MS, MAX_RUNNING_EDITORS, PRESTART, PRESTART_IDLE_MS, PRESTART_MAX_RUNNING, COMPILE_CACHE_DIR, editorAllowedHosts, SLIDEV_BIN, SLIDEV_DIR, WARMUP } from './settings.mjs';
 import { OPEN_AGAIN, passes } from './sign-in.mjs';
 import { httpError } from './web.mjs';
 import { editorRequestAllowed, slidevEnv } from './zone-decks.mjs';
@@ -107,9 +107,22 @@ export async function assertEditorRequest(req, context, slug) {
   return access;
 }
 
-/** Passes a request on to the deck's editor. */
-export function proxyToEditor(req, res, editor) {
+/**
+ * Passes a request on to the deck's editor. local: the request is sent as one for the editor's own address
+ * (Host 127.0.0.1:<port>), which Vite always accepts: the chart builder's /__slidev/ and /@studio/ calls arrive on
+ * the manager address, whose name an editor started before this version does not know (see editorAllowedHosts).
+ */
+export function proxyToEditor(req, res, editor, { local = false } = {}) {
+  if (local) asLocalRequest(req, editor.port);
   proxy.web(req, res, { target: `http://127.0.0.1:${editor.port}` });
+}
+
+/** The request made out to the editor's own address: Host 127.0.0.1:<port> (the public name stays in X-Forwarded-Host). */
+export function asLocalRequest(req, port) {
+  const host = req.headers.host;
+  if (host && !req.headers['x-forwarded-host']) req.headers['x-forwarded-host'] = host;
+  req.headers.host = `127.0.0.1:${port}`;
+  return req;
 }
 
 /** Passes the editor's live connection (a websocket) on to the deck's editor. */
@@ -155,7 +168,7 @@ function startEditor(slug, why) {
   const child = spawn(SLIDEV_BIN, [deckFile(slug), '--remote', '--bind', '127.0.0.1', '--port', String(port), '--base', basePath], {
     cwd: SLIDEV_DIR,
     // Without the service keys: Zone Leaders use this editor too (zone-decks.mjs slidevEnv).
-    env: slidevEnv(process.env, { __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: PUBLIC_HOST, ...(COMPILE_CACHE_DIR ? { NODE_COMPILE_CACHE: COMPILE_CACHE_DIR } : {}) }),
+    env: slidevEnv(process.env, { __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: editorAllowedHosts(), ...(COMPILE_CACHE_DIR ? { NODE_COMPILE_CACHE: COMPILE_CACHE_DIR } : {}) }),
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   // timings (ms since the spawn) are what GET …/editor reports to the editor page's startup measurement.

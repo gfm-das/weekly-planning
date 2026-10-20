@@ -241,7 +241,9 @@ async function routeBuilderEditorRequest(req, res, context) {
   ensureDeckBuildWatcher(slug);
   editor.lastUsed = Date.now();
   console.log(`[${slug}:edit-proxy] ${req.method} ${req.url}`);
-  proxyToEditor(req, res, editor);
+  // Sent as a request for the editor's own address: Vite refuses host names it does not know (403), and this
+  // request arrives on the manager address, not the deck address the editor is opened on.
+  proxyToEditor(req, res, editor, { local: true });
   return true;
 }
 
