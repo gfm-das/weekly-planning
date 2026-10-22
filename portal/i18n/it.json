@@ -3563,5 +3563,6 @@
  "pres.slideNotReadLost": "Impossibile leggere la diapositiva {a}: la connessione all’editor è stata persa. Attendi che le diapositive siano visibili, poi riprova.",
  "pres.slideNotReadError": "Impossibile leggere la diapositiva {a} dall’editor (errore {b}). Attendi che le diapositive siano visibili, poi riprova.",
  "pres.chartNotSavedLost": "Impossibile salvare il grafico nella diapositiva {a}: la connessione all’editor è stata persa. Attendi che le diapositive siano visibili, poi riprova.",
- "pres.chartNotSavedError": "Impossibile salvare il grafico nella diapositiva {a} (errore {b}). Attendi che le diapositive siano visibili, poi riprova."
+ "pres.chartNotSavedError": "Impossibile salvare il grafico nella diapositiva {a} (errore {b}). Attendi che le diapositive siano visibili, poi riprova.",
+ "dam.rowsAreBothTheReportOf": "Le righe {a} del file sono entrambe il rapporto di '{b}' per la settimana del {c}. Tieni solo una di esse nel file, oppure assegna a ogni riga il proprio rione/ramo."
 }

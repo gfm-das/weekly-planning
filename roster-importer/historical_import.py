@@ -237,6 +237,16 @@ def stage_rows(conn, selected):
         mappings = area_mapping(cur)
         check_mappings(selected, mappings)
         keys = [row.get("_report_key") or make_report_key(clean(row.get(COMPANIONSHIP_COLUMN)), row["_sunday"]) for row in selected]
+        # One report per key (the table's primary key): two rows with one key are refused with the check's words,
+        # before anything is written (the check page names them too, historical_preview.check_same_report_key).
+        rows_of_key = {}
+        for key, row in zip(keys, selected):
+            rows_of_key.setdefault(key, []).append(row)
+        for key, same in rows_of_key.items():
+            if len(same) > 1:
+                rows = ", ".join(str(r.get("_source_row_number")) for r in same)
+                raise ValueError(f"Rows {rows} of the file are both the report of '{clean(same[0].get(COMPANIONSHIP_COLUMN))}' for the week of "
+                                 f"{same[0]['_sunday']}. Keep only one of them in the file, or give each row its own Ward/Branch.")
         for table in STAGING_TABLES:
             cur.execute(f"delete from public.{table} where source_report_key = any(%s)", (keys,))
         for row in selected:

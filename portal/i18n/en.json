@@ -3560,5 +3560,6 @@
  "pres.slideNotReadLost": "Slide {a} could not be read: the connection to the editor was lost. Wait until the slides show, then try again.",
  "pres.slideNotReadError": "Slide {a} could not be read from the editor (error {b}). Wait until the slides show, then try again.",
  "pres.chartNotSavedLost": "The chart could not be saved on slide {a}: the connection to the editor was lost. Wait until the slides show, then try again.",
- "pres.chartNotSavedError": "The chart could not be saved on slide {a} (error {b}). Wait until the slides show, then try again."
+ "pres.chartNotSavedError": "The chart could not be saved on slide {a} (error {b}). Wait until the slides show, then try again.",
+ "dam.rowsAreBothTheReportOf": "Rows {a} of the file are both the report of '{b}' for the week of {c}. Keep only one of them in the file, or give each row its own Ward/Branch."
 }

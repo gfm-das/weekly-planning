@@ -47,6 +47,60 @@ class ReportKeyCollisionTests(unittest.TestCase):
         self.assertEqual(historical.make_report_key("Frankfurt-Langen", date(2026, 8, 23)), "frankfurt-langen:2026-08-23")
 
 
+class SameReportKeyTests(unittest.TestCase):
+    """v1.0.21: 'duplicate key value violates unique constraint "import_weekly_planning_reports_pkey" ... Key
+    (source_report_key)=(heidelberg-media-ramstein:2026-06-07)'. A companionship that sent one form per unit, where the
+    Ward/Branch answers matched no unit, kept both rows (told apart by the answer) but got one report key."""
+
+    def two_forms(self):
+        sunday = date(2026, 6, 7)
+        rows = [dict(row("Heidelberg-Media Ramstein", sunday), **{historical.UNIT_COLUMN: "Kaiserslautern-Ramstein 1", "_source_row_number": 4}),
+                dict(row("Heidelberg-Media Ramstein", sunday), **{historical.UNIT_COLUMN: "Kaiserslautern-Ramstein 2", "_source_row_number": 9})]
+        return rows, sunday
+
+    def test_two_units_without_a_found_unit_get_two_keys(self):
+        rows, sunday = self.two_forms()
+        units = historical_preview.units_per_report_key(rows)
+        keys = {historical_preview.report_key("Heidelberg-Media Ramstein", sunday, historical_preview.unit_identity(r), units) for r in rows}
+        self.assertEqual(keys, {"heidelberg-media-ramstein:2026-06-07@tkaiserslautern-ramstein-1",
+                                "heidelberg-media-ramstein:2026-06-07@tkaiserslautern-ramstein-2"})
+        self.assertEqual(collisions(rows), {})
+
+    def test_found_units_keep_their_old_keys(self):
+        rows = [row("Frankfurt-Darmstadt S", unit_id=1), row("Frankfurt-Darmstadt S", unit_id=2)]
+        units = historical_preview.units_per_report_key(rows)
+        self.assertEqual(historical_preview.report_key("Frankfurt-Darmstadt S", date(2026, 8, 9), 2, units), "frankfurt-darmstadt-s:2026-08-09@u2")
+        self.assertEqual(historical_preview.report_key("Frankfurt-Langen", date(2026, 8, 9), None, {}), "frankfurt-langen:2026-08-09")
+
+    def test_two_rows_with_one_key_are_an_error_on_the_check_page(self):
+        rows, sunday = self.two_forms()
+
+        class Check:
+            errors, closed_only = [], []
+        items = [{"key": "heidelberg-media-ramstein:2026-06-07", "source": "Heidelberg-Media Ramstein", "sunday": sunday, "row": r} for r in rows]
+        historical_preview.check_same_report_key(Check, items)
+        self.assertEqual(Check.errors, ["Rows 4, 9 of the file are both the report of 'Heidelberg-Media Ramstein' for the week of 2026-06-07. "
+                                        "Keep only one of them in the file, or give each row its own Ward/Branch."])
+
+    def test_staging_refuses_two_rows_with_one_key_before_writing(self):
+        rows, _ = self.two_forms()
+        for r in rows:
+            r["_report_key"] = "heidelberg-media-ramstein:2026-06-07"
+
+        class Cursor:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def execute(self, *a): self.ran = True
+            def fetchall(self): return [{"source_companionship": "Heidelberg-Media Ramstein", "target_area_name": "Ramstein", "match_status": "MATCHED"}]
+        original = historical.database.cursor
+        historical.database.cursor = lambda conn: Cursor()
+        try:
+            with self.assertRaisesRegex(ValueError, "Rows 4, 9 of the file are both the report of 'Heidelberg-Media Ramstein'"):
+                historical.stage_rows(None, rows)
+        finally:
+            historical.database.cursor = original
+
+
 class OldAreaMatchTests(unittest.TestCase):
     areas = [{"id": 158, "name": "Darmstadt S", "zone": "Frankfurt"},
              {"id": 185, "name": "Wetterau 2", "zone": "Friedrichsdorf"},

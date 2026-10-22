@@ -3560,5 +3560,6 @@
  "pres.slideNotReadLost": "Dias {a} kunne ikke læses: forbindelsen til editoren blev afbrudt. Vent, til diasene vises, og prøv så igen.",
  "pres.slideNotReadError": "Dias {a} kunne ikke læses fra editoren (fejl {b}). Vent, til diasene vises, og prøv så igen.",
  "pres.chartNotSavedLost": "Diagrammet kunne ikke gemmes på dias {a}: forbindelsen til editoren blev afbrudt. Vent, til diasene vises, og prøv så igen.",
- "pres.chartNotSavedError": "Diagrammet kunne ikke gemmes på dias {a} (fejl {b}). Vent, til diasene vises, og prøv så igen."
+ "pres.chartNotSavedError": "Diagrammet kunne ikke gemmes på dias {a} (fejl {b}). Vent, til diasene vises, og prøv så igen.",
+ "dam.rowsAreBothTheReportOf": "Rækkerne {a} i filen er begge rapporten for '{b}' for ugen {c}. Behold kun én af dem i filen, eller giv hver række sin egen menighed/gren."
 }

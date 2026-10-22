@@ -439,7 +439,8 @@
   "Friends Found - Actual",
   "Lessons with Friends - Actual",
   "Sacrament Attendance - Actual",
-  "keep:{}"
+  "keep:{}",
+  "text:{}"
  ],
  "roster-importer/historical_units.py": [
   "\\b(\\d+)\\s*(st|nd|rd|th|\\.)(?=\\W|$)"

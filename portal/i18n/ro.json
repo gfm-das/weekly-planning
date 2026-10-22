@@ -3573,5 +3573,6 @@
  "pres.slideNotReadLost": "Diapozitivul {a} nu a putut fi citit: conexiunea cu editorul s-a pierdut. Așteaptă să apară diapozitivele, apoi încearcă din nou.",
  "pres.slideNotReadError": "Diapozitivul {a} nu a putut fi citit din editor (eroare {b}). Așteaptă să apară diapozitivele, apoi încearcă din nou.",
  "pres.chartNotSavedLost": "Graficul nu a putut fi salvat pe diapozitivul {a}: conexiunea cu editorul s-a pierdut. Așteaptă să apară diapozitivele, apoi încearcă din nou.",
- "pres.chartNotSavedError": "Graficul nu a putut fi salvat pe diapozitivul {a} (eroare {b}). Așteaptă să apară diapozitivele, apoi încearcă din nou."
+ "pres.chartNotSavedError": "Graficul nu a putut fi salvat pe diapozitivul {a} (eroare {b}). Așteaptă să apară diapozitivele, apoi încearcă din nou.",
+ "dam.rowsAreBothTheReportOf": "Rândurile {a} din fișier sunt amândouă raportul lui '{b}' pentru săptămâna din {c}. Păstrează doar unul dintre ele în fișier sau dă fiecărui rând propria episcopie/ramură."
 }

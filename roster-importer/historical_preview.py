@@ -26,6 +26,7 @@ The result carries a state token (an HMAC, see state_token): Apply (historical_a
 lock and refuses anything that changed since the manager looked at it.
 """
 import hashlib
+import re
 import hmac
 import json
 from pathlib import Path
@@ -91,13 +92,13 @@ def preview(path, connection=None, replace_existing=True, choices=None):
         with database.cursor(conn) as cur:
             check = Check(cur, choices, replace_existing)
             find_units(check, rows)
-            selected, duplicates = historical.deduplicate_rows(
-                rows, unit_of=lambda r: r["_unit_id"] if r["_unit_id"] else historical.clean(r.get(historical.UNIT_COLUMN)).casefold())
+            selected, duplicates = historical.deduplicate_rows(rows, unit_of=unit_identity)
             if not selected:
                 raise ValueError("No dated Weekly Planning reports were found in the CSV.")
             units_of_key = units_per_report_key(selected)
             dropped, extra_keys, combined = choose_look_alike_labels(check, selected, units_of_key)
             items = report_items(check, selected, dropped, extra_keys, units_of_key)
+            check_same_report_key(check, items)
             check_combined_areas(check, items, combined)
             items, skipped = choose_same_unit_rows(check, items)
             groups = {}
@@ -224,20 +225,48 @@ def add_unit_notices(check):
 
 # ------------------------------------------------------------------------------------------ 2. and 3. report keys
 
+def unit_identity(row):
+    """Which unit a row reports for, as the check tells rows apart: the unit found for it, or else its Ward/Branch
+    answer (an answer that matches no unit, or the unit of a Closed label without an area). Two forms of one label and
+    Sunday for two different units are two reports, so they need two report keys."""
+    if row.get("_unit_id"):
+        return row["_unit_id"]
+    text = historical.clean(row.get(historical.UNIT_COLUMN)).casefold()
+    return f"text:{text}" if text else None
+
+
 def units_per_report_key(selected):
     """{report key: the units reported under it}. A label reporting for two units in one week needs one key per unit."""
     units_of_key = {}
     for row in selected:
         base = historical.make_report_key(historical.clean(row[historical.COMPANIONSHIP_COLUMN]), row["_sunday"])
-        units_of_key.setdefault(base, set()).add(row["_unit_id"])
+        units_of_key.setdefault(base, set()).add(unit_identity(row))
     return units_of_key
 
 
-def report_key(label, sunday, unit_id, units_of_key):
-    """The report key of a label, week and unit: '<label>:<sunday>', plus '@u<unit id>' when the label reports for
-    two units that week."""
+def report_key(label, sunday, unit, units_of_key):
+    """The report key of a label, week and unit (unit_identity): '<label>:<sunday>', plus '@u<unit id>' (or '@t<the
+    Ward/Branch answer>' when no unit was found) when the label reports for two units that week."""
     base = historical.make_report_key(label, sunday)
-    return f"{base}@u{unit_id}" if len(units_of_key.get(base, ())) > 1 else base
+    if len(units_of_key.get(base, ())) <= 1:
+        return base
+    if isinstance(unit, str) and unit.startswith("text:"):
+        return f"{base}@t{re.sub(r'[^a-z0-9]+', '-', unit[5:]).strip('-') or 'none'}"
+    return f"{base}@u{unit}"
+
+
+def check_same_report_key(check, items):
+    """Two rows of the file that would still be saved under one report key (the database allows one report per key)
+    are an error on the check page, naming the label and the week, instead of failing when the import is applied."""
+    seen = {}
+    for item in items + [{"key": r.get("_report_key"), "source": historical.clean(r[historical.COMPANIONSHIP_COLUMN]),
+                          "sunday": r["_sunday"], "row": r} for r in check.closed_only]:
+        seen.setdefault(item["key"], []).append(item)
+    for key, same in sorted(seen.items(), key=lambda kv: str(kv[0])):
+        if key and len(same) > 1:
+            rows = ", ".join(str(i["row"].get("_source_row_number")) for i in same)
+            check.errors.append(f"Rows {rows} of the file are both the report of '{same[0]['source']}' for the week of "
+                                f"{same[0]['sunday']}. Keep only one of them in the file, or give each row its own Ward/Branch.")
 
 
 def choose_look_alike_labels(check, selected, units_of_key):
@@ -251,7 +280,7 @@ def choose_look_alike_labels(check, selected, units_of_key):
             continue
         bucket.sort(key=lambda x: x[0])
         labels = [label for label, _ in bucket]
-        sunday, unit_id = bucket[0][1]["_sunday"], bucket[0][1]["_unit_id"]
+        sunday, unit_id = bucket[0][1]["_sunday"], unit_identity(bucket[0][1])
         check.state["collisions"][key] = labels
         options = [f"keep:{label}" for label in labels] + ["combine"]
         choice = chosen.get(key)
@@ -283,7 +312,7 @@ def look_alike_buckets(selected, units_of_key):
     buckets = {}
     for row in selected:
         label = historical.clean(row[historical.COMPANIONSHIP_COLUMN])
-        bucket = buckets.setdefault(report_key(label, row["_sunday"], row["_unit_id"], units_of_key), [])
+        bucket = buckets.setdefault(report_key(label, row["_sunday"], unit_identity(row), units_of_key), [])
         if label.casefold() not in {r[0].casefold() for r in bucket}:
             bucket.append((label, row))
     return buckets
@@ -307,13 +336,14 @@ def report_items(check, selected, dropped, extra_keys, units_of_key):
     for row in selected:
         source = historical.clean(row[historical.COMPANIONSHIP_COLUMN])
         sunday = row["_sunday"]
-        ident = (source.casefold(), sunday, row["_unit_id"])
+        ident = (source.casefold(), sunday, unit_identity(row))
         if ident in dropped:
             continue
         mapping = check.mappings.get(source.casefold())
         area = check.area_of_label(source)
         if mapping and mapping.get("match_status") == "CLOSED" and not area:
             check_row(check, row, source, mapping, sunday)  # kept in the import tables only (Apply stages it)
+            row["_report_key"] = extra_keys.get(ident) or report_key(source, sunday, unit_identity(row), units_of_key)
             check.closed_only.append(row)
             continue
         if not area:
@@ -324,7 +354,7 @@ def report_items(check, selected, dropped, extra_keys, units_of_key):
                 check.errors.append(f"Map '{source}' to a current area before importing.")
             continue
         check_row(check, row, source, mapping, sunday)
-        key = extra_keys.get(ident) or report_key(source, sunday, row["_unit_id"], units_of_key)
+        key = extra_keys.get(ident) or report_key(source, sunday, unit_identity(row), units_of_key)
         row["_report_key"] = key
         unit = check.units_by_id.get(row["_unit_id"])
         items.append({"source": source, "area": area, "sunday": sunday, "key": key, "row": row, "existing_id": None,
