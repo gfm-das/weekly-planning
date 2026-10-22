@@ -223,6 +223,22 @@
       },
       "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"roster.units\",\"roster.missionaries\",\"roster.companionships\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":1}}",
       "sha256": "ab8be020b859c410ba99695d795690655e3a32297796ad80ad0839bb11075929"
+    },
+    {
+      "name": "missionaries per church unit (round 28)",
+      "input": {
+        "measures": [
+          "roster.missionaries"
+        ],
+        "level": "unit",
+        "by": "unit",
+        "weeks": {
+          "last": 1
+        },
+        "sort": "desc"
+      },
+      "canonical": "{\"audience\":\"stewardship\",\"by\":\"unit\",\"filter\":{},\"includeCurrent\":true,\"level\":\"unit\",\"measures\":[\"roster.missionaries\"],\"sort\":\"desc\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":1}}",
+      "sha256": "eb93bba4a1bce8ed4c189190a1486e13528a9cbd62d698fb547233ec4634dc60"
     }
   ],
   "invalid": [
@@ -250,7 +266,7 @@
         ],
         "level": "country"
       },
-      "error": "Choose one of mission, zone, district, area for level."
+      "error": "Choose one of mission, zone, district, area, unit for level."
     },
     {
       "name": "a mission chart limited to zones",
@@ -363,7 +379,7 @@
         ],
         "level": null
       },
-      "error": "Choose one of mission, zone, district, area for level."
+      "error": "Choose one of mission, zone, district, area, unit for level."
     },
     {
       "name": "not JSON",
@@ -568,6 +584,16 @@
         }
       },
       "error": "The from date must not be after the to date."
+    },
+    {
+      "name": "church units show only roster counts",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "level": "unit"
+      },
+      "error": "Church units can show only roster counts."
     }
   ]
 }

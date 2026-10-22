@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<{
   to?: string
   quarter?: string
   per?: string
+  chart?: string // 'tile' (default) or 'line': a full line chart with axes, week labels, values and the goal line
 }>(), {
   metrics: ALL,
   weeks: 12,
@@ -31,12 +32,13 @@ const props = withDefaults(defineProps<{
   to: '',
   quarter: '',
   per: '',
+  chart: 'tile',
 })
 
 const list = computed(() => String(props.metrics || ALL).split(',').map(s => s.trim()).filter(Boolean).slice(0, 12))
 // 0 = automatic: up to 3 across (a number needs room to be read on a call), 2 for four tiles.
 const across = computed(() => props.columns > 0 ? props.columns : list.value.length === 4 ? 2 : Math.min(3, list.value.length || 1))
-const height = computed(() => (list.value.length > across.value ? 150 : 200))
+const height = computed(() => props.chart === 'line' ? (list.value.length > across.value ? 200 : 300) : (list.value.length > across.value ? 150 : 200))
 </script>
 
 <template>
@@ -52,6 +54,7 @@ const height = computed(() => (list.value.length > across.value ? 150 : 200))
       :to="to"
       :quarter="quarter"
       :per="per"
+      :chart="chart"
     />
   </div>
 </template>
@@ -82,4 +85,9 @@ props:
     label: Quarter instead of weeks (for example 2026-Q3)
   per:
     label: Per companionship (write companionship)
+  chart:
+    label: Chart
+    options:
+      - tile
+      - line
 </studio>

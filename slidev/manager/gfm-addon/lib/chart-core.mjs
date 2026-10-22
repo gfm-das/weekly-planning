@@ -714,6 +714,13 @@ function labelFor(settings, chrome, fmt, kind, horizontal) {
   return { show: true, position, color: where === 'inside' && kind === 'bar' ? '#ffffff' : chrome.soft, fontSize: 12, formatter: p => fmt.value(Array.isArray(p.value) ? p.value[horizontal ? 0 : 1] : p.value) }
 }
 
+function goalLabel(label, values) {
+  if (!label.show) return label
+  let last = -1
+  values.forEach((v, i) => { if (v !== null && v !== undefined && Number.isFinite(Number(v))) last = i })
+  return { ...label, position: 'right', formatter: p => (p.dataIndex === last ? label.formatter(p) : '') }
+}
+
 /**
  * The data lines, bars or points of one table column, plus its trend line.
  * Shared by the ordinary chart and small multiples.
@@ -730,7 +737,8 @@ function columnSeries(s, index, env) {
       type: 'line', name: s.name, data, color: goal, z: 3,
       symbol: 'rect', symbolSize: 7, showSymbol: labelsCount <= 40,
       lineStyle: { width: 2, color: goal }, itemStyle: { color: goal, borderColor: chrome.surface, borderWidth: 1 },
-      label: labelFor(settings, chrome, fmt, 'line', false),
+      // Round 28: the goal's value only at its last week, so it does not sit on top of the actual numbers.
+      label: goalLabel(labelFor(settings, chrome, fmt, 'line', false), s.values),
       ...axes,
     })
     return { series: out, trend: null }

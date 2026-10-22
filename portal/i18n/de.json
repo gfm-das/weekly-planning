@@ -3576,5 +3576,6 @@
  "api.unitsWithMissionaries": "Einheiten mit Missionaren",
  "api.datesFormat": "Schreibe die Daten von und bis wie 2026-07-01.",
  "api.weeksOrDates": "Wähle entweder die letzten Wochen oder ein Von- und Bis-Datum, nicht beides.",
- "api.fromAfterTo": "Das Von-Datum darf nicht nach dem Bis-Datum liegen."
+ "api.fromAfterTo": "Das Von-Datum darf nicht nach dem Bis-Datum liegen.",
+ "api.unitsOnlyRoster": "Für Kircheneinheiten lassen sich nur Zahlen aus der Missionarsliste zeigen."
 }

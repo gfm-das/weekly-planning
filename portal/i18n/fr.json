@@ -3579,5 +3579,6 @@
  "api.unitsWithMissionaries": "Unités avec missionnaires",
  "api.datesFormat": "Écris les dates de début et de fin comme 2026-07-01.",
  "api.weeksOrDates": "Choisis soit les dernières semaines, soit des dates de début et de fin, pas les deux.",
- "api.fromAfterTo": "La date de début ne doit pas être après la date de fin."
+ "api.fromAfterTo": "La date de début ne doit pas être après la date de fin.",
+ "api.unitsOnlyRoster": "Les unités de l’Église ne peuvent afficher que les effectifs de la liste des missionnaires."
 }

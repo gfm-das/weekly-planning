@@ -3576,5 +3576,6 @@
  "api.unitsWithMissionaries": "Misyonerli birimler",
  "api.datesFormat": "Başlangıç ve bitiş tarihlerini 2026-07-01 gibi yazın.",
  "api.weeksOrDates": "Ya son haftaları ya da başlangıç ve bitiş tarihini seçin, ikisini birden değil.",
- "api.fromAfterTo": "Başlangıç tarihi bitiş tarihinden sonra olamaz."
+ "api.fromAfterTo": "Başlangıç tarihi bitiş tarihinden sonra olamaz.",
+ "api.unitsOnlyRoster": "Kilise birimleri yalnızca misyoner listesi sayılarını gösterebilir."
 }

@@ -81,10 +81,11 @@
   "includeCurrent must be true or false.",
   "mission_id = {}",
   "plans.{}",
+  "roster.{}",
   "sum({}) AS {}",
   "sunday = ANY({}::date[])",
-  "{} = ANY({}::bigint[])",
-  "roster.{}"
+  "unit_id IS NOT NULL",
+  "{} = ANY({}::bigint[])"
  ],
  "portal-api/planning.py": [
   "(key => value, ...): named arguments, so the order of the SQL signature never matters.",

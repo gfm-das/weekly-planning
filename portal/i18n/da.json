@@ -3576,5 +3576,6 @@
  "api.unitsWithMissionaries": "Enheder med missionærer",
  "api.datesFormat": "Skriv fra- og til-dato som 2026-07-01.",
  "api.weeksOrDates": "Vælg enten de seneste uger eller en fra- og til-dato, ikke begge.",
- "api.fromAfterTo": "Fra-datoen må ikke være efter til-datoen."
+ "api.fromAfterTo": "Fra-datoen må ikke være efter til-datoen.",
+ "api.unitsOnlyRoster": "Kirkens enheder kan kun vise tal fra missionærlisten."
 }

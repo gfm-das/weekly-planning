@@ -17,6 +17,7 @@ withDefaults(defineProps<{
   to?: string
   quarter?: string
   per?: string
+  chart?: string // 'tile' (default) or 'line': a full line chart with axes, week labels, values and the goal line
 }>(), {
   metric: 'friends_found',
   weeks: 12,
@@ -26,12 +27,13 @@ withDefaults(defineProps<{
   to: '',
   quarter: '',
   per: '',
+  chart: 'tile',
 })
 </script>
 
 <template>
   <div class="gfm-kpi" :class="{ 'gfm-kpi--highlight': highlight }">
-    <MissionKpiChart :kpi="metric" chart="tile" :weeks="weeks" :height="height" :from="from" :to="to" :quarter="quarter" :per="per" />
+    <MissionKpiChart :kpi="metric" :chart="chart === 'line' ? 'line' : 'tile'" :show-values="chart === 'line'" :trend="chart === 'line' ? 'none' : undefined" :weeks="weeks" :height="height" :from="from" :to="to" :quarter="quarter" :per="per" />
   </div>
 </template>
 
@@ -71,4 +73,9 @@ props:
     label: Quarter instead of weeks (for example 2026-Q3)
   per:
     label: Per companionship (write companionship)
+  chart:
+    label: Chart
+    options:
+      - tile
+      - line
 </studio>

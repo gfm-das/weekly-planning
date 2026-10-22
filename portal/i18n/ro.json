@@ -3589,5 +3589,6 @@
  "api.unitsWithMissionaries": "Unități cu misionari",
  "api.datesFormat": "Scrie datele de la și până la așa: 2026-07-01.",
  "api.weeksOrDates": "Alege fie ultimele săptămâni, fie o dată de la și până la, nu ambele.",
- "api.fromAfterTo": "Data de la nu poate fi după data până la."
+ "api.fromAfterTo": "Data de la nu poate fi după data până la.",
+ "api.unitsOnlyRoster": "Unitățile Bisericii pot afișa doar numere din lista misionarilor."
 }

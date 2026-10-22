@@ -166,7 +166,7 @@ Most zones taught more people than last week.
 
 One key indicator of the mission as a tile - the last finished week against the goal set the week before, with a small line of the weeks. Live from the weekly plans.
 
-Settings: `metric` (New people being taught | Baptisms and confirmations | Baptismal dates | Sacrament attendance | Members at lessons | New member sacrament attendance), `weeks`, `height`, `highlight`, `from`, `to`, `quarter`, `per`.
+Settings: `metric` (New people being taught | Baptisms and confirmations | Baptismal dates | Sacrament attendance | Members at lessons | New member sacrament attendance), `weeks`, `height`, `highlight`, `from`, `to`, `quarter`, `per`, `chart` (tile | line).
 
 ```
 <GfmKpi metric="New people being taught" />
@@ -176,7 +176,7 @@ Settings: `metric` (New people being taught | Baptisms and confirmations | Bapti
 
 Key indicators of the mission as a grid of tiles, live from the weekly plans. Choose which ones, how many weeks the small lines show, and whether the first is outlined.
 
-Settings: `metrics`, `weeks`, `columns`, `highlightFirst`, `from`, `to`, `quarter`, `per`.
+Settings: `metrics`, `weeks`, `columns`, `highlightFirst`, `from`, `to`, `quarter`, `per`, `chart` (tile | line).
 
 ```
 <GfmKpiGrid metrics="friends_found,baptismal_dates,sacrament_attendance" />
@@ -234,7 +234,7 @@ Settings: `title`, `rows`, `sample`, `columns`, `sort`, `limit`, `groupBy`, `pag
 
 ### `MissionRoster`
 
-Roster counts of the mission, never names - church units with missionaries, missionaries per unit and companionships, or elders and sisters. This week or as of a date.
+Roster counts of the mission, never names of people - the number of church units with missionaries and a bar chart of missionaries per unit, or elders and sisters. This week or as of a date.
 
 Settings: `view` (units | gender).
 

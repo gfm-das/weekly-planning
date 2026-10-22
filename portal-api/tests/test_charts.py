@@ -710,3 +710,27 @@ class StateOfMissionTest(unittest.TestCase):
         self.assertEqual(numbers.value('2026-07-05', 1, 'friends_found.actual'), 2.5)
         plain = charts.ChartNumbers(cells, areas, 'none', set(), comps)
         self.assertEqual(plain.over_weeks(1, 'roster.missionaries', ['2026-07-05', '2026-07-12']), 10)
+
+    def test_round28_unit_level_and_distinct_companionships(self):
+        spec = charts.normalize_spec({'measures': ['roster.missionaries'], 'level': 'unit', 'by': 'unit', 'weeks': {'last': 1}})
+        self.assertEqual(spec['level'], 'unit')
+        with self.assertRaisesRegex(ValueError, 'only roster counts'):
+            charts.normalize_spec({'measures': ['friends_found.actual'], 'level': 'unit'})
+        query, _ = charts.roster_query('mission', 1, ['2026-07-05'], {}, None)
+        text = repr(query)
+        self.assertIn('sum(companionships)', text)
+        self.assertNotIn('count(*)', text)
+        self.assertIn('unit_id IS NOT NULL', repr(charts.roster_query('unit', 1, ['2026-07-05'], {}, None)[0]))
+        areas = [{'id': 1, 'zone_id': 1, 'district_id': 1}, {'id': 2, 'zone_id': 2, 'district_id': 2}]
+        self.assertEqual(charts.stewardship_units('unit', areas, {1}), ('area', {1}))
+        self.assertEqual(charts.stewardship_units('unit', areas, {1, 2}), ('unit', None))
+
+    def test_round28_per_companionship_uses_each_weeks_count(self):
+        # Mission sum per week / that week's distinct companionships, not the latest week's, not an average per area.
+        rows = {'kpi': [{'sunday': '2026-07-05', 'mission_id': 1, 'friends_found_actual': 12},
+                        {'sunday': '2026-07-12', 'mission_id': 1, 'friends_found_actual': 12}],
+                'roster': [{'sunday': '2026-07-05', 'mission_id': 1, 'companionships': 3},
+                           {'sunday': '2026-07-12', 'mission_id': 1, 'companionships': 4}]}
+        cells, _, areas, comps = charts.pivot(['friends_found.actual'], 'mission', rows)
+        numbers = charts.ChartNumbers(cells, areas, 'per_companionship', set(), comps)
+        self.assertEqual(numbers.weekly(1, 'friends_found.actual', ['2026-07-05', '2026-07-12']), [4.0, 3.0])

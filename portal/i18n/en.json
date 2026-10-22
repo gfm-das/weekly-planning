@@ -3576,5 +3576,6 @@
  "api.unitsWithMissionaries": "Church units with missionaries",
  "api.datesFormat": "Write the from and to dates like 2026-07-01.",
  "api.weeksOrDates": "Choose either the last weeks or a from and to date, not both.",
- "api.fromAfterTo": "The from date must not be after the to date."
+ "api.fromAfterTo": "The from date must not be after the to date.",
+ "api.unitsOnlyRoster": "Church units can show only roster counts."
 }

@@ -20,12 +20,14 @@
 // Only portal-api knows which measure names exist; this side checks their shape.
 
 export const LEVELS = ['mission', 'zone', 'district', 'area']
+// Round 28: church units (wards and branches with missionaries), for roster counts only (charts.py ROSTER_LEVELS).
+export const ROSTER_LEVELS = [...LEVELS, 'unit']
 export const BYS = ['week', 'unit']
 export const TRANSFORMS = ['none', 'pct_of_goal', 'cumulative', 'rolling4', 'per_area', 'per_companionship']
 export const SORTS = ['none', 'desc', 'asc']
 export const AUDIENCES = ['deck', 'stewardship']
 const FILTER_KEYS = ['zones', 'districts', 'areas']
-const LEVEL_FILTERS = { mission: [], zone: ['zones'], district: ['zones', 'districts'], area: ['zones', 'districts', 'areas'] }
+const LEVEL_FILTERS = { mission: [], zone: ['zones'], district: ['zones', 'districts'], area: ['zones', 'districts', 'areas'], unit: ['zones', 'districts', 'areas'] }
 const SPEC_KEYS = ['v', 'measures', 'level', 'by', 'filter', 'weeks', 'includeCurrent', 'transform', 'sort', 'top', 'audience']
 const MEASURE_ID = /^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$/
 export const MAX_MEASURES = 8
@@ -86,7 +88,8 @@ export function normalizeSpec(raw) {
   }
   if (seen.size > MAX_MEASURES) throw new SpecError(`Choose at most ${MAX_MEASURES} numbers for one chart.`)
 
-  const level = choice(raw, 'level', LEVELS, 'mission')
+  const level = choice(raw, 'level', ROSTER_LEVELS, 'mission')
+  if (level === 'unit' && [...seen].some(m => !m.startsWith('roster.'))) throw new SpecError('Church units can show only roster counts.')
   const by = choice(raw, 'by', BYS, 'week')
 
   let given = get(raw, 'filter', {})
@@ -206,6 +209,14 @@ export function rosterSpec({ view, asOf } = {}) {
   catch { return null }
 }
 
+/** Round 28: missionaries per church unit (one bar per unit, by name), this week or the week of asOf. */
+export function rosterUnitSpec({ asOf } = {}) {
+  const base = rosterSpec({ view: 'units', asOf })
+  if (!base) return null
+  try { return normalizeSpec({ measures: ['roster.missionaries'], level: 'unit', by: 'unit', weeks: base.weeks, sort: 'desc' }) }
+  catch { return null }
+}
+
 const COMPONENT_TAG = /<\s*(gfmkpigrid|gfm-kpi-grid|gfmkpi|gfm-kpi|missionkpichart|mission-kpi-chart|missionroster|mission-roster)\b([^>]*)>/gi
 const PLAIN_ATTRIBUTE = /(?<![\w:.-])([A-Za-z][\w-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')/g
 
@@ -222,7 +233,13 @@ export function componentSpecs(markdown) {
   for (const m of String(markdown ?? '').matchAll(COMPONENT_TAG)) {
     const tag = m[1].toLowerCase().replace(/-/g, '')
     const a = plainAttributes(m[2])
-    if (tag === 'missionroster') { const s = rosterSpec(a); if (s) out.push(s); continue }
+    if (tag === 'missionroster') {
+      const s = rosterSpec(a)
+      if (s) out.push(s)
+      const u = String(a.view ?? '').trim().toLowerCase() === 'gender' ? null : rosterUnitSpec(a)
+      if (u) out.push(u)
+      continue
+    }
     const kpis = tag === 'gfmkpigrid'
       ? String(a.metrics || KPI_IDS.join(',')).split(',').map(x => x.trim()).filter(Boolean).slice(0, 12)
       : [tag === 'gfmkpi' ? a.metric : a.kpi]

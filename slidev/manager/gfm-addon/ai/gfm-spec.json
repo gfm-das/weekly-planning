@@ -424,6 +424,15 @@
      "name": "per",
      "type": "string",
      "label": "Per companionship (write companionship)"
+    },
+    {
+     "name": "chart",
+     "type": "string",
+     "label": "Chart",
+     "options": [
+      "tile",
+      "line"
+     ]
     }
    ],
    "slot": false
@@ -473,6 +482,15 @@
      "name": "per",
      "type": "string",
      "label": "Per companionship (write companionship)"
+    },
+    {
+     "name": "chart",
+     "type": "string",
+     "label": "Chart",
+     "options": [
+      "tile",
+      "line"
+     ]
     }
    ],
    "slot": false
@@ -1181,12 +1199,12 @@
   {
    "name": "MissionRoster",
    "category": "GFM data",
-   "description": "Roster counts of the mission, never names - church units with missionaries, missionaries per unit and companionships, or elders and sisters. This week or as of a date.",
+   "description": "Roster counts of the mission, never names of people - the number of church units with missionaries and a bar chart of missionaries per unit, or elders and sisters. This week or as of a date.",
    "snippet": "<MissionRoster view=\"units\" />",
    "props": [
     {
      "name": "view",
-     "type": "'units' | 'gender', asOf?: string, title?: string",
+     "type": "'units' | 'gender', asOf?: string, title?: string, height?: number",
      "label": "Counts",
      "options": [
       "units",

@@ -3579,5 +3579,6 @@
  "api.unitsWithMissionaries": "Unità con missionari",
  "api.datesFormat": "Scrivi le date da e a così: 2026-07-01.",
  "api.weeksOrDates": "Scegli le ultime settimane oppure una data da e a, non entrambe.",
- "api.fromAfterTo": "La data da non può essere dopo la data a."
+ "api.fromAfterTo": "La data da non può essere dopo la data a.",
+ "api.unitsOnlyRoster": "Le unità della Chiesa possono mostrare solo i numeri dell’elenco dei missionari."
 }

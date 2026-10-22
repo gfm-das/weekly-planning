@@ -76,13 +76,15 @@ def _app():
 
 
 LEVELS = ('mission', 'zone', 'district', 'area')
+# Round 28: church units (wards and branches with missionaries), for roster counts only (missionaries per unit).
+ROSTER_LEVELS = LEVELS + ('unit',)
 BYS = ('week', 'unit')
 TRANSFORMS = ('none', 'pct_of_goal', 'cumulative', 'rolling4', 'per_area', 'per_companionship')
 SORTS = ('none', 'desc', 'asc')
 AUDIENCES = ('deck', 'stewardship')
 FILTER_KEYS = ('zones', 'districts', 'areas')
 LEVEL_FILTERS = {'mission': (), 'zone': ('zones',), 'district': ('zones', 'districts'),
-                 'area': ('zones', 'districts', 'areas')}
+                 'area': ('zones', 'districts', 'areas'), 'unit': ('zones', 'districts', 'areas')}
 FILTER_COLUMNS = {'zones': 'zone_id', 'districts': 'district_id', 'areas': 'area_id'}
 SPEC_KEYS = ('v', 'measures', 'level', 'by', 'filter', 'weeks', 'includeCurrent', 'transform', 'sort', 'top', 'audience')
 MEASURE_ID = re.compile(r'^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$')
@@ -109,8 +111,8 @@ KPI_VIEWS = {'mission': 'kpi_mission_week', 'zone': 'kpi_zone_week', 'district':
 PEOPLE_VIEWS = {'mission': 'people_mission_week', 'zone': 'people_zone_week', 'district': 'people_district_week',
                 'area': 'people_area_week'}
 UNIT_COLUMNS = {'mission': ('mission_id', None), 'zone': ('zone_id', 'zone'), 'district': ('district_id', 'district'),
-                'area': ('area_id', 'area')}
-LEVEL_WORDS = {'mission': 'Mission', 'zone': 'Zone', 'district': 'District', 'area': 'Area'}
+                'area': ('area_id', 'area'), 'unit': ('unit_id', 'unit')}
+LEVEL_WORDS = {'mission': 'Mission', 'zone': 'Zone', 'district': 'District', 'area': 'Area', 'unit': 'Unit'}
 
 GROUPS = (
     ('kpi', 'Key indicators'),
@@ -288,7 +290,9 @@ def normalize_spec(raw, whitelist=True):
     if len(seen) > MAX_MEASURES:
         raise ValueError(f'Choose at most {MAX_MEASURES} numbers for one chart.')
 
-    level = _choice(raw, 'level', LEVELS, 'mission')
+    level = _choice(raw, 'level', ROSTER_LEVELS, 'mission')
+    if level == 'unit' and any(MEASURES[m]['source'] != 'roster' for m in seen):
+        raise ValueError('Church units can show only roster counts.')
     by = _choice(raw, 'by', BYS, 'week')
 
     given = raw.get('filter', {})
@@ -424,6 +428,8 @@ def stewardship_units(level, all_areas, mine):
     """
     if all_areas and all(a['id'] in mine for a in all_areas):
         return level, None
+    if level == 'unit':  # a church unit can cross stewardships: a leader sees their own areas instead
+        return 'area', {a['id'] for a in all_areas if a['id'] in mine}
     for candidate in LEVELS[LEVELS.index(level):]:
         units = covered_units(candidate, all_areas, mine)
         if units and candidate != 'mission':
@@ -454,12 +460,14 @@ def range_query(mission_id, current, first, last_day, include_current):
 
 
 def roster_query(level, mission_id, sundays, filt, units):
-    """Roster counts (migration 059) per unit at `level` and week: companionships (areas with missionaries),
-    missionaries, elders, sisters and church units. Counts only."""
+    """Roster counts (migrations 059/060) per unit at `level` and week: companionships (the distinct companionships
+    active that week, migration 060), missionaries, elders, sisters and church units. Counts only."""
     unit_id, unit_name = UNIT_COLUMNS[level]
     keys = [sql.Identifier('sunday'), sql.Identifier(unit_id)] + ([sql.Identifier(unit_name)] if unit_name else [])
     where = [sql.SQL('mission_id = %s'), sql.SQL('sunday = ANY(%s::date[])')]
     args = [mission_id, list(sundays)]
+    if level == 'unit':
+        where.append(sql.SQL('unit_id IS NOT NULL'))
     for key in FILTER_KEYS:
         if filt.get(key):
             where.append(sql.SQL('{} = ANY(%s::bigint[])').format(sql.Identifier(FILTER_COLUMNS[key])))
@@ -467,7 +475,7 @@ def roster_query(level, mission_id, sundays, filt, units):
     if units is not None:
         where.append(sql.SQL('{} = ANY(%s::bigint[])').format(sql.Identifier(unit_id)))
         args.append(sorted(units))
-    query = sql.SQL('SELECT {keys}, count(*) AS companionships, sum(missionaries) AS missionaries, '
+    query = sql.SQL('SELECT {keys}, sum(companionships) AS companionships, sum(missionaries) AS missionaries, '
                     'sum(elders) AS elders, sum(sisters) AS sisters, count(DISTINCT unit_id) AS units '
                     'FROM {view} WHERE {where} GROUP BY {keys} ORDER BY sunday, {unit} LIMIT {cap}').format(
         keys=sql.SQL(', ').join(keys), view=sql.Identifier('dashboards', 'roster_area_week'),
