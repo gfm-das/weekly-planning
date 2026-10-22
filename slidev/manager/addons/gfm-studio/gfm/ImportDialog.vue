@@ -10,7 +10,8 @@ import { useNav } from '@slidev/client'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { importApi, assetApi } from '../client/composables/useDeckApi'
 import { pushDeckHistory } from '../client/composables/useSlideSource'
-import { importOpen, importPrefill } from '../client/state'
+import { importLabels, importOpen, importPrefill } from '../client/state'
+import { copyText, copyWords } from './copy-text.mjs'
 import spec from '../../../gfm-addon/ai/gfm-spec.json'
 import aiPrompt from '../../../gfm-addon/ai/gfm-ai-prompt.txt?raw'
 import { analyzeDeck, autoFix, FIXES } from './import-analyze.mjs'
@@ -92,10 +93,18 @@ async function doImport() {
   finally { importing.value = false }
 }
 
+const words = computed(() => copyWords(importLabels.value))
+const showPrompt = ref(false)
+const copyBlocked = ref(false)
+const promptBox = ref<HTMLTextAreaElement>()
+function selectPrompt() { setTimeout(() => { promptBox.value?.focus(); promptBox.value?.select(); if (promptBox.value) promptBox.value.scrollTop = 0 }) }
+// Works on the portal's plain http too (copy-text.mjs); when the browser refuses both ways, the instructions are shown
+// selected, so Ctrl+C copies them.
 async function copyInstructions() {
-  try { await navigator.clipboard.writeText(aiPrompt); copied.value = true; setTimeout(() => (copied.value = false), 2500) }
-  catch { message.value = 'The browser did not allow copying. Select the instructions in the editor page menu instead.' }
+  if (await copyText(aiPrompt)) { copyBlocked.value = false; copied.value = true; setTimeout(() => (copied.value = false), 2500); return }
+  copyBlocked.value = true; showPrompt.value = true; selectPrompt()
 }
+function togglePrompt() { showPrompt.value = !showPrompt.value; if (showPrompt.value) selectPrompt() }
 
 async function openFile(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0]
@@ -129,15 +138,29 @@ const bySlide = computed(() => {
         Paste a complete Slidev presentation, for example one written by ChatGPT or Claude. It is checked first; nothing changes until you press Import.
       </p>
 
-      <div class="gfm-imp__row">
-        <button class="gfm-btn" @click="copyInstructions">
-          {{ copied ? 'Copied' : 'Copy AI instructions' }}
-        </button>
-        <button class="gfm-btn" @click="fileInput?.click()">
-          Open a file…
-        </button>
-        <input ref="fileInput" type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden @change="openFile">
-        <span class="gfm-imp__hint">Give the instructions to the AI first, then paste what it writes.</span>
+      <div class="gfm-imp__ai" data-gfm-ai-instructions>
+        <p class="gfm-imp__steps">
+          {{ words.steps }}
+        </p>
+        <div class="gfm-imp__row">
+          <button class="gfm-btn gfm-btn--go" data-gfm-copy-instructions @click="copyInstructions">
+            {{ words.copy }}
+          </button>
+          <button class="gfm-btn" :aria-expanded="showPrompt" @click="togglePrompt">
+            {{ showPrompt ? words.hide : words.show }}
+          </button>
+          <button class="gfm-btn" @click="fileInput?.click()">
+            Open a file…
+          </button>
+          <input ref="fileInput" type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden @change="openFile">
+        </div>
+        <p v-if="copied" class="gfm-imp__ok" role="status">
+          {{ words.copied }}
+        </p>
+        <p v-if="copyBlocked" class="gfm-imp__msg" role="alert">
+          {{ words.blocked }}
+        </p>
+        <textarea v-if="showPrompt" ref="promptBox" class="gfm-imp__text gfm-imp__prompt" readonly spellcheck="false" :value="aiPrompt" @focus="($event.target as HTMLTextAreaElement).select()" />
       </div>
 
       <textarea ref="area" v-model="text" class="gfm-imp__text" spellcheck="false" placeholder="---&#10;theme: default&#10;title: My presentation&#10;---&#10;&#10;# First slide" />
@@ -247,6 +270,11 @@ html.dark .gfm-imp__box { background: #18262f; color: #edf7f8; }
 .gfm-btn--go { background: #087f8c; border-color: #087f8c; color: #fff; font-weight: 650; }
 .gfm-btn--go:hover:not(:disabled) { background: #066a75; color: #fff; }
 .gfm-imp__msg { color: #b42318; font-size: 13px; }
+.gfm-imp__ai { border: 1px solid rgba(8, 127, 140, 0.35); background: rgba(8, 127, 140, 0.06); border-radius: 12px; padding: 10px 14px; margin: 0 0 12px; }
+.gfm-imp__ai .gfm-imp__row { margin: 6px 0 2px; }
+.gfm-imp__steps { margin: 0; font-size: 14px; font-weight: 600; }
+.gfm-imp__ok { color: #127a4a; font-size: 13px; margin: 6px 0 0; }
+.gfm-imp__prompt { height: 180px; margin-top: 8px; }
 .gfm-imp__result h3 { margin: 14px 0 6px; font-size: 16px; }
 .gfm-imp__summary { padding: 8px 12px; border-radius: 10px; background: rgba(183, 121, 31, 0.12); font-size: 14px; }
 .gfm-imp__summary--bad { background: rgba(180, 35, 24, 0.12); }

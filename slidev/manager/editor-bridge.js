@@ -189,7 +189,7 @@
     const data = event.data || {};
     if (data.type === 'gfm-editor-open-import') {
       // GFM Studio: the editor page's Paste presentation button (and a Markdown file chosen in its menu).
-      try { const s = window.__studio__; if (data.text) s.importPrefill.value = String(data.text).slice(0, 1500000); s.importOpen.value = true; } catch {}
+      try { const s = window.__studio__; if (data.text) s.importPrefill.value = String(data.text).slice(0, 1500000); if (data.labels && typeof data.labels === 'object' && s.importLabels) s.importLabels.value = data.labels; s.importOpen.value = true; } catch {}
     }
     else if (data.type === 'gfm-editor-perf-get') post({ type: 'gfm-editor-perf', perf: perfSnapshot() });
     else if (data.type === 'gfm-editor-reload') location.reload();

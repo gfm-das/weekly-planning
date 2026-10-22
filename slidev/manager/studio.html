@@ -644,7 +644,15 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
   function closeMore() { $('moreMenu').hidden = true; $('moreButton').setAttribute('aria-expanded', 'false'); }
-  $('pasteButton').addEventListener('click', () => tellEditor({ type: 'gfm-editor-open-import' }));
+  // The words of the dialog's copy part, in the reader's language (the editor is on another address and has no i18n.js).
+  const tr = text => window.MissionI18n?.translate?.(text) || text;
+  const importLabels = () => ({
+    copy: tr('Copy AI instructions'), copied: tr('AI instructions copied. Paste them into ChatGPT or Claude.'),
+    steps: tr('Step 1: copy the instructions and give them to ChatGPT or Claude with your topic. Step 2: paste what it writes below.'),
+    show: tr('Show instructions'), hide: tr('Hide instructions'),
+    blocked: tr('This browser blocked copying. The instructions are selected below: press Ctrl+C (⌘C on a Mac).'),
+  });
+  $('pasteButton').addEventListener('click', () => tellEditor({ type: 'gfm-editor-open-import', labels: importLabels() }));
   $('moreButton').addEventListener('click', e => {
     e.stopPropagation();
     const open = $('moreMenu').hidden;
@@ -656,9 +664,13 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
     closeMore();
     try {
       const text = await (await fetch('/_manager/chart/gfm-ai-prompt.txt', { credentials: 'same-origin' })).text();
-      await navigator.clipboard.writeText(text);
+      if (!(await copyText(text))) throw new Error('blocked');
       toast('AI instructions copied. Paste them into ChatGPT or Claude.');
-    } catch { toast('The browser did not allow copying.', true); }
+    } catch {
+      // Copying is blocked: open Paste presentation, which shows the instructions selected for Ctrl+C.
+      toast('The browser did not allow copying.', true);
+      tellEditor({ type: 'gfm-editor-open-import', labels: importLabels() });
+    }
   });
   $('downloadMdItem').addEventListener('click', async () => {
     closeMore();
@@ -681,16 +693,24 @@ dialog{border:0;border-radius:16px;padding:0;width:min(640px,calc(100vw - 30px))
       } catch (e) { toast(e.message || 'The upload did not work.', true); }
     } else {
       // A Markdown file goes through the same check as a pasted presentation.
-      tellEditor({ type: 'gfm-editor-open-import', text: await file.text() });
+      tellEditor({ type: 'gfm-editor-open-import', text: await file.text(), labels: importLabels() });
     }
   });
 
   $('publishButton').addEventListener('click', () => publish(false));
   // Copy details: the message and Slidev's lines, to send to whoever looks after the portal (round 16).
+  // Copy a text: the clipboard API exists only on https or localhost, so on the portal's plain http the old way
+  // (a selected hidden text box and execCommand) is used. Returns whether it worked. inside: where the box goes (a
+  // modal dialog keeps the selection only inside itself).
+  async function copyText(text, inside = document.body) {
+    if (navigator.clipboard && window.isSecureContext !== false) { try { await navigator.clipboard.writeText(text); return true; } catch {} }
+    const box = document.createElement('textarea'); box.value = text; box.setAttribute('readonly', ''); box.style.position = 'fixed'; box.style.opacity = '0';
+    inside.appendChild(box); box.select(); let ok = false; try { ok = document.execCommand('copy') === true; } catch {} box.remove();
+    return ok;
+  }
   $('publishCopy').addEventListener('click', async () => {
     const text = $('publishCopy').dataset.text || '';
-    try { await navigator.clipboard.writeText(text); }
-    catch { const box = document.createElement('textarea'); box.value = text; box.style.position = 'fixed'; box.style.opacity = '0'; $('publishDialog').appendChild(box); box.select(); try { document.execCommand('copy'); } catch {} box.remove(); }
+    await copyText(text, $('publishDialog'));
     const button = $('publishCopy'); button.textContent = 'Details copied.'; setTimeout(() => { button.textContent = 'Copy details'; }, 2500);
   });
   $('publishClose').addEventListener('click', () => $('publishDialog').close());

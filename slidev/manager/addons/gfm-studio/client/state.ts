@@ -55,10 +55,12 @@ if (typeof window !== 'undefined')
 export const importOpen = ref(false)
 /** Text to start the dialog with (a file the person chose in the editor page's menu). */
 export const importPrefill = ref('')
+/** The copy part's words in the reader's language, sent by the editor page with its Paste button (gfm/copy-text.mjs). */
+export const importLabels = ref<Record<string, string>>({})
 /** A short message after a page reload (an import reloads the deck): shown once, in a toast. */
 export const notice = ref<string | null>(null)
 if (typeof window !== 'undefined') {
-  Object.assign((window as any).__studio__, { importOpen, importPrefill, notice })
+  Object.assign((window as any).__studio__, { importOpen, importPrefill, importLabels, notice })
   try {
     const kept = sessionStorage.getItem('gfm-studio:notice')
     if (kept) {

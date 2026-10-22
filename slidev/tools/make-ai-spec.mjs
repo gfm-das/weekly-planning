@@ -159,7 +159,10 @@ export function promptText(m) {
   for (const c of m.components.filter(c => c.name.startsWith('Gfm'))) L.push(`- ${c.name}${c.props.length ? ` (${c.props.filter(p => !p.hidden).map(p => p.name + (p.options ? `=${p.options.join('|')}` : '')).join(', ')})` : ''}: ${c.description.split('.')[0]}.`);
   L.push('- MissionChart: <MissionChart chart-id="c1" preset="trend" :height="330" :rows="[\'Week, Value\', \'Aug 3, 12\', \'Aug 10, 15\']" />');
   L.push(`  preset: ${m.chart.kinds.filter(k => k.group === 'kind').map(k => k.id).join(', ')}, or type-<name> (${m.chart.kinds.filter(k => k.group === 'type').map(k => k.id.slice(5)).join(', ')}).`);
-  L.push('  Optional: :calc=\'[{"name":"Rate","formula":"[A] / [B]","format":"percent"}]\' (functions: ' + Object.keys(m.chart.functions).join(', ') + '), :shape=\'{"only":["A"],"sort":"desc","top":5}\', :story=\'[{"label":"Step 1","shape":{"only":["A"]}},{"label":"All","shape":{}}]\' for a chart that changes with each click.', '');
+  L.push('  Optional: :calc=\'[{"name":"Rate","formula":"[A] / [B]","format":"percent"}]\' (functions: ' + Object.keys(m.chart.functions).join(', ') + '), :shape=\'{"only":["A"],"sort":"desc","top":5}\', :story=\'[{"label":"Step 1","shape":{"only":["A"]}},{"label":"All","shape":{}}]\' for a chart that changes with each click (:steps is the same; a step may also have "option" to change the chart kind, for example lines to bars).');
+  L.push('- MissionList: a table typed into the slide. <MissionList :rows="[\'Name, Zone, Date\', \'Elder Sample, Mainz, 3 May\']" group-by="Zone" reveal />');
+  L.push('  Optional: columns, sort="Column" or "Column:desc", :limit="10", group-by, :page-size="8", numbered, reveal (rows appear one click at a time).');
+  L.push('- MissionKpiChart: live numbers for one key indicator with goal and trend. <MissionKpiChart kpi="New people being taught" :weeks="12" chart="bar" trend="linear" />', '');
   L.push('Example slide:', '---', 'layout: gfm-chart-insight', 'heading: New people being taught', 'kicker: Trend', '---', '', '<MissionChart chart-id="t1" preset="trend" :height="330" :rows="[\'Week, Taught\', \'Aug 3, 12\', \'Aug 10, 15\']" />', '', '::right::', '', '<GfmInsight>Teaching rose two weeks in a row.</GfmInsight>', '');
   L.push('Now create the presentation about: ');
   return L.join('\n');

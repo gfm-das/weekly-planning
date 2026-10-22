@@ -166,7 +166,7 @@ Most zones taught more people than last week.
 
 One key indicator of the mission as a tile - the last finished week against the goal set the week before, with a small line of the weeks. Live from the weekly plans.
 
-Settings: `weeks`, `height`, `highlight`.
+Settings: `metric` (New people being taught | Baptisms and confirmations | Baptismal dates | Sacrament attendance | Members at lessons | New member sacrament attendance), `weeks`, `height`, `highlight`.
 
 ```
 <GfmKpi metric="New people being taught" />
@@ -216,10 +216,20 @@ A chart from your own numbers or from mission numbers, drawn with ECharts. Use A
 
 Live mission numbers for one key indicator, week by week, with the goal and a trend line. The first settings are the everyday ones; the ones marked More fine-tune the chart.
 
-Settings: `weeks`, `chart` (bar | line | area | tile), `showGoal`, `trend` (linear | polynomial | exponential | logarithmic | moving-average | none), `degree`, `trendColor`, `colors`, `goalColor`, `title`, `height`, `showValues`, `trendStyle` (dashed | dotted | solid), `trendWidth`, `trendLabel`, `window`, `forecast`, `target`, `targetLabel`, `targetColor`, `average`, `averageColor`, `legend` (auto | top | bottom | right | none), `yMin`, `yMax`, `smooth`, `valuePosition` (auto | top | inside | bottom), `dataZoom`.
+Settings: `kpi` (New people being taught | Baptisms and confirmations | Baptismal dates | Sacrament attendance | Members at lessons | New member sacrament attendance), `weeks`, `chart` (bar | line | area | tile), `showGoal`, `trend` (linear | polynomial | exponential | logarithmic | moving-average | none), `degree`, `trendColor`, `colors`, `goalColor`, `title`, `height`, `showValues`, `trendStyle` (dashed | dotted | solid), `trendWidth`, `trendLabel`, `window`, `forecast`, `target`, `targetLabel`, `targetColor`, `average`, `averageColor`, `legend` (auto | top | bottom | right | none), `yMin`, `yMax`, `smooth`, `valuePosition` (auto | top | inside | bottom), `dataZoom`.
 
 ```
 <MissionKpiChart kpi="New people being taught" :weeks="12" chart="bar" trend="linear" />
+```
+
+### `MissionList`
+
+A list (a table of rows) typed into the slide or from live mission numbers, with sort, limit, groups, pages and rows that appear one click at a time.
+
+Settings: `title`, `rows`, `sample`, `columns`, `sort`, `limit`, `groupBy`, `pageSize`, `paging` (click | auto), `autoSeconds`, `reveal`, `height`, `numbered`.
+
+```
+<MissionList :rows="['Name, Zone', 'Elder Sample, Mainz', 'Sister Example, Wiesbaden']" sort="Name" />
 ```
 
 ## Charts (`MissionChart`)

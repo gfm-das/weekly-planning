@@ -378,6 +378,19 @@
    "snippet": "<GfmKpi metric=\"New people being taught\" />",
    "props": [
     {
+     "name": "metric",
+     "type": "string",
+     "label": "Key indicator",
+     "options": [
+      "New people being taught",
+      "Baptisms and confirmations",
+      "Baptismal dates",
+      "Sacrament attendance",
+      "Members at lessons",
+      "New member sacrament attendance"
+     ]
+    },
+    {
      "name": "weeks",
      "type": "number",
      "label": "Weeks in the small line (1-104)"
@@ -783,6 +796,16 @@
      "hidden": true
     },
     {
+     "name": "steps",
+     "type": "Record<string, any>[] | string",
+     "hidden": true
+    },
+    {
+     "name": "sample",
+     "type": "string[] | string",
+     "hidden": true
+    },
+    {
      "name": "storyTransition",
      "type": "'morph' | 'fade' | 'none'",
      "options": [
@@ -811,6 +834,19 @@
    "description": "Live mission numbers for one key indicator, week by week, with the goal and a trend line. The first settings are the everyday ones; the ones marked More fine-tune the chart.",
    "snippet": "<MissionKpiChart kpi=\"New people being taught\" :weeks=\"12\" chart=\"bar\" trend=\"linear\" />",
    "props": [
+    {
+     "name": "kpi",
+     "type": "string",
+     "label": "Key indicator",
+     "options": [
+      "New people being taught",
+      "Baptisms and confirmations",
+      "Baptismal dates",
+      "Sacrament attendance",
+      "Members at lessons",
+      "New member sacrament attendance"
+     ]
+    },
     {
      "name": "weeks",
      "type": "number",
@@ -987,6 +1023,94 @@
      "name": "chartId",
      "type": "string",
      "hidden": true
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "MissionList",
+   "category": "Charts",
+   "description": "A list (a table of rows) typed into the slide or from live mission numbers, with sort, limit, groups, pages and rows that appear one click at a time.",
+   "snippet": "<MissionList :rows=\"['Name, Zone', 'Elder Sample, Mainz', 'Sister Example, Wiesbaden']\" sort=\"Name\" />",
+   "props": [
+    {
+     "name": "title",
+     "type": "string",
+     "label": "Title"
+    },
+    {
+     "name": "rows",
+     "type": "string[] | string",
+     "label": "Rows, one per box (first row = headings)"
+    },
+    {
+     "name": "csv",
+     "type": "string",
+     "hidden": true
+    },
+    {
+     "name": "query",
+     "type": "Record<string, any> | string",
+     "hidden": true
+    },
+    {
+     "name": "sample",
+     "type": "string[] | string",
+     "label": "Sample rows shown when the live numbers cannot load"
+    },
+    {
+     "name": "columns",
+     "type": "string[] | string",
+     "label": "Columns to show (their headings, in order)"
+    },
+    {
+     "name": "sort",
+     "type": "string",
+     "label": "Sort by (a heading, add :desc for largest first)"
+    },
+    {
+     "name": "limit",
+     "type": "number",
+     "label": "Show at most this many rows (0 = all)"
+    },
+    {
+     "name": "groupBy",
+     "type": "string",
+     "label": "Group by (a heading)"
+    },
+    {
+     "name": "pageSize",
+     "type": "number",
+     "label": "Rows per page (0 = one page)"
+    },
+    {
+     "name": "paging",
+     "type": "'click' | 'auto'",
+     "label": "Turn pages with clicks or automatically",
+     "options": [
+      "click",
+      "auto"
+     ]
+    },
+    {
+     "name": "autoSeconds",
+     "type": "number",
+     "label": "Seconds per page (automatic pages)"
+    },
+    {
+     "name": "reveal",
+     "type": "boolean",
+     "label": "One row per click"
+    },
+    {
+     "name": "height",
+     "type": "number",
+     "label": "Highest it may grow (slide pixels, 0 = no limit)"
+    },
+    {
+     "name": "numbered",
+     "type": "boolean",
+     "label": "Number the rows"
     }
    ],
    "slot": false
