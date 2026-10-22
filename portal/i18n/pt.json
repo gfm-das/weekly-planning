@@ -1232,6 +1232,7 @@
  "dam.theUploadYourChoicesOr": "O envio, suas escolhas ou os relatórios existentes mudaram desde que você revisou a visualização. Verifique a visualização de novo e escolha outra vez.",
  "dam.undoBlockedTheAffectedRow": "Não é possível desfazer: a chave da linha afetada não é mais única.",
  "dam.undoBlockedNowReferencesA": "Não é possível desfazer: {a} agora faz referência a uma linha criada por esta importação.",
+ "dam.undoBlockedLaterImportReferences": "Desfazer bloqueado: {a} da importação posterior {b} (lote {c}) agora faz referência a uma linha criada por esta importação. Desfaça primeiro essa importação.",
  "dam.thisBatchDoesNotExist": "Este lote não existe ou já foi desfeito.",
  "dam.undoBlockedTheAuditContains": "Não é possível desfazer: o registro contém uma tabela não suportada.",
  "dam.undoBlockedChangedAfterThis": "Não é possível desfazer: {a} mudou depois desta importação. Nenhum dado foi revertido.",

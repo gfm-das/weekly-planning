@@ -1267,6 +1267,7 @@
  "dam.theUploadYourChoicesOr": "تغيّر الرفع أو اختياراتك أو التقارير الموجودة منذ أن راجعت المعاينة. راجع المعاينة مرة أخرى واختر من جديد.",
  "dam.undoBlockedTheAffectedRow": "التراجع محظور: لم يعد مفتاح الصف المتأثر فريدًا.",
  "dam.undoBlockedNowReferencesA": "التراجع محظور: {a} يشير الآن إلى صف أنشأه هذا الاستيراد.",
+ "dam.undoBlockedLaterImportReferences": "تم حظر التراجع: {a} من الاستيراد اللاحق {b} (الدفعة {c}) يشير الآن إلى صف أنشأه هذا الاستيراد. تراجع عن ذلك الاستيراد أولاً.",
  "dam.thisBatchDoesNotExist": "هذه الدفعة غير موجودة أو تم التراجع عنها بالفعل.",
  "dam.undoBlockedTheAuditContains": "التراجع محظور: يحتوي السجل على جدول غير مدعوم.",
  "dam.undoBlockedChangedAfterThis": "التراجع محظور: تغيّر {a} بعد هذا الاستيراد. لم تُسترجع أي بيانات.",

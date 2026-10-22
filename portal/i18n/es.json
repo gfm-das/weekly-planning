@@ -1231,6 +1231,7 @@
  "dam.theUploadYourChoicesOr": "La carga, tus elecciones o los informes existentes cambiaron desde que revisaste la vista previa. Revisa de nuevo la vista previa y vuelve a elegir.",
  "dam.undoBlockedTheAffectedRow": "No se puede deshacer: la clave de la fila afectada ya no es única.",
  "dam.undoBlockedNowReferencesA": "No se puede deshacer: {a} ahora hace referencia a una fila creada por esta importación.",
+ "dam.undoBlockedLaterImportReferences": "Deshacer bloqueado: {a} de la importación posterior {b} (lote {c}) ahora hace referencia a una fila creada por esta importación. Deshaga primero esa importación.",
  "dam.thisBatchDoesNotExist": "Este lote no existe o ya se deshizo.",
  "dam.undoBlockedTheAuditContains": "No se puede deshacer: el registro contiene una tabla no admitida.",
  "dam.undoBlockedChangedAfterThis": "No se puede deshacer: {a} cambió después de esta importación. No se revirtió ningún dato.",

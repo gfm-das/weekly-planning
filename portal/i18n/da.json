@@ -1231,6 +1231,7 @@
  "dam.theUploadYourChoicesOr": "Uploaden, dine valg eller de eksisterende rapporter er ændret, siden du gennemgik forhåndsvisningen. Gennemgå forhåndsvisningen igen, og vælg på ny.",
  "dam.undoBlockedTheAffectedRow": "Fortrydelse blokeret: nøglen til den berørte række er ikke længere entydig.",
  "dam.undoBlockedNowReferencesA": "Fortrydelse blokeret: {a} henviser nu til en række, som denne import har oprettet.",
+ "dam.undoBlockedLaterImportReferences": "Fortryd blokeret: {a} i den senere import {b} (batch {c}) henviser nu til en række oprettet af denne import. Fortryd den import først.",
  "dam.thisBatchDoesNotExist": "Denne batch findes ikke eller er allerede fortrudt.",
  "dam.undoBlockedTheAuditContains": "Fortrydelse blokeret: loggen indeholder en tabel, der ikke understøttes.",
  "dam.undoBlockedChangedAfterThis": "Fortrydelse blokeret: {a} er ændret efter denne import. Ingen data blev ført tilbage.",

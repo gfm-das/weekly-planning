@@ -1231,6 +1231,7 @@
  "dam.theUploadYourChoicesOr": "Önizlemeyi incelediğinizden beri yükleme, seçimleriniz veya mevcut raporlar değişti. Önizlemeyi yeniden kontrol edip tekrar seçin.",
  "dam.undoBlockedTheAffectedRow": "Geri alma engellendi: etkilenen satır anahtarı artık benzersiz değil.",
  "dam.undoBlockedNowReferencesA": "Geri alma engellendi: {a} artık bu içe aktarmanın oluşturduğu bir satıra başvuruyor.",
+ "dam.undoBlockedLaterImportReferences": "Geri alma engellendi: sonraki içe aktarma {b} (parti {c}) içindeki {a} artık bu içe aktarmanın oluşturduğu bir satıra başvuruyor. Önce o içe aktarmayı geri alın.",
  "dam.thisBatchDoesNotExist": "Bu grup yok veya zaten geri alındı.",
  "dam.undoBlockedTheAuditContains": "Geri alma engellendi: denetim kaydı desteklenmeyen bir tablo içeriyor.",
  "dam.undoBlockedChangedAfterThis": "Geri alma engellendi: {a} bu içe aktarmadan sonra değişti. Hiçbir veri geri alınmadı.",

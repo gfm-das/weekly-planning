@@ -1232,6 +1232,7 @@
  "dam.theUploadYourChoicesOr": "Il caricamento, le tue scelte o i rapporti esistenti sono cambiati da quando hai controllato l'anteprima. Ricontrolla l'anteprima e scegli di nuovo.",
  "dam.undoBlockedTheAffectedRow": "Annullamento bloccato: la chiave della riga interessata non è più univoca.",
  "dam.undoBlockedNowReferencesA": "Annullamento bloccato: {a} ora fa riferimento a una riga creata da questa importazione.",
+ "dam.undoBlockedLaterImportReferences": "Annullamento bloccato: {a} dell'importazione successiva {b} (lotto {c}) ora fa riferimento a una riga creata da questa importazione. Annulla prima quell'importazione.",
  "dam.thisBatchDoesNotExist": "Questo lotto non esiste o è già stato annullato.",
  "dam.undoBlockedTheAuditContains": "Annullamento bloccato: il registro contiene una tabella non supportata.",
  "dam.undoBlockedChangedAfterThis": "Annullamento bloccato: {a} è cambiato dopo questa importazione. Nessun dato è stato ripristinato.",

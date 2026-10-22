@@ -198,6 +198,27 @@ class ManagementIntegrationTests(unittest.TestCase):
             session.update(portal_mission_id=2)
             undo.undo_batch(batch)
 
+    def test_04b_undo_names_the_later_import_that_links_to_this_one(self):
+        # The live v1.0.23 report: Undo of a Historical batch "did not go" because the next file's weekly rows pointed
+        # at the people this batch created; the message did not say which import to undo first.
+        batch, report, _ = self.imported_fixture("Later linked source", "2000-01-23")
+        with database.connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""insert into public.roster_import_batches(id,mission_id,kind,filename,status,actor)
+                  values(gen_random_uuid(),2,'HISTORICAL','later.csv','APPLIED','Integration test') returning id""")
+                later = cur.fetchone()[0]
+                cur.execute("insert into public.weekly_high_potential_friends(weekly_area_report_id,display_order,name) values(%s,1,'Later file') returning id", (report,))
+                row = cur.fetchone()[0]
+                cur.execute("""insert into public.roster_import_changes(batch_id,sequence,table_name,row_key,before_row,after_row)
+                  values(%s,1,'weekly_high_potential_friends',%s,null,%s)""", (later, json.dumps({"id": row}), json.dumps({"id": row})))
+        with self.context():
+            session.update(portal_mission_id=2)
+            with self.assertRaisesRegex(ValueError, f"later import later.csv \\(batch {later}\\).*Undo that import first"):
+                undo.undo_batch(batch)
+            undo.undo_batch(str(later))
+            undo.undo_batch(batch)
+        self.assertEqual(self.scalar("select status from public.roster_import_batches where id=%s", (batch,)), "UNDONE")
+
     def test_05_account_languages_and_invalid_transaction(self):
         page, data = self.page_form(self.client, self.person)  # the page as shown: only the languages are edited
         self.assertIn("Assigned languages", page)

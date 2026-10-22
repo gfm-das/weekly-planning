@@ -1231,6 +1231,7 @@
  "dam.theUploadYourChoicesOr": "The upload, your choices, or the existing reports changed since you reviewed the preview. Recheck the preview and choose again.",
  "dam.undoBlockedTheAffectedRow": "Undo blocked: the affected row key is no longer unique.",
  "dam.undoBlockedNowReferencesA": "Undo blocked: {a} now references a row created by this import.",
+ "dam.undoBlockedLaterImportReferences": "Undo blocked: {a} of the later import {b} (batch {c}) now references a row created by this import. Undo that import first.",
  "dam.thisBatchDoesNotExist": "This batch does not exist or has already been undone.",
  "dam.undoBlockedTheAuditContains": "Undo blocked: the audit contains an unsupported table.",
  "dam.undoBlockedChangedAfterThis": "Undo blocked: {a} changed after this import. No data was reversed.",

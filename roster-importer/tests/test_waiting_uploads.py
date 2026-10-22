@@ -72,7 +72,15 @@ class WaitingUploads(unittest.TestCase):
             self.assertEqual((old.exists(), new.exists()), (False, True))
 
     def test_a_post_form_is_sent_once(self):
-        self.assertIn('if(f.dataset.sent){e.preventDefault();return}', (HERE / "page.py").read_text(encoding="utf-8"))
+        text = (HERE / "page.py").read_text(encoding="utf-8")
+        self.assertIn('f.dataset.sent)e.preventDefault()},true)', text)  # capture: a second send is ignored
+
+    def test_a_cancelled_or_script_sent_form_can_still_be_sent(self):
+        # v1.0.23 marked a form sent in the capture phase, before its own handlers ran: a confirm() answered Cancel
+        # (account page) left the form dead. It is marked only after them, and only when they let it go.
+        text = (HERE / "page.py").read_text(encoding="utf-8")
+        self.assertIn('window.addEventListener("submit",function(e){var f=e.target;if(f&&!e.defaultPrevented', text)
+        self.assertNotIn('f.dataset.sent="1"},true)', text)
 
 
 if __name__ == "__main__":

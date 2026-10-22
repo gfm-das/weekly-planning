@@ -1232,6 +1232,7 @@
  "dam.theUploadYourChoicesOr": "Le téléversement, vos choix ou les rapports existants ont changé depuis votre vérification de l’aperçu. Revérifiez l’aperçu et choisissez de nouveau.",
  "dam.undoBlockedTheAffectedRow": "Annulation bloquée : la clé de la ligne concernée n’est plus unique.",
  "dam.undoBlockedNowReferencesA": "Annulation bloquée : {a} fait maintenant référence à une ligne créée par cette importation.",
+ "dam.undoBlockedLaterImportReferences": "Annulation bloquée : {a} de l'import ultérieur {b} (lot {c}) référence désormais une ligne créée par cet import. Annulez d'abord cet import-là.",
  "dam.thisBatchDoesNotExist": "Ce lot n’existe pas ou a déjà été annulé.",
  "dam.undoBlockedTheAuditContains": "Annulation bloquée : le journal contient une table non prise en charge.",
  "dam.undoBlockedChangedAfterThis": "Annulation bloquée : {a} a changé après cette importation. Aucune donnée n’a été rétablie.",

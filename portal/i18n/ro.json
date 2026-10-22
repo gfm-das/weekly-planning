@@ -1240,6 +1240,7 @@
  "dam.theUploadYourChoicesOr": "Încărcarea, alegerile tale sau rapoartele existente s-au schimbat de când ai verificat previzualizarea. Verifică din nou previzualizarea și alege din nou.",
  "dam.undoBlockedTheAffectedRow": "Anulare blocată: cheia rândului afectat nu mai este unică.",
  "dam.undoBlockedNowReferencesA": "Anulare blocată: {a} face acum referire la un rând creat de acest import.",
+ "dam.undoBlockedLaterImportReferences": "Anulare blocată: {a} din importul ulterior {b} (lotul {c}) face acum referire la un rând creat de acest import. Anulați mai întâi acel import.",
  "dam.thisBatchDoesNotExist": "Acest lot nu există sau a fost deja anulat.",
  "dam.undoBlockedTheAuditContains": "Anulare blocată: jurnalul conține un tabel neacceptat.",
  "dam.undoBlockedChangedAfterThis": "Anulare blocată: {a} s-a schimbat după acest import. Nu s-a readus nicio dată.",

@@ -1231,6 +1231,7 @@
  "dam.theUploadYourChoicesOr": "Der Upload, deine Auswahl oder die vorhandenen Berichte haben sich seit der Prüfung der Vorschau geändert. Prüfe die Vorschau erneut und wähle noch einmal.",
  "dam.undoBlockedTheAffectedRow": "Rückgängigmachen blockiert: Der Schlüssel der betroffenen Zeile ist nicht mehr eindeutig.",
  "dam.undoBlockedNowReferencesA": "Rückgängigmachen blockiert: {a} verweist jetzt auf eine Zeile, die dieser Import angelegt hat.",
+ "dam.undoBlockedLaterImportReferences": "Rückgängig blockiert: {a} des späteren Imports {b} (Stapel {c}) verweist jetzt auf eine Zeile dieses Imports. Machen Sie zuerst jenen Import rückgängig.",
  "dam.thisBatchDoesNotExist": "Dieser Vorgang existiert nicht oder wurde bereits rückgängig gemacht.",
  "dam.undoBlockedTheAuditContains": "Rückgängigmachen blockiert: Das Protokoll enthält eine nicht unterstützte Tabelle.",
  "dam.undoBlockedChangedAfterThis": "Rückgängigmachen blockiert: {a} wurde nach diesem Import geändert. Es wurden keine Daten zurückgesetzt.",

@@ -1231,6 +1231,7 @@
  "dam.theUploadYourChoicesOr": "Uppladdningen, dina val eller de befintliga rapporterna har ändrats sedan du granskade förhandsgranskningen. Granska förhandsgranskningen igen och välj på nytt.",
  "dam.undoBlockedTheAffectedRow": "Ångra blockerat: nyckeln för den berörda raden är inte längre unik.",
  "dam.undoBlockedNowReferencesA": "Ångra blockerat: {a} refererar nu till en rad som den här importen skapade.",
+ "dam.undoBlockedLaterImportReferences": "Ångra blockerad: {a} i den senare importen {b} (batch {c}) refererar nu till en rad som skapades av denna import. Ångra den importen först.",
  "dam.thisBatchDoesNotExist": "Den här omgången finns inte eller har redan ångrats.",
  "dam.undoBlockedTheAuditContains": "Ångra blockerat: loggen innehåller en tabell som inte stöds.",
  "dam.undoBlockedChangedAfterThis": "Ångra blockerat: {a} ändrades efter den här importen. Inga data återställdes.",

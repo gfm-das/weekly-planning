@@ -101,7 +101,7 @@ def put_rows_back(cur, batch, changes):
     """Removes the rows the batch added (newest first) and puts back the rows it changed or removed."""
     for change in reversed(changes):
         if change["before_row"] is None:
-            refuse_if_referenced(cur, change["table_name"], change["after_row"])
+            refuse_if_referenced(cur, change["table_name"], change["after_row"], batch["id"])
             cur.execute(sql.SQL("delete from public.{} where {}").format(sql.Identifier(change["table_name"]),
                         key_predicate(change["row_key"])), list(change["row_key"].values()))
     if batch["kind"] == "HISTORICAL":
@@ -139,7 +139,7 @@ def current_row(cur, table, key):
     return rows[0]["row"] if rows else None
 
 
-def refuse_if_referenced(cur, table, row):
+def refuse_if_referenced(cur, table, row, batch_id=None):
     """A row the batch added may only be removed when no other row points to it (for example a report that got
     Weekly Planning entries after the import)."""
     cur.execute("""select n.nspname schema_name,cl.relname table_name,
@@ -155,7 +155,22 @@ def refuse_if_referenced(cur, table, row):
             sql.Identifier(ref["schema_name"]), sql.Identifier(ref["table_name"]), predicates),
             [row[c] for c in ref["parent_columns"]])
         if cur.fetchone()["present"]:
+            later = later_batch(cur, ref, [row[c] for c in ref["parent_columns"]], batch_id)
+            if later:  # a later import (for example the next file of the same people) links to this one's rows
+                raise ValueError(f"Undo blocked: {ref['table_name']} of the later import {later['filename']} "
+                                 f"(batch {later['id']}) now references a row created by this import. Undo that import first.")
             raise ValueError(f"Undo blocked: {ref['table_name']} now references a row created by this import.")
+
+
+def later_batch(cur, ref, values, batch_id):
+    """The newest other applied batch that added one of the referencing rows, or None (they were typed in the portal)."""
+    cur.execute(sql.SQL("""select b.id,b.filename from public.roster_import_batches b where b.status='APPLIED' and b.id<>%s
+      and exists(select 1 from public.roster_import_changes c join {}.{} t on c.row_key <@ to_jsonb(t)
+                 where c.batch_id=b.id and c.table_name=%s and c.before_row is null and {})
+      order by b.created_at desc limit 1""").format(sql.Identifier(ref["schema_name"]), sql.Identifier(ref["table_name"]),
+      sql.SQL(" and ").join(sql.SQL("t.{}=%s").format(sql.Identifier(c)) for c in ref["child_columns"])),
+      [batch_id, ref["table_name"]] + values)
+    return cur.fetchone()
 
 
 def restore_row(cur, table, row, key, insert=False):
