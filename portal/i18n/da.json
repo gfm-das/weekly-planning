@@ -3568,5 +3568,13 @@
  "pres.chartNotSavedError": "Diagrammet kunne ikke gemmes på dias {a} (fejl {b}). Vent, til diasene vises, og prøv så igen.",
  "dam.rowsAreBothTheReportOf": "Rækkerne {a} i filen er begge rapporten for '{b}' for ugen {c}. Behold kun én af dem i filen, eller giv hver række sin egen menighed/gren.",
  "dam.uploadAFile": "Upload en fil",
- "dam.uploadExpiredOrImported": "Denne upload er udløbet eller allerede importeret. Se importhistorikken, eller upload filen igen."
+ "dam.uploadExpiredOrImported": "Denne upload er udløbet eller allerede importeret. Se importhistorikken, eller upload filen igen.",
+ "api.rosterGroup": "Bemanding (antal)",
+ "api.companionships": "Makkerpar",
+ "api.elders": "Ældster",
+ "api.sisters": "Søstre",
+ "api.unitsWithMissionaries": "Enheder med missionærer",
+ "api.datesFormat": "Skriv fra- og til-dato som 2026-07-01.",
+ "api.weeksOrDates": "Vælg enten de seneste uger eller en fra- og til-dato, ikke begge.",
+ "api.fromAfterTo": "Fra-datoen må ikke være efter til-datoen."
 }

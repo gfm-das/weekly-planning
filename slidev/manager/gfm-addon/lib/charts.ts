@@ -257,7 +257,7 @@ export function fetchMissionKpis(weeks: number): Promise<KpiWeek[]> {
 /** What POST /api/charts/data answers: the chart's table and what it shows. */
 export interface ChartAnswer {
   table: { labels: string[], series: { name: string, values: (number | null)[], role?: 'goal' }[] }
-  meta: { level?: string, by?: 'week' | 'unit', unit?: 'count' | 'percent' | 'per_area', weeks?: string[], suppressed?: boolean, stewardship?: boolean, units?: number, pinned?: boolean, [key: string]: any }
+  meta: { level?: string, by?: 'week' | 'unit', unit?: 'count' | 'percent' | 'per_area' | 'per_companionship', weeks?: string[], suppressed?: boolean, stewardship?: boolean, units?: number, pinned?: boolean, [key: string]: any }
 }
 
 /** A refusal or a mistake in the chart's settings, with the server's own sentence (400 and 403 answers). */

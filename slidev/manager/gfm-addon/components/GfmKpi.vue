@@ -13,17 +13,25 @@ withDefaults(defineProps<{
   weeks?: number
   height?: number
   highlight?: boolean
+  from?: string
+  to?: string
+  quarter?: string
+  per?: string
 }>(), {
   metric: 'friends_found',
   weeks: 12,
   height: 168,
   highlight: false,
+  from: '',
+  to: '',
+  quarter: '',
+  per: '',
 })
 </script>
 
 <template>
   <div class="gfm-kpi" :class="{ 'gfm-kpi--highlight': highlight }">
-    <MissionKpiChart :kpi="metric" chart="tile" :weeks="weeks" :height="height" />
+    <MissionKpiChart :kpi="metric" chart="tile" :weeks="weeks" :height="height" :from="from" :to="to" :quarter="quarter" :per="per" />
   </div>
 </template>
 
@@ -55,4 +63,12 @@ props:
     label: Height (slide pixels)
   highlight:
     label: Outline in teal (the first, most important number)
+  from:
+    label: From date (YYYY-MM-DD, with To; instead of weeks)
+  to:
+    label: To date (YYYY-MM-DD)
+  quarter:
+    label: Quarter instead of weeks (for example 2026-Q3)
+  per:
+    label: Per companionship (write companionship)
 </studio>

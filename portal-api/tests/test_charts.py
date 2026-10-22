@@ -687,3 +687,26 @@ class ZoneDecks(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class StateOfMissionTest(unittest.TestCase):
+    """Round 27: fixed periods, per companionship and roster counts (no database)."""
+
+    def test_period_and_roster(self):
+        spec = charts.normalize_spec({'measures': ['roster.units', 'friends_found.actual'],
+                                      'weeks': {'from': '2026-07-01', 'to': '2026-09-30'}, 'transform': 'per_companionship'})
+        self.assertEqual(spec['weeks'], {'from': '2026-07-01', 'to': '2026-09-30'})
+        with self.assertRaisesRegex(ValueError, 'not both'):
+            charts.normalize_spec({'measures': ['friends_found.actual'], 'weeks': {'last': 2, 'from': '2026-07-01', 'to': '2026-07-02'}})
+
+    def test_per_companionship_and_latest_roster(self):
+        rows = {'kpi': [{'sunday': '2026-07-05', 'mission_id': 1, 'friends_found_actual': 10}],
+                'roster': [{'sunday': '2026-07-05', 'mission_id': 1, 'companionships': 4, 'missionaries': 8, 'elders': 6,
+                            'sisters': 2, 'units': 3},
+                           {'sunday': '2026-07-12', 'mission_id': 1, 'companionships': 5, 'missionaries': 10, 'elders': 6,
+                            'sisters': 4, 'units': 3}]}
+        cells, _, areas, comps = charts.pivot(['friends_found.actual', 'roster.missionaries'], 'mission', rows)
+        numbers = charts.ChartNumbers(cells, areas, 'per_companionship', set(), comps)
+        self.assertEqual(numbers.value('2026-07-05', 1, 'friends_found.actual'), 2.5)
+        plain = charts.ChartNumbers(cells, areas, 'none', set(), comps)
+        self.assertEqual(plain.over_weeks(1, 'roster.missionaries', ['2026-07-05', '2026-07-12']), 10)

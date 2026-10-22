@@ -21,7 +21,7 @@
           "friends_found.actual"
         ],
         "filter": {},
-        "top": 0.0,
+        "top": 0,
         "includeCurrent": true
       },
       "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":12}}",
@@ -179,6 +179,50 @@
       },
       "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\",\"friends_found.goal\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":12}}",
       "sha256": "bcc3c2180e8bd67a9b4a291c719cfb5ab7354e1e5e43388477b6b1353a765a5d"
+    },
+    {
+      "name": "a fixed period (round 27)",
+      "input": {
+        "measures": [
+          "friends_found.actual",
+          "friends_found.previous_goal"
+        ],
+        "weeks": {
+          "from": "2026-07-01",
+          "to": "2026-09-30"
+        }
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"friends_found.actual\",\"friends_found.previous_goal\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"from\":\"2026-07-01\",\"to\":\"2026-09-30\"}}",
+      "sha256": "8e48c940c5bdbbb23be6a74e936e8101c6c318c81b0aa66d79cfe35400e548bf"
+    },
+    {
+      "name": "per companionship (round 27)",
+      "input": {
+        "measures": [
+          "baptismal_dates.actual"
+        ],
+        "transform": "per_companionship",
+        "weeks": {
+          "last": 8
+        }
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"baptismal_dates.actual\"],\"sort\":\"none\",\"top\":0,\"transform\":\"per_companionship\",\"v\":1,\"weeks\":{\"last\":8}}",
+      "sha256": "05973a6045bd007426e0ec44b7fb05477aa796b46d901bf7cd5d8adf4de6645d"
+    },
+    {
+      "name": "roster counts (round 27)",
+      "input": {
+        "measures": [
+          "roster.units",
+          "roster.missionaries",
+          "roster.companionships"
+        ],
+        "weeks": {
+          "last": 1
+        }
+      },
+      "canonical": "{\"audience\":\"deck\",\"by\":\"week\",\"filter\":{},\"includeCurrent\":true,\"level\":\"mission\",\"measures\":[\"roster.units\",\"roster.missionaries\",\"roster.companionships\"],\"sort\":\"none\",\"top\":0,\"transform\":\"none\",\"v\":1,\"weeks\":{\"last\":1}}",
+      "sha256": "ab8be020b859c410ba99695d795690655e3a32297796ad80ad0839bb11075929"
     }
   ],
   "invalid": [
@@ -485,6 +529,45 @@
         ]
       },
       "error": "A number in this chart is not written like \"friends_found.actual\"."
+    },
+    {
+      "name": "weeks both last and dates",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "weeks": {
+          "last": 4,
+          "from": "2026-07-01",
+          "to": "2026-09-30"
+        }
+      },
+      "error": "Choose either the last weeks or a from and to date, not both."
+    },
+    {
+      "name": "weeks only from",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "weeks": {
+          "from": "2026-07-01"
+        }
+      },
+      "error": "Write the from and to dates like 2026-07-01."
+    },
+    {
+      "name": "weeks from after to",
+      "input": {
+        "measures": [
+          "friends_found.actual"
+        ],
+        "weeks": {
+          "from": "2026-09-30",
+          "to": "2026-07-01"
+        }
+      },
+      "error": "The from date must not be after the to date."
     }
   ]
 }

@@ -77,7 +77,7 @@ def _app():
 
 LEVELS = ('mission', 'zone', 'district', 'area')
 BYS = ('week', 'unit')
-TRANSFORMS = ('none', 'pct_of_goal', 'cumulative', 'rolling4', 'per_area')
+TRANSFORMS = ('none', 'pct_of_goal', 'cumulative', 'rolling4', 'per_area', 'per_companionship')
 SORTS = ('none', 'desc', 'asc')
 AUDIENCES = ('deck', 'stewardship')
 FILTER_KEYS = ('zones', 'districts', 'areas')
@@ -119,6 +119,7 @@ GROUPS = (
     ('new_members', 'New members'),
     ('baptismal_date_friends', 'Friends with a baptismal date'),
     ('high_potentials', 'High-potential friends'),
+    ('roster', 'Roster (counts)'),
 )
 
 # The six key indicators have "goal set the week before" (previous_goal, what Call-ins compares with) and "next
@@ -199,6 +200,13 @@ def _measures():
         out[f'plans.{field}'] = {'id': f'plans.{field}', 'source': 'kpi', 'column': column, 'group': 'plans',
                                  'topic': 'plans', 'field': field, 'kind': 'count', 'label': label, 'short': label,
                                  'goals': {}}
+    # Round 27: counts from the roster (migration 059, dashboards.roster_area_week). One area with missionaries on
+    # a reporting Sunday is one companionship. By unit, a roster number is the last week's, never a sum of weeks.
+    for field, label in (('companionships', 'Companionships'), ('missionaries', 'Missionaries'), ('elders', 'Elders'),
+                         ('sisters', 'Sisters'), ('units', 'Church units with missionaries')):
+        out[f'roster.{field}'] = {'id': f'roster.{field}', 'source': 'roster', 'column': field, 'group': 'roster',
+                                  'topic': 'roster', 'field': field, 'kind': 'count', 'label': label, 'short': label,
+                                  'goals': {}}
     for group, _, fields in PEOPLE:
         for field, column, label, short in fields:
             out[f'{group}.{field}'] = {'id': f'{group}.{field}', 'source': 'people', 'column': column, 'group': group,
@@ -221,6 +229,19 @@ def _integer(value):
     if isinstance(value, float) and math.isfinite(value) and value.is_integer():
         return int(value)
     return None
+
+
+DAY = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+
+
+def _day(value):
+    """A date written YYYY-MM-DD, else a ValueError (the same sentence as chart-spec.mjs)."""
+    if not isinstance(value, str) or not DAY.fullmatch(value):
+        raise ValueError('Write the from and to dates like 2026-07-01.')
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        raise ValueError('Write the from and to dates like 2026-07-01.') from None
 
 
 def _choice(spec, key, options, default):
@@ -297,13 +318,23 @@ def normalize_spec(raw, whitelist=True):
         filt[key] = ids
 
     weeks = raw.get('weeks', 12)
+    span = None
     if isinstance(weeks, dict):
-        extra = sorted(set(weeks) - {'last'})
+        extra = sorted(set(weeks) - {'last', 'from', 'to'})
         if extra:
             raise ValueError(f'Unknown chart setting: weeks.{extra[0]}.')
+        if 'from' in weeks or 'to' in weeks:
+            # Round 27: a fixed period, {"from": "2026-07-01", "to": "2026-09-30"} (the Sundays inside it).
+            if 'last' in weeks:
+                raise ValueError('Choose either the last weeks or a from and to date, not both.')
+            span = (_day(weeks.get('from')), _day(weeks.get('to')))
+            if span[0] > span[1]:
+                raise ValueError('The from date must not be after the to date.')
+            if (span[1] - span[0]).days > MAX_WEEKS * 7:
+                raise ValueError(f'Choose between 1 and {MAX_WEEKS} weeks.')
         weeks = weeks.get('last', 12)
     last = _integer(weeks)
-    if last is None or not 1 <= last <= MAX_WEEKS:
+    if span is None and (last is None or not 1 <= last <= MAX_WEEKS):
         raise ValueError(f'Choose between 1 and {MAX_WEEKS} weeks.')
 
     include_current = raw.get('includeCurrent', True)
@@ -323,7 +354,8 @@ def normalize_spec(raw, whitelist=True):
 
     audience = _choice(raw, 'audience', AUDIENCES, 'deck' if level in ('mission', 'zone') else 'stewardship')
 
-    spec = {'v': 1, 'measures': seen, 'level': level, 'by': by, 'filter': filt, 'weeks': {'last': last},
+    period = {'from': span[0].isoformat(), 'to': span[1].isoformat()} if span else {'last': last}
+    spec = {'v': 1, 'measures': seen, 'level': level, 'by': by, 'filter': filt, 'weeks': period,
             'includeCurrent': include_current, 'transform': transform, 'sort': sort, 'top': top, 'audience': audience}
     if whitelist:
         check_whitelist(spec)
@@ -412,6 +444,37 @@ def week_query(mission_id, current, last, include_current):
     return query, [mission_id, current, last]
 
 
+def range_query(mission_id, current, first, last_day, include_current):
+    """The reporting Sundays with plans between two dates (a fixed period), up to the current one."""
+    compare = sql.SQL('<=') if include_current else sql.SQL('<')
+    query = sql.SQL('SELECT sunday FROM {view} WHERE mission_id = %s AND sunday >= %s AND sunday <= %s '
+                    'AND sunday {cmp} %s ORDER BY sunday DESC LIMIT %s').format(
+        view=sql.Identifier('dashboards', 'people_mission_week'), cmp=compare)
+    return query, [mission_id, first, last_day, current, MAX_WEEKS + ROLLING]
+
+
+def roster_query(level, mission_id, sundays, filt, units):
+    """Roster counts (migration 059) per unit at `level` and week: companionships (areas with missionaries),
+    missionaries, elders, sisters and church units. Counts only."""
+    unit_id, unit_name = UNIT_COLUMNS[level]
+    keys = [sql.Identifier('sunday'), sql.Identifier(unit_id)] + ([sql.Identifier(unit_name)] if unit_name else [])
+    where = [sql.SQL('mission_id = %s'), sql.SQL('sunday = ANY(%s::date[])')]
+    args = [mission_id, list(sundays)]
+    for key in FILTER_KEYS:
+        if filt.get(key):
+            where.append(sql.SQL('{} = ANY(%s::bigint[])').format(sql.Identifier(FILTER_COLUMNS[key])))
+            args.append(list(filt[key]))
+    if units is not None:
+        where.append(sql.SQL('{} = ANY(%s::bigint[])').format(sql.Identifier(unit_id)))
+        args.append(sorted(units))
+    query = sql.SQL('SELECT {keys}, count(*) AS companionships, sum(missionaries) AS missionaries, '
+                    'sum(elders) AS elders, sum(sisters) AS sisters, count(DISTINCT unit_id) AS units '
+                    'FROM {view} WHERE {where} GROUP BY {keys} ORDER BY sunday, {unit} LIMIT {cap}').format(
+        keys=sql.SQL(', ').join(keys), view=sql.Identifier('dashboards', 'roster_area_week'),
+        where=sql.SQL(' AND ').join(where), unit=sql.Identifier(unit_id), cap=sql.Literal(MAX_ROWS + 1))
+    return query, args
+
+
 def data_query(source, level, measures, mission_id, sundays, filt, units):
     """One source's rows (kpi or people) for the chosen weeks, as a whitelisted SELECT."""
     view = (KPI_VIEWS if source == 'kpi' else PEOPLE_VIEWS)[level]
@@ -482,7 +545,7 @@ def pivot(measures, level, rows_by_source):
     """The rows as three lookups: cells {(week, unit): {measure: value}}, names {unit: name} and
     areas {(week, unit): number of areas reporting} (for the per-area transform)."""
     unit_id, unit_name = UNIT_COLUMNS[level]
-    cells, names, areas = {}, {}, {}
+    cells, names, areas, comps = {}, {}, {}, {}
     for source, source_rows in rows_by_source.items():
         for r in source_rows:
             week, unit = _iso(r['sunday']), r[unit_id]
@@ -493,12 +556,14 @@ def pivot(measures, level, rows_by_source):
                     value = _number(r.get(MEASURES[m]['column']))
                     # The totals count a goal nobody set as 0: leave it out of the goal line, as <MissionKpiChart> does.
                     cell[m] = None if value == 0 and MEASURES[m]['kind'] == 'goal' else value
-            if source == 'kpi' and level == 'area':
+            if source == 'roster':
+                comps[(week, unit)] = _number(r.get('companionships'))
+            elif source == 'kpi' and level == 'area':
                 count = r.get('reports')
                 areas.setdefault((week, unit), 1 if count else None)
             elif r.get('areas_reporting') is not None:
                 areas[(week, unit)] = _number(r['areas_reporting'])
-    return cells, names, areas
+    return cells, names, areas, comps
 
 
 class ChartNumbers:
@@ -507,8 +572,9 @@ class ChartNumbers:
     poisoned: measures whose empty values mean "hidden" (people counts per area), so sums and averages over them
     stay empty instead of showing a smaller number."""
 
-    def __init__(self, cells, areas, transform, poisoned):
+    def __init__(self, cells, areas, transform, poisoned, comps=None):
         self.cells, self.areas, self.transform, self.poisoned = cells, areas, transform, poisoned
+        self.comps = comps or {}
 
     def value(self, week, unit, m):
         """One number; divided by the areas reporting for the per-area transform."""
@@ -516,11 +582,17 @@ class ChartNumbers:
         if v is not None and self.transform == 'per_area':
             d = self.areas.get((week, unit))
             v = v / d if d else None
+        elif v is not None and self.transform == 'per_companionship' and MEASURES[m]['source'] != 'roster':
+            d = self.comps.get((week, unit))
+            v = v / d if d else None
         return v
 
     def over_weeks(self, unit, m, weeks_used):
         """By unit: the measure added up over the weeks (None when a hidden number is among them)."""
         values = [self.value(w, unit, m) for w in weeks_used]
+        if MEASURES[m]['source'] == 'roster':  # a count of people serving: the last week's, not a sum
+            present = [v for v in values if v is not None]
+            return present[-1] if present else None
         if m in self.poisoned and any(v is None for v in values):
             return None
         present = [v for v in values if v is not None]
@@ -635,10 +707,10 @@ def build_table(spec, level, weeks, rows_by_source, poisoned):
     empty values mean "hidden" (people counts per area), so sums and averages over them stay empty.
     """
     measures = spec['measures']
-    cells, names, areas = pivot(measures, level, rows_by_source)
+    cells, names, areas, comps = pivot(measures, level, rows_by_source)
     units = sorted(names, key=lambda u: (str(names[u]).casefold(), str(u)))
     transform = spec['transform']
-    numbers = ChartNumbers(cells, areas, transform, poisoned)
+    numbers = ChartNumbers(cells, areas, transform, poisoned, comps)
     pairs = goal_pairs(measures) if transform == 'pct_of_goal' else [(m, None) for m in measures]
     shown_weeks = weeks[ROLLING - 1:] if transform == 'rolling4' else weeks
     if spec['by'] == 'unit':
@@ -659,20 +731,33 @@ def run_chart(conn, c, spec, deck_units=None):
         level, units = deck_units
     current = _app().rows(conn, 'SELECT public.current_reporting_sunday() AS sunday')[0]['sunday']
     extra = ROLLING - 1 if spec['transform'] == 'rolling4' else 0
-    sources = [source for source in ('kpi', 'people') if any(MEASURES[m]['source'] == source for m in spec['measures'])]
+    sources = [source for source in ('kpi', 'people', 'roster') if any(MEASURES[m]['source'] == source for m in spec['measures'])]
+    if spec['transform'] == 'per_companionship' and 'roster' not in sources:
+        sources.append('roster')
     rows_by_source = {}
     with dashboard_reader(conn, STATEMENT_TIMEOUT) as cur:
-        wq, wargs = week_query(c['mission_id'], current, spec['weeks']['last'] + extra, spec['includeCurrent'])
-        weeks = sorted(_iso(r['sunday']) for r in fetch(cur, wq, wargs))
+        if 'from' in spec['weeks']:
+            wq, wargs = range_query(c['mission_id'], current, spec['weeks']['from'], spec['weeks']['to'],
+                                    spec['includeCurrent'])
+            weeks = sorted(_iso(r['sunday']) for r in fetch(cur, wq, wargs))
+            if extra and weeks:  # rolling4: the weeks just before the period
+                pq, pargs = week_query(c['mission_id'], weeks[0], extra, False)
+                weeks = sorted(_iso(r['sunday']) for r in fetch(cur, pq, pargs)) + weeks
+        else:
+            wq, wargs = week_query(c['mission_id'], current, spec['weeks']['last'] + extra, spec['includeCurrent'])
+            weeks = sorted(_iso(r['sunday']) for r in fetch(cur, wq, wargs))
         if units is None or units:
             for source in sources:
-                query, args, _ = data_query(source, level, spec['measures'], c['mission_id'], weeks, spec['filter'], units)
+                if source == 'roster':
+                    query, args = roster_query(level, c['mission_id'], weeks, spec['filter'], units)
+                else:
+                    query, args, _ = data_query(source, level, spec['measures'], c['mission_id'], weeks, spec['filter'], units)
                 rows_by_source[source] = fetch(cur, query, args)
     poisoned = {m for m in spec['measures'] if MEASURES[m]['source'] == 'people' and level == 'area'}
     table, unit_count = build_table(spec, level, weeks, rows_by_source, poisoned)
     # A people count per area that exists but is empty was hidden (fewer than 3, see migration 025).
     suppressed = any(r.get(MEASURES[m]['column']) is None for r in rows_by_source.get('people', []) for m in poisoned)
-    value_kind = {'pct_of_goal': 'percent', 'per_area': 'per_area'}.get(spec['transform'], 'count')
+    value_kind = {'pct_of_goal': 'percent', 'per_area': 'per_area', 'per_companionship': 'per_companionship'}.get(spec['transform'], 'count')
     return {
         'table': table,
         'meta': {

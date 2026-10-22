@@ -3568,5 +3568,13 @@
  "pres.chartNotSavedError": "Diagrammet kunde inte sparas på bild {a} (fel {b}). Vänta tills bilderna visas och försök sedan igen.",
  "dam.rowsAreBothTheReportOf": "Raderna {a} i filen är båda rapporten för '{b}' för veckan {c}. Behåll bara en av dem i filen, eller ge varje rad en egen församling/gren.",
  "dam.uploadAFile": "Ladda upp en fil",
- "dam.uploadExpiredOrImported": "Den här uppladdningen har gått ut eller har redan importerats. Titta i importhistoriken eller ladda upp filen igen."
+ "dam.uploadExpiredOrImported": "Den här uppladdningen har gått ut eller har redan importerats. Titta i importhistoriken eller ladda upp filen igen.",
+ "api.rosterGroup": "Bemanning (antal)",
+ "api.companionships": "Kamratskap",
+ "api.elders": "Äldster",
+ "api.sisters": "Systrar",
+ "api.unitsWithMissionaries": "Enheter med missionärer",
+ "api.datesFormat": "Skriv från- och till-datum som 2026-07-01.",
+ "api.weeksOrDates": "Välj antingen de senaste veckorna eller ett från- och till-datum, inte båda.",
+ "api.fromAfterTo": "Från-datum får inte vara efter till-datum."
 }

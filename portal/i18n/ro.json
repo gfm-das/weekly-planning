@@ -3581,5 +3581,13 @@
  "pres.chartNotSavedError": "Graficul nu a putut fi salvat pe diapozitivul {a} (eroare {b}). Așteaptă să apară diapozitivele, apoi încearcă din nou.",
  "dam.rowsAreBothTheReportOf": "Rândurile {a} din fișier sunt amândouă raportul lui '{b}' pentru săptămâna din {c}. Păstrează doar unul dintre ele în fișier sau dă fiecărui rând propria episcopie/ramură.",
  "dam.uploadAFile": "Încarcă un fișier",
- "dam.uploadExpiredOrImported": "Această încărcare a expirat sau a fost deja importată. Verifică istoricul importurilor sau încarcă din nou fișierul."
+ "dam.uploadExpiredOrImported": "Această încărcare a expirat sau a fost deja importată. Verifică istoricul importurilor sau încarcă din nou fișierul.",
+ "api.rosterGroup": "Efectiv (numere)",
+ "api.companionships": "Colegi",
+ "api.elders": "Vârstnici",
+ "api.sisters": "Surori",
+ "api.unitsWithMissionaries": "Unități cu misionari",
+ "api.datesFormat": "Scrie datele de la și până la așa: 2026-07-01.",
+ "api.weeksOrDates": "Alege fie ultimele săptămâni, fie o dată de la și până la, nu ambele.",
+ "api.fromAfterTo": "Data de la nu poate fi după data până la."
 }

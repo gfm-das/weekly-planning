@@ -3571,5 +3571,13 @@
  "pres.chartNotSavedError": "Le graphique n’a pas pu être enregistré sur la diapositive {a} (erreur {b}). Attendez que les diapositives s’affichent, puis réessayez.",
  "dam.rowsAreBothTheReportOf": "Les lignes {a} du fichier sont toutes deux le rapport de '{b}' pour la semaine du {c}. Ne gardez qu’une seule d’entre elles dans le fichier, ou donnez à chaque ligne sa propre paroisse/branche.",
  "dam.uploadAFile": "Téléverser un fichier",
- "dam.uploadExpiredOrImported": "Ce téléversement a expiré ou a déjà été importé. Consultez l’historique des imports ou téléversez à nouveau le fichier."
+ "dam.uploadExpiredOrImported": "Ce téléversement a expiré ou a déjà été importé. Consultez l’historique des imports ou téléversez à nouveau le fichier.",
+ "api.rosterGroup": "Effectif (nombres)",
+ "api.companionships": "Binômes",
+ "api.elders": "Elders",
+ "api.sisters": "Sœurs",
+ "api.unitsWithMissionaries": "Unités avec missionnaires",
+ "api.datesFormat": "Écris les dates de début et de fin comme 2026-07-01.",
+ "api.weeksOrDates": "Choisis soit les dernières semaines, soit des dates de début et de fin, pas les deux.",
+ "api.fromAfterTo": "La date de début ne doit pas être après la date de fin."
 }

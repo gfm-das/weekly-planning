@@ -3568,5 +3568,13 @@
  "pres.chartNotSavedError": "Grafik slayt {a} üzerine kaydedilemedi (hata {b}). Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
  "dam.rowsAreBothTheReportOf": "Dosyanın {a} satırlarının ikisi de '{b}' için {c} haftasının raporu. Dosyada bunlardan yalnızca birini bırakın veya her satıra kendi koğuşunu/şubesini verin.",
  "dam.uploadAFile": "Dosya yükle",
- "dam.uploadExpiredOrImported": "Bu yüklemenin süresi doldu veya zaten içe aktarıldı. İçe aktarma geçmişine bakın ya da dosyayı yeniden yükleyin."
+ "dam.uploadExpiredOrImported": "Bu yüklemenin süresi doldu veya zaten içe aktarıldı. İçe aktarma geçmişine bakın ya da dosyayı yeniden yükleyin.",
+ "api.rosterGroup": "Kadro (sayılar)",
+ "api.companionships": "Ekipler",
+ "api.elders": "Elderlar",
+ "api.sisters": "Kız kardeşler",
+ "api.unitsWithMissionaries": "Misyonerli birimler",
+ "api.datesFormat": "Başlangıç ve bitiş tarihlerini 2026-07-01 gibi yazın.",
+ "api.weeksOrDates": "Ya son haftaları ya da başlangıç ve bitiş tarihini seçin, ikisini birden değil.",
+ "api.fromAfterTo": "Başlangıç tarihi bitiş tarihinden sonra olamaz."
 }

@@ -13,7 +13,7 @@
 //   { v: 1, measures: ['friends_found.actual', 'friends_found.previous_goal'],
 //     level: 'mission'|'zone'|'district'|'area', by: 'week'|'unit',
 //     filter: { zones?: [ids], districts?: [ids], areas?: [ids] },
-//     weeks: { last: 1–104 }, includeCurrent: true,
+//     weeks: { last: 1–104 } or { from: 'YYYY-MM-DD', to: 'YYYY-MM-DD' } (round 27), includeCurrent: true,
 //     transform: 'none'|'pct_of_goal'|'cumulative'|'rolling4'|'per_area',
 //     sort: 'none'|'desc'|'asc', top: 0–50,
 //     audience: 'deck'|'stewardship' }
@@ -21,7 +21,7 @@
 
 export const LEVELS = ['mission', 'zone', 'district', 'area']
 export const BYS = ['week', 'unit']
-export const TRANSFORMS = ['none', 'pct_of_goal', 'cumulative', 'rolling4', 'per_area']
+export const TRANSFORMS = ['none', 'pct_of_goal', 'cumulative', 'rolling4', 'per_area', 'per_companionship']
 export const SORTS = ['none', 'desc', 'asc']
 export const AUDIENCES = ['deck', 'stewardship']
 const FILTER_KEYS = ['zones', 'districts', 'areas']
@@ -108,13 +108,21 @@ export function normalizeSpec(raw) {
   }
 
   let weeks = get(raw, 'weeks', 12)
+  let span = null
   if (isPlain(weeks)) {
-    const extra = Object.keys(weeks).filter(k => k !== 'last').sort()
+    const extra = Object.keys(weeks).filter(k => !['last', 'from', 'to'].includes(k)).sort()
     if (extra.length) throw new SpecError(`Unknown chart setting: weeks.${extra[0]}.`)
+    if (has(weeks, 'from') || has(weeks, 'to')) {
+      if (has(weeks, 'last')) throw new SpecError('Choose either the last weeks or a from and to date, not both.')
+      span = [day(weeks.from), day(weeks.to)]
+      if (span[0] > span[1]) throw new SpecError('The from date must not be after the to date.')
+      if ((Date.parse(`${span[1]}T00:00:00Z`) - Date.parse(`${span[0]}T00:00:00Z`)) / 86400000 > MAX_WEEKS * 7)
+        throw new SpecError(`Choose between 1 and ${MAX_WEEKS} weeks.`)
+    }
     weeks = get(weeks, 'last', 12)
   }
   const last = integer(weeks)
-  if (last === null || last < 1 || last > MAX_WEEKS) throw new SpecError(`Choose between 1 and ${MAX_WEEKS} weeks.`)
+  if (!span && (last === null || last < 1 || last > MAX_WEEKS)) throw new SpecError(`Choose between 1 and ${MAX_WEEKS} weeks.`)
 
   const includeCurrent = get(raw, 'includeCurrent', true)
   if (typeof includeCurrent !== 'boolean') throw new SpecError('includeCurrent must be true or false.')
@@ -130,7 +138,97 @@ export function normalizeSpec(raw) {
 
   const audience = choice(raw, 'audience', AUDIENCES, level === 'mission' || level === 'zone' ? 'deck' : 'stewardship')
 
-  return { v: 1, measures: [...seen], level, by, filter, weeks: { last }, includeCurrent, transform, sort, top, audience }
+  const period = span ? { from: span[0], to: span[1] } : { last }
+  return { v: 1, measures: [...seen], level, by, filter, weeks: period, includeCurrent, transform, sort, top, audience }
+}
+
+/** A real date written YYYY-MM-DD, else SpecError (the same sentence as charts.py _day). */
+function day(value) {
+  const bad = () => new SpecError('Write the from and to dates like 2026-07-01.')
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw bad()
+  const d = new Date(`${value}T00:00:00Z`)
+  if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== value) throw bad()
+  return value
+}
+
+// ---- the queries of GFM components that are written as plain settings (round 27) ------------------------------
+// <GfmKpiGrid from=… to=… per=…>, <GfmKpi …>, <MissionKpiChart …> with a period or per="companionship", and
+// <MissionRoster view=… asOf=…> ask POST /api/charts/data with a query made from their settings. The deck's
+// slides.md is read with the same functions (componentSpecs), so those queries are pinned like :query ones.
+
+export const KPI_IDS = ['friends_found', 'baptisms_confirmations', 'baptismal_dates', 'sacrament_attendance', 'members_at_lessons', 'new_member_sacrament']
+const KPI_LABELS = ['new people being taught', 'baptisms and confirmations', 'baptismal dates', 'sacrament attendance', 'members at lessons', 'new member sacrament attendance']
+
+/** The id of a key indicator name or id (as chart-core kpiId), friends_found otherwise. */
+export function kpiKey(value) {
+  const lower = String(value ?? '').trim().toLowerCase()
+  const id = lower.replace(/[\s-]+/g, '_')
+  const i = KPI_IDS.findIndex((k, n) => k === id || KPI_LABELS[n] === lower)
+  return KPI_IDS[i < 0 ? 0 : i]
+}
+
+/** { from, to } of quarter="2026-Q3" or from/to settings; null when none is set or it cannot be read. */
+export function periodOf({ from, to, quarter } = {}) {
+  const q = String(quarter ?? '').trim().match(/^(\d{4})-?Q([1-4])$/i)
+  if (q) {
+    const y = q[1], n = Number(q[2])
+    const ends = ['03-31', '06-30', '09-30', '12-31']
+    return { from: `${y}-${String(n * 3 - 2).padStart(2, '0')}-01`, to: `${y}-${ends[n - 1]}` }
+  }
+  if (from || to) return { from: String(from ?? '').trim(), to: String(to ?? '').trim() }
+  return null
+}
+
+/** The query of one key indicator tile or chart with a period or per="companionship"; null for the classic one. */
+export function kpiSpec({ kpi, from, to, quarter, per, weeks } = {}) {
+  const period = periodOf({ from, to, quarter })
+  const perComp = String(per ?? '').trim().toLowerCase() === 'companionship'
+  if (!period && !perComp) return null
+  const id = kpiKey(kpi)
+  const raw = { measures: [`${id}.actual`, `${id}.previous_goal`], level: 'mission', transform: perComp ? 'per_companionship' : 'none', weeks: period ?? { last: Math.min(MAX_WEEKS, Math.max(1, Math.round(Number(weeks) || 12))) } }
+  try { return normalizeSpec(raw) }
+  catch { return null }
+}
+
+export const ROSTER_VIEWS = { units: ['roster.units', 'roster.missionaries', 'roster.companionships'], gender: ['roster.elders', 'roster.sisters', 'roster.missionaries'] }
+
+/** The query of <MissionRoster view="units"|"gender" asOf="YYYY-MM-DD">: the reporting Sunday on or before asOf, else the current one. */
+export function rosterSpec({ view, asOf } = {}) {
+  const measures = ROSTER_VIEWS[String(view ?? '').trim().toLowerCase()] ?? ROSTER_VIEWS.units
+  const until = String(asOf ?? '').trim()
+  let weeks = { last: 1 }
+  if (until) {
+    const end = Date.parse(`${until}T00:00:00Z`)
+    if (!Number.isFinite(end)) return null
+    weeks = { from: new Date(end - 6 * 86400000).toISOString().slice(0, 10), to: until }
+  }
+  try { return normalizeSpec({ measures, level: 'mission', weeks }) }
+  catch { return null }
+}
+
+const COMPONENT_TAG = /<\s*(gfmkpigrid|gfm-kpi-grid|gfmkpi|gfm-kpi|missionkpichart|mission-kpi-chart|missionroster|mission-roster)\b([^>]*)>/gi
+const PLAIN_ATTRIBUTE = /(?<![\w:.-])([A-Za-z][\w-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')/g
+
+/** The settings written as plain text on a tag (name="…"); bound ones (:name) are not read. Names in camelCase. */
+function plainAttributes(text) {
+  const out = {}
+  for (const m of String(text).matchAll(PLAIN_ATTRIBUTE)) out[m[1].replace(/-(\w)/g, (_, c) => c.toUpperCase())] = m[2] ?? m[3]
+  return out
+}
+
+/** The queries the GFM components in a deck ask for (see above), as normalised specs. */
+export function componentSpecs(markdown) {
+  const out = []
+  for (const m of String(markdown ?? '').matchAll(COMPONENT_TAG)) {
+    const tag = m[1].toLowerCase().replace(/-/g, '')
+    const a = plainAttributes(m[2])
+    if (tag === 'missionroster') { const s = rosterSpec(a); if (s) out.push(s); continue }
+    const kpis = tag === 'gfmkpigrid'
+      ? String(a.metrics || KPI_IDS.join(',')).split(',').map(x => x.trim()).filter(Boolean).slice(0, 12)
+      : [tag === 'gfmkpi' ? a.metric : a.kpi]
+    for (const kpi of kpis) { const s = kpiSpec({ ...a, kpi }); if (s) out.push(s) }
+  }
+  return out
 }
 
 /** JSON with the keys of every object sorted and no spaces (Python: sort_keys, compact separators). */
@@ -195,6 +293,7 @@ export function pinnedKeys(markdown) {
     const key = specKey(raw)
     if (key) keys.add(key)
   }
+  for (const spec of componentSpecs(markdown)) keys.add(canonicalJson(spec))
   return keys
 }
 

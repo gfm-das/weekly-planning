@@ -3571,5 +3571,13 @@
  "pres.chartNotSavedError": "Não foi possível salvar o gráfico no slide {a} (erro {b}). Aguarde até os slides aparecerem e tente novamente.",
  "dam.rowsAreBothTheReportOf": "As linhas {a} do arquivo são ambas o relatório de '{b}' para a semana de {c}. Mantenha apenas uma delas no arquivo ou dê a cada linha sua própria ala/ramo.",
  "dam.uploadAFile": "Enviar um arquivo",
- "dam.uploadExpiredOrImported": "Este envio expirou ou já foi importado. Verifique o histórico de importações ou envie o arquivo novamente."
+ "dam.uploadExpiredOrImported": "Este envio expirou ou já foi importado. Verifique o histórico de importações ou envie o arquivo novamente.",
+ "api.rosterGroup": "Lista (números)",
+ "api.companionships": "Duplas",
+ "api.elders": "Élderes",
+ "api.sisters": "Sísteres",
+ "api.unitsWithMissionaries": "Unidades com missionários",
+ "api.datesFormat": "Escreva as datas de início e fim assim: 2026-07-01.",
+ "api.weeksOrDates": "Escolha as últimas semanas ou datas de início e fim, não ambos.",
+ "api.fromAfterTo": "A data de início não pode ser depois da data de fim."
 }

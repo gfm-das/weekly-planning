@@ -3568,5 +3568,13 @@
  "pres.chartNotSavedError": "No se pudo guardar el gráfico en la diapositiva {a} (error {b}). Espera a que se muestren las diapositivas y vuelve a intentarlo.",
  "dam.rowsAreBothTheReportOf": "Las filas {a} del archivo son ambas el informe de '{b}' para la semana del {c}. Deja solo una de ellas en el archivo o da a cada fila su propio barrio/rama.",
  "dam.uploadAFile": "Subir un archivo",
- "dam.uploadExpiredOrImported": "Esta carga ha caducado o ya se importó. Revisa el historial de importaciones o vuelve a subir el archivo."
+ "dam.uploadExpiredOrImported": "Esta carga ha caducado o ya se importó. Revisa el historial de importaciones o vuelve a subir el archivo.",
+ "api.rosterGroup": "Plantilla (números)",
+ "api.companionships": "Compañerismos",
+ "api.elders": "Élderes",
+ "api.sisters": "Hermanas",
+ "api.unitsWithMissionaries": "Unidades con misioneros",
+ "api.datesFormat": "Escribe las fechas desde y hasta así: 2026-07-01.",
+ "api.weeksOrDates": "Elige las últimas semanas o unas fechas desde y hasta, no ambas.",
+ "api.fromAfterTo": "La fecha desde no puede ser posterior a la fecha hasta."
 }

@@ -83,7 +83,8 @@
   "plans.{}",
   "sum({}) AS {}",
   "sunday = ANY({}::date[])",
-  "{} = ANY({}::bigint[])"
+  "{} = ANY({}::bigint[])",
+  "roster.{}"
  ],
  "portal-api/planning.py": [
   "(key => value, ...): named arguments, so the order of the SQL signature never matters.",
@@ -1093,5 +1094,18 @@
  "roster-importer/planning_questions.py": [
   "Unlocked: {}",
   "Locked again"
+ ],
+ "slidev/manager/gfm-addon/lib/chart-spec.mjs": [
+  "new people being taught",
+  "baptisms and confirmations",
+  "baptismal dates",
+  "sacrament attendance",
+  "members at lessons",
+  "new member sacrament attendance",
+  "{}.actual",
+  "{}.previous_goal",
+  "Choose either the last weeks or a from and to date, not both.",
+  "The from date must not be after the to date.",
+  "Write the from and to dates like 2026-07-01."
  ]
 }

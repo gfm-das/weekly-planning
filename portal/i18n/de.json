@@ -3568,5 +3568,13 @@
  "pres.chartNotSavedError": "Das Diagramm konnte auf Folie {a} nicht gespeichert werden (Fehler {b}). Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
  "dam.rowsAreBothTheReportOf": "Die Zeilen {a} der Datei sind beide der Bericht von '{b}' für die Woche vom {c}. Behalte nur eine davon in der Datei oder gib jeder Zeile ihre eigene Gemeinde/ihren eigenen Zweig.",
  "dam.uploadAFile": "Datei hochladen",
- "dam.uploadExpiredOrImported": "Dieser Upload ist abgelaufen oder wurde schon importiert. Sieh im Importverlauf nach oder lade die Datei noch einmal hoch."
+ "dam.uploadExpiredOrImported": "Dieser Upload ist abgelaufen oder wurde schon importiert. Sieh im Importverlauf nach oder lade die Datei noch einmal hoch.",
+ "api.rosterGroup": "Missionarsliste (Anzahlen)",
+ "api.companionships": "Mitarbeiterschaften",
+ "api.elders": "Elders",
+ "api.sisters": "Schwestern",
+ "api.unitsWithMissionaries": "Einheiten mit Missionaren",
+ "api.datesFormat": "Schreibe die Daten von und bis wie 2026-07-01.",
+ "api.weeksOrDates": "Wähle entweder die letzten Wochen oder ein Von- und Bis-Datum, nicht beides.",
+ "api.fromAfterTo": "Das Von-Datum darf nicht nach dem Bis-Datum liegen."
 }

@@ -6,6 +6,8 @@
  *
  * `metrics` is a comma list of key indicator names or ids; empty = all six, in the order of the Preach My Gospel
  * indicators. The first tile is outlined (`highlightFirst`).
+ * Round 27: from/to (YYYY-MM-DD) or quarter="2026-Q3" show a fixed period; per="companionship" divides each week by
+ * the companionships serving that week. Write these as plain settings (no colon) so the deck pins the query.
  */
 import { computed } from 'vue'
 
@@ -16,11 +18,19 @@ const props = withDefaults(defineProps<{
   weeks?: number
   columns?: number
   highlightFirst?: boolean
+  from?: string
+  to?: string
+  quarter?: string
+  per?: string
 }>(), {
   metrics: ALL,
   weeks: 12,
   columns: 0,
   highlightFirst: true,
+  from: '',
+  to: '',
+  quarter: '',
+  per: '',
 })
 
 const list = computed(() => String(props.metrics || ALL).split(',').map(s => s.trim()).filter(Boolean).slice(0, 12))
@@ -38,6 +48,10 @@ const height = computed(() => (list.value.length > across.value ? 150 : 200))
       :weeks="weeks"
       :height="height"
       :highlight="highlightFirst && i === 0"
+      :from="from"
+      :to="to"
+      :quarter="quarter"
+      :per="per"
     />
   </div>
 </template>
@@ -60,4 +74,12 @@ props:
     label: Tiles across (0 = automatic)
   highlightFirst:
     label: Outline the first tile
+  from:
+    label: From date (YYYY-MM-DD, with To; instead of weeks)
+  to:
+    label: To date (YYYY-MM-DD)
+  quarter:
+    label: Quarter instead of weeks (for example 2026-Q3)
+  per:
+    label: Per companionship (write companionship)
 </studio>

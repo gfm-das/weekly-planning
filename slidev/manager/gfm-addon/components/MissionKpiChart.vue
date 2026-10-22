@@ -17,7 +17,8 @@
  * first, because Studio's Element panel shows them in this order.
  */
 import { computed, onMounted, ref, watch } from 'vue'
-import { buildOption, fetchMissionKpis, KPI_NAMES, kpiChart, kpiId, kpiWeekCount, useMissionChart } from '../lib/charts'
+import { buildOption, fetchChartData, fetchMissionKpis, KPI_NAMES, kpiChart, kpiId, kpiWeekCount, useMissionChart } from '../lib/charts'
+import { canonicalJson, deckOfPath, kpiSpec } from '../lib/chart-spec.mjs'
 import type { KpiWeek } from '../lib/charts'
 
 const props = withDefaults(defineProps<{
@@ -51,6 +52,10 @@ const props = withDefaults(defineProps<{
   dataZoom?: boolean
   option?: Record<string, any> | string
   chartId?: string
+  from?: string // round 27: a fixed period, YYYY-MM-DD (with `to`), or quarter="2026-Q3"
+  to?: string
+  quarter?: string
+  per?: '' | 'companionship' // each week divided by the companionships serving that week
 }>(), {
   kpi: 'friends_found',
   weeks: 12,
@@ -77,6 +82,10 @@ const props = withDefaults(defineProps<{
   valuePosition: 'auto',
   dataZoom: false,
   chartId: '',
+  from: '',
+  to: '',
+  quarter: '',
+  per: '',
 })
 
 const el = ref<HTMLElement>()
@@ -100,13 +109,26 @@ const { render, failed, ready } = useMissionChart(el, ctx => buildOption(table.v
   if (state.value === 'error' || (state.value === 'ready' && Date.now() - loadedAt > STALE_MS)) load()
 }, () => props.chart === 'tile')
 
+// Round 27: a period or per="companionship" asks POST /api/charts/data with the query kpiSpec makes (the same one
+// the deck's slides.md is read for, so it is pinned) and turns its answer into the weeks a key number chart reads.
+const rangeSpec = computed(() => kpiSpec({ kpi: props.kpi, from: props.from, to: props.to, quarter: props.quarter, per: props.per, weeks: props.weeks }))
+async function rangeWeeks(spec: Record<string, any>): Promise<KpiWeek[]> {
+  const deck = typeof location === 'undefined' ? '' : deckOfPath(location.pathname)
+  const answer = await fetchChartData(deck, spec, canonicalJson(spec))
+  const weeks = answer.meta?.weeks ?? answer.table.labels
+  const actual = answer.table.series.find(s => s.role !== 'goal')?.values ?? []
+  const goal = answer.table.series.find(s => s.role === 'goal')?.values ?? []
+  return weeks.map((week, i) => ({ week, [kpiKey.value]: { actual: actual[i] ?? null, goal: goal[i] ?? null } }))
+}
+
 let request = 0
 async function load() {
   const mine = ++request
   // A refresh keeps showing the numbers it already has.
   if (!rows.value) state.value = 'loading'
   try {
-    const list = await fetchMissionKpis(weekCount.value)
+    const spec = rangeSpec.value
+    const list = spec ? await rangeWeeks(spec) : await fetchMissionKpis(weekCount.value)
     if (mine !== request) return
     rows.value = list
     loadedAt = Date.now()
@@ -119,7 +141,7 @@ async function load() {
 }
 
 onMounted(load)
-watch(weekCount, () => { rows.value = null; load() })
+watch([weekCount, () => rangeSpec.value && canonicalJson(rangeSpec.value)], () => { rows.value = null; load() })
 watch(view, () => render(), { deep: true, flush: 'post' })
 
 const loading = computed(() => !failed.value && (state.value === 'loading' || (state.value === 'ready' && !!table.value && !ready.value)))
@@ -256,6 +278,14 @@ props:
     label: More · Where the values go
   dataZoom:
     label: More · Zoom slider
+  from:
+    label: More · From date (YYYY-MM-DD, with To)
+  to:
+    label: More · To date (YYYY-MM-DD)
+  quarter:
+    label: More · Quarter instead of weeks (for example 2026-Q3)
+  per:
+    label: More · Per companionship (companionship = each week divided by the companionships serving)
   chartId:
     hidden: true
   option:

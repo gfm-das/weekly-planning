@@ -404,6 +404,26 @@
      "name": "highlight",
      "type": "boolean",
      "label": "Outline in teal (the first, most important number)"
+    },
+    {
+     "name": "from",
+     "type": "string",
+     "label": "From date (YYYY-MM-DD, with To; instead of weeks)"
+    },
+    {
+     "name": "to",
+     "type": "string",
+     "label": "To date (YYYY-MM-DD)"
+    },
+    {
+     "name": "quarter",
+     "type": "string",
+     "label": "Quarter instead of weeks (for example 2026-Q3)"
+    },
+    {
+     "name": "per",
+     "type": "string",
+     "label": "Per companionship (write companionship)"
     }
    ],
    "slot": false
@@ -433,6 +453,26 @@
      "name": "highlightFirst",
      "type": "boolean",
      "label": "Outline the first tile"
+    },
+    {
+     "name": "from",
+     "type": "string",
+     "label": "From date (YYYY-MM-DD, with To; instead of weeks)"
+    },
+    {
+     "name": "to",
+     "type": "string",
+     "label": "To date (YYYY-MM-DD)"
+    },
+    {
+     "name": "quarter",
+     "type": "string",
+     "label": "Quarter instead of weeks (for example 2026-Q3)"
+    },
+    {
+     "name": "per",
+     "type": "string",
+     "label": "Per companionship (write companionship)"
     }
    ],
    "slot": false
@@ -1023,6 +1063,29 @@
      "name": "chartId",
      "type": "string",
      "hidden": true
+    },
+    {
+     "name": "from",
+     "type": "string",
+     "label": "More · From date (YYYY-MM-DD, with To)"
+    },
+    {
+     "name": "to",
+     "type": "string",
+     "label": "More · To date (YYYY-MM-DD)"
+    },
+    {
+     "name": "quarter",
+     "type": "string",
+     "label": "More · Quarter instead of weeks (for example 2026-Q3)"
+    },
+    {
+     "name": "per",
+     "type": "'' | 'companionship'",
+     "label": "More · Per companionship (companionship = each week divided by the companionships serving)",
+     "options": [
+      " | "
+     ]
     }
    ],
    "slot": false
@@ -1111,6 +1174,24 @@
      "name": "numbered",
      "type": "boolean",
      "label": "Number the rows"
+    }
+   ],
+   "slot": false
+  },
+  {
+   "name": "MissionRoster",
+   "category": "GFM data",
+   "description": "Roster counts of the mission, never names - church units with missionaries, missionaries per unit and companionships, or elders and sisters. This week or as of a date.",
+   "snippet": "<MissionRoster view=\"units\" />",
+   "props": [
+    {
+     "name": "view",
+     "type": "'units' | 'gender', asOf?: string, title?: string",
+     "label": "Counts",
+     "options": [
+      "units",
+      "gender"
+     ]
     }
    ],
    "slot": false

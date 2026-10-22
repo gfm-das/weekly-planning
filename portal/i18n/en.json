@@ -3568,5 +3568,13 @@
  "pres.chartNotSavedError": "The chart could not be saved on slide {a} (error {b}). Wait until the slides show, then try again.",
  "dam.rowsAreBothTheReportOf": "Rows {a} of the file are both the report of '{b}' for the week of {c}. Keep only one of them in the file, or give each row its own Ward/Branch.",
  "dam.uploadAFile": "Upload a file",
- "dam.uploadExpiredOrImported": "This upload has expired or was already imported. Check Import history, or upload the file again."
+ "dam.uploadExpiredOrImported": "This upload has expired or was already imported. Check Import history, or upload the file again.",
+ "api.rosterGroup": "Roster (counts)",
+ "api.companionships": "Companionships",
+ "api.elders": "Elders",
+ "api.sisters": "Sisters",
+ "api.unitsWithMissionaries": "Church units with missionaries",
+ "api.datesFormat": "Write the from and to dates like 2026-07-01.",
+ "api.weeksOrDates": "Choose either the last weeks or a from and to date, not both.",
+ "api.fromAfterTo": "The from date must not be after the to date."
 }
