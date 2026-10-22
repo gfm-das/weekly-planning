@@ -204,3 +204,81 @@ class UnitResolutionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class UnknownUnitsStayApartTests(unittest.TestCase):
+    """Real-file test of PR #34: one label sent one form per unit, and neither Ward/Branch answer matched a unit. The
+    rows got two report keys (v1.0.22) but still one report group (area, week, no unit), so the check asked to "keep
+    only" a label against itself and Apply added the two units' numbers into one report."""
+
+    SUNDAY = date(2026, 6, 7)
+    AREA = {"id": 7, "name": "Beta Base"}
+
+    def item(self, answer, number):
+        r = dict(row("Zone-Beta Base", self.SUNDAY), **{historical.UNIT_COLUMN: answer, "_source_row_number": number})
+        return {"source": "Zone-Beta Base", "area": self.AREA, "sunday": self.SUNDAY, "row": r, "unit_id": None,
+                "unit_name": None, "key": f"zone-beta-base:2026-06-07@t{number}", "collision_extra": False, "combined": False,
+                "group": historical_preview.report_group(7, self.SUNDAY, r)}
+
+    def test_two_unknown_answers_are_two_report_groups(self):
+        a, b, again = self.item("Zone-Beta 1", 4), self.item("Zone-Beta 2", 9), self.item("zone-beta 1", 12)
+        self.assertNotEqual(a["group"], b["group"])
+        self.assertEqual(a["group"], again["group"])  # the same answer (any case) is the same unit
+        found = dict(row("Zone-Beta Base", self.SUNDAY, unit_id=31), **{historical.UNIT_COLUMN: "Zone-Beta 1"})
+        self.assertEqual(historical_preview.report_group(7, self.SUNDAY, found), (7, self.SUNDAY, 31))
+        self.assertIsNone(historical_preview.group_unit_id(a["group"]))
+        self.assertEqual(historical_preview.group_unit_id((7, self.SUNDAY, 31)), 31)
+
+    def test_no_keep_only_question_for_one_label_in_two_unknown_units(self):
+        check = historical_preview.Check.__new__(historical_preview.Check)
+        check.choices, check.errors, check.pending = {}, [], []
+        check.ui, check.effective, check.state = ({"merges": []}, {"merges": {}}, {"merges": {}})
+        check.areas, check.units_by_id = {7: self.AREA}, {}
+        items, skipped = historical_preview.choose_same_unit_rows(check, [self.item("Zone-Beta 1", 4), self.item("Zone-Beta 2", 9)])
+        self.assertEqual((len(items), skipped, check.ui["merges"], check.pending), (2, [], [], []))
+
+    def test_two_labels_in_one_unknown_unit_are_still_asked_about(self):
+        check = historical_preview.Check.__new__(historical_preview.Check)
+        check.choices, check.errors, check.pending = {}, [], []
+        check.ui, check.effective, check.state = ({"merges": []}, {"merges": {}}, {"merges": {}})
+        check.areas, check.units_by_id = {7: self.AREA}, {}
+        other = self.item("Zone-Beta 1", 5)
+        other["source"] = "Zone-Beta Old"
+        items, skipped = historical_preview.choose_same_unit_rows(check, [self.item("Zone-Beta 1", 4), other])
+        self.assertEqual(len(skipped), 2)
+        self.assertEqual(len(check.ui["merges"]), 1)
+        self.assertTrue(check.ui["merges"][0]["key"].startswith("7|t"))  # short key: the form keeps 100 characters
+        self.assertLessEqual(len(check.ui["merges"][0]["key"]), 12)
+        self.assertIn("zone-beta 1", check.ui["merges"][0]["unit"])
+
+    def test_one_earlier_report_is_taken_over_by_one_unit_only(self):
+        a, b = self.item("Zone-Beta 1", 4), self.item("Zone-Beta 2", 9)
+        check = historical_preview.Check.__new__(historical_preview.Check)
+        check.choices, check.errors, check.pending, check.replace_existing = {}, [], [], True
+        check.ui, check.effective, check.state = ({"targets": []}, {"targets": {}}, {"targets": {}})
+        earlier = {"id": 50, "unit_id": None, "unit_name": None, "status": "SUBMITTED", "historical_source_key": "zone-beta-base:2026-06-07",
+                   "friends_found_actual": 1, "lessons_with_friends_actual": 1, "sacrament_attendance_actual": 1, "baptismal_dates_actual": 0}
+
+        class Cursor:
+            def execute(self, query, args): self.args = args
+            def fetchall(self): return [earlier]
+        groups = {a["group"]: [a], b["group"]: [b]}
+        targets, taken, _ = historical_preview.choose_target_reports(check, Cursor(), groups)
+        self.assertEqual(list(targets.values()), [50])  # never both written into report #50
+        self.assertEqual(taken, {50})
+        self.assertEqual([a.get("existing_id"), b.get("existing_id")], [50, None])
+
+    def test_apply_writes_one_report_per_group(self):
+        import historical_apply
+        a, b = self.item("Zone-Beta 1", 4), self.item("Zone-Beta 2", 9)
+        made, added = [], []
+        originals = (historical_apply.staged_report, historical_apply.write_report, historical_apply.add_to_report, historical_apply.write_details)
+        historical_apply.staged_report = lambda cur, key: {"key": key}
+        historical_apply.write_report = lambda cur, item, staged, batch, report_id, moved: made.append(item["key"]) or len(made)
+        historical_apply.add_to_report = lambda cur, report_id, staged: added.append(report_id)
+        historical_apply.write_details = lambda *args: None
+        try:
+            historical_apply.write_reports(None, {"rows": [a, b], "target_reports": {}, "stale_reports": {}}, "batch")
+        finally:
+            (historical_apply.staged_report, historical_apply.write_report, historical_apply.add_to_report, historical_apply.write_details) = originals
+        self.assertEqual((made, added), ([a["key"], b["key"]], []))

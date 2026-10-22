@@ -3564,5 +3564,7 @@
  "pres.slideNotReadError": "La diapositive {a} n’a pas pu être lue depuis l’éditeur (erreur {b}). Attendez que les diapositives s’affichent, puis réessayez.",
  "pres.chartNotSavedLost": "Le graphique n’a pas pu être enregistré sur la diapositive {a} : la connexion à l’éditeur a été perdue. Attendez que les diapositives s’affichent, puis réessayez.",
  "pres.chartNotSavedError": "Le graphique n’a pas pu être enregistré sur la diapositive {a} (erreur {b}). Attendez que les diapositives s’affichent, puis réessayez.",
- "dam.rowsAreBothTheReportOf": "Les lignes {a} du fichier sont toutes deux le rapport de '{b}' pour la semaine du {c}. Ne gardez qu’une seule d’entre elles dans le fichier, ou donnez à chaque ligne sa propre paroisse/branche."
+ "dam.rowsAreBothTheReportOf": "Les lignes {a} du fichier sont toutes deux le rapport de '{b}' pour la semaine du {c}. Ne gardez qu’une seule d’entre elles dans le fichier, ou donnez à chaque ligne sa propre paroisse/branche.",
+ "dam.uploadAFile": "Téléverser un fichier",
+ "dam.uploadExpiredOrImported": "Ce téléversement a expiré ou a déjà été importé. Consultez l’historique des imports ou téléversez à nouveau le fichier."
 }

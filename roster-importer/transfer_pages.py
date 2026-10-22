@@ -36,6 +36,8 @@ def start_roster(upload, transfer_date_text):
         mission_id = sign_in.current_mission_id()
         transfer_date = date.fromisoformat(transfer_date_text)
         path = keep_upload(upload)
+        if not Path(path).is_file():
+            raise FileNotFoundError(path)
         rows = roster_file.read_roster(path)
         changes = transfer.preview(rows, mission_id, transfer_date)
         session["pending_file"] = str(path)
@@ -129,6 +131,8 @@ def apply_page():
     try:
         if request.form.get("confirmed") != "yes":
             raise ValueError("Review and confirm the transfer preview first.")
+        if not Path(path).is_file():
+            raise FileNotFoundError(path)
         rows = roster_file.read_roster(path)
         # Checked again here: the preview may be old.
         loss = transfer.own_access_loss(rows, date.fromisoformat(transfer_date), session.get("portal_user_id"))
@@ -143,5 +147,10 @@ def apply_page():
             session.pop(key, None)
         own = "<p class='warn'>Your own DA Management access ended with this transfer, so the links below no longer open for you.</p>" if own_now else ""
         return page.render(f"""<div class="card"><h2 class="good">Transfer applied successfully</h2><p>Roster, emails, units, assignments, and roster-managed permissions are updated.</p>{own}<p><a href="/accounts">Open Account Manager</a> · <a href="/imports/{batch}">View import batch</a> · <a href="/">Import another roster</a></p></div>""")
+    except FileNotFoundError:
+        # Apply clicked twice (the first imported the roster and removed it), or the upload expired.
+        for key in PENDING_KEYS:
+            session.pop(key, None)
+        return page.render(f"<div class='error'>{h(settings.UPLOAD_GONE)}</div><p><a href='/imports'>Import history</a> · <a href='/uploads'>Upload a file</a></p>", 410)
     except Exception as e:
         return page.render(f"<div class='error'><b>Nothing was committed.</b>\n{h(e)}</div><p><a href='/'>Back</a></p>", 500)

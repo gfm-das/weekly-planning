@@ -111,8 +111,12 @@ def look_alike(label, areas, zone_names):
         prefix = loose(zone) + " "
         wanted |= {w[len(prefix):] for w in list(wanted) if prefix.strip() and w.startswith(prefix)}
     numbers = lambda text: re.findall(r"\d+", text)  # 'Beta 12' is never a look-alike of 'Beta 1'
+    # 'Office E' (Elders) is never a look-alike of 'Office S' (Sisters), nor 'Darmstadt S' of 'Darmstadt': one-letter
+    # words mark a different companionship, so they must be the same.
+    letters = lambda text: [word for word in text.split() if len(word) == 1 and word.isalpha()]
+    same_marks = lambda w, name: numbers(w) == numbers(name) and letters(w) == letters(name)
     scored = sorted(((max(difflib.SequenceMatcher(None, w, loose(a["name"])).ratio() for w in wanted), a.get("active", True), a["id"])
-                     for a in areas if any(numbers(w) == numbers(loose(a["name"])) for w in wanted)), reverse=True)
+                     for a in areas if any(same_marks(w, loose(a["name"])) for w in wanted)), reverse=True)
     if not scored or scored[0][0] < SIMILAR or (len(scored) > 1 and scored[1][:2] == scored[0][:2]):
         return None  # nothing alike enough, or two areas equally alike: no guess
     return next(a for a in areas if a["id"] == scored[0][2])

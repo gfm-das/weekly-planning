@@ -3561,5 +3561,7 @@
  "pres.slideNotReadError": "Folie {a} konnte nicht aus dem Editor gelesen werden (Fehler {b}). Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
  "pres.chartNotSavedLost": "Das Diagramm konnte auf Folie {a} nicht gespeichert werden: Die Verbindung zum Editor ist abgebrochen. Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
  "pres.chartNotSavedError": "Das Diagramm konnte auf Folie {a} nicht gespeichert werden (Fehler {b}). Warte, bis die Folien zu sehen sind, und versuche es dann noch einmal.",
- "dam.rowsAreBothTheReportOf": "Die Zeilen {a} der Datei sind beide der Bericht von '{b}' für die Woche vom {c}. Behalte nur eine davon in der Datei oder gib jeder Zeile ihre eigene Gemeinde/ihren eigenen Zweig."
+ "dam.rowsAreBothTheReportOf": "Die Zeilen {a} der Datei sind beide der Bericht von '{b}' für die Woche vom {c}. Behalte nur eine davon in der Datei oder gib jeder Zeile ihre eigene Gemeinde/ihren eigenen Zweig.",
+ "dam.uploadAFile": "Datei hochladen",
+ "dam.uploadExpiredOrImported": "Dieser Upload ist abgelaufen oder wurde schon importiert. Sieh im Importverlauf nach oder lade die Datei noch einmal hoch."
 }

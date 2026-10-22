@@ -3564,5 +3564,7 @@
  "pres.slideNotReadError": "Não foi possível ler o slide {a} do editor (erro {b}). Aguarde até os slides aparecerem e tente novamente.",
  "pres.chartNotSavedLost": "Não foi possível salvar o gráfico no slide {a}: a conexão com o editor foi perdida. Aguarde até os slides aparecerem e tente novamente.",
  "pres.chartNotSavedError": "Não foi possível salvar o gráfico no slide {a} (erro {b}). Aguarde até os slides aparecerem e tente novamente.",
- "dam.rowsAreBothTheReportOf": "As linhas {a} do arquivo são ambas o relatório de '{b}' para a semana de {c}. Mantenha apenas uma delas no arquivo ou dê a cada linha sua própria ala/ramo."
+ "dam.rowsAreBothTheReportOf": "As linhas {a} do arquivo são ambas o relatório de '{b}' para a semana de {c}. Mantenha apenas uma delas no arquivo ou dê a cada linha sua própria ala/ramo.",
+ "dam.uploadAFile": "Enviar um arquivo",
+ "dam.uploadExpiredOrImported": "Este envio expirou ou já foi importado. Verifique o histórico de importações ou envie o arquivo novamente."
 }

@@ -194,6 +194,11 @@ class SuggestionTests(unittest.TestCase):
         numbered = [{"id": 10, "name": "Beta 1", "zone": "Frankfurt", "active": True}]
         self.assertIsNone(mappings_page.look_alike("Beta 12", numbered, ZONES))  # another number is another area
         self.assertEqual(mappings_page.look_alike("Betta 1", numbered, ZONES)["id"], 10)
+        # A one-letter mark is another companionship: Elders (E) are never suggested for a Sisters (S) area.
+        marked = [{"id": 11, "name": "Gamma S", "zone": "Frankfurt", "active": True}, {"id": 12, "name": "Delta", "zone": "Frankfurt", "active": True}]
+        self.assertIsNone(mappings_page.look_alike("Frankfurt-Gamma E", marked, ZONES))
+        self.assertIsNone(mappings_page.look_alike("Delta S", marked, ZONES))
+        self.assertEqual(mappings_page.look_alike("Gama S", marked, ZONES)["id"], 11)
         idle = [{"id": 9, "name": "Quiet Town", "zone": "Frankfurt", "active": True}]  # active, but nobody serves there
         self.assertEqual(mappings_page.suggestion("Quiet Town", self.CURRENT, idle, ZONES), (None, None))
 

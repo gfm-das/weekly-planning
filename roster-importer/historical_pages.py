@@ -96,7 +96,7 @@ def actions(items):
     """What happens to each row's report: new, replace #id, combine into the same report, or move an earlier import."""
     seen, result = set(), []
     for r in sorted(items, key=lambda i: i["combined"]):  # the order Apply writes them
-        group = (r["area"]["id"], r["sunday"], r["unit_id"])
+        group = historical_preview.item_group(r)
         if group in seen:
             result.append("Combine into the same report")
             continue
@@ -230,8 +230,10 @@ def historical_review():
     if not sign_in.allowed():
         return sign_in.go_to_login()
     path = session.get("historical_file")
-    if not path or not Path(path).is_file():
+    if not path:
         return redirect("/historical")
+    if not Path(path).is_file():
+        return upload_gone()
     return check_page(path)
 
 
@@ -247,7 +249,7 @@ def historical_apply_route():
             raise ValueError("Review and confirm the preview first.")
         path = session.get("historical_file")
         if not path or not Path(path).is_file():
-            raise ValueError("No historical upload is pending.")
+            return upload_gone()
         try:
             posted = json.loads(request.form.get("choices") or "{}")
         except ValueError:
@@ -265,5 +267,15 @@ def historical_apply_route():
             session.pop(key, None)
         flash("Historical reports imported. Original labels and detailed answers were preserved.")
         return redirect(f"/imports/{batch}")
+    except FileNotFoundError:
+        # Apply clicked twice: the second waited for the first, which imported the file and removed it.
+        return upload_gone()
     except Exception as e:
         return page.render(f"<div class='error'><b>Nothing was committed.</b><br>{h(e)}</div><p><a href='/historical/review'>Back to preview</a></p>", 400)
+
+
+def upload_gone():
+    """The page for an Apply whose upload is no longer waiting: already imported (Apply clicked twice) or expired."""
+    for key in SESSION_KEYS:
+        session.pop(key, None)
+    return page.render(f"<div class='error'>{h(settings.UPLOAD_GONE)}</div><p><a href='/imports'>Import history</a> · <a href='/uploads'>Upload a file</a></p>", 410)

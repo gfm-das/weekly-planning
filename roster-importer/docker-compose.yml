@@ -26,7 +26,11 @@ services:
       WEB_LINK_CLOUDFLARE: "${WEB_LINK_CLOUDFLARE:-}"
       WEB_LINK_WIKI: "${WEB_LINK_WIKI:-}"
       PORTAL_PORT: "${PORTAL_PORT:-8070}"
+      UPLOAD_DIR: /data/uploads
     volumes:
+      # Uploads waiting between their check and Apply (v1.0.23): a named volume, so they survive a restart or an update.
+      # Docker creates it on the first start (fresh installs and updates alike); DA Management deletes files older than a day.
+      - importer-uploads:/data/uploads
       # Delete retired (round 13): the backup made before a delete is written here, on this computer, next to the other backups.
       - ../backups:/backups
       # DA Management > Updates (round 7): the page only leaves requests for the updater on this computer
@@ -37,6 +41,9 @@ services:
       - default
       - supabase_network
     restart: unless-stopped
+
+volumes:
+  importer-uploads:
 
 networks:
   supabase_network:

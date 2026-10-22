@@ -23,7 +23,7 @@ def people_of_rows(items):
     appearances, high_potentials = [], []
     for item in items:
         row, area_id, unit_id, sunday = item["row"], item["area"]["id"], item["unit_id"], item["sunday"]
-        target = (area_id, sunday, unit_id)
+        target = item.get("group") or (area_id, sunday, unit_id)  # the report it belongs to (see historical_preview.report_group)
         for part in range(1, 11):
             name = historical.clean(historical.new_member_column(row, part, "First & Last Name pt.{part}"))
             if not name:

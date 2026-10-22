@@ -103,7 +103,7 @@ def preview(path, connection=None, replace_existing=True, choices=None):
             items, skipped = choose_same_unit_rows(check, items)
             groups = {}
             for item in items:
-                groups.setdefault((item["area"]["id"], item["sunday"], item["unit_id"]), []).append(item)
+                groups.setdefault(item_group(item), []).append(item)
             target_reports, taken, owner = choose_target_reports(check, cur, groups)
             stale = find_moved_labels(check, cur, items, groups, target_reports, taken, owner)
             people = check_people(check, cur, items)
@@ -358,12 +358,41 @@ def report_items(check, selected, dropped, extra_keys, units_of_key):
         row["_report_key"] = key
         unit = check.units_by_id.get(row["_unit_id"])
         items.append({"source": source, "area": area, "sunday": sunday, "key": key, "row": row, "existing_id": None,
+                      "group": report_group(area["id"], sunday, row),
                       "unit_id": row["_unit_id"], "unit_name": unit_label(unit) if unit else None,
                       "collision_extra": ident in extra_keys, "combined": mapping.get("match_status") == "COMBINED"})
     if check.closed_only:
         labels = sorted({historical.clean(r[historical.COMPANIONSHIP_COLUMN]) for r in check.closed_only})
         check.notices.append(f"Closed labels without an area are kept in the import tables only, not in reports: {', '.join(labels)}.")
     return items
+
+
+def report_group(area_id, sunday, row):
+    """The report a row writes to: (area id, Sunday, unit). The unit is the unit id, or, when no unit was found, the
+    row's Ward/Branch answer ('text:<answer>', see unit_identity): two rows of one area and week with two different
+    unknown answers ('Ramstein 1', 'Ramstein 2') are two units, so two reports, never added together."""
+    return (area_id, sunday, unit_identity(row))
+
+
+def unit_tag(unit):
+    """A short form of a unit identity for the page's choice keys (kept short: the form keeps only 100 characters):
+    the unit id, 'none', or 't' and a hash of an unknown Ward/Branch answer."""
+    if unit is None:
+        return "none"
+    if isinstance(unit, str):
+        return "t" + hashlib.sha1(unit.encode("utf-8")).hexdigest()[:8]
+    return str(unit)
+
+
+def item_group(item):
+    """The report group of an item (report_group); an item made without one groups by its unit id."""
+    return item.get("group") or (item["area"]["id"], item["sunday"], item["unit_id"])
+
+
+def group_unit_id(group):
+    """The unit id stored on the reports of a group (None for an answer that matched no unit)."""
+    unit = group[2]
+    return None if isinstance(unit, str) else unit
 
 
 def check_row(check, row, source, mapping, sunday):
@@ -400,7 +429,7 @@ def choose_same_unit_rows(check, items):
     same_unit = {}
     for item in items:
         if not item["collision_extra"] and not item["combined"]:
-            same_unit.setdefault((item["area"]["id"], item["unit_id"], item["sunday"]), []).append(item)
+            same_unit.setdefault((item["area"]["id"], item_group(item)[2], item["sunday"]), []).append(item)
     keep_out = set()
     for (area_id, unit_id), weeks in same_unit_scopes(same_unit).items():
         keep_out |= choose_for_scope(check, items, same_unit, area_id, unit_id, weeks)
@@ -410,7 +439,7 @@ def choose_same_unit_rows(check, items):
             check.errors.append("A saved choice for old areas sharing one unit no longer matches this upload. Recheck the preview and choose again.")
             break
     for item in items:
-        if not item.get("skip") and (item["area"]["id"], item["unit_id"], item["sunday"]) in keep_out:
+        if not item.get("skip") and (item["area"]["id"], item_group(item)[2], item["sunday"]) in keep_out:
             item["skip"] = "Waiting for your choice below"
     # Rows of weeks still waiting for a choice stay out of the report plan (Apply is disabled anyway).
     return [i for i in items if not i.get("skip")], [i for i in items if i.get("skip")]
@@ -427,7 +456,7 @@ def same_unit_scopes(same_unit):
 
 def choose_for_scope(check, items, same_unit, area_id, unit_id, weeks):
     """Applies the manager's choice for one area and unit (and its single weeks). Returns the weeks still waiting."""
-    scope_key = f"{area_id}|{unit_id if unit_id is not None else 'none'}"
+    scope_key = f"{area_id}|{unit_tag(unit_id)}"  # unit_id: a unit id, 'text:<answer>' or None
     labels = sorted({label for _, week_labels in weeks for label in week_labels})
     options = [f"keep:{label}" for label in labels]
     chosen = check.chosen("merges")
@@ -458,7 +487,8 @@ def choose_for_scope(check, items, same_unit, area_id, unit_id, weeks):
         check.effective["merges"][week_key] = choice
         skip_other_labels(items, same_unit[(area_id, unit_id, sunday)], choice[5:])
     unit = check.units_by_id.get(unit_id)
-    check.ui["merges"].append({"key": scope_key, "area": area_name, "unit": unit_label(unit) if unit else "no unit",
+    unit_text = unit_label(unit) if unit else ("no unit" + (" · " + unit_id[5:] if isinstance(unit_id, str) else ""))
+    check.ui["merges"].append({"key": scope_key, "area": area_name, "unit": unit_text,
                                "labels": labels, "weeks": week_ui, "selected": scope_choice})
     return waiting
 
@@ -485,6 +515,10 @@ def choose_target_reports(check, cur, groups):
         taken |= {r["id"] for r in existing}
         owner.update({r["id"]: group for r in existing})
         chosen = pick_target(check, group, items, existing, chosen_targets)
+        if chosen is not None and chosen in target_reports.values():
+            # Two unknown Ward/Branch answers of one area and week, and one earlier report without a unit: only the
+            # first takes it over; the other gets a new report, so the two are never written into one.
+            chosen = None
         if chosen is not None:
             target_reports[group] = chosen
             for item in items:
@@ -497,7 +531,7 @@ def choose_target_reports(check, cur, groups):
 
 def existing_reports(cur, group):
     """The reports that already exist for an area, Sunday and unit."""
-    area_id, sunday, unit_id = group
+    area_id, sunday, unit_id = group[0], group[1], group_unit_id(group)
     cur.execute("""select r.id,r.unit_id,u.name unit_name,r.status,r.historical_source_key,r.friends_found_actual,
         r.lessons_with_friends_actual,r.sacrament_attendance_actual,r.baptismal_dates_actual
       from public.weekly_area_reports r join public.reporting_weeks w on w.id=r.reporting_week_id
@@ -517,7 +551,7 @@ def pick_target(check, group, items, existing, chosen_targets):
             check.errors.append(f"{item['source']}, {sunday}: a report already exists for {name}{unit_note}. Choose Replace existing reports to continue.")
     elif len(existing) > 1:
         # Only reports without a unit can repeat per area/week: the manager picks the one to replace.
-        group_key = f"{area_id}|{sunday}"
+        group_key = f"{area_id}|{sunday}" + (f"|{unit_tag(group[2])}" if isinstance(group[2], str) else "")
         ids = [r["id"] for r in existing]
         check.state["targets"][group_key] = ids
         batch_keys = {item["key"] for item in items}
@@ -556,7 +590,7 @@ def find_moved_labels(check, cur, items, groups, target_reports, taken, owner):
     refs, stale = None, {}
     claimed = set(target_reports)  # groups that already have their report; later stale ones are removed
     for item in items:
-        group = (item["area"]["id"], item["sunday"], item["unit_id"])
+        group = item_group(item)
         for found in reports_with_label(cur, item):
             labels = report_labels(found["details_labels"]) or [historical.clean(found["historical_source_area"])]
             folded = {label.casefold() for label in labels}

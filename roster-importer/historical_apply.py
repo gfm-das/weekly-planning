@@ -103,7 +103,7 @@ def write_reports(cur, checked, batch):
     written = {}
     for item in sorted(checked["rows"], key=lambda i: i["combined"]):  # a Combined companionship is added last
         staged = staged_report(cur, item["key"])
-        target = (item["area"]["id"], item["sunday"], item["unit_id"])
+        target = historical_preview.item_group(item)  # area, week and unit (an unknown Ward/Branch answer counts as its own unit)
         if target in written:
             add_to_report(cur, written[target], staged)
         else:

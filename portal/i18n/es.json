@@ -3561,5 +3561,7 @@
  "pres.slideNotReadError": "No se pudo leer la diapositiva {a} desde el editor (error {b}). Espera a que se muestren las diapositivas y vuelve a intentarlo.",
  "pres.chartNotSavedLost": "No se pudo guardar el gráfico en la diapositiva {a}: se perdió la conexión con el editor. Espera a que se muestren las diapositivas y vuelve a intentarlo.",
  "pres.chartNotSavedError": "No se pudo guardar el gráfico en la diapositiva {a} (error {b}). Espera a que se muestren las diapositivas y vuelve a intentarlo.",
- "dam.rowsAreBothTheReportOf": "Las filas {a} del archivo son ambas el informe de '{b}' para la semana del {c}. Deja solo una de ellas en el archivo o da a cada fila su propio barrio/rama."
+ "dam.rowsAreBothTheReportOf": "Las filas {a} del archivo son ambas el informe de '{b}' para la semana del {c}. Deja solo una de ellas en el archivo o da a cada fila su propio barrio/rama.",
+ "dam.uploadAFile": "Subir un archivo",
+ "dam.uploadExpiredOrImported": "Esta carga ha caducado o ya se importó. Revisa el historial de importaciones o vuelve a subir el archivo."
 }

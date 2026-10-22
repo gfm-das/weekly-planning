@@ -3561,5 +3561,7 @@
  "pres.slideNotReadError": "Bild {a} kunde inte läsas från redigeraren (fel {b}). Vänta tills bilderna visas och försök sedan igen.",
  "pres.chartNotSavedLost": "Diagrammet kunde inte sparas på bild {a}: anslutningen till redigeraren bröts. Vänta tills bilderna visas och försök sedan igen.",
  "pres.chartNotSavedError": "Diagrammet kunde inte sparas på bild {a} (fel {b}). Vänta tills bilderna visas och försök sedan igen.",
- "dam.rowsAreBothTheReportOf": "Raderna {a} i filen är båda rapporten för '{b}' för veckan {c}. Behåll bara en av dem i filen, eller ge varje rad en egen församling/gren."
+ "dam.rowsAreBothTheReportOf": "Raderna {a} i filen är båda rapporten för '{b}' för veckan {c}. Behåll bara en av dem i filen, eller ge varje rad en egen församling/gren.",
+ "dam.uploadAFile": "Ladda upp en fil",
+ "dam.uploadExpiredOrImported": "Den här uppladdningen har gått ut eller har redan importerats. Titta i importhistoriken eller ladda upp filen igen."
 }

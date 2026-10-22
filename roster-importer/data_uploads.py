@@ -133,9 +133,10 @@ def pending_path(token):
 def clear_old_pending():
     """Deletes waiting files older than PENDING_HOURS."""
     limit = time.time() - PENDING_HOURS * 3600
-    for path in settings.UPLOAD_DIR.glob("data-*.json"):
+    # Every waiting file: the rows of Data uploads (data-*.json) and the uploaded rosters and Historical CSVs.
+    for path in settings.UPLOAD_DIR.iterdir():
         try:
-            if path.stat().st_mtime < limit:
+            if path.is_file() and path.stat().st_mtime < limit:
                 path.unlink()
         except OSError:
             pass

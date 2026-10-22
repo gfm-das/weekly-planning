@@ -3561,5 +3561,7 @@
  "pres.slideNotReadError": "Slayt {a} düzenleyiciden okunamadı (hata {b}). Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
  "pres.chartNotSavedLost": "Grafik slayt {a} üzerine kaydedilemedi: düzenleyiciyle bağlantı koptu. Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
  "pres.chartNotSavedError": "Grafik slayt {a} üzerine kaydedilemedi (hata {b}). Slaytlar görünene kadar bekleyin, sonra tekrar deneyin.",
- "dam.rowsAreBothTheReportOf": "Dosyanın {a} satırlarının ikisi de '{b}' için {c} haftasının raporu. Dosyada bunlardan yalnızca birini bırakın veya her satıra kendi koğuşunu/şubesini verin."
+ "dam.rowsAreBothTheReportOf": "Dosyanın {a} satırlarının ikisi de '{b}' için {c} haftasının raporu. Dosyada bunlardan yalnızca birini bırakın veya her satıra kendi koğuşunu/şubesini verin.",
+ "dam.uploadAFile": "Dosya yükle",
+ "dam.uploadExpiredOrImported": "Bu yüklemenin süresi doldu veya zaten içe aktarıldı. İçe aktarma geçmişine bakın ya da dosyayı yeniden yükleyin."
 }

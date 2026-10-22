@@ -19,8 +19,12 @@ IMPORTER_PASSWORD = os.environ.get("IMPORTER_PASSWORD", "")
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me")
 
 # A folder for files that wait between "check" and "apply" (a roster or a historical CSV, or the rows of a data upload).
-UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "/tmp/roster-importer"))
+# Uploads waiting between their check and Apply. /data/uploads is a Docker volume (docker-compose.yml), so a waiting
+# upload survives a restart or an update of DA Management; /tmp inside the container did not (v1.0.22 "[Errno 2]").
+UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "/data/uploads"))
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+# What a page says when the upload it waits for is no longer there (Apply clicked twice, or left for over a day).
+UPLOAD_GONE = "This upload has expired or was already imported. Check Import history, or upload the file again."
 
 # The mission's time zone (an IANA name such as America/Denver): the times DA Management shows are in it, and the database counts weeks
 # in it too (public.gfm_time_zone(), migration 045). Europe/Berlin when nothing is set, as it always was.
