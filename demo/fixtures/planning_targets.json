@@ -1,0 +1,117 @@
+{
+ "current_area_id": 1111,
+ "areas": [
+  {
+   "zone_id": 11,
+   "zone": "Zone Alpha",
+   "district_id": 111,
+   "district": "Alpha 1",
+   "area_id": 1111,
+   "area": "Alpha 1 North",
+   "units": [
+    {
+     "unit_id": 11110,
+     "unit": "Alpha 1 North Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 11,
+   "zone": "Zone Alpha",
+   "district_id": 111,
+   "district": "Alpha 1",
+   "area_id": 1112,
+   "area": "Alpha 1 South",
+   "units": [
+    {
+     "unit_id": 11120,
+     "unit": "Alpha 1 South Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 11,
+   "zone": "Zone Alpha",
+   "district_id": 112,
+   "district": "Alpha 2",
+   "area_id": 1121,
+   "area": "Alpha 2 East",
+   "units": [
+    {
+     "unit_id": 11210,
+     "unit": "Alpha 2 East Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 12,
+   "zone": "Zone Beta",
+   "district_id": 121,
+   "district": "Beta 1",
+   "area_id": 1211,
+   "area": "Beta 1 West",
+   "units": [
+    {
+     "unit_id": 12110,
+     "unit": "Beta 1 West Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 12,
+   "zone": "Zone Beta",
+   "district_id": 121,
+   "district": "Beta 1",
+   "area_id": 1212,
+   "area": "Beta 1 Centre",
+   "units": [
+    {
+     "unit_id": 12120,
+     "unit": "Beta 1 Centre Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 13,
+   "zone": "Zone Gamma",
+   "district_id": 131,
+   "district": "Gamma 1",
+   "area_id": 1311,
+   "area": "Gamma 1 Hill",
+   "units": [
+    {
+     "unit_id": 13110,
+     "unit": "Gamma 1 Hill Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 13,
+   "zone": "Zone Gamma",
+   "district_id": 132,
+   "district": "Gamma 2",
+   "area_id": 1321,
+   "area": "Gamma 2 Lake",
+   "units": [
+    {
+     "unit_id": 13210,
+     "unit": "Gamma 2 Lake Ward"
+    }
+   ]
+  },
+  {
+   "zone_id": 13,
+   "zone": "Zone Gamma",
+   "district_id": 132,
+   "district": "Gamma 2",
+   "area_id": 1322,
+   "area": "Gamma 2 Park",
+   "units": [
+    {
+     "unit_id": 13220,
+     "unit": "Gamma 2 Park Ward"
+    }
+   ]
+  }
+ ]
+}

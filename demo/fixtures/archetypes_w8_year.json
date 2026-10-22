@@ -1,0 +1,1954 @@
+{
+ "viewer": {
+  "scope": "mission",
+  "settings": true
+ },
+ "bands": [
+  {
+   "from": 120,
+   "name": "Outstanding",
+   "color": "#34b36a"
+  },
+  {
+   "from": 110,
+   "name": "Strong",
+   "color": "#a3e39a"
+  },
+  {
+   "from": 90,
+   "name": "Average",
+   "color": "#fff1c1"
+  },
+  {
+   "from": 80,
+   "name": "Needs attention",
+   "color": "#ffc49e"
+  },
+  {
+   "from": null,
+   "name": "High priority",
+   "color": "#ff9f9f"
+  }
+ ],
+ "compare_presets": [
+  "prev4",
+  "prev12",
+  "year"
+ ],
+ "weeks_choices": [
+  1,
+  4,
+  8,
+  12
+ ],
+ "weeks_to_average": 8,
+ "weeks": [
+  {
+   "week": "@week-0",
+   "areas": 8
+  },
+  {
+   "week": "@week-1",
+   "areas": 8
+  },
+  {
+   "week": "@week-2",
+   "areas": 8
+  },
+  {
+   "week": "@week-3",
+   "areas": 8
+  },
+  {
+   "week": "@week-4",
+   "areas": 8
+  },
+  {
+   "week": "@week-5",
+   "areas": 8
+  },
+  {
+   "week": "@week-6",
+   "areas": 8
+  },
+  {
+   "week": "@week-7",
+   "areas": 8
+  },
+  {
+   "week": "@week-8",
+   "areas": 8
+  },
+  {
+   "week": "@week-9",
+   "areas": 8
+  },
+  {
+   "week": "@week-10",
+   "areas": 8
+  },
+  {
+   "week": "@week-11",
+   "areas": 8
+  },
+  {
+   "week": "@week-12",
+   "areas": 8
+  },
+  {
+   "week": "@week-13",
+   "areas": 8
+  },
+  {
+   "week": "@week-14",
+   "areas": 8
+  },
+  {
+   "week": "@week-15",
+   "areas": 8
+  },
+  {
+   "week": "@week-16",
+   "areas": 8
+  },
+  {
+   "week": "@week-17",
+   "areas": 8
+  },
+  {
+   "week": "@week-18",
+   "areas": 8
+  },
+  {
+   "week": "@week-19",
+   "areas": 8
+  },
+  {
+   "week": "@week-20",
+   "areas": 8
+  },
+  {
+   "week": "@week-21",
+   "areas": 8
+  },
+  {
+   "week": "@week-22",
+   "areas": 8
+  },
+  {
+   "week": "@week-23",
+   "areas": 8
+  },
+  {
+   "week": "@week-24",
+   "areas": 8
+  },
+  {
+   "week": "@week-25",
+   "areas": 8
+  }
+ ],
+ "newest_week": "@week-0",
+ "settings_version": 3,
+ "kpi_labels": {
+  "friends_found": "New People Being Taught",
+  "lessons_with_friends": "Lessons with friends",
+  "follow_up_lessons": "Follow-up lessons",
+  "members_at_lessons": "Lessons with a Member Participating",
+  "baptismal_dates": "People with a Baptismal Date",
+  "baptisms_confirmations": "People Who Are Baptized and Confirmed",
+  "sacrament_attendance": "People Being Taught Who Attend Sacrament Meeting",
+  "first_time_sacrament": "First time at sacrament meeting",
+  "first_time_first_week_sacrament": "At sacrament meeting the week they were found",
+  "new_member_sacrament": "New Members Attending Sacrament Meeting",
+  "new_member_sacrament_share": "Share of new members at sacrament meeting",
+  "new_member_lessons_per_member": "Lessons per new member",
+  "member_meals_active": "Member meals with active members",
+  "member_meals_less_active": "Member meals with less-active members",
+  "member_meals_part_member": "Member meals with part-member families",
+  "member_visits_active": "Member visits with active members",
+  "member_visits_less_active": "Member visits with less-active members",
+  "member_visits_part_member": "Member visits with part-member families",
+  "member_referral_asks": "Referral requests at member meals and visits",
+  "lessons_asked_referral": "Lessons where you asked for a referral",
+  "youth_activities": "Youth activities",
+  "service_hours": "Service hours",
+  "less_active_sacrament": "Less-active members at sacrament meeting",
+  "findechristus_referrals": "FindeChristus referrals",
+  "finding_people_found": "People found (Church finding report)",
+  "finding_people_reached": "People reached (Church finding report)",
+  "finding_first_lessons": "First lessons (Church finding report)",
+  "baptism_records": "Baptisms (baptism records)"
+ },
+ "week": "@week-0",
+ "skipped": [],
+ "compare": {
+  "preset": "year",
+  "has_data": true,
+  "current": {
+   "from": "@week-7",
+   "to": "@week-0",
+   "weeks": 8
+  },
+  "previous": {
+   "from": "@week-59",
+   "to": "@week-52",
+   "weeks": 8
+  }
+ },
+ "areas": [
+  {
+   "indices": {
+    "finding": 116.5,
+    "teaching": 101.1,
+    "bringing": 95.7,
+    "baptizing": 94.8,
+    "fellowshipping": 96.3,
+    "reactivating": 98.2
+   },
+   "overall": 100.5,
+   "label": "finding",
+   "id": 1111,
+   "name": "Alpha 1 North",
+   "zone_id": 11,
+   "district_id": 111,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "finding",
+      "text": "Creates and replenishes teaching opportunities."
+     },
+     {
+      "archetype": "teaching",
+      "text": "Strong, consistent teaching, and people are progressing."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "steady",
+      "title": "Steady work",
+      "meaning": "Nothing is far below what similar areas usually see.",
+      "steps": [
+       "Thank the companions and ask what is going well.",
+       "Ask how you can help them keep going."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 3.08,
+    "baptisms_confirmations": 4.08,
+    "first_time_first_week_sacrament": 3.08,
+    "first_time_sacrament": 6.08,
+    "follow_up_lessons": 5.08,
+    "friends_found": 7.08,
+    "lessons_with_friends": 8.07,
+    "member_meals_active": 3.08,
+    "member_meals_less_active": 4.08,
+    "member_meals_part_member": 5.08,
+    "member_visits_active": 6.08,
+    "member_visits_less_active": 3.08,
+    "member_visits_part_member": 4.08,
+    "members_at_lessons": 6.08,
+    "new_member_lessons_per_member": 6.08,
+    "new_member_sacrament_share": 5.08,
+    "sacrament_attendance": 5.08
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 117.3,
+      "teaching": 101.2,
+      "bringing": 95.6,
+      "baptizing": 94.7,
+      "fellowshipping": 96.2,
+      "reactivating": 98.1
+     },
+     "overall": 100.5,
+     "label": "finding"
+    },
+    "change": {
+     "overall": {
+      "delta": 0.0,
+      "direction": "flat"
+     },
+     "indices": {
+      "finding": {
+       "delta": -0.7,
+       "direction": "down"
+      },
+      "teaching": {
+       "delta": 0.0,
+       "direction": "flat"
+      },
+      "bringing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "baptizing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "fellowshipping": {
+       "delta": 0.2,
+       "direction": "flat"
+      },
+      "reactivating": {
+       "delta": 0.2,
+       "direction": "flat"
+      }
+     }
+    }
+   },
+   "notes": [
+    {
+     "id": 2,
+     "author": "Sister Demo",
+     "role": "AP",
+     "body": "Great finding work. Check that the lessons keep up.",
+     "updated_at": "@week-0T17:10:00+02:00",
+     "mine": false
+    }
+   ]
+  },
+  {
+   "indices": {
+    "finding": 104.1,
+    "teaching": 129.1,
+    "bringing": 96.8,
+    "baptizing": 95.5,
+    "fellowshipping": 97.4,
+    "reactivating": 101.1
+   },
+   "overall": 104.0,
+   "label": "teaching",
+   "id": 1112,
+   "name": "Alpha 1 South",
+   "zone_id": 11,
+   "district_id": 111,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "teaching",
+      "text": "Strong, consistent teaching, and people are progressing."
+     },
+     {
+      "archetype": "finding",
+      "text": "Creates and replenishes teaching opportunities."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "steady",
+      "title": "Steady work",
+      "meaning": "Nothing is far below what similar areas usually see.",
+      "steps": [
+       "Thank the companions and ask what is going well.",
+       "Ask how you can help them keep going."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 3.15,
+    "baptisms_confirmations": 4.15,
+    "first_time_first_week_sacrament": 3.15,
+    "first_time_sacrament": 6.15,
+    "follow_up_lessons": 9.15,
+    "friends_found": 3.15,
+    "lessons_with_friends": 8.15,
+    "member_meals_active": 3.15,
+    "member_meals_less_active": 4.15,
+    "member_meals_part_member": 5.15,
+    "member_visits_active": 6.15,
+    "member_visits_less_active": 3.15,
+    "member_visits_part_member": 4.15,
+    "members_at_lessons": 10.15,
+    "new_member_lessons_per_member": 6.15,
+    "new_member_sacrament_share": 5.15,
+    "sacrament_attendance": 5.15
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 99.5,
+      "teaching": 126.4,
+      "bringing": 91.0,
+      "baptizing": 91.8,
+      "fellowshipping": 91.8,
+      "reactivating": 94.7
+     },
+     "overall": 99.2,
+     "label": "teaching"
+    },
+    "change": {
+     "overall": {
+      "delta": 4.8,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 4.6,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 2.7,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 5.8,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 3.7,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 5.6,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 6.4,
+       "direction": "up"
+      }
+     }
+    }
+   },
+   "notes": []
+  },
+  {
+   "indices": {
+    "finding": 90.9,
+    "teaching": 90.0,
+    "bringing": 95.7,
+    "baptizing": 94.8,
+    "fellowshipping": 119.8,
+    "reactivating": 102.3
+   },
+   "overall": 98.9,
+   "label": "fellowshipping",
+   "id": 1121,
+   "name": "Alpha 2 East",
+   "zone_id": 11,
+   "district_id": 112,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "fellowshipping",
+      "text": "Strengthens and keeps new members close."
+     },
+     {
+      "archetype": "reactivating",
+      "text": "Helps less-active members come back and feel welcome."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "teaching_low",
+      "title": "Help with teaching",
+      "meaning": "Fewer lessons than in similar areas. People progress when they are taught regularly, with members.",
+      "steps": [
+       "Set the next appointment at the end of every lesson.",
+       "Invite a member to join lessons this week."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 3.08,
+    "baptisms_confirmations": 4.08,
+    "first_time_first_week_sacrament": 3.08,
+    "first_time_sacrament": 6.08,
+    "follow_up_lessons": 5.08,
+    "friends_found": 3.08,
+    "lessons_with_friends": 4.08,
+    "member_meals_active": 7.08,
+    "member_meals_less_active": 4.08,
+    "member_meals_part_member": 5.08,
+    "member_visits_active": 10.07,
+    "member_visits_less_active": 3.08,
+    "member_visits_part_member": 4.08,
+    "members_at_lessons": 6.08,
+    "new_member_lessons_per_member": 6.08,
+    "new_member_sacrament_share": 9.07,
+    "sacrament_attendance": 5.08
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 90.4,
+      "teaching": 89.4,
+      "bringing": 95.6,
+      "baptizing": 94.7,
+      "fellowshipping": 120.0,
+      "reactivating": 102.2
+     },
+     "overall": 98.7,
+     "label": "fellowshipping"
+    },
+    "change": {
+     "overall": {
+      "delta": 0.2,
+      "direction": "flat"
+     },
+     "indices": {
+      "finding": {
+       "delta": 0.5,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 0.6,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "baptizing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "fellowshipping": {
+       "delta": -0.1,
+       "direction": "flat"
+      },
+      "reactivating": {
+       "delta": 0.1,
+       "direction": "flat"
+      }
+     }
+    }
+   },
+   "notes": []
+  },
+  {
+   "indices": {
+    "finding": 92.9,
+    "teaching": 94.9,
+    "bringing": 103.1,
+    "baptizing": 132.5,
+    "fellowshipping": 96.3,
+    "reactivating": 98.2
+   },
+   "overall": 103.0,
+   "label": "baptizing",
+   "id": 1211,
+   "name": "Beta 1 West",
+   "zone_id": 12,
+   "district_id": 121,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "baptizing",
+      "text": "Turns teaching into commitments and ordinances."
+     },
+     {
+      "archetype": "bringing",
+      "text": "Brings friends and new members to church consistently."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "steady",
+      "title": "Steady work",
+      "meaning": "Nothing is far below what similar areas usually see.",
+      "steps": [
+       "Thank the companions and ask what is going well.",
+       "Ask how you can help them keep going."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 7.08,
+    "baptisms_confirmations": 8.07,
+    "first_time_first_week_sacrament": 3.08,
+    "first_time_sacrament": 6.08,
+    "follow_up_lessons": 5.08,
+    "friends_found": 3.08,
+    "lessons_with_friends": 4.08,
+    "member_meals_active": 3.08,
+    "member_meals_less_active": 4.08,
+    "member_meals_part_member": 5.08,
+    "member_visits_active": 6.08,
+    "member_visits_less_active": 3.08,
+    "member_visits_part_member": 4.08,
+    "members_at_lessons": 6.08,
+    "new_member_lessons_per_member": 6.08,
+    "new_member_sacrament_share": 5.08,
+    "sacrament_attendance": 9.07
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 92.4,
+      "teaching": 94.4,
+      "bringing": 103.0,
+      "baptizing": 132.7,
+      "fellowshipping": 96.2,
+      "reactivating": 98.1
+     },
+     "overall": 102.8,
+     "label": "baptizing"
+    },
+    "change": {
+     "overall": {
+      "delta": 0.2,
+      "direction": "flat"
+     },
+     "indices": {
+      "finding": {
+       "delta": 0.5,
+       "direction": "flat"
+      },
+      "teaching": {
+       "delta": 0.4,
+       "direction": "flat"
+      },
+      "bringing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "baptizing": {
+       "delta": -0.2,
+       "direction": "flat"
+      },
+      "fellowshipping": {
+       "delta": 0.2,
+       "direction": "flat"
+      },
+      "reactivating": {
+       "delta": 0.2,
+       "direction": "flat"
+      }
+     }
+    }
+   },
+   "notes": []
+  },
+  {
+   "indices": {
+    "finding": 104.1,
+    "teaching": 101.6,
+    "bringing": 111.4,
+    "baptizing": 104.9,
+    "fellowshipping": 111.4,
+    "reactivating": 115.5
+   },
+   "overall": 108.2,
+   "label": "reactivating",
+   "id": 1212,
+   "name": "Beta 1 Centre",
+   "zone_id": 12,
+   "district_id": 121,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "reactivating",
+      "text": "Helps less-active members come back and feel welcome."
+     },
+     {
+      "archetype": "bringing",
+      "text": "Brings friends and new members to church consistently."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "steady",
+      "title": "Steady work",
+      "meaning": "Nothing is far below what similar areas usually see.",
+      "steps": [
+       "Thank the companions and ask what is going well.",
+       "Ask how you can help them keep going."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 4.15,
+    "baptisms_confirmations": 5.15,
+    "first_time_first_week_sacrament": 4.15,
+    "first_time_sacrament": 7.15,
+    "follow_up_lessons": 6.15,
+    "friends_found": 4.15,
+    "lessons_with_friends": 5.15,
+    "member_meals_active": 4.15,
+    "member_meals_less_active": 5.15,
+    "member_meals_part_member": 6.15,
+    "member_visits_active": 7.15,
+    "member_visits_less_active": 4.15,
+    "member_visits_part_member": 5.15,
+    "members_at_lessons": 7.15,
+    "new_member_lessons_per_member": 7.15,
+    "new_member_sacrament_share": 6.15,
+    "sacrament_attendance": 6.15
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 99.5,
+      "teaching": 97.3,
+      "bringing": 106.2,
+      "baptizing": 101.3,
+      "fellowshipping": 106.4,
+      "reactivating": 109.9
+     },
+     "overall": 103.4,
+     "label": "reactivating"
+    },
+    "change": {
+     "overall": {
+      "delta": 4.7,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 4.6,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 4.2,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 5.2,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 3.6,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 5.0,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 5.6,
+       "direction": "up"
+      }
+     }
+    }
+   },
+   "notes": []
+  },
+  {
+   "indices": {
+    "finding": 72.5,
+    "teaching": 73.7,
+    "bringing": 73.8,
+    "baptizing": 80.6,
+    "fellowshipping": 75.3,
+    "reactivating": 74.2
+   },
+   "overall": 75.0,
+   "label": "stalled",
+   "id": 1311,
+   "name": "Gamma 1 Hill",
+   "zone_id": 13,
+   "district_id": 131,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [],
+    "patterns": [
+     {
+      "id": "stalled",
+      "title": "A season to regroup",
+      "meaning": "This week every part of the work is below what similar areas usually see. It often means the companions are tired, discouraged or facing something new, not that they are not trying.",
+      "steps": [
+       "Start by listening: ask the companions how they are doing and how you can help.",
+       "Plan together one simple goal for each day of the coming week.",
+       "Invite a member or the ward mission leader to join a lesson or a finding activity."
+      ]
+     },
+     {
+      "id": "finding_low",
+      "title": "Help with finding",
+      "meaning": "Fewer new people are found than in similar areas. Finding is often easiest together with members.",
+      "steps": [
+       "Plan daily finding time and try one new way to find this week.",
+       "Ask members whom they could invite to meet the missionaries."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 1.57,
+    "baptisms_confirmations": 2.57,
+    "first_time_first_week_sacrament": 1.57,
+    "first_time_sacrament": 4.58,
+    "follow_up_lessons": 3.58,
+    "friends_found": 1.57,
+    "lessons_with_friends": 2.57,
+    "member_meals_active": 1.57,
+    "member_meals_less_active": 2.57,
+    "member_meals_part_member": 3.58,
+    "member_visits_active": 4.58,
+    "member_visits_less_active": 1.57,
+    "member_visits_part_member": 2.57,
+    "members_at_lessons": 4.58,
+    "new_member_lessons_per_member": 4.58,
+    "new_member_sacrament_share": 3.58,
+    "sacrament_attendance": 3.58
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 90.4,
+      "teaching": 89.4,
+      "bringing": 95.6,
+      "baptizing": 94.7,
+      "fellowshipping": 96.2,
+      "reactivating": 98.1
+     },
+     "overall": 94.0,
+     "label": "stalled"
+    },
+    "change": {
+     "overall": {
+      "delta": -19.0,
+      "direction": "down"
+     },
+     "indices": {
+      "finding": {
+       "delta": -17.9,
+       "direction": "down"
+      },
+      "teaching": {
+       "delta": -15.6,
+       "direction": "down"
+      },
+      "bringing": {
+       "delta": -21.8,
+       "direction": "down"
+      },
+      "baptizing": {
+       "delta": -14.1,
+       "direction": "down"
+      },
+      "fellowshipping": {
+       "delta": -20.9,
+       "direction": "down"
+      },
+      "reactivating": {
+       "delta": -23.9,
+       "direction": "down"
+      }
+     }
+    }
+   },
+   "notes": [
+    {
+     "id": 1,
+     "author": "Elder Sample",
+     "role": "AP",
+     "body": "Gamma 1 Hill had a slow start. Pair them with Alpha 1 North for a day of finding.",
+     "updated_at": "@week-0T18:30:00+02:00",
+     "mine": true
+    }
+   ]
+  },
+  {
+   "indices": {
+    "finding": 92.9,
+    "teaching": 100.1,
+    "bringing": 116.5,
+    "baptizing": 94.8,
+    "fellowshipping": 96.3,
+    "reactivating": 99.9
+   },
+   "overall": 100.1,
+   "label": "bringing",
+   "id": 1321,
+   "name": "Gamma 2 Lake",
+   "zone_id": 13,
+   "district_id": 132,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "bringing",
+      "text": "Brings friends and new members to church consistently."
+     },
+     {
+      "archetype": "teaching",
+      "text": "Strong, consistent teaching, and people are progressing."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "steady",
+      "title": "Steady work",
+      "meaning": "Nothing is far below what similar areas usually see.",
+      "steps": [
+       "Thank the companions and ask what is going well.",
+       "Ask how you can help them keep going."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 3.08,
+    "baptisms_confirmations": 4.08,
+    "first_time_first_week_sacrament": 3.08,
+    "first_time_sacrament": 10.07,
+    "follow_up_lessons": 5.08,
+    "friends_found": 3.08,
+    "lessons_with_friends": 4.08,
+    "member_meals_active": 3.08,
+    "member_meals_less_active": 4.08,
+    "member_meals_part_member": 5.08,
+    "member_visits_active": 6.08,
+    "member_visits_less_active": 3.08,
+    "member_visits_part_member": 4.08,
+    "members_at_lessons": 10.07,
+    "new_member_lessons_per_member": 6.08,
+    "new_member_sacrament_share": 5.08,
+    "sacrament_attendance": 9.07
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 92.4,
+      "teaching": 99.9,
+      "bringing": 116.5,
+      "baptizing": 94.7,
+      "fellowshipping": 96.2,
+      "reactivating": 99.8
+     },
+     "overall": 99.9,
+     "label": "bringing"
+    },
+    "change": {
+     "overall": {
+      "delta": 0.2,
+      "direction": "flat"
+     },
+     "indices": {
+      "finding": {
+       "delta": 0.5,
+       "direction": "flat"
+      },
+      "teaching": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "bringing": {
+       "delta": 0.0,
+       "direction": "flat"
+      },
+      "baptizing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "fellowshipping": {
+       "delta": 0.2,
+       "direction": "flat"
+      },
+      "reactivating": {
+       "delta": 0.1,
+       "direction": "flat"
+      }
+     }
+    }
+   },
+   "notes": []
+  },
+  {
+   "indices": {
+    "finding": 117.4,
+    "teaching": 102.0,
+    "bringing": 96.8,
+    "baptizing": 95.5,
+    "fellowshipping": 97.4,
+    "reactivating": 99.4
+   },
+   "overall": 101.4,
+   "label": "finding",
+   "id": 1322,
+   "name": "Gamma 2 Park",
+   "zone_id": 13,
+   "district_id": 132,
+   "peer_group": "Whole mission",
+   "diagnosis": {
+    "strengths": [
+     {
+      "archetype": "finding",
+      "text": "Creates and replenishes teaching opportunities."
+     },
+     {
+      "archetype": "teaching",
+      "text": "Strong, consistent teaching, and people are progressing."
+     }
+    ],
+    "patterns": [
+     {
+      "id": "steady",
+      "title": "Steady work",
+      "meaning": "Nothing is far below what similar areas usually see.",
+      "steps": [
+       "Thank the companions and ask what is going well.",
+       "Ask how you can help them keep going."
+      ]
+     }
+    ]
+   },
+   "missing": [],
+   "values": {
+    "baptismal_dates": 3.15,
+    "baptisms_confirmations": 4.15,
+    "first_time_first_week_sacrament": 3.15,
+    "first_time_sacrament": 6.15,
+    "follow_up_lessons": 5.15,
+    "friends_found": 7.15,
+    "lessons_with_friends": 8.15,
+    "member_meals_active": 3.15,
+    "member_meals_less_active": 4.15,
+    "member_meals_part_member": 5.15,
+    "member_visits_active": 6.15,
+    "member_visits_less_active": 3.15,
+    "member_visits_part_member": 4.15,
+    "members_at_lessons": 6.15,
+    "new_member_lessons_per_member": 6.15,
+    "new_member_sacrament_share": 5.15,
+    "sacrament_attendance": 5.15
+   },
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 113.3,
+      "teaching": 97.8,
+      "bringing": 91.0,
+      "baptizing": 91.8,
+      "fellowshipping": 91.8,
+      "reactivating": 93.0
+     },
+     "overall": 96.5,
+     "label": "finding"
+    },
+    "change": {
+     "overall": {
+      "delta": 5.0,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 4.1,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 4.2,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 5.8,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 3.7,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 5.6,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 6.4,
+       "direction": "up"
+      }
+     }
+    }
+   },
+   "notes": []
+  }
+ ],
+ "districts": [
+  {
+   "indices": {
+    "finding": 110.3,
+    "teaching": 115.1,
+    "bringing": 96.3,
+    "baptizing": 95.1,
+    "fellowshipping": 96.8,
+    "reactivating": 99.7
+   },
+   "overall": 102.2,
+   "label": "teaching",
+   "id": 111,
+   "name": "Alpha 1",
+   "kind": "district",
+   "areas_scored": 2,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 100.7
+    },
+    {
+     "week": "@week-6",
+     "overall": 99.4
+    },
+    {
+     "week": "@week-5",
+     "overall": 100.3
+    },
+    {
+     "week": "@week-4",
+     "overall": 101.2
+    },
+    {
+     "week": "@week-3",
+     "overall": 102.3
+    },
+    {
+     "week": "@week-2",
+     "overall": 101.5
+    },
+    {
+     "week": "@week-1",
+     "overall": 100.8
+    },
+    {
+     "week": "@week-0",
+     "overall": 102.2
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 108.4,
+      "teaching": 113.8,
+      "bringing": 93.3,
+      "baptizing": 93.3,
+      "fellowshipping": 94.0,
+      "reactivating": 96.4
+     },
+     "overall": 99.9,
+     "label": "teaching"
+    },
+    "change": {
+     "overall": {
+      "delta": 2.4,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 1.9,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 1.3,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 3.0,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 1.9,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 2.9,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 3.3,
+       "direction": "up"
+      }
+     }
+    }
+   },
+   "zone_id": 11
+  },
+  {
+   "indices": {
+    "finding": 90.9,
+    "teaching": 90.0,
+    "bringing": 95.7,
+    "baptizing": 94.8,
+    "fellowshipping": 119.8,
+    "reactivating": 102.3
+   },
+   "overall": 98.9,
+   "label": "fellowshipping",
+   "id": 112,
+   "name": "Alpha 2",
+   "kind": "district",
+   "areas_scored": 1,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 99.7
+    },
+    {
+     "week": "@week-6",
+     "overall": 95.9
+    },
+    {
+     "week": "@week-5",
+     "overall": 96.9
+    },
+    {
+     "week": "@week-4",
+     "overall": 97.8
+    },
+    {
+     "week": "@week-3",
+     "overall": 98.9
+    },
+    {
+     "week": "@week-2",
+     "overall": 100.5
+    },
+    {
+     "week": "@week-1",
+     "overall": 97.4
+    },
+    {
+     "week": "@week-0",
+     "overall": 98.9
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 90.4,
+      "teaching": 89.4,
+      "bringing": 95.6,
+      "baptizing": 94.7,
+      "fellowshipping": 120.0,
+      "reactivating": 102.2
+     },
+     "overall": 98.7,
+     "label": "fellowshipping"
+    },
+    "change": {
+     "overall": {
+      "delta": 0.2,
+      "direction": "flat"
+     },
+     "indices": {
+      "finding": {
+       "delta": 0.5,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 0.6,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "baptizing": {
+       "delta": 0.1,
+       "direction": "flat"
+      },
+      "fellowshipping": {
+       "delta": -0.1,
+       "direction": "flat"
+      },
+      "reactivating": {
+       "delta": 0.1,
+       "direction": "flat"
+      }
+     }
+    }
+   },
+   "zone_id": 11
+  },
+  {
+   "indices": {
+    "finding": 98.5,
+    "teaching": 98.2,
+    "bringing": 107.3,
+    "baptizing": 118.7,
+    "fellowshipping": 103.9,
+    "reactivating": 106.9
+   },
+   "overall": 105.6,
+   "label": "baptizing",
+   "id": 121,
+   "name": "Beta 1",
+   "kind": "district",
+   "areas_scored": 2,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 104.1
+    },
+    {
+     "week": "@week-6",
+     "overall": 102.8
+    },
+    {
+     "week": "@week-5",
+     "overall": 103.7
+    },
+    {
+     "week": "@week-4",
+     "overall": 104.6
+    },
+    {
+     "week": "@week-3",
+     "overall": 105.7
+    },
+    {
+     "week": "@week-2",
+     "overall": 104.8
+    },
+    {
+     "week": "@week-1",
+     "overall": 104.1
+    },
+    {
+     "week": "@week-0",
+     "overall": 105.6
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 96.0,
+      "teaching": 95.9,
+      "bringing": 104.6,
+      "baptizing": 117.0,
+      "fellowshipping": 101.3,
+      "reactivating": 104.0
+     },
+     "overall": 103.1,
+     "label": "baptizing"
+    },
+    "change": {
+     "overall": {
+      "delta": 2.5,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 2.6,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 2.3,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 2.7,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 1.7,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 2.6,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 2.9,
+       "direction": "up"
+      }
+     }
+    }
+   },
+   "zone_id": 12
+  },
+  {
+   "indices": {
+    "finding": 72.5,
+    "teaching": 73.7,
+    "bringing": 73.8,
+    "baptizing": 80.6,
+    "fellowshipping": 75.3,
+    "reactivating": 74.2
+   },
+   "overall": 75.0,
+   "label": "stalled",
+   "id": 131,
+   "name": "Gamma 1",
+   "kind": "district",
+   "areas_scored": 1,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 95.0
+    },
+    {
+     "week": "@week-6",
+     "overall": 91.2
+    },
+    {
+     "week": "@week-5",
+     "overall": 88.9
+    },
+    {
+     "week": "@week-4",
+     "overall": 86.6
+    },
+    {
+     "week": "@week-3",
+     "overall": 84.5
+    },
+    {
+     "week": "@week-2",
+     "overall": 82.8
+    },
+    {
+     "week": "@week-1",
+     "overall": 76.6
+    },
+    {
+     "week": "@week-0",
+     "overall": 75.0
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 90.4,
+      "teaching": 89.4,
+      "bringing": 95.6,
+      "baptizing": 94.7,
+      "fellowshipping": 96.2,
+      "reactivating": 98.1
+     },
+     "overall": 94.0,
+     "label": "stalled"
+    },
+    "change": {
+     "overall": {
+      "delta": -19.0,
+      "direction": "down"
+     },
+     "indices": {
+      "finding": {
+       "delta": -17.9,
+       "direction": "down"
+      },
+      "teaching": {
+       "delta": -15.6,
+       "direction": "down"
+      },
+      "bringing": {
+       "delta": -21.8,
+       "direction": "down"
+      },
+      "baptizing": {
+       "delta": -14.1,
+       "direction": "down"
+      },
+      "fellowshipping": {
+       "delta": -20.9,
+       "direction": "down"
+      },
+      "reactivating": {
+       "delta": -23.9,
+       "direction": "down"
+      }
+     }
+    }
+   },
+   "zone_id": 13
+  },
+  {
+   "indices": {
+    "finding": 105.2,
+    "teaching": 101.0,
+    "bringing": 106.6,
+    "baptizing": 95.1,
+    "fellowshipping": 96.8,
+    "reactivating": 99.7
+   },
+   "overall": 100.8,
+   "label": "balanced",
+   "id": 132,
+   "name": "Gamma 2",
+   "kind": "district",
+   "areas_scored": 2,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 99.1
+    },
+    {
+     "week": "@week-6",
+     "overall": 97.8
+    },
+    {
+     "week": "@week-5",
+     "overall": 98.8
+    },
+    {
+     "week": "@week-4",
+     "overall": 99.7
+    },
+    {
+     "week": "@week-3",
+     "overall": 100.8
+    },
+    {
+     "week": "@week-2",
+     "overall": 99.9
+    },
+    {
+     "week": "@week-1",
+     "overall": 99.3
+    },
+    {
+     "week": "@week-0",
+     "overall": 100.8
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 102.9,
+      "teaching": 98.8,
+      "bringing": 103.8,
+      "baptizing": 93.3,
+      "fellowshipping": 94.0,
+      "reactivating": 96.4
+     },
+     "overall": 98.2,
+     "label": "balanced"
+    },
+    "change": {
+     "overall": {
+      "delta": 2.6,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 2.3,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 2.2,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 2.9,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 1.9,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 2.9,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 3.3,
+       "direction": "up"
+      }
+     }
+    }
+   },
+   "zone_id": 13
+  }
+ ],
+ "zones": [
+  {
+   "indices": {
+    "finding": 103.9,
+    "teaching": 106.7,
+    "bringing": 96.1,
+    "baptizing": 95.0,
+    "fellowshipping": 104.5,
+    "reactivating": 100.5
+   },
+   "overall": 101.1,
+   "label": "balanced",
+   "id": 11,
+   "name": "Zone Alpha",
+   "kind": "zone",
+   "areas_scored": 3,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 100.4
+    },
+    {
+     "week": "@week-6",
+     "overall": 98.2
+    },
+    {
+     "week": "@week-5",
+     "overall": 99.2
+    },
+    {
+     "week": "@week-4",
+     "overall": 100.1
+    },
+    {
+     "week": "@week-3",
+     "overall": 101.2
+    },
+    {
+     "week": "@week-2",
+     "overall": 101.2
+    },
+    {
+     "week": "@week-1",
+     "overall": 99.7
+    },
+    {
+     "week": "@week-0",
+     "overall": 101.1
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 102.4,
+      "teaching": 105.7,
+      "bringing": 94.0,
+      "baptizing": 93.7,
+      "fellowshipping": 102.7,
+      "reactivating": 98.3
+     },
+     "overall": 99.5,
+     "label": "teaching"
+    },
+    "change": {
+     "overall": {
+      "delta": 1.7,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 1.5,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 1.1,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 2.0,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 1.3,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 1.9,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 2.2,
+       "direction": "up"
+      }
+     }
+    }
+   }
+  },
+  {
+   "indices": {
+    "finding": 98.5,
+    "teaching": 98.2,
+    "bringing": 107.3,
+    "baptizing": 118.7,
+    "fellowshipping": 103.9,
+    "reactivating": 106.9
+   },
+   "overall": 105.6,
+   "label": "baptizing",
+   "id": 12,
+   "name": "Zone Beta",
+   "kind": "zone",
+   "areas_scored": 2,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 104.1
+    },
+    {
+     "week": "@week-6",
+     "overall": 102.8
+    },
+    {
+     "week": "@week-5",
+     "overall": 103.7
+    },
+    {
+     "week": "@week-4",
+     "overall": 104.6
+    },
+    {
+     "week": "@week-3",
+     "overall": 105.7
+    },
+    {
+     "week": "@week-2",
+     "overall": 104.8
+    },
+    {
+     "week": "@week-1",
+     "overall": 104.1
+    },
+    {
+     "week": "@week-0",
+     "overall": 105.6
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 96.0,
+      "teaching": 95.9,
+      "bringing": 104.6,
+      "baptizing": 117.0,
+      "fellowshipping": 101.3,
+      "reactivating": 104.0
+     },
+     "overall": 103.1,
+     "label": "baptizing"
+    },
+    "change": {
+     "overall": {
+      "delta": 2.5,
+      "direction": "up"
+     },
+     "indices": {
+      "finding": {
+       "delta": 2.6,
+       "direction": "up"
+      },
+      "teaching": {
+       "delta": 2.3,
+       "direction": "up"
+      },
+      "bringing": {
+       "delta": 2.7,
+       "direction": "up"
+      },
+      "baptizing": {
+       "delta": 1.7,
+       "direction": "up"
+      },
+      "fellowshipping": {
+       "delta": 2.6,
+       "direction": "up"
+      },
+      "reactivating": {
+       "delta": 2.9,
+       "direction": "up"
+      }
+     }
+    }
+   }
+  },
+  {
+   "indices": {
+    "finding": 94.3,
+    "teaching": 91.9,
+    "bringing": 95.7,
+    "baptizing": 90.3,
+    "fellowshipping": 89.7,
+    "reactivating": 91.2
+   },
+   "overall": 92.2,
+   "label": "stalled",
+   "id": 13,
+   "name": "Zone Gamma",
+   "kind": "zone",
+   "areas_scored": 3,
+   "trend": [
+    {
+     "week": "@week-7",
+     "overall": 97.8
+    },
+    {
+     "week": "@week-6",
+     "overall": 95.6
+    },
+    {
+     "week": "@week-5",
+     "overall": 95.5
+    },
+    {
+     "week": "@week-4",
+     "overall": 95.3
+    },
+    {
+     "week": "@week-3",
+     "overall": 95.3
+    },
+    {
+     "week": "@week-2",
+     "overall": 94.2
+    },
+    {
+     "week": "@week-1",
+     "overall": 91.7
+    },
+    {
+     "week": "@week-0",
+     "overall": 92.2
+    }
+   ],
+   "compare": {
+    "previous": {
+     "indices": {
+      "finding": 98.7,
+      "teaching": 95.7,
+      "bringing": 101.0,
+      "baptizing": 93.7,
+      "fellowshipping": 94.7,
+      "reactivating": 97.0
+     },
+     "overall": 96.8,
+     "label": "balanced"
+    },
+    "change": {
+     "overall": {
+      "delta": -4.6,
+      "direction": "down"
+     },
+     "indices": {
+      "finding": {
+       "delta": -4.4,
+       "direction": "down"
+      },
+      "teaching": {
+       "delta": -3.8,
+       "direction": "down"
+      },
+      "bringing": {
+       "delta": -5.3,
+       "direction": "down"
+      },
+      "baptizing": {
+       "delta": -3.4,
+       "direction": "down"
+      },
+      "fellowshipping": {
+       "delta": -5.1,
+       "direction": "down"
+      },
+      "reactivating": {
+       "delta": -5.8,
+       "direction": "down"
+      }
+     }
+    }
+   }
+  }
+ ],
+ "mission": {
+  "indices": {
+   "finding": 98.9,
+   "teaching": 99.1,
+   "bringing": 98.7,
+   "baptizing": 99.2,
+   "fellowshipping": 98.8,
+   "reactivating": 98.6
+  },
+  "overall": 98.9,
+  "label": "stalled",
+  "id": 1,
+  "name": "Demo Mission",
+  "kind": "mission",
+  "areas_scored": 8,
+  "trend": [
+   {
+    "week": "@week-7",
+    "overall": 100.3
+   },
+   {
+    "week": "@week-6",
+    "overall": 98.4
+   },
+   {
+    "week": "@week-5",
+    "overall": 98.9
+   },
+   {
+    "week": "@week-4",
+    "overall": 99.4
+   },
+   {
+    "week": "@week-3",
+    "overall": 100.1
+   },
+   {
+    "week": "@week-2",
+    "overall": 99.5
+   },
+   {
+    "week": "@week-1",
+    "overall": 97.8
+   },
+   {
+    "week": "@week-0",
+    "overall": 98.9
+   }
+  ],
+  "compare": {
+   "previous": {
+    "indices": {
+     "finding": 99.4,
+     "teaching": 99.5,
+     "bringing": 99.3,
+     "baptizing": 99.6,
+     "fellowshipping": 99.3,
+     "reactivating": 99.2
+    },
+    "overall": 99.4,
+    "label": "stalled"
+   },
+   "change": {
+    "overall": {
+     "delta": -0.5,
+     "direction": "down"
+    },
+    "indices": {
+     "finding": {
+      "delta": -0.5,
+      "direction": "flat"
+     },
+     "teaching": {
+      "delta": -0.4,
+      "direction": "flat"
+     },
+     "bringing": {
+      "delta": -0.6,
+      "direction": "down"
+     },
+     "baptizing": {
+      "delta": -0.4,
+      "direction": "flat"
+     },
+     "fellowshipping": {
+      "delta": -0.5,
+      "direction": "down"
+     },
+     "reactivating": {
+      "delta": -0.6,
+      "direction": "down"
+     }
+    }
+   }
+  }
+ },
+ "home": {
+  "scope": "mission",
+  "zone_id": null,
+  "district_id": null
+ }
+}

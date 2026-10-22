@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Dashboards</title>
+<script>
+// The portal's theme before the first paint (the shell keeps it in gfm_portal_layout_v1), then every change it sends.
+(function () {
+  var set = function (t) { document.documentElement.dataset.theme = t === 'dark' || t === 'light' ? t : 'mission'; };
+  try { set((JSON.parse(localStorage.getItem('gfm_portal_layout_v1') || 'null') || {}).theme); } catch (e) { set('mission'); }
+  addEventListener('message', function (e) {
+    if (e.data && e.data.type === 'portal-theme') { set(e.data.theme); if (window.__redraw) window.__redraw(); }
+  });
+})();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="bar" id="bar" aria-label="Dashboards"></nav>
+<main id="page" aria-live="polite"></main>
+<script src="echarts.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+ "can_publish": false,
+ "announcements": [
+  {"id": 1, "title": "Welcome to the demo", "body": "This is a demo with fake data. Click around: nothing you do is saved, and nobody real is shown.", "created_at": "@dt-1@08:00", "expires_at": null, "pinned": true, "urgent": false, "read_at": null, "attachments": [], "can_edit": false, "reads": 0},
+  {"id": 2, "title": "Transfer day reminder", "body": "A fake reminder: pack your bags, leave your area clean and write your handover notes.", "created_at": "@dt-3@12:00", "expires_at": null, "pinned": false, "urgent": true, "read_at": null, "attachments": [], "can_edit": false, "reads": 0},
+  {"id": 3, "title": "New idea for finding people", "body": "Zone Alpha tried a short service project each Saturday. A made-up success story for the demo.", "created_at": "@dt-6@18:00", "expires_at": null, "pinned": false, "urgent": false, "read_at": "@dt-5@09:00", "attachments": [], "can_edit": false, "reads": 0}
+ ]
+}

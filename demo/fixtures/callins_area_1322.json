@@ -1,0 +1,240 @@
+{
+ "role": "AP",
+ "roles": [
+  "AP"
+ ],
+ "roles_label": "AP",
+ "layout": "desktop",
+ "home": {
+  "level": "mission",
+  "id": 1
+ },
+ "week": {
+  "id": 12,
+  "sunday": "@week-0"
+ },
+ "weeks": [
+  {
+   "sunday": "@week-0"
+  },
+  {
+   "sunday": "@week-1"
+  },
+  {
+   "sunday": "@week-2"
+  },
+  {
+   "sunday": "@week-3"
+  },
+  {
+   "sunday": "@week-4"
+  },
+  {
+   "sunday": "@week-5"
+  },
+  {
+   "sunday": "@week-6"
+  },
+  {
+   "sunday": "@week-7"
+  },
+  {
+   "sunday": "@week-8"
+  },
+  {
+   "sunday": "@week-9"
+  },
+  {
+   "sunday": "@week-10"
+  },
+  {
+   "sunday": "@week-11"
+  }
+ ],
+ "current_sunday": "@week-0",
+ "scope": {
+  "level": "area",
+  "id": 1322,
+  "name": "Gamma 2 Park",
+  "child_level": null,
+  "breadcrumb": [
+   {
+    "level": "mission",
+    "id": 1,
+    "name": "Demo Mission",
+    "allowed": true
+   },
+   {
+    "level": "zone",
+    "id": 13,
+    "name": "Zone Gamma",
+    "allowed": true
+   },
+   {
+    "level": "district",
+    "id": 132,
+    "name": "Gamma 2",
+    "allowed": true
+   },
+   {
+    "level": "area",
+    "id": 1322,
+    "name": "Gamma 2 Park",
+    "allowed": true
+   }
+  ],
+  "mission_id": 1,
+  "zone_id": 13,
+  "district_id": 132,
+  "area_id": 1322
+ },
+ "metrics": [
+  {
+   "key": "friends_found",
+   "label": "New people being taught"
+  },
+  {
+   "key": "members_at_lessons",
+   "label": "Members at lessons"
+  },
+  {
+   "key": "sacrament_attendance",
+   "label": "Sacrament attendance"
+  },
+  {
+   "key": "baptismal_dates",
+   "label": "Baptismal dates"
+  },
+  {
+   "key": "baptisms_confirmations",
+   "label": "Baptisms and confirmations"
+  },
+  {
+   "key": "nm_sacrament",
+   "label": "New member sacrament attendance"
+  },
+  {
+   "key": "follow_up_lessons",
+   "label": "Follow-up lessons"
+  }
+ ],
+ "can": {
+  "area_updates": false,
+  "complete": false,
+  "reopen": true,
+  "dl_notes": false,
+  "zl_notes": false
+ },
+ "totals": {
+  "friends_found": {
+   "previous_goal": 7,
+   "actual": 6,
+   "goal": 7
+  },
+  "members_at_lessons": {
+   "previous_goal": 5,
+   "actual": 5,
+   "goal": 6
+  },
+  "sacrament_attendance": {
+   "previous_goal": 5,
+   "actual": 4,
+   "goal": 5
+  },
+  "baptismal_dates": {
+   "previous_goal": 4,
+   "actual": 3,
+   "goal": 4
+  },
+  "baptisms_confirmations": {
+   "previous_goal": 2,
+   "actual": 2,
+   "goal": 3
+  },
+  "nm_sacrament": {
+   "previous_goal": 9,
+   "actual": 8,
+   "goal": 9
+  },
+  "follow_up_lessons": {
+   "previous_goal": null,
+   "actual": 7,
+   "goal": 8
+  }
+ },
+ "status": {
+  "report_count": 2,
+  "all_reports_submitted": true,
+  "dl_call_in_complete": true,
+  "dl_completed_at": "@dt-1@10:00"
+ },
+ "notes": {},
+ "children": [],
+ "detail": {
+  "level": "area",
+  "id": 1322,
+  "name": "Gamma 2 Park",
+  "allowed": true,
+  "metrics": {
+   "friends_found": {
+    "previous_goal": 7,
+    "actual": 6,
+    "goal": 7
+   },
+   "members_at_lessons": {
+    "previous_goal": 5,
+    "actual": 5,
+    "goal": 6
+   },
+   "sacrament_attendance": {
+    "previous_goal": 5,
+    "actual": 4,
+    "goal": 5
+   },
+   "baptismal_dates": {
+    "previous_goal": 4,
+    "actual": 3,
+    "goal": 4
+   },
+   "baptisms_confirmations": {
+    "previous_goal": 2,
+    "actual": 2,
+    "goal": 3
+   },
+   "nm_sacrament": {
+    "previous_goal": 9,
+    "actual": 8,
+    "goal": 9
+   },
+   "follow_up_lessons": {
+    "previous_goal": null,
+    "actual": 7,
+    "goal": 8
+   }
+  },
+  "status": {
+   "report_count": 2,
+   "all_reports_submitted": true
+  },
+  "missionaries": [
+   {
+    "name": "Elder Sample",
+    "position": "DL"
+   },
+   {
+    "name": "Elder Example",
+    "position": ""
+   }
+  ],
+  "area_update": "Both companionships met their goals this week and invited two new friends to the ward activity.",
+  "plans": {
+   "friends_found": "Visit the people on the list and invite them to church.",
+   "members_at_lessons": "Visit the people on the list and invite them to church.",
+   "sacrament_attendance": "Visit the people on the list and invite them to church.",
+   "baptismal_dates": "Visit the people on the list and invite them to church.",
+   "baptisms_confirmations": "Visit the people on the list and invite them to church.",
+   "nm_sacrament": "Visit the people on the list and invite them to church."
+  },
+  "planning_details": []
+ }
+}

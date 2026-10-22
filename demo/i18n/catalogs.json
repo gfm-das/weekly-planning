@@ -1,0 +1,104 @@
+{
+ "version": 2,
+ "about": "One file per language: i18n/<code>.json, the same keys in each. en.json holds the English texts that the pages show; i18n.js replaces a text by the same key in the chosen language. Every catalog except English needs review by a native speaker (docs/handoff/round6/i18n.md lists the Preach My Gospel terms used).",
+ "languages": {
+  "en": {
+   "english": "English",
+   "name": "English",
+   "church": "eng",
+   "dir": "ltr",
+   "review": "source"
+  },
+  "de": {
+   "english": "German",
+   "name": "Deutsch",
+   "church": "deu",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "es": {
+   "english": "Spanish",
+   "name": "Español",
+   "church": "spa",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "fr": {
+   "english": "French",
+   "name": "Français",
+   "church": "fra",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "pt": {
+   "english": "Portuguese",
+   "name": "Português",
+   "church": "por",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "uk": {
+   "english": "Ukrainian",
+   "name": "Українська",
+   "church": "ukr",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "ru": {
+   "english": "Russian",
+   "name": "Русский",
+   "church": "rus",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "it": {
+   "english": "Italian",
+   "name": "Italiano",
+   "church": "ita",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "tr": {
+   "english": "Turkish",
+   "name": "Türkçe",
+   "church": "tur",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "fa": {
+   "english": "Persian",
+   "name": "فارسی",
+   "church": "pes",
+   "dir": "rtl",
+   "review": "needs review by a native speaker"
+  },
+  "ro": {
+   "english": "Romanian",
+   "name": "Română",
+   "church": "ron",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "sv": {
+   "english": "Swedish",
+   "name": "Svenska",
+   "church": "swe",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "da": {
+   "english": "Danish",
+   "name": "Dansk",
+   "church": "dan",
+   "dir": "ltr",
+   "review": "needs review by a native speaker"
+  },
+  "ar": {
+   "english": "Arabic",
+   "name": "العربية",
+   "church": "ara",
+   "dir": "rtl",
+   "review": "needs review by a native speaker"
+  }
+ }
+}

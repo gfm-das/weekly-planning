@@ -1,0 +1,9 @@
+{
+ "can_edit": false,
+ "events": [
+  {"id": 1, "title": "Monday Morning Meeting", "description": "Weekly meeting for the whole mission. Fake demo event.", "location": "Demo Mission Office", "meeting_url": "", "starts_at": "@dt+1@09:00", "ends_at": "@dt+1@10:30", "timezone": "Europe/Berlin", "recurrence": null, "attachments": [], "roles": ["MISSIONARY", "DL", "ZL", "STL", "AP"], "zone_ids": [11, 12, 13], "reminder_minutes": 30},
+  {"id": 2, "title": "Zone conference Alpha", "description": "A fake zone conference for the demo.", "location": "Demo Chapel", "meeting_url": "", "starts_at": "@dt+4@10:00", "ends_at": "@dt+4@15:00", "timezone": "Europe/Berlin", "recurrence": null, "attachments": [], "roles": ["MISSIONARY", "DL", "ZL"], "zone_ids": [11], "reminder_minutes": 60},
+  {"id": 3, "title": "Leadership training (online)", "description": "A fake online training. The link is not real.", "location": "", "meeting_url": "https://example.org/demo-meeting", "starts_at": "@dt+8@19:00", "ends_at": "@dt+8@20:00", "timezone": "Europe/Berlin", "recurrence": null, "attachments": [], "roles": ["DL", "ZL", "AP"], "zone_ids": [11, 12, 13], "reminder_minutes": 30},
+  {"id": 4, "title": "Service project", "description": "Helping at the demo food bank.", "location": "Demo Town Hall", "meeting_url": "", "starts_at": "@dt+12@14:00", "ends_at": "@dt+12@17:00", "timezone": "Europe/Berlin", "recurrence": null, "attachments": [], "roles": ["MISSIONARY"], "zone_ids": [12, 13], "reminder_minutes": 30}
+ ]
+}

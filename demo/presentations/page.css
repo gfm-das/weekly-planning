@@ -1,0 +1,26 @@
+/* The demo's Presentations library: the empty state of a fresh install, in every portal theme. */
+:root { --page: #f5f7fa; --panel: #fff; --text: #17394b; --muted: #546a76; --line: #dce3ea; --soft: #eef2f6; --accent: #087f8c; --accent-text: #fff; color-scheme: light; }
+:root[data-theme="light"] { --page: #fafbfc; }
+:root[data-theme="dark"] { --page: #101a21; --panel: #18262f; --text: #edf7f8; --muted: #a9bdc3; --line: #2d414b; --soft: #21343d; --accent: #4fd1c5; --accent-text: #0b1a20; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--page); color: var(--text); font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+button, a.btn { font: inherit; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* The library */
+header.top { position: sticky; top: 0; z-index: 20; background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+header.top h1 { font-size: 26px; margin: 0; }
+.sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.primary { border: 0; background: var(--accent); color: var(--accent-text); border-radius: 12px; padding: 11px 16px; font-weight: 700; cursor: pointer; }
+main.lib { padding: 22px; max-width: 1200px; margin: 0 auto; }
+.toolbar { margin-bottom: 16px; color: var(--muted); font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.empty { grid-column: 1 / -1; background: var(--panel); border: 1px dashed var(--line); border-radius: 16px; padding: 45px; text-align: center; color: var(--muted); }
+.toast { position: fixed; right: 12px; bottom: 12px; background: var(--text); color: var(--page); padding: 8px 14px; border-radius: 8px; font-size: 13px; z-index: 50; max-width: calc(100vw - 24px); }
+
+@media (max-width: 600px) {
+  header.top { padding: 12px 14px; } header.top h1 { font-size: 22px; }
+  main.lib { padding: 14px; }
+}
